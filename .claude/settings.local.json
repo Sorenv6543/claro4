@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run test:run:*)",
+      "Bash(npm run build:*)",
+      "mcp__supabase__list_tables",
+      "mcp__supabase__execute_sql",
+      "Bash(npm run lint)",
+      "Bash(tail:*)",
+      "Bash(npm run dev:*)",
+      "Bash(compgen:*)",
+      "Bash(sed:*)",
+      "Bash(npx vue-tsc:*)",
+      "Bash(Remove-Item -Recurse -Force node_modules.vite -ErrorAction SilentlyContinue)",
+      "Bash(rm:*)",
+      "Bash(curl:*)",
+      "Bash(gh pr list:*)"
+    ],
+    "deny": []
+  },
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "sequential-thinking",
+    "supabase",
+    "context7",
+    "desktop-commander",
+    "browser-tools",
+    "browser-tools-enhanced",
+    "puppeteer",
+    "playwright"
+  ],
+  "enabledPlugins": {
+    "context7@claude-plugins-official": true,
+    "code-review@claude-plugins-official": true,
+    "code-simplifier@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "typescript-lsp@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true
+  }
+}
