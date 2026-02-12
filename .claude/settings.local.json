@@ -14,27 +14,49 @@
       "Bash(Remove-Item -Recurse -Force node_modules.vite -ErrorAction SilentlyContinue)",
       "Bash(rm:*)",
       "Bash(curl:*)",
-      "Bash(gh pr list:*)"
+      "Bash(gh pr list:*)",
+      "Bash(where:*)",
+      "mcp__supabase__get_project_url",
+      "WebSearch",
+      "Bash(powershell -ExecutionPolicy ByPass -c \"irm https://astral.sh/uv/install.ps1 | iex\")",
+      "Bash(powershell.exe -NoProfile -ExecutionPolicy Bypass -Command \"irm https://astral.sh/uv/install.ps1 | iex\")",
+      "Bash(uv:*)",
+      "Bash(python -m uv:*)",
+      "Bash(claude mcp add:*)",
+      "mcp__plugin_serena_serena__activate_project",
+      "mcp__plugin_serena_serena__check_onboarding_performed",
+      "mcp__plugin_serena_serena__onboarding",
+      "mcp__plugin_serena_serena__list_dir",
+      "Bash(claude mcp list:*)",
+      "Bash(claude mcp get:*)",
+      "mcp__plugin_serena_serena__read_file",
+      "mcp__plugin_serena_serena__write_memory",
+      "Bash(npx vite --version)",
+      "Bash(git checkout:*)",
+      "mcp__console-ninja__runtime-errors",
+      "mcp__console-ninja__runtime-logs"
     ],
     "deny": []
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [
-    "sequential-thinking",
     "supabase",
     "context7",
     "desktop-commander",
-    "browser-tools",
-    "browser-tools-enhanced",
-    "puppeteer",
     "playwright"
   ],
   "enabledPlugins": {
-    "context7@claude-plugins-official": true,
+    "claude-md-management@claude-plugins-official": true,
     "code-review@claude-plugins-official": true,
     "code-simplifier@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
     "github@claude-plugins-official": true,
+    "greptile@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "pr-review-toolkit@claude-plugins-official": true,
+    "serena@claude-plugins-official": true,
     "typescript-lsp@claude-plugins-official": true,
-    "claude-md-management@claude-plugins-official": true
-  }
+    "vite@claude-plugins-official": true
+  },
+  "claude-code.enableAuthLogin": true
 }

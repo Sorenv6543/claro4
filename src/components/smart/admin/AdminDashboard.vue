@@ -736,18 +736,18 @@ import type { Property } from '@/types/property.ts';
 // Composables
 const router = useRouter();
 const { mobile } = useDisplay();
-  const { 
-    allBookings, 
-    fetchAllBookings 
-  } = useAdminBookings();
-const { 
-  allProperties, 
+const {
+  allBookings,
+  fetchAllBookings
+} = useAdminBookings();
+const {
+  allProperties,
   loading: _propertiesLoading,
-  fetchAllProperties 
+  fetchAllProperties
 } = useAdminProperties();
-const { 
-  users, 
-  fetchAllUsers 
+const {
+  users,
+  fetchAllUsers
 } = useAdminUserManagement();
 
 // Reactive state

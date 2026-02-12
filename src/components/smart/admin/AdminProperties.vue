@@ -329,6 +329,7 @@ import { ref, computed } from 'vue'
 import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts'
 import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
 import type { Property, PricingTier } from '@/types/property.ts'
+import type { Booking } from '@/types/booking.ts'
 
 // Composables
 const { allProperties, updateProperty } = useAdminProperties()
@@ -360,8 +361,8 @@ const tierOptions = [
 ]
 
 // Computed properties
-const allPropertiesArray = computed<Property[]>(() => Array.from(allProperties.value.values()) as Property[])
-const allBookingsArray = computed(() => Array.from(allBookings.value.values()))
+const allPropertiesArray = computed<Property[]>(() => allProperties.value)
+const allBookingsArray = computed<Booking[]>(() => allBookings.value)
 
 const ownerOptions = computed(() => {
   const owners = new Set(allPropertiesArray.value.map(p => p.owner_id))

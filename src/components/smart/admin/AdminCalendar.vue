@@ -103,7 +103,7 @@
       :mode="adminBookingFormModal.mode"
       :booking="adminBookingFormModal.booking"
       :properties="Array.from(allProperties.values())"
-      :cleaners="allUsers.filter(user => user.role === 'cleaner' || user.role === 'admin')"
+      :cleaner="allUsers.filter(user => user.role === 'cleaner' || user.role === 'admin')"
       :loading="adminBookingFormModal.loading"
       :errors="adminBookingFormModal.errors"
       @submit="handleAdminBookingFormSubmit"

@@ -23,8 +23,12 @@ async function fetchAllUsers(): Promise<void> {
       throw supabaseError
     }
     users.value = (data as User[]) || []
-  } catch (err: any) {
-    error.value = err?.message || 'Failed to fetch users'
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'message' in err) {
+      error.value = (err as { message?: string }).message || 'Failed to fetch users'
+    } else {
+      error.value = 'Failed to fetch users'
+    }
     users.value = []
   } finally {
     loading.value = false
@@ -72,8 +76,12 @@ async function createUser(userData: Partial<User> & { password: string }): Promi
     }
     await fetchAllUsers()
     return true
-  } catch (err: any) {
-    error.value = err?.message || 'Failed to create user'
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'message' in err) {
+      error.value = (err as { message?: string }).message || 'Failed to create user'
+    } else {
+      error.value = 'Failed to create user'
+    }
     return false
   } finally {
     loading.value = false
@@ -96,8 +104,12 @@ async function updateUser(userId: string, updateData: Partial<User>): Promise<bo
     }
     await fetchAllUsers()
     return true
-  } catch (err: any) {
-    error.value = err?.message || 'Failed to update user'
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'message' in err) {
+      error.value = (err as { message?: string }).message || 'Failed to update user'
+    } else {
+      error.value = 'Failed to update user'
+    }
     return false
   } finally {
     loading.value = false
@@ -124,8 +136,12 @@ async function deleteUser(userId: string): Promise<boolean> {
     }
     await fetchAllUsers()
     return true
-  } catch (err: any) {
-    error.value = err?.message || 'Failed to delete user'
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'message' in err) {
+      error.value = (err as { message?: string }).message || 'Failed to delete user'
+    } else {
+      error.value = 'Failed to delete user'
+    }
     return false
   } finally {
     loading.value = false
@@ -150,8 +166,12 @@ async function bulkChangeRoles(userIds: string[], newRole: UserRole): Promise<bo
     }
     await fetchAllUsers()
     return true
-  } catch (err: any) {
-    error.value = err?.message || 'Failed to change user roles'
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'message' in err) {
+      error.value = (err as { message?: string }).message || 'Failed to change user roles'
+    } else {
+      error.value = 'Failed to change user roles'
+    }
     return false
   } finally {
     loading.value = false
@@ -170,8 +190,12 @@ async function resetUserPassword(userId: string, newPassword: string): Promise<b
       throw resetError
     }
     return true
-  } catch (err: any) {
-    error.value = err?.message || 'Failed to send password reset email'
+  } catch (err: unknown) {
+    if (err && typeof err === 'object' && 'message' in err) {
+      error.value = (err as { message?: string }).message || 'Failed to send password reset email'
+    } else {
+      error.value = 'Failed to send password reset email'
+    }
     return false
   } finally {
     loading.value = false

@@ -3,6 +3,7 @@ import vue from '@vitejs/plugin-vue'
 import vuetify from 'vite-plugin-vuetify'
 import path from 'path'
 import vueDevTools from 'vite-plugin-vue-devtools'
+import devtoolsJson from 'vite-plugin-devtools-json';
 import { VitePWA } from 'vite-plugin-pwa'
 
 
@@ -23,7 +24,8 @@ export default defineConfig({
           styles: {
             configFile: 'src/styles/variables.scss'
           }
-    }),   
+    }),  
+    devtoolsJson(),
 vueDevTools({
   componentInspector: {
     enabled: false,

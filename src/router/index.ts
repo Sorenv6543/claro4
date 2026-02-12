@@ -8,8 +8,7 @@
 // ✅ Applies navigation guards
 
 import { createRouter, createWebHistory } from 'vue-router' 
-// Guards are commented out below but kept for future re-enablement
-// import { developmentGuard, loadingGuard, authGuard, afterNavigationGuard } from './guards'
+import { developmentGuard, loadingGuard, authGuard, afterNavigationGuard } from './guards'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,8 +39,9 @@ const router = createRouter({
       name: 'HomeOwner',
       component: () => import('@/pages/owner/dashboard.vue'),
       meta: {
-        layout: 'owner', 
-        role: 'owner'
+        layout: 'owner',
+        role: 'owner',
+        requiresAuth: true
       }
     },
     {
@@ -50,7 +50,8 @@ const router = createRouter({
       component: () => import('@/pages/owner/calendar.vue'),
       meta: {
         layout: 'owner',
-        role: 'owner'
+        role: 'owner',
+        requiresAuth: true
       }
     },
     {
@@ -59,7 +60,8 @@ const router = createRouter({
       component: () => import('@/pages/owner/bookings/index.vue'),
       meta: {
         layout: 'owner',
-        role: 'owner'
+        role: 'owner',
+        requiresAuth: true
       }
     },
     {
@@ -68,7 +70,8 @@ const router = createRouter({
       component: () => import('@/pages/owner/profile.vue'),
       meta: {
         layout: 'owner',
-        role: 'owner'
+        role: 'owner',
+        requiresAuth: true
       }
     },
     {
@@ -77,7 +80,8 @@ const router = createRouter({
       component: () => import('@/components/smart/owner/OwnerProperties.vue'),
       meta: {
         layout: 'owner',
-        role: 'owner'
+        role: 'owner',
+        requiresAuth: true
       }
     },
 
@@ -88,7 +92,8 @@ const router = createRouter({
       component: () => import('@/pages/admin/index.vue'),
       meta: {
         layout: 'admin',
-        role: 'admin'
+        role: 'admin',
+        requiresAuth: true
       }
     },
     {
@@ -97,7 +102,8 @@ const router = createRouter({
       component: () => import('@/pages/admin/schedule/index.vue'),
       meta: {
         layout: 'admin',
-        role: 'admin'
+        role: 'admin',
+        requiresAuth: true
       }
     },
     {
@@ -106,7 +112,8 @@ const router = createRouter({
       component: () => import('@/pages/admin/properties/index.vue'),
       meta: {
         layout: 'admin',
-        role: 'admin'
+        role: 'admin',
+        requiresAuth: true
       }
     },
     {
@@ -115,7 +122,8 @@ const router = createRouter({
       component: () => import('@/pages/admin/properties/index.vue'),
       meta: {
         layout: 'admin',
-        role: 'admin'
+        role: 'admin',
+        requiresAuth: true
       }
     },
     {
@@ -124,7 +132,8 @@ const router = createRouter({
       component: () => import('@/pages/admin/properties/index.vue'),
       meta: {
         layout: 'admin',
-        role: 'admin'
+        role: 'admin',
+        requiresAuth: true
       }
     },
     {
@@ -133,7 +142,8 @@ const router = createRouter({
       component: () => import('@/pages/admin/bookings/index.vue'),
       meta: {
         layout: 'admin',
-        role: 'admin'
+        role: 'admin',
+        requiresAuth: true
       }
     },
     {
@@ -142,7 +152,8 @@ const router = createRouter({
       component: () => import('@/pages/admin/property-owners/index.vue'),
       meta: {
         layout: 'admin',
-        role: 'admin'
+        role: 'admin',
+        requiresAuth: true
       }
     },
     {
@@ -151,7 +162,8 @@ const router = createRouter({
       component: () => import('@/pages/admin/reports/index.vue'),
       meta: {
         layout: 'admin',
-        role: 'admin'
+        role: 'admin',
+        requiresAuth: true
       }
     },
     {
@@ -160,7 +172,8 @@ const router = createRouter({
       component: () => import('@/pages/admin/cleaners/index.vue'),
       meta: {
         layout: 'admin',
-        role: 'admin'
+        role: 'admin',
+        requiresAuth: true
       }
     },
     {
@@ -169,7 +182,8 @@ const router = createRouter({
       component: () => import('@/pages/admin/users/index.vue'),
       meta: {
         layout: 'admin',
-        role: 'admin'
+        role: 'admin',
+        requiresAuth: true
       }
     },
 
@@ -296,6 +310,16 @@ const router = createRouter({
       }
     },
     {
+      path: '/dev/admin/orphaned-components',
+      name: 'orphaned-components-demo',
+      component: () => import('@/dev/demos/Admin/OrphanedComponentsDemo.vue'),
+      meta: {
+        layout: 'admin',
+        role: 'admin',
+        development: true
+      }
+    },
+    {
       path: '/dev/admin/turn-visual-indicators',
       name: 'turn-visual-indicators',
       component: () => import('@/dev/demos/Admin/turn-visual-indicators.vue'),
@@ -308,10 +332,10 @@ const router = createRouter({
   ]
 })
 
-// // Apply navigation guards
-// router.beforeEach(developmentGuard)
-// router.beforeEach(loadingGuard)
-// router.beforeEach(authGuard)
-// router.afterEach(afterNavigationGuard)
+// Apply navigation guards
+router.beforeEach(developmentGuard)
+router.beforeEach(loadingGuard)
+router.beforeEach(authGuard)
+router.afterEach(afterNavigationGuard)
 
 export default router 

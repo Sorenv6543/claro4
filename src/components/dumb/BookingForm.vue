@@ -8,7 +8,7 @@
     @keydown.esc="handleClose"
   >
     <v-card class="modal-card">
-      <v-card-title class="text-h5 pb-2 flex-shrink-0">
+      <v-card-title class="text-h5 pb-2 shrink-0">
         {{ formTitle }}
         <v-chip
           v-if="form.booking_type === 'turn'"
@@ -90,13 +90,51 @@
                 />
               </v-col>
             </v-row>
-            
-            <!-- Booking Type and Guest Count -->
             <v-row>
+              <v-col
+                cols="12"
+                md="6" 
+              >
+                <v-text-field
+                  v-model="form.checkout_time"
+                  label="Checkout Time"
+                  type="time"
+                  :rules="timeRules"
+                  required
+                  variant="solo"
+                  :disabled="loading"
+                  :error-messages="errors.get('checkout_time')"
+                  hint="When guests leave"
+                  persistent-hint
+                  prepend-inner-icon="mdi-calendar-remove"
+                  @update:model-value="updateBookingType"
+                />
+              </v-col>
+              
               <v-col
                 cols="12"
                 md="6"
               >
+                <v-text-field
+                  v-model="form.checkin_time"
+                  label="Checkin Time"
+                  type="time"
+                  :rules="timeRules"
+                  required
+                  variant="outlined"
+                  :disabled="loading"
+                  :error-messages="errors.get('checkin_time')"
+                  hint="When new guests arrive"
+                  persistent-hint
+                  prepend-inner-icon="mdi-calendar-plus"
+                  @update:model-value="updateBookingType"
+                />
+              </v-col>
+            </v-row>
+            
+            <!-- Booking Type and Guest Count -->
+            <v-row>
+              <v-col>
                 <v-select
                   v-model="form.booking_type"
                   :items="bookingTypeItems"
@@ -280,6 +318,8 @@ const form = reactive<Partial<BookingFormData>>({
   property_id: '',
   checkout_date: '',
   checkin_date: '',
+  checkout_time: '',
+  checkin_time: '',
   booking_type: 'standard',
   guest_count: undefined,
   notes: '',
@@ -365,6 +405,12 @@ const dateRules = [
 const bookingTypeRules = [
   (v: string) => !!v || 'Booking type is required',
   (v: string) => ['standard', 'turn'].includes(v) || 'Invalid booking type'
+];
+
+// Time validation rules for time input fields
+const timeRules = [
+  (v: string) => !!v || 'Time is required',
+  (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) || 'Invalid time format (HH:mm:ss) sshould be 24-hour)'
 ];
 
 // METHODS

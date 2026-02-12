@@ -14,11 +14,7 @@
     <AdminDashboard />
   </div>
    
-  
-    
-
   <!-- Owner-focused Modals -->
-
 
   <PropertyModal
     :open="propertyModalOpen"
@@ -28,8 +24,6 @@
     @save="handlePropertyModalSave"
     @delete="handlePropertyModalDelete"
   />
-
-
 
   <ConfirmationDialog
     :open="confirmDialogOpen"
@@ -110,6 +104,8 @@ const {
   next,
   prev
 } = useCalendarState();
+
+
 
 // ============================================================================
 // LOCAL STATE

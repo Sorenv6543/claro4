@@ -86,7 +86,7 @@ export function useCleanerManagement() {
   const currentAdminId = computed(() => authStore.user?.id);
   
   // COMPUTED PROPERTIES - Admin system-wide cleaner access
-  
+
   /**
    * Get ALL cleaners in the system (admin-only access)
    */
@@ -224,24 +224,6 @@ export function useCleanerManagement() {
   });
   
   /**
-   * Get cleaners grouped by skills
-   */
-  const cleanersBySkill = computed(() => {
-    const skillGroups: Record<string, Cleaner[]> = {};
-    
-    allCleaners.value.forEach(cleaner => {
-      cleaner.skills.forEach(skill => {
-        if (!skillGroups[skill]) {
-          skillGroups[skill] = [];
-        }
-        skillGroups[skill].push(cleaner);
-      });
-    });
-    
-    return skillGroups;
-  });
-  
-  /**
    * Get cleaner workload analysis
    */
   const cleanerWorkloads = computed((): CleanerWorkload[] => {
@@ -304,33 +286,37 @@ export function useCleanerManagement() {
     });
   });
   
+  
+// TODO: Add cleanersBySkill computed property for skill-based insights and assignments;  
+
   /**
    * Get system-wide cleaner metrics
    */
+
   const systemCleanerMetrics = computed(() => {
     const totalCleaners = allCleaners.value.length;
     const availableCount = availableCleaners.value.length;
     const totalCapacity = allCleaners.value.reduce((sum, cleaner) => sum + cleaner.max_daily_bookings, 0);
-    
+
     const workloads = cleanerWorkloads.value;
     const utilizationRates = workloads.map(w => w.utilizationRate);
-    const averageUtilization = utilizationRates.length > 0 
+    const averageUtilization = utilizationRates.length > 0
       ? Math.round(utilizationRates.reduce((sum, rate) => sum + rate, 0) / utilizationRates.length)
       : 0;
-    
+
     const workloadDistribution = {
       light: workloads.filter(w => w.workloadStatus === 'light').length,
       moderate: workloads.filter(w => w.workloadStatus === 'moderate').length,
       heavy: workloads.filter(w => w.workloadStatus === 'heavy').length,
       overloaded: workloads.filter(w => w.workloadStatus === 'overloaded').length
     };
-    
+
     const allSkills = [...new Set(allCleaners.value.flatMap(c => c.skills))];
     const skillCoverage = allSkills.map(skill => ({
       skill,
-      cleanerCount: cleanersBySkill.value[skill]?.length || 0
+      cleanerCount: allCleaners.value.filter(c => c.skills.includes(skill)).length
     }));
-    
+
     return {
       totalCleaners,
       availableCount,
@@ -342,11 +328,14 @@ export function useCleanerManagement() {
     };
   });
   
+
+
   // ADMIN-SPECIFIC CRUD OPERATIONS
   
   /**
    * Fetch all cleaners (admin-only operation)
    */
+
   async function fetchCleaners(): Promise<boolean> {
     if (!currentAdminId.value) {
       error.value = 'Admin authentication required to access cleaner data';
@@ -920,7 +909,7 @@ export function useCleanerManagement() {
     // Computed properties
     allCleaners,
     availableCleaners,
-    cleanersBySkill,
+    //cleanersBySkill,
     cleanerWorkloads,
     systemCleanerMetrics,
     
