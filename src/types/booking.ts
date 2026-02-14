@@ -41,6 +41,7 @@ export interface Booking {
   created_at?: string;
   updated_at?: string;
   // Add index signature to allow conversion to Record<string, unknown>
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any;
 }
 

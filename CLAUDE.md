@@ -117,7 +117,13 @@ Admin routes: `/admin`, `/admin/schedule`, `/admin/properties`, `/admin/bookings
 ## Key Constraints
 
 - Stores use Map collections — do not convert to array-based state
-- Owner composables MUST filter by `owner_id`; admin composables MUST NOT filter
+- Ui components receive data as props for arrays only when necessary (e.g. calendar events, property lists) 
+- Admin components have access to all data; owner components only see their own data filtered by `owner_id`
+- No generic components with role props — create separate owner/admin components that use shared dumb components
+- Real-time updates must be handled with optimistic UI and deduplication logic in `useRealtimeSync`
+- Build chunks must be maintained as configured in `vite.config.ts` for optimal performance 
+- Feature flags must be respected in both code and build configuration
+
 - Vuetify components are auto-imported (no manual imports needed)
 - PWA plugin only activates in production builds
 - `src/dev/` contains demo/testing code excluded from production builds

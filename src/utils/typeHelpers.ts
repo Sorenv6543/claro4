@@ -57,7 +57,7 @@ export function safeBookingField(booking: Booking | Record<string, unknown>, fie
  * @param booking - The booking object
  * @returns Valid Date object
  */
-export function safeCheckoutDate(booking: any): Date {
+export function safeCheckoutDate(booking: Booking | Record<string, unknown>): Date {
   const dateValue = booking?.checkout_date;
   return safeDate(dateValue);
 }
@@ -67,7 +67,7 @@ export function safeCheckoutDate(booking: any): Date {
  * @param booking - The booking object
  * @returns Valid Date object
  */
-export function safeCheckinDate(booking: any): Date {
+export function safeCheckinDate(booking: Booking | Record<string, unknown>): Date {
   const dateValue = booking?.checkin_date;
   return safeDate(dateValue);
 }
