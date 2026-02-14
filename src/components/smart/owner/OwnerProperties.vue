@@ -252,7 +252,7 @@ src/components/smart/owner/OwnerProperties.vue -
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import PropertyModal from '@/components/dumb/PropertyModal.vue'
+import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
 import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
 
 // ✅ SAME COMPOSABLES AS HomeOwner.vue - SINGLE SOURCE OF TRUTH MAINTAINED

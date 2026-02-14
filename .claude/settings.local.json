@@ -34,7 +34,8 @@
       "Bash(npx vite --version)",
       "Bash(git checkout:*)",
       "mcp__console-ninja__runtime-errors",
-      "mcp__console-ninja__runtime-logs"
+      "mcp__console-ninja__runtime-logs",
+      "Bash(pnpm --dir \"c:\\\\Users\\\\Soren\\\\claro4\" run build:fast)"
     ],
     "deny": []
   },

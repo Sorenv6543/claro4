@@ -1,9 +1,10 @@
-// EVENTS/BOOKING COMPOSABLE - BOOKING COMPOSABLE 
+// EVENTS/BOOKING COMPOSABLE - BOOKING COMPOSABLE
 import { ref, computed } from 'vue';
 import { useBookingStore } from '@/stores/booking';
 import { usePropertyStore } from '@/stores/property';
 import type { Booking, BookingFormData, BookingStatus, BookingType } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import { canTransitionBookingStatus } from '@/utils/businessLogic';
 
 
 
@@ -196,16 +197,8 @@ export function useBookings() {
         throw new Error('Booking not found');
       }
       
-      // Validate status transition
-      const validTransitions: Record<BookingStatus, BookingStatus[]> = {
-        'pending': ['scheduled', 'cancelled'],
-        'scheduled': ['in_progress', 'cancelled'],
-        'in_progress': ['completed', 'cancelled'],
-        'completed': [],
-        'cancelled': ['pending'] // Allow reopening cancelled bookings
-      };
-      
-      if (!validTransitions[booking.status].includes(status)) {
+      // Validate status transition using shared business logic
+      if (!canTransitionBookingStatus(booking, status)) {
         throw new Error(`Cannot transition from ${booking.status} to ${status}`);
       }
       

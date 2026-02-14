@@ -3,7 +3,8 @@ import { useProperties } from '@/composables/shared/useProperties';
 import { useAuthStore } from '@/stores/auth';
 import { usePropertyStore } from '@/stores/property';
 import { useBookingStore } from '@/stores/booking';
-import type { Property, PropertyFormData, PricingTier, Booking } from '@/types';
+import { canDeactivateProperty } from '@/utils/businessLogic';
+import type { Property, PropertyFormData, PricingTier } from '@/types';
 
 /**
  * Owner-specific property composable
@@ -305,16 +306,11 @@ export function useOwnerProperties() {
         throw new Error('You can only manage your own properties');
       }
       
-      // If deactivating, check for upcoming bookings
+      // If deactivating, check for upcoming bookings using shared validation
       if (!active) {
-        const now = new Date();
-        const upcomingBookings = Array.from(bookingStore.bookingsByProperty(id).values()).filter((booking: Booking) => {
-          const checkinDate = new Date(booking.checkin_date);
-          return checkinDate > now && ['pending', 'scheduled'].includes(booking.status);
-        });
-        
-        if (upcomingBookings.length > 0) {
-          throw new Error('Cannot deactivate property with upcoming bookings. Please complete or cancel them first.');
+        const check = canDeactivateProperty(id, bookingStore.bookingsByProperty(id).values());
+        if (!check.canDeactivate) {
+          throw new Error(check.reason!);
         }
       }
       

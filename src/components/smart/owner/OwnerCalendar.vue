@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick, onMounted } from 'vue';
-import FullCalendar from '@/components/smart/FullCalendar.vue';
+import FullCalendar from '@/components/smart/shared/FullCalendar.vue';
 import type { Booking, Property } from '@/types';
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core';
 

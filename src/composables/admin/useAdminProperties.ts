@@ -3,6 +3,7 @@ import { useProperties } from '@/composables/shared/useProperties.ts';
 import { useAuthStore } from '@/stores/auth.ts';
 import { usePropertyStore } from '@/stores/property.ts';
 import { useBookingStore } from '@/stores/booking.ts';
+import { canDeactivateProperty } from '@/utils/businessLogic';
 import type { Property, PropertyFormData, PricingTier } from '@/types/property.ts';
 
 /**
@@ -137,6 +138,7 @@ export function useAdminProperties() {
   
   /**
    * Get property utilization data (booking frequency per property)
+   * Delegates to shared calculatePropertyMetrics to avoid duplication
    */
   const propertyUtilizationData = computed(() => {
     const utilizationMap: Record<string, {
@@ -149,75 +151,26 @@ export function useAdminProperties() {
       revenueProjection: number;
       cleaningLoad: 'light' | 'moderate' | 'heavy';
     }> = {};
-    
+
     allProperties.value.forEach(property => {
+      const metrics = baseProperties.calculatePropertyMetrics(property.id);
+      if (!metrics) return;
+
       const propertyBookings = Array.from(bookingStore.bookings.values())
         .filter(booking => booking.property_id === property.id);
-      
-      const turnBookings = propertyBookings.filter(b => b.booking_type === 'turn');
-      const standardBookings = propertyBookings.filter(b => b.booking_type === 'standard');
-      
-      // Calculate utilization rate (simplified - based on booking count)
-      const utilizationRate = Math.min(propertyBookings.length / 10, 1); // Assume 10 bookings = 100% utilization
-      
-      // Calculate average gap between bookings
-      let averageGapDays = 0;
-      if (propertyBookings.length > 1) {
-        const sortedBookings = [...propertyBookings].sort((a, b) => 
-          new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime()
-        );
-        
-        let totalGapDays = 0;
-        let gapCount = 0;
-        
-        for (let i = 0; i < sortedBookings.length - 1; i++) {
-          const currentCheckout = new Date(sortedBookings[i].checkin_date);
-          const nextCheckin = new Date(sortedBookings[i + 1].checkout_date);
-          
-          if (nextCheckin > currentCheckout) {
-            const gapDays = Math.round((nextCheckin.getTime() - currentCheckout.getTime()) / (1000 * 60 * 60 * 24));
-            totalGapDays += gapDays;
-            gapCount++;
-          }
-        }
-        
-        averageGapDays = gapCount > 0 ? Math.round(totalGapDays / gapCount) : 0;
-      }
-      
-      // Calculate revenue projection
-      const revenueMultipliers: Record<PricingTier, number> = {
-        basic: 1,
-        standard: 1.2,
-        premium: 1.5,
-        luxury: 2.5
-      };
-      
-      const baseRevenue = 100;
-      const projectedBookings = Math.round(utilizationRate * 30);
-      const revenueProjection = projectedBookings * baseRevenue * revenueMultipliers[property.pricing_tier];
-      
-      // Determine cleaning load
-      let cleaningLoad: 'light' | 'moderate' | 'heavy';
-      if (utilizationRate < 0.3) {
-        cleaningLoad = 'light';
-      } else if (utilizationRate < 0.7) {
-        cleaningLoad = 'moderate';
-      } else {
-        cleaningLoad = 'heavy';
-      }
-      
+
       utilizationMap[property.id] = {
         property,
         totalBookings: propertyBookings.length,
-        turnBookings: turnBookings.length,
-        standardBookings: standardBookings.length,
-        utilizationRate,
-        averageGapDays,
-        revenueProjection,
-        cleaningLoad
+        turnBookings: propertyBookings.filter(b => b.booking_type === 'turn').length,
+        standardBookings: propertyBookings.filter(b => b.booking_type === 'standard').length,
+        utilizationRate: metrics.utilizationRate,
+        averageGapDays: Math.round(metrics.averageGapBetweenBookings),
+        revenueProjection: metrics.revenueProjection,
+        cleaningLoad: metrics.cleaningLoad
       };
     });
-    
+
     return utilizationMap;
   });
   
@@ -356,17 +309,10 @@ export function useAdminProperties() {
             continue;
           }
           
-          // If deactivating, check for upcoming bookings
+          // If deactivating, check for upcoming bookings using shared validation
           if (!active) {
-            const now = new Date();
-            const upcomingBookings = Array.from(bookingStore.bookings.values())
-              .filter(booking => 
-                booking.property_id === propertyId &&
-                new Date(booking.checkin_date) > now &&
-                ['pending', 'scheduled'].includes(booking.status)
-              );
-            
-            if (upcomingBookings.length > 0) {
+            const check = canDeactivateProperty(propertyId, bookingStore.bookings.values());
+            if (!check.canDeactivate) {
               results.failed.push(propertyId);
               continue;
             }

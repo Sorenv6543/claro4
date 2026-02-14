@@ -117,6 +117,18 @@ Admin routes: `/admin`, `/admin/schedule`, `/admin/properties`, `/admin/bookings
 ## Key Constraints
 
 - Stores use Map collections — do not convert to array-based state
+- Admin composables have NO filtering by `owner_id` — they see all data. Owner composables MUST filter by `owner_id`.
+- All components must use Vuetify 3 (auto-imported) for consistent styling
+- PWA features only activate in production builds (via `vite-plugin-pwa` configuration)
+- Demo/testing code must be placed in `src/dev/` and should not be imported into production builds
+- All API interactions must go through composables in `src/composables/` — no direct API calls from components
+- All shared logic must be in `src/utils/` or `src/composables/shared/` — no duplication between owner/admin code
+- All new features must include tests in `src/__tests__/` with appropriate coverage
+- All new code must be type-checked with TypeScript and pass linting rules (prettier + eslint)
+- All new routes must have appropriate `meta.layout` and `meta.role` for access control
+- All database interactions must respect RLS policies and use the Supabase client configured in `src/plugins/supabase.ts`
+- All state updates must go through Pinia stores and follow the Map-based structure with caching where applicable
+- All calendar interactions must use the FullCalendar Vue component with appropriate event handlers for clicks, drops, resizes, view changes, and date changes
 - Owner composables MUST filter by `owner_id`; admin composables MUST NOT filter
 - Vuetify components are auto-imported (no manual imports needed)
 - PWA plugin only activates in production builds

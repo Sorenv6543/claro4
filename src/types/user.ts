@@ -6,7 +6,7 @@
 /**
  * Valid user roles in the system
  */
-export type UserRole = 'owner' | 'admin' | 'cleaner';
+export type UserRole = 'owner' | 'admin' | 'cleaner' | 'guest';
 
 /**
  * User settings interface (nested structure)

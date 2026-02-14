@@ -315,7 +315,7 @@ import { useRouter } from 'vue-router';
 import { useDisplay } from 'vuetify';
 import { useAuthStore } from '@/stores/auth';
 import { usePropertyStore } from '@/stores/property';
-import PropertyModal from '@/components/dumb/PropertyModal.vue';
+import PropertyModal from '@/components/dumb/shared/PropertyModal.vue';
 import type { Property, PropertyFormData, PricingTier } from '@/types';
 
 // Constants for consistent sizing

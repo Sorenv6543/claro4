@@ -382,12 +382,42 @@ export const getRecentBookings = (
 ): Map<string, Booking> => {
   const cutoffDate = new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000)
   const recent = new Map<string, Booking>()
-  
+
   bookings.forEach((booking, id) => {
     if (new Date(booking.checkout_date) >= cutoffDate) {
       recent.set(id, booking)
     }
   })
-  
+
   return recent
+}
+
+/**
+ * Check if a property can be deactivated (no upcoming bookings)
+ * Shared between owner and admin composables to eliminate duplication
+ */
+export const canDeactivateProperty = (
+  propertyId: string,
+  bookings: Iterable<Booking>
+): { canDeactivate: boolean; upcomingCount: number; reason?: string } => {
+  const now = new Date();
+  let upcomingCount = 0;
+
+  for (const booking of bookings) {
+    if (booking.property_id === propertyId &&
+        new Date(booking.checkin_date) > now &&
+        ['pending', 'scheduled'].includes(booking.status)) {
+      upcomingCount++;
+    }
+  }
+
+  if (upcomingCount > 0) {
+    return {
+      canDeactivate: false,
+      upcomingCount,
+      reason: `Cannot deactivate property with ${upcomingCount} upcoming booking${upcomingCount > 1 ? 's' : ''}. Please complete or cancel them first.`
+    };
+  }
+
+  return { canDeactivate: true, upcomingCount: 0 };
 } 

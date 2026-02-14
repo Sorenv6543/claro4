@@ -242,8 +242,8 @@ import { useDisplay } from 'vuetify';
 // Owner-specific components
 import OwnerSidebar from '@/components/smart/owner/OwnerSidebar.vue';
 import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue';
-import BookingForm from '@/components/dumb/BookingForm.vue';
-import PropertyModal from '@/components/dumb/PropertyModal.vue';
+import BookingForm from '@/components/dumb/shared/BookingForm.vue';
+import PropertyModal from '@/components/dumb/shared/PropertyModal.vue';
 import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue';
 
 // State management

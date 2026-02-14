@@ -20,8 +20,7 @@ const router = createRouter({
       name: 'home',
       component: () => import('@/pages/auth/login.vue'),
       meta: {
-        layout: 'auth',
-        
+        layout: 'auth'
       }
     },
     {
@@ -29,7 +28,8 @@ const router = createRouter({
       name: 'register',
       component: () => import('@/pages/auth/register.vue'),
       meta: {
-        layout: 'auth'
+        layout: 'auth',
+        role: 'guest'
       }
     },
 

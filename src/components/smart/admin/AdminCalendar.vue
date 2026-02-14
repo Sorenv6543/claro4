@@ -118,7 +118,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch, nextTick } from 'vue';
 import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
-import FullCalendar from '@/components/smart/FullCalendar.vue';
+import FullCalendar from '@/components/smart/shared/FullCalendar.vue';
 import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue';
 
 import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts';

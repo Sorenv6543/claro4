@@ -4,6 +4,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useBookingStore } from '@/stores/booking';
 import { usePropertyStore } from '@/stores/property';
 import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor';
+import { useCachedComputed } from '@/composables/shared/useCachedComputed';
 import type { Booking, BookingFormData, BookingStatus, Property } from '@/types';
 
 /**
@@ -38,16 +39,16 @@ function useOwnerBookingsPinia() {
     /**
      * Get all bookings for the current owner only
      */
-    const myBookings = computed((): Booking[] => {
+    const myBookings = useCachedComputed((): Booking[] => {
       return measureRolePerformance('owner', 'filter-owner-bookings', () => {
         if (!currentUserId.value) {
           trackCachePerformance('owner-bookings-no-user', true);
           return [];
         }
-        
+
         const filteredBookings = Array.from(bookingStore.bookings.values())
           .filter(booking => booking.owner_id === currentUserId.value);
-        
+
         trackCachePerformance('owner-my-bookings', filteredBookings.length > 0);
         return filteredBookings;
       });
@@ -56,16 +57,16 @@ function useOwnerBookingsPinia() {
     /**
      * Get current owner's properties only
      */
-    const myProperties = computed((): Property[] => {
+    const myProperties = useCachedComputed((): Property[] => {
       return measureRolePerformance('owner', 'filter-owner-properties', () => {
         if (!currentUserId.value) {
           trackCachePerformance('owner-properties-no-user', true);
           return [];
         }
-        
+
         const filteredProperties = Array.from(propertyStore.properties.values())
           .filter(property => property.owner_id === currentUserId.value);
-        
+
         trackCachePerformance('owner-my-properties', filteredProperties.length > 0);
         return filteredProperties;
       });
@@ -74,12 +75,12 @@ function useOwnerBookingsPinia() {
     /**
      * Get today's turn bookings for current owner only
      */
-    const myTodayTurns = computed(() => {
+    const myTodayTurns = useCachedComputed(() => {
       if (!currentUserId.value) return [];
-      
+
       const today = new Date().toISOString().split('T')[0];
-      
-      return myBookings.value.filter(booking => 
+
+      return myBookings.value.filter(booking =>
         booking.booking_type === 'turn' &&
         booking.checkout_date.startsWith(today) &&
         booking.status !== 'completed'
@@ -164,23 +165,17 @@ function useOwnerBookingsPinia() {
         error.value = 'Please log in to view your bookings';
         return false;
       }
-      
+
       loading.value = true;
       error.value = null;
-      
-      try {
-        // In a real app, this would make an API call with owner filter
-        // For now, we simulate the call and rely on computed filtering
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        success.value = `Loaded ${myBookings.value.length} of your bookings`;
-        loading.value = false;
-        return true;
-      } catch (err) {
-        error.value = 'Unable to load your bookings. Please try again.';
-        loading.value = false;
-        return false;
-      }
+
+      //  make an API call with owner filter
+      // For now, we the call and rely on computed filtering
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      success.value = `Loaded ${myBookings.value.length} of your bookings`;
+      loading.value = false;
+      return true;
     }
     
     /**
@@ -459,7 +454,9 @@ function useOwnerBookingsPinia() {
       // Optionally add to store if needed for test
       try {
         bookingStore.addBooking(booking);
-      } catch {}
+      } catch {
+        // ignore
+      }
       return booking;
     }
 
@@ -485,10 +482,11 @@ function useOwnerBookingsPinia() {
     const createBooking = async (bookingData: BookingFormData): Promise<Booking | null> => {
       return measureRolePerformance('owner', 'create-booking', async () => {
         // Ensure owner_id is set for owner role
-        const result = await bookingStore.addBooking(bookingData as Booking)
-        trackCachePerformance('owner-create-booking', result !== null)
-        return result
-      })
+        await bookingStore.addBooking(bookingData as Booking);
+        trackCachePerformance('owner-create-booking', true);
+        // Since addBooking returns void, we cannot get the bookingId here
+        return null;
+      });
     }
 
     // Role-specific performance metrics
@@ -554,4 +552,4 @@ function useOwnerBookingsPinia() {
 // Export the Pinia version as default
 export function useOwnerBookings() {
   return useOwnerBookingsPinia();
-} 
+}

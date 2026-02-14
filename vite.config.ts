@@ -141,7 +141,7 @@ vueDevTools({
         navigateFallback: '/index.html'
       },
       // Enable advanced PWA features only in production
-      mode: 'development',
+      mode: 'production',
       // Handle navigation fallback for SPA
       injectRegister: 'auto',
       // Ensure PWA only runs in production builds
