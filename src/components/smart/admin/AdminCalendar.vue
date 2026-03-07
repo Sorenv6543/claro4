@@ -103,7 +103,7 @@
       :mode="adminBookingFormModal.mode"
       :booking="adminBookingFormModal.booking"
       :properties="Array.from(allProperties.values())"
-      :cleaner="allUsers.filter(user => user.role === 'cleaner' || user.role === 'admin')"
+      :cleaners="(allUsers.filter(user => user.role === 'cleaner' || user.role === 'admin') as Cleaner[])"
       :loading="adminBookingFormModal.loading"
       :errors="adminBookingFormModal.errors"
       @submit="handleAdminBookingFormSubmit"
@@ -455,7 +455,7 @@ const handleAdminBookingFormAssignCleaner = async (bookingId: string, cleanerId:
   }
 };
 
-const handleAdminBookingFormOpenCleanerModal = (booking: Booking): void => {
+const handleAdminBookingFormOpenCleanerModal = (booking: Partial<Record<string, unknown>>): void => {
   console.log('Open cleaner modal for booking:', booking);
   // Could implement cleaner modal logic here
 };

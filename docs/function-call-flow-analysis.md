@@ -78,7 +78,7 @@ sequenceDiagram
     AuthStore->>UserStore: setUser(user)
     UserStore->>UserStore: clearUserPreferences()
     AuthComposable->>Router: push('/owner/dashboard')
-    Router->>Router: Route guard check
+    Router->>Router: Route guard check (before navigation)
 ```
 
 **Function Call Sequence**:

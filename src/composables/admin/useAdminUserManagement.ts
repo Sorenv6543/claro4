@@ -2,7 +2,6 @@ import { ref } from 'vue'
 import type { Ref } from 'vue'
 import type { User, UserRole } from '@/types/user'
 import { supabase } from '@/plugins/supabase' // adjust import if needed
-// import { useAdminErrorHandler } from '@/composables/admin/useAdminErrorHandler'
 
 // State
 const users: Ref<User[]> = ref([])

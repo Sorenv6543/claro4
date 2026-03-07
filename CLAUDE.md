@@ -4,132 +4,286 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Multi-tenant property cleaning scheduler with role-based access. Two distinct interfaces:
-- **Owner** (30-40 clients): Personal property/booking management, mobile-optimized
-- **Admin** (1 user): System-wide operations, cleaner management, analytics
+Multi-tenant property cleaning scheduler with role-based Owner/Admin UI. Core product: guest-stay booking plus cleaning operations. Tech stack: Vue 3 + Vite + Vuetify 3, Pinia for state, Supabase for auth/Postgres/RLS/realtime. FullCalendar for scheduling views.
+
+Two user types: **Property Owners** (30-40 clients with personal property/booking management) and **Business Admin** (1 user with system-wide operations and cleaner management).
 
 ## Commands
 
 ```bash
-# Development (http://localhost:3000)
-pnpm run dev
+# Development
+pnpm dev                    # Start dev server (with --host)
+pnpm dev:local              # Start dev server (localhost only)
 
-# Build
-pnpm run build:fast          # Quick build, no type-check
-pnpm run build:production    # Full production build
-pnpm run build:owner-only    # Owner interface only
-pnpm run build:admin-only    # Admin interface only
+# Testing
+pnpm test                   # Run tests in watch mode
+pnpm test:run               # Run tests once
+pnpm test -- path/to/file   # Run single test file
+pnpm test:coverage          # Run with coverage
+pnpm test:performance       # Performance regression tests
 
-# Lint (auto-fixes by default via --fix)
-pnpm run lint
+# Building
+pnpm build                  # Full production build (runs vue-tsc --noEmit first)
+pnpm build:fast             # Skip type checking for quick iteration
+pnpm build:owner-only       # Owner-only bundle
+pnpm build:admin-only       # Admin-only bundle
 
-# Tests
-pnpm run test                # Vitest watch mode
-pnpm run test:run            # Single run
-pnpm run test:coverage       # With coverage
-pnpm run test:performance    # Performance regression tests
-vitest run src/__tests__/path/to/file.spec.ts  # Run a single test file
+# Linting
+pnpm lint                   # ESLint with auto-fix
 
-# Type checking (part of full build)
-vue-tsc --noEmit
-
-# Preview production build
-pnpm run preview
-
-# Bundle analysis
-pnpm run analyze:bundle
+# Analysis
+pnpm analyze:bundle         # Bundle size analysis
+pnpm perf:analysis          # Performance analysis (bundle + regression tests)
 ```
-
-## Tech Stack
-
-Vue 3 + TypeScript + Vite, Vuetify 3 (auto-imported), Pinia stores, FullCalendar, Supabase (auth, DB, realtime), PWA via vite-plugin-pwa. Package manager is **pnpm**.
-
-## Environment Variables
-
-Supabase credentials are configured in `.env.local` (not committed). Required vars: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`.
 
 ## Architecture
 
-### Role-Based Separation
+### Smart vs Dumb Components
+- **Smart components** (`src/components/smart/`): Data-aware, orchestration logic, depend on stores/composables
+- **Dumb components** (`src/components/dumb/`): Pure UI, receive props and emit events only
 
-The core architectural principle is **owner vs. admin separation at every layer**:
+### Role Separation
 
-- **Composables**: `src/composables/owner/` filters by `owner_id`, `src/composables/admin/` has NO filtering (sees all data). Shared base composables in `src/composables/shared/`.
-- **Components**: Smart components (have logic) in `src/components/smart/{owner,admin}/`. Dumb components (props-only, presentational) in `src/components/dumb/{owner,admin,shared}/`.
-- **Pages**: `src/pages/owner/` and `src/pages/admin/` with separate layouts.
-- **Layouts**: `src/layouts/admin.vue` (sidebar + data loading), `src/layouts/owner.vue` (minimal wrapper), `src/layouts/auth.vue`.
+#TODO  - Role-based component organization with separate trees for Owner and Admin features
+Owner and Admin have separate component trees throughout:
+- `src/components/smart/{admin,owner,shared}/`
+- `src/components/dumb/{admin,owner,shared}/`
+- `src/pages/{admin,owner,auth}/`
+- `src/composables/{owner,owner/admin,shared,supabase}/`
+- `src/layouts/{admin,owner,auth,default}.vue`
 
-Do NOT create generic components with role props. Create separate role-specific components that use shared dumb components with different data scopes.
+### State Management
 
-### State Management (Map-Based)
+#TODO  - `src/stores/` - Domain-specific state management with caching and optimistic updates
 
-All Pinia stores (`src/stores/`) use `Map<string, T>` instead of arrays for O(1) lookups. Filtered views are cached with a 10-second TTL. Use Map methods (`.has()`, `.get()`, `.set()`, `.delete()`) and only convert to arrays when the UI requires it.
+- Domain stores in `src/stores/`: `auth.ts`, `booking.ts`, `property.ts`, `ownerData.ts`, `adminData.ts`, `ui.ts`
+- Stores use `Map` collections with cached filtered Maps (TTL-based invalidation) for O(1) access
+- Optimistic updates with rollback on failure
+- Prefer derived computeds over cloning arrays
+- Business logic lives in `src/utils/`, not in stores
 
-### Supabase Integration
+### Composables Organization
+#TODO  - `src/composables/` - Role-aware data access and cross-cutting concerns
 
-- Client configured in `src/plugins/supabase.ts` using PKCE auth flow
-- Auth composable: `src/composables/supabase/useSupabaseAuth.ts` (retry logic, fallback profile creation)
-- Real-time sync: `src/composables/supabase/useRealtimeSync.ts` (optimistic update deduplication, offline queue)
-- RLS policies enforce multi-tenant isolation at the database level (`supabase/migrations/`)
-- Private schema functions (`private.is_admin()`, `private.is_owner()`) are SECURITY DEFINER for RLS performance
+- `src/composables/owner/` - Owner-specific data access (useOwnerBookings, useOwnerProperties, etc.)
+- `src/composables/owner/admin/` - Admin-specific data access (useAdminBookings, useCleanerManagement, etc.)
+- `src/composables/shared/` - Cross-cutting concerns (useCalendarState, usePerformanceMonitor, etc.)
+- `src/composables/supabase/` - Supabase integration (useSupabaseAuth, useRealtimeSync, etc.)
+- Reuse existing composables before adding new Supabase calls
 
-### Auth Flow
+### Key Utilities
 
-`useSupabaseAuth` composable → wrapped by `src/stores/auth.ts`. The store exposes `isAdmin`, `isOwner`, `isCleaner` computed properties. Route guards exist in `src/router/guards.ts` but are **currently commented out** in the router. Auth initialization uses timeouts (500ms-1000ms) to handle race conditions.
+#TODO  - `src/utils/` - Business logic and helpers that must be reused, not duplicated
 
-### Turn Booking System
+- `src/utils/businessLogic.ts` - Booking/cleaning rules, priority calculation, conflict detection
+- `src/utils/timeDefaults.ts` - Time defaults and Vuetify validation helpers
+#TODO  - Add example code snippets for using businessLogic helpers and time validation rules
 
-"Turns" are same-day turnovers requiring urgent attention. Business logic in `src/utils/businessLogic.ts` handles priority calculation, cleaning window computation, conflict detection, and status transition rules. Multiple dedicated UI components exist for turn alerts and priority display.
+- `src/utils/authHelpers.ts` - Auth helpers including `getDefaultRouteForRole`
+- `src/utils/constants.ts` - Application constants
+- `src/utils/errorMessages.ts` - Centralized error messages
+- `src/utils/typeHelpers.ts` - TypeScript type helper utilities
 
-### Build Chunking & Feature Flags
+### Path Aliases
+Configured in both `vite.config.ts` and `tsconfig.json`:
+- `@` → `./src`
+- `@components`, `@composables`, `@stores`, `@types`, `@utils`, `@layouts`, `@pages`, `@plugins`, `@assets`
 
-Vite's `manualChunks` in `vite.config.ts` splits output by role: `owner-app`, `admin-app`, `app-core`, plus vendor chunks (`vue-core`, `vuetify`, `calendar`, `vendor`).
+## Domain Rules
 
-Build-time feature flags: `__ENABLE_OWNER_FEATURES__`, `__ENABLE_ADMIN_FEATURES__`, `__DEV_DEMOS_ENABLED__` (true only in dev). The `vue` alias points to `vue/dist/vue.esm-bundler.js` (full build with template compiler).
+### Booking Model
+- Guest-stay model: `checkout_date` must be strictly after `checkin_date`
 
-## Path Aliases
+#TODO  - Add example code snippets for using `validateBooking` and `calculateBookingPriority`
 
-`@` → `src/`, `@components`, `@composables`, `@stores`, `@types`, `@utils`, `@layouts`, `@pages`, `@plugins`, `@assets` — all resolve to their respective `src/` subdirectories. Configured in both `vite.config.ts` and `tsconfig.json`.
 
-## Naming Conventions
+- `booking_type === 'turn'`: Same-day short stays; validated via `validateTurnBooking`
+- Priority: Use `calculateBookingPriority` - turn bookings are always at least `high`
+- Conflicts: Use `detectBookingConflicts` and `validateBooking` instead of ad-hoc date math
 
-- **Owner components**: `Owner` prefix (`OwnerSidebar.vue`, `OwnerCalendar.vue`)
-- **Admin components**: `Admin` prefix (`AdminSidebar.vue`, `AdminCalendar.vue`)
-- **Shared components**: No prefix (`PropertyCard.vue`, `TurnAlerts.vue`)
-- **Owner composables**: `useOwner` prefix (`useOwnerBookings.ts`)
-- **Admin composables**: `useAdmin` prefix (`useAdminBookings.ts`)
-- **Stores/types/utils**: camelCase filenames
+### Cleaning Tasks
+- Operational work modeled via `cleaning_tasks` table and `src/types/cleaningTask.ts`
+- `getCleaningWindow` / `canScheduleCleaning` in businessLogic.ts are deprecated
 
-## Testing
+### Time Validation
+Use helpers from `src/utils/timeDefaults.ts`:
+- `getDefaultTimes`, `getTimeValidationRules`, `getCheckoutTimeValidationRules`, `getTimeHint`
+- Don't hard-code time strings or validation rules in components
 
-- **Framework**: Vitest with happy-dom environment
-- **Setup file**: `src/__tests__/setup/setupTests.ts`
-- **Test location**: `src/__tests__/` (excluded from TypeScript compilation)
-- Tests are excluded from `tsconfig.json` — they have their own config via `vitest.config.ts`
+## Auth & Routing
 
-## Routing
+#TODO  - Add example code snippets for using `useAuthStore` and route guards with `meta.requiresAuth` and `meta.role`
 
-Routes use `meta.layout` (`auth`, `owner`, `admin`) and `meta.role` for access control. Navigation guards in `src/router/guards.ts` are **currently commented out** in `src/router/index.ts`. Dev demo routes are under `/dev/admin/*` and only load from `src/dev/demos/`.
+### Auth Source of Truth
+- `useAuthStore` in `src/stores/auth.ts` delegates to `useSupabaseAuth` outside test mode
+- Derive auth state via store computeds: `isAuthenticated`, `isOwner`, `isAdmin`, `user`, `session`
+- Don't create separate refs for auth in components
 
-Owner routes: `/owner/dashboard`, `/owner/calendar`, `/owner/bookings`, `/owner/properties`, `/owner/profile`
-Admin routes: `/admin`, `/admin/schedule`, `/admin/properties`, `/admin/bookings`, `/admin/cleaners`, `/admin/users`, `/admin/reports`, `/admin/property-owners`
+### Route Protection
+- Guards in `src/router/guards.ts` and `src/router/index.ts`
+- Use `meta.requiresAuth` / `meta.role` on routes
+- `getDefaultRouteForRole` handles post-login redirects
 
-## Key Constraints
+## Supabase Integration
+#TODO - Supabase client configured in `src/plugins/supabase.ts`
 
-- Stores use Map collections — do not convert to array-based state
-- Admin composables have NO filtering by `owner_id` — they see all data. Owner composables MUST filter by `owner_id`.
-- All components must use Vuetify 3 (auto-imported) for consistent styling
-- PWA features only activate in production builds (via `vite-plugin-pwa` configuration)
-- Demo/testing code must be placed in `src/dev/` and should not be imported into production builds
-- All API interactions must go through composables in `src/composables/` — no direct API calls from components
-- All shared logic must be in `src/utils/` or `src/composables/shared/` — no duplication between owner/admin code
-- All new features must include tests in `src/__tests__/` with appropriate coverage
-- All new code must be type-checked with TypeScript and pass linting rules (prettier + eslint)
-- All new routes must have appropriate `meta.layout` and `meta.role` for access control
-- All database interactions must respect RLS policies and use the Supabase client configured in `src/plugins/supabase.ts`
-- All state updates must go through Pinia stores and follow the Map-based structure with caching where applicable
-- All calendar interactions must use the FullCalendar Vue component with appropriate event handlers for clicks, drops, resizes, view changes, and date changes
-- Owner composables MUST filter by `owner_id`; admin composables MUST NOT filter
-- Vuetify components are auto-imported (no manual imports needed)
-- PWA plugin only activates in production builds
-- `src/dev/` contains demo/testing code excluded from production builds
+- Client configured in `src/plugins/supabase.ts`
+- Requires `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env.local`
+- Schema and RLS policies in `supabase/migrations/`
+- New queries/mutations go in role-aware composables under `src/composables/`
+
+#TODO  - Add example code snippets for using `useSupabaseAuth` and real-time subscriptions in composables
+## Performance
+
+
+- Stores use `Map`-based collections with cached filtered Maps (10s TTL)
+- Use computed helpers like `getUpcomingBookings` / `getUrgentTurns` from businessLogic.ts
+
+#TODO - Track subscriptions with `usePerformanceMonitor` from `src/composables/shared/usePerformanceMonitor.ts`
+- Track subscriptions with `usePerformanceMonitor` from `src/composables/shared/usePerformanceMonitor.ts`
+- Clean up subscriptions on unmount to keep performance tests green
+- Run `pnpm test:performance` after significant data flow changes
+
+## Vuetify 3 UI/UX Patterns
+
+#TODO - Add screenshots of key components (forms, modals, calendar) with pencil.DEV annotations for patterns to follow
+### Setup
+- **Version**: Vuetify 3.11.8 with `vite-plugin-vuetify` for auto-imports
+- **Icons**: MDI (`mdi-*`) via `@mdi/font`
+- **Config**: `src/plugins/vuetify.ts` - theme colors, component defaults, breakpoints
+
+### Component Defaults (already configured globally)
+Don't override these unless necessary:
+- `VBtn`: `variant="flat"`, `rounded`, no uppercase
+- `VCard`: `elevation="2"`, `rounded="lg"`, `pa-2`
+- `VTextField`, `VSelect`, `VTextarea`, `VAutocomplete`, `VCombobox`: `variant="outlined"`, `density="comfortable"`, `rounded="lg"`, `hideDetails="auto"`
+- `VDialog`: `max-width="700px"`, `rounded="lg"`
+- `VAlert`: `variant="tonal"`, `rounded="lg"`
+- `VChip/VBadge`: `rounded="pill"`
+
+### Layout Patterns
+```vue
+<!-- Standard form layout -->
+<v-container>
+  <v-row>
+    <v-col cols="12" md="6">
+      <v-text-field v-model="field" label="Label" :rules="rules" />
+    </v-col>
+  </v-row>
+</v-container>
+
+<!-- Modal with scroll -->
+<v-dialog v-model="open" persistent scrollable>
+  <v-card class="d-flex flex-column" style="max-height: 90vh">
+    <v-card-title>Title</v-card-title>
+    <v-divider />
+    <v-card-text class="grow overflow-y-auto">Content</v-card-text>
+    <v-divider />
+    <v-card-actions>
+      <v-spacer />
+      <v-btn @click="close">Cancel</v-btn>
+      <v-btn color="primary" @click="save">Save</v-btn>
+    </v-card-actions>
+  </v-card>
+</v-dialog>
+```
+
+### Form Validation
+```vue
+<script setup lang="ts">
+import type { VForm } from 'vuetify/components'
+
+const formRef = ref<VForm | null>(null)
+const formValid = ref(false)
+
+const rules = [
+  (v: string) => !!v || 'Required',
+  (v: string) => v.length >= 3 || 'Min 3 characters'
+]
+
+async function submit() {
+  const { valid } = await formRef.value!.validate()
+  if (!valid) return
+  // proceed...
+}
+</script>
+
+<template>
+  <v-form ref="formRef" v-model="formValid" @submit.prevent="submit">
+    <v-text-field v-model="name" :rules="rules" />
+    <v-btn type="submit" :disabled="!formValid">Submit</v-btn>
+  </v-form>
+</template>
+```
+
+### Theme Colors
+Use semantic colors, not hex values:
+- `primary`, `secondary`, `accent`, `error`, `warning`, `success`, `info`
+- Domain-specific: `turn-urgent`, `turn-standard`, `booking-standard`
+- Variants: `primary-darken-1`, `primary-lighten-2`
+
+### Existing Dumb Components
+Check `src/components/dumb/shared/` before creating new UI:
+- `ConfirmationDialog.vue`, `LoadingSpinner.vue`, `ErrorAlert.vue`, `SkeletonLoader.vue`, `EnhancedToast.vue`
+
+## Fixing Type Errors
+
+### Common Error Patterns
+
+| Error | Likely Cause | Fix |
+|-------|--------------|-----|
+| `Property 'x' does not exist on type 'never'` | Uninitialized ref or empty array inference | Add explicit type: `ref<Booking[]>([])` |
+| `Type 'X \| undefined' is not assignable to 'X'` | Optional chaining or Map.get() | Add null check or use `!` if guaranteed |
+| `Argument of type 'X' is not assignable to parameter of type 'Y'` | Supabase row vs app type mismatch | Cast via `as Booking` or map fields explicitly |
+| `Object is possibly 'undefined'` | Accessing computed before data loads | Guard with `v-if` in template or `?.` in script |
+
+### Type Locations may use types from multiple sources:
+
+#TODO  
+- **Domain types**: `src/types/` - Booking, Property, User, etc.
+- **Supabase rows**: Inferred from `supabase.from('table').select()` - may need casting to domain types
+- **Component props**: Define with `defineProps<{ prop: Type }>()` - import types from `@types/*`
+- **Store state**: Pinia stores use `Map<string, T>` - use `.get()` with undefined checks
+
+
+#TODO   - Add example code snippets for common type fixes (casting, null checks, explicit types) 
+### Supabase to App Type Mapping
+Supabase returns snake_case rows; app types match this convention. When types drift:
+
+#TODO - Add example code snippets for mapping Supabase rows to app types
+
+
+1. Check `supabase/migrations/` for column changes
+2. Update corresponding type in `src/types/`
+3. Run `pnpm build` to find all affected code
+
+## ESLint Rules
+- Vue components: `multi-word-component-names` off, `define-props-declaration` type-based, `define-emits-declaration` type-based, `component-definition-name-casing` PascalCase
+- TypeScript: strict, unused vars warn with `_` prefix ignore pattern
+- Parser: `vue-eslint-parser` with `@typescript-eslint/parser` for `<script>` blocks
+
+## Critical Files
+
+#TODO - `src/utils/` - Business logic and helpers that must be reused, not duplicated
+#TODO 
+These areas require careful modification - extend existing patterns rather than refactoring:
+- `src/components/smart/` - Working role-based components
+- `src/composables/` - Performance-optimized logic
+- `src/stores/` - Role-based state management with Map caching
+- `src/router/` - Authentication and role guards
+- `vite.config.ts` - Build optimization and chunking settings
+
+## Gotchas
+
+- Strict TypeScript: `pnpm build` runs `vue-tsc --noEmit`; keep `src/types/` in sync with Supabase migrations
+#TODO   - Add example code snippets for common type fixes (casting, null checks, explicit types) 
+
+- Don't duplicate business rules in components - call helpers in businessLogic.ts and timeDefaults.ts
+
+
+// #TODO  - Add example code snippets for using businessLogic helpers and time validation rules
+
+- Before finishing changes: run `pnpm test:run` and `pnpm build`
+- For auth/routing or subscription changes: also run `pnpm test:performance`
+- Build flags `__ENABLE_OWNER_FEATURES__` and `__ENABLE_ADMIN_FEATURES__` control role-specific code inclusion
+- Vite chunk strategy splits: `vue-core`, `vuetify`, `calendar`, `vendor` (node_modules) and role-based app chunks

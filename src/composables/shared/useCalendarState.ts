@@ -3,6 +3,8 @@ import { useUIStore } from '@/stores/ui';
 import { useBookingStore } from '@/stores/booking';
 import type { Booking } from '@/types';
 
+const __DEV__ = import.meta.env.DEV;
+
 /**
  * Composable for calendar view state management
  * Controls calendar display options, date ranges, and filtering
@@ -97,7 +99,16 @@ export function useCalendarState() {
    * Update date range based on current view and date
    */
   function updateDateRange() {
-    const date = new Date(currentDate.value);
+    // Ensure currentDate.value is a valid Date object
+    let date: Date;
+    if (currentDate.value instanceof Date && !isNaN(currentDate.value.getTime())) {
+      date = new Date(currentDate.value);
+    } else {
+      console.warn('[useCalendarState] currentDate.value is invalid, using current date');
+      date = new Date();
+      currentDate.value = date;
+    }
+
     let start: Date;
     let end: Date;
     
@@ -204,7 +215,8 @@ export function useCalendarState() {
    * Filter bookings based on current filters
    */
   function filterBookings(bookings: Booking[]): Booking[] {
-    return bookings.filter(booking => {
+    try {
+    const filtered = bookings.filter(booking => {
       // Filter by status
       if (
         (booking.status === 'pending' && !showPendingBookings.value) ||
@@ -215,7 +227,7 @@ export function useCalendarState() {
       ) {
         return false;
       }
-      
+
       // Filter by type
       if (
         (booking.booking_type === 'turn' && !showTurnBookings.value) ||
@@ -223,22 +235,34 @@ export function useCalendarState() {
       ) {
         return false;
       }
-      
+
       // Filter by property
       if (selectedPropertyIds.value.size > 0 && !selectedPropertyIds.value.has(booking.property_id)) {
         return false;
       }
-      
-      // Check if booking is within current date range
-      const bookingStart = new Date(booking.checkout_date);
-      const bookingEnd = new Date(booking.checkin_date);
-      
+
+      // Check if booking is within current date range (checkin = start, checkout = end)
+      const bookingStart = new Date(booking.checkin_date);
+      const bookingEnd = new Date(booking.checkout_date);
+
+      if (isNaN(bookingStart.getTime()) || isNaN(bookingEnd.getTime())) {
+        return false;
+      }
+
       return (
         (bookingStart >= dateRange.value.start && bookingStart <= dateRange.value.end) ||
         (bookingEnd >= dateRange.value.start && bookingEnd <= dateRange.value.end) ||
         (bookingStart <= dateRange.value.start && bookingEnd >= dateRange.value.end)
       );
     });
+
+    if (__DEV__) console.log(`[useCalendarState] Filtered ${bookings.length} bookings down to ${filtered.length}`);
+
+    return filtered;
+    } catch (error) {
+      console.error('[useCalendarState] Error in filterBookings:', error);
+      return [];
+    }
   }
   
   /**
@@ -338,6 +362,7 @@ export function useCalendarState() {
     goToToday,
     next,
     prev,
+    updateDateRange,
     
     // Filtering
     toggleStatusFilter,

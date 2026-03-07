@@ -1,6 +1,7 @@
 {
   "permissions": {
     "allow": [
+      "claude-code.enableAuthLogin",
       "Read(//c/Users/Soren/**)"
     ]
   }

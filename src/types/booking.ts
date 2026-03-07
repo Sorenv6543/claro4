@@ -24,18 +24,25 @@ export interface Booking {
   id: string;
   property_id: string;
   owner_id: string;
-  checkout_date: string; // ISO date when guests leave
-  checkin_date: string;  // ISO date when new guests arrive
+  checkin_date: string;  // ISO date when guests check in (arrive) - start of guest stay
+  checkout_date: string; // ISO date when guests check out (depart) - end of guest stay
+  checkin_time: string;  // Time when guests arrive (HH:MM:SS format)
+  checkout_time: string; // Time when guests depart (HH:MM:SS format)
   booking_type: BookingType;
   status: BookingStatus;
   guest_count?: number;
-  notes?: string;
+  notes?: string; // General notes and instructions for the booking
+  special_instructions?: string; // Legacy field for backward compatibility
   priority?: 'low' | 'normal' | 'high' | 'urgent';
   assigned_cleaner_id?: string;
+  upcharge_reason?: string;
+  upcharge_amount?: number;
+  cleaning_duration?: number; // minutes
   created_at?: string;
   updated_at?: string;
   // Add index signature to allow conversion to Record<string, unknown>
-  [key: string]: unknown;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  [key: string]: any;
 }
 
 /**
@@ -51,6 +58,13 @@ export interface BookingWithMetadata extends Booking {
   };
   priority: 'low' | 'normal' | 'high' | 'urgent';
 }
+
+/**
+ * Record-compatible wrapper types for boundaries that require Record<string, unknown>
+ * (e.g., modal systems, realtime payloads). Use these instead of weakening domain types.
+ */
+export type BookingRecord = Booking & Record<string, unknown>;
+export type BookingWithMetadataRecord = BookingWithMetadata & Record<string, unknown>;
 
 /**
  * Form data for creating/editing bookings

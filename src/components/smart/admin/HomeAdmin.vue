@@ -39,22 +39,49 @@
 </template>
 
 <script setup lang="ts">
+import { computed, watch, onMounted, onUnmounted } from 'vue';
+import { useUIStore } from '@/stores/ui';
+import { usePropertyStore } from '@/stores/property';
+import { useBookingStore } from '@/stores/booking';
+import { useAuthStore } from '@/stores/auth';
+import { useDisplay } from 'vuetify';
+import { Property } from '@/types';
 
+const uiStore = useUIStore();
+const propertyStore = usePropertyStore();
+const bookingStore = useBookingStore();
+const authStore = useAuthStore();
+const { xs } = useDisplay();
+
+// ============================================================================
+// REACTIVE STATE
+// ============================================================================
+
+import { ref } from 'vue';
+
+const sidebarOpen = ref(true);
+
+// ============================================================================
+// COMPUTED PROPERTIES - STATE
+// ============================================================================
+
+const isAdminAuthenticated = computed(() => {
+  return authStore.isAuthenticated && authStore.user?.role === 'admin';
+});
+
+// ============================================================================
+// API FUNCTIONS
+// ============================================================================
+
+const fetchAllUsers = async (): Promise<void> => {
+  // Placeholder for fetching all users
+  // This should be implemented based on your API/store structure
+  console.log('📊 [HomeAdmin] fetchAllUsers called');
+};
 
 // ============================================================================
 // UI STATE - MODAL MANAGEMENT
 // ============================================================================
-
-// Event Modal
-const eventModalOpen = computed(() => uiStore.isModalOpen('eventModal'));
-const eventModalMode = computed(() => {
-  const modal = uiStore.getModalState('eventModal');
-  return (modal?.mode as 'create' | 'edit') || 'create';
-});
-const eventModalData = computed(() => {
-  const modal = uiStore.getModalState('eventModal');
-  return modal?.data as Booking | undefined;
-});
 
 // Property Modal
 const propertyModalOpen = computed(() => uiStore.isModalOpen('propertyModal'));
@@ -96,6 +123,38 @@ const confirmDialogData = computed(() => {
 
 
 // ============================================================================
+// PROPERTY MODAL HANDLERS
+// ============================================================================
+
+const handlePropertyModalClose = (): void => {
+  uiStore.closeModal('propertyModal');
+};
+
+const handlePropertyModalSave = async (property: Property): Promise<void> => {
+  try {
+    if (propertyModalMode.value === 'create') {
+      await propertyStore.addProperty(property);
+    } else {
+      await propertyStore.updateProperty(property.id, property);
+    }
+    uiStore.closeModal('propertyModal');
+  } catch (error) {
+    console.error('Failed to save property:', error);
+  }
+};
+
+const handlePropertyModalDelete = async (property: Property): Promise<void> => {
+  uiStore.openConfirmDialog('confirmDialog', {
+    title: 'Delete Property',
+    message: `Are you sure you want to delete "${property.name}"? This action cannot be undone.`,
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+    dangerous: true,
+    data: { type: 'property', id: property.id }
+  });
+};
+
+// ============================================================================
 // CONFIRMATION DIALOG HANDLERS
 // ============================================================================
 
@@ -105,7 +164,7 @@ const handleConfirmDialogConfirm = async (): Promise<void> => {
   if (data?.type === 'booking' && data?.id) {
     try {
       // Admin can delete any booking - no ownership check needed
-      await deleteBooking(data.id as string);
+      await bookingStore.removeBooking(data.id as string);
       uiStore.closeModal('eventModal');
     } catch (error) {
       console.error('Failed to delete booking:', error);
@@ -113,7 +172,7 @@ const handleConfirmDialogConfirm = async (): Promise<void> => {
   } else if (data?.type === 'property' && data?.id) {
     try {
       // Admin can delete any property - no ownership check needed
-      await deleteProperty(data.id as string);
+      await propertyStore.removeProperty(data.id as string);
       uiStore.closeModal('propertyModal');
     } catch (error) {
       console.error('Failed to delete property:', error);
@@ -129,15 +188,6 @@ const handleConfirmDialogCancel = (): void => {
 
 const handleConfirmDialogClose = (): void => {
   uiStore.closeConfirmDialog('confirmDialog');
-};
-
-// ============================================================================
-// SIDEBAR MANAGEMENT
-// ============================================================================
-
-
-const _toggleSidebar = (): void => {
-  sidebarOpen.value = !sidebarOpen.value;
 };
 
 // ============================================================================
@@ -180,16 +230,6 @@ onMounted(async () => {
         fetchAllUsers()
       ]);
       console.log('✅ [HomeAdmin] System data loaded successfully');
-      
-      // Debug data after loading
-      console.log('🔍 [HomeAdmin] System data state after loading:', {
-        allProperties: allProperties.value.length,
-        allBookings: allBookings.value.length,
-        allUsers: allUsers.value.length,
-        systemMetrics: systemMetrics.value,
-        propertyMetrics: systemPropertyMetrics.value
-      });
-      
     } catch (error) {
       console.error('❌ [HomeAdmin] Failed to load system data:', error);
     }

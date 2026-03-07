@@ -226,22 +226,14 @@ vueDevTools({
     chunkSizeWarningLimit: 1000, // Increase limit to allow larger chunks
     rollupOptions: {
       output: {
-        // Safer manual chunking strategy - separate by major functionality
         manualChunks: (id) => {
-          // Core dependencies
           if (id.includes('node_modules')) {
-            if (id.includes('vue/dist') || id.includes('@vue/')) {
-              return 'vue-core'
-            }
-            if (id.includes('vuetify')) {
-              return 'vuetify'
-            }
-            if (id.includes('@fullcalendar')) {
-              return 'calendar'
-            }
-            if (id.includes('pinia')) {
-              return 'vue-core' // Keep pinia with vue core for better initialization
-            }
+            if (id.includes('@fullcalendar')) return 'calendar'
+            if (id.includes('/vuetify/')) return 'vuetify'
+            if (id.includes('@supabase/')) return 'supabase'
+            if (id.includes('/vue/') || id.includes('/@vue/') || id.includes('/vue-demi/')) return 'vue-core'
+            if (id.includes('/vue-router/')) return 'vue-core'
+            if (id.includes('/pinia/')) return 'vue-core'
             return 'vendor'
           }
 

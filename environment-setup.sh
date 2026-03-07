@@ -1,8 +1,8 @@
 # .env.local - Create this file in your project root
 
 # Supabase Configuration (Production)
-VITE_SUPABASE_URL=https://yplrudursbvzcdaroqly.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InlwbHJ1ZHVyc2J2emNkYXJvcWx5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTEyNzIyNTAsImV4cCI6MjA2Njg0ODI1MH0.D3NN6SPNG_fJ4ys_2Ju9t_9X12P18nWLyzF_nteHIuQ
+VITE_SUPABASE_URL=https://aejkrsvemqnftivzkkxd.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFlamtyc3ZlbXFuZnRpdnpra3hkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4MzE0OTcsImV4cCI6MjA4NzQwNzQ5N30.gwFE37j96b4gnMNi5Y9E_hYcdQBFcXq9ikvDqFNcmL8
 
 # App Configuration
 VITE_APP_NAME="Property Cleaning Scheduler"

@@ -1,157 +1,327 @@
 // src/stores/auth.ts - Fixed Version with Proper Loading Management
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { User, UserRole } from '@/types';
-import type { Session } from '@supabase/supabase-js';
+import type { UserRole, User } from '@/types';
+import {
+  getRoleSpecificSuccessMessage,
+  clearAllRoleSpecificState
+} from '@/utils/authHelpers';
 import { useSupabaseAuth } from '@/composables/supabase/useSupabaseAuth';
 
+interface RegisterData {
+  email: string;
+  password: string;
+  name: string;
+  role: UserRole;
+  company_name?: string;
+}
+
 export const useAuthStore = defineStore('auth', () => {
-  // --- Initial state ---
-  const initialState = {
-    session: null as Session | null,
-    user: null as User | null,
-    loading: false,
-    error: null as string | null,
-    initializing: true,
-    isAuthenticated: false,
-  };
+  // Use Supabase auth composable
+  const {
+    user: supabaseUser,
+    session,
+    loading: supabaseLoading,
+    error: supabaseError,
+    isAuthenticated: supabaseIsAuthenticated,
+    signIn,
+    signUp,
+    signOut: supabaseSignOut,
+    updateProfile,
+    resetPassword,
+    checkAuth,
+    getAllUsers,
+    updateUserRole
+  } = useSupabaseAuth();
 
-  // --- State refs for fallback/test mode ---
-  const fallbackSession = ref<Session | null>(initialState.session);
-  const fallbackUser = ref<User | null>(initialState.user);
-  const fallbackLoading = ref(initialState.loading);
-  const fallbackError = ref<string | null>(initialState.error);
-  const fallbackInitializing = ref(initialState.initializing);
+  // Local loading state for store operations
+  const storeLoading = ref(false);
+  const storeError = ref<string | null>(null);
 
-  let signIn: (email: string, password: string) => Promise<boolean> = async () => true;
-  let signUp: (email: string, password: string, userData: { name: string; role?: UserRole; company_name?: string }) => Promise<boolean> = async () => true;
-  let supabaseSignOut: () => Promise<boolean> = async () => true;
-  let updateProfile: (updates: Partial<User>) => Promise<boolean> = async () => true;
-  let resetPassword: (email: string) => Promise<boolean> = async () => true;
-  let _checkAuth: () => Promise<void> = async () => {};
-  let getAllUsers: () => Promise<User[]> = async () => [];
-  let updateUserRole: (userId: string, newRole: UserRole) => Promise<boolean> = async () => true;
-  let deleteUser: (userId: string) => Promise<boolean> = async () => true;
+  // Computed properties
+  const user = computed(() => supabaseUser.value);
+  const isAuthenticated = computed(() => {
+    const authenticated = supabaseIsAuthenticated.value;
+    console.log('[Auth Store] isAuthenticated:', authenticated, { user: !!user.value });
+    return authenticated;
+  });
 
-  let unsubscribe: (() => void) | null = null;
+  // Combined loading state - true if either Supabase or store operations are loading
+  const loading = computed(() => {
+    const isLoading = storeLoading.value || supabaseLoading.value;
+    console.log('[Auth Store] loading state:', {
+      storeLoading: storeLoading.value,
+      supabaseLoading: supabaseLoading.value,
+      combined: isLoading
+    });
+    return isLoading;
+  });
 
-  // Define composable at module scope
-  let composable: ReturnType<typeof useSupabaseAuth> | null = null;
+  // Combined error state
+  const error = computed(() => storeError.value || supabaseError.value);
 
-  // Initialize once, outside test mode
-  if (import.meta.env.MODE !== 'test' && !unsubscribe) {
-    composable = useSupabaseAuth();
-    
-    signIn = composable.signIn;
-    signUp = composable.signUp;
-    supabaseSignOut = composable.signOut;
-    updateProfile = composable.updateProfile;
-    resetPassword = composable.resetPassword;
-    _checkAuth = composable.checkAuth;
-    getAllUsers = composable.getAllUsers;
-    updateUserRole = composable.updateUserRole;
-    deleteUser = composable.deleteUser;
-  }
-
-  // --- Reactive computed state that uses composable or fallback ---
-  const session = computed(() => composable?.session.value ?? fallbackSession.value);
-  const user = computed(() => composable?.user.value ?? fallbackUser.value);
-  const loading = computed(() => composable?.loading.value ?? fallbackLoading.value);
-  const error = computed(() => composable?.error.value ?? fallbackError.value);
-  const initializing = computed(() => composable?.initializing.value ?? fallbackInitializing.value);
-  const isAuthenticated = computed(() => !!session.value && !!user.value);
-  
-  // Role-based computed properties
   const isAdmin = computed(() => user.value?.role === 'admin');
   const isOwner = computed(() => user.value?.role === 'owner');
   const isCleaner = computed(() => user.value?.role === 'cleaner');
 
-  // Enhanced checkAuth method that waits for initialization
-  const enhancedCheckAuth = async (): Promise<void> => {
-    if (composable) {
-      // Wait for initialization to complete if still initializing
-      if (composable.initializing.value) {
-        console.log('🔄 Auth store: Waiting for composable initialization...');
-        const maxWaitTime = 500; // 500ms max wait (reduced from 1 second)
-        const checkInterval = 50; // Check every 50ms (reduced from 100ms)
-        let waitedTime = 0;
-        
-        while (composable.initializing.value && waitedTime < maxWaitTime) {
-          await new Promise(resolve => setTimeout(resolve, checkInterval));
-          waitedTime += checkInterval;
-        }
-        
-        if (composable.initializing.value) {
-          console.warn('⚠️ Composable initialization timeout in store');
-        } else {
-          console.log('✅ Composable initialization completed in store');
-        }
-      }
-      
-      // Now call the composable's checkAuth
-      await composable.checkAuth();
-    } else {
-      console.warn('⚠️ No composable available in auth store');
-    }
-  };
-
-  // ... rest of the store logic ...
-
-  // --- $reset implementation ---
-  function $reset() {
-    // Reset fallback values (used in test mode)
-    fallbackSession.value = initialState.session;
-    fallbackUser.value = initialState.user;
-    fallbackLoading.value = initialState.loading;
-    fallbackError.value = initialState.error;
-    fallbackInitializing.value = initialState.initializing;
+  // Clear errors helper
+  function clearError() {
+    storeError.value = null;
   }
 
-  // Keep this if you need to use loadUserProfile elsewhere
-  const loadUserProfile = composable?.loadUserProfile;
+  // Authentication methods
+  async function login(email: string, password: string): Promise<boolean> {
+    try {
+      storeLoading.value = true;
+      storeError.value = null;
+
+      console.log('🔐 [Auth Store] Attempting login for:', email);
+      const success = await signIn(email, password);
+
+      if (success) {
+        console.log('✅ [Auth Store] Login successful for role:', user.value?.role);
+        clearError();
+        return true;
+      }
+
+      storeError.value = 'Invalid email or password';
+      return false;
+    } catch (err) {
+      console.error('❌ [Auth Store] Login error:', err);
+      storeError.value = err instanceof Error ? err.message : 'Login failed';
+      return false;
+    } finally {
+      storeLoading.value = false;
+    }
+  }
+
+  async function logout(): Promise<boolean> {
+    try {
+      storeLoading.value = true;
+      storeError.value = null;
+
+      console.log('🚪 [Auth Store] Logging out user:', user.value?.email);
+
+      // Clear role-specific state before logout
+      clearAllRoleSpecificState();
+
+      const success = await supabaseSignOut();
+
+      if (success) {
+        console.log('✅ [Auth Store] Logout successful');
+        clearError();
+        return true;
+      }
+
+      return false;
+    } catch (err) {
+      console.error('❌ [Auth Store] Logout error:', err);
+      storeError.value = err instanceof Error ? err.message : 'Logout failed';
+      return false;
+    } finally {
+      storeLoading.value = false;
+    }
+  }
+
+  async function register(userData: RegisterData): Promise<boolean> {
+    try {
+      storeLoading.value = true;
+      storeError.value = null;
+
+      console.log('📝 [Auth Store] Registering user:', userData.email, 'as', userData.role);
+
+      const success = await signUp(userData.email, userData.password, {
+        name: userData.name,
+        role: userData.role,
+        company_name: userData.company_name
+      });
+
+      if (success) {
+        console.log('✅ [Auth Store] Registration successful');
+        clearError();
+        return true;
+      }
+
+      storeError.value = 'Registration failed';
+      return false;
+    } catch (err) {
+      console.error('❌ [Auth Store] Registration error:', err);
+      storeError.value = err instanceof Error ? err.message : 'Registration failed';
+      return false;
+    } finally {
+      storeLoading.value = false;
+    }
+  }
+
+  // Role switching (for admin users)
+  function switchToOwnerView(ownerId?: string): boolean {
+    if (!isAdmin.value) {
+      storeError.value = 'Only administrators can switch views';
+      return false;
+    }
+
+    console.log('🔄 [Auth Store] Switching to owner view:', ownerId || 'all owners');
+    return true;
+  }
+
+  function switchToAdminView(): boolean {
+    if (!isAdmin.value) {
+      storeError.value = 'Only administrators can access admin view';
+      return false;
+    }
+
+    console.log('🔄 [Auth Store] Switching to admin view');
+    return true;
+  }
+
+  // Profile management
+  async function updateUserProfile(updates: {
+    name?: string;
+    company_name?: string;
+    notifications_enabled?: boolean;
+    timezone?: string;
+    theme?: 'light' | 'dark' | 'system';
+    language?: string;
+  }): Promise<boolean> {
+    try {
+      storeLoading.value = true;
+      storeError.value = null;
+
+      const success = await updateProfile(updates as Partial<User>);
+
+      if (success) {
+        console.log('✅ [Auth Store] Profile updated successfully');
+        clearError();
+        return true;
+      }
+
+      return false;
+    } catch (err) {
+      console.error('❌ [Auth Store] Profile update error:', err);
+      storeError.value = err instanceof Error ? err.message : 'Profile update failed';
+      return false;
+    } finally {
+      storeLoading.value = false;
+    }
+  }
+
+  async function requestPasswordReset(email: string): Promise<boolean> {
+    try {
+      storeLoading.value = true;
+      storeError.value = null;
+
+      const success = await resetPassword(email);
+
+      if (success) {
+        console.log('✅ [Auth Store] Password reset email sent');
+        clearError();
+        return true;
+      }
+
+      return false;
+    } catch (err) {
+      console.error('❌ [Auth Store] Password reset error:', err);
+      storeError.value = err instanceof Error ? err.message : 'Password reset failed';
+      return false;
+    } finally {
+      storeLoading.value = false;
+    }
+  }
+
+  // Admin functions
+  async function fetchAllUsers() {
+    if (!isAdmin.value) {
+      throw new Error('Unauthorized: Admin access required');
+    }
+
+    try {
+      storeLoading.value = true;
+      return await getAllUsers();
+    } catch (err) {
+      console.error('❌ [Auth Store] Failed to fetch users:', err);
+      storeError.value = err instanceof Error ? err.message : 'Failed to fetch users';
+      throw err;
+    } finally {
+      storeLoading.value = false;
+    }
+  }
+
+  async function changeUserRole(userId: string, newRole: UserRole): Promise<boolean> {
+    if (!isAdmin.value) {
+      storeError.value = 'Unauthorized: Admin access required';
+      return false;
+    }
+
+    try {
+      storeLoading.value = true;
+      const success = await updateUserRole(userId, newRole);
+
+      if (success) {
+        console.log('✅ [Auth Store] User role updated successfully');
+        clearError();
+        return true;
+      }
+
+      return false;
+    } catch (err) {
+      console.error('❌ [Auth Store] Role update error:', err);
+      storeError.value = err instanceof Error ? err.message : 'Role update failed';
+      return false;
+    } finally {
+      storeLoading.value = false;
+    }
+  }
+
+  // Utility functions
+  function getSuccessMessage(action: 'login' | 'logout' | 'register'): string {
+    return getRoleSpecificSuccessMessage(action, user.value?.role);
+  }
+
+  // Initialize auth state
+  async function initialize() {
+    try {
+      console.log('🚀 [Auth Store] Initializing auth store...');
+      await checkAuth();
+      if (user.value) {
+        console.log('✅ [Auth Store] User authenticated:', user.value.email, 'as', user.value.role);
+      } else {
+        console.log('ℹ️ [Auth Store] No authenticated user found');
+      }
+    } catch (err) {
+      console.error('❌ [Auth Store] Auth initialization error:', err);
+      storeError.value = err instanceof Error ? err.message : 'Initialization failed';
+    }
+  }
 
   return {
-    session,
+    // State
     user,
+    session,
     loading,
     error,
-    initializing,
+
+    // Computed
     isAuthenticated,
     isAdmin,
     isOwner,
     isCleaner,
-    $reset,
-    // ... other computed and methods ...
-    login: async (email: string, password: string) => {
-      const result = await signIn(email, password);
-      return result;
-    },
-    logout: supabaseSignOut,
-    register: signUp,
-    updateUserProfile: updateProfile,
-    requestPasswordReset: resetPassword,
-    fetchAllUsers: getAllUsers,
-    changeUserRole: updateUserRole,
-    deleteUser: deleteUser,
-    clearError: () => { 
-      fallbackError.value = null;
-      // Also clear composable error if available
-      if (composable?.error) {
-        composable.error.value = null;
-      }
-    },
-    getSuccessMessage: () => null,
-    initialize: async (): Promise<void> => {},
-    checkAuth: enhancedCheckAuth,
-    updateProfile,
-    loadUserProfile,
-    // Expose fallback refs for test utilities
-    ...(import.meta.env.MODE === 'test' ? { 
-      fallbackUser,
-      fallbackSession, 
-      fallbackLoading,
-      fallbackError,
-      fallbackInitializing
-    } : {})
+
+    // Methods
+    login,
+    logout,
+    register,
+    switchToOwnerView,
+    switchToAdminView,
+    updateUserProfile,
+    requestPasswordReset,
+    fetchAllUsers,
+    changeUserRole,
+    clearError,
+    getSuccessMessage,
+    initialize,
+
+    // Direct Supabase access for advanced use cases
+    checkAuth,
+    updateProfile
   };
 });

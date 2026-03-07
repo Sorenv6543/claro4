@@ -1,7 +1,7 @@
 # A string used to distinguish different Supabase projects on the same machine.
 # Not particularly relevant if you only have one project.
 # You can change this if you want to run multiple projects on the same machine.
-project_id = "claro"
+project_id = "claro4"
 
 [api]
 enabled = true

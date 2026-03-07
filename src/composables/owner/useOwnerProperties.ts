@@ -150,7 +150,7 @@ export function useOwnerProperties() {
       success.value = `Loaded ${myProperties.value.length} of your properties`;
       loading.value = false;
       return true;
-    } catch (err) {
+    } catch {
       error.value = 'Unable to load your properties. Please try again.';
       loading.value = false;
       return false;
@@ -187,8 +187,8 @@ export function useOwnerProperties() {
       } else {
         throw new Error('Failed to create property');
       }
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Unable to create your property. Please try again.';
+    } catch (_err) {
+      error.value = _err instanceof Error ? _err.message : 'Unable to create your property. Please try again.';
       loading.value = false;
       return null;
     }
@@ -228,8 +228,8 @@ export function useOwnerProperties() {
       } else {
         throw new Error('Failed to update property');
       }
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Unable to update your property. Please try again.';
+    } catch (_err) {
+      error.value = _err instanceof Error ? _err.message : 'Unable to update your property. Please try again.';
       loading.value = false;
       return false;
     }
@@ -349,41 +349,8 @@ export function useOwnerProperties() {
     return baseProperties.calculatePropertyMetrics(id);
   }
   
-  /**
-   * Get property recommendations for the current owner
-   */
-  function getMyPropertyRecommendations() {
-    if (!currentUserId.value || myProperties.value.length === 0) {
-      return [];
-    }
-    
-    const recommendations: string[] = [];
-    const metrics = myPropertyMetrics.value;
-    
-    // Utilization recommendations
-    if (metrics.averageUtilization < 0.3) {
-      recommendations.push('Consider adjusting your pricing or marketing to increase bookings');
-    } else if (metrics.averageUtilization > 0.8) {
-      recommendations.push('Your properties are highly utilized - consider raising prices or adding more properties');
-    }
-    
-    // Pricing tier recommendations
-    if (metrics.pricingTierDistribution.basic > metrics.totalProperties * 0.7) {
-      recommendations.push('Consider upgrading some properties to premium tiers for higher revenue');
-    }
-    
-    // Cleaning duration recommendations
-    if (metrics.averageCleaningDuration > 180) {
-      recommendations.push('Consider optimizing cleaning processes to reduce turnaround time');
-    }
-    
-    // Property count recommendations
-    if (metrics.totalProperties < 3) {
-      recommendations.push('Consider adding more properties to diversify your portfolio');
-    }
-    
-    return recommendations;
-  }
+
+   
   
   return {
     // State
@@ -406,6 +373,6 @@ export function useOwnerProperties() {
     
     // Business logic - Owner-specific
     getMyPropertyMetrics,
-    getMyPropertyRecommendations
+  
   };
 } 
