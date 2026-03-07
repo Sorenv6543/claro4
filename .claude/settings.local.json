@@ -41,7 +41,9 @@
       "mcp__plugin_serena_serena__list_dir",
       "mcp__plugin_serena_serena__activate_project",
       "mcp__vuetify-mcp__get_component_api_by_version",
-      "mcp__vuetify-mcp__get_feature_guide"
+      "mcp__vuetify-mcp__get_feature_guide",
+      "mcp__plugin_playwright_playwright__browser_snapshot",
+      "mcp__plugin_playwright_playwright__browser_evaluate"
     ],
     "deny": []
   },

@@ -8,9 +8,9 @@ _A comprehensive, production-ready checklist for integrating Supabase with your 
 - [ ] **Review `src/plugins/supabase.ts`**
   - [ ] Uses environment variables for URL and anon key
   - [ ] Correct export and usage across the app
-- [ ] **Check `.env` file**
+- [ ] **Check `local.env` file**
   - [ ] `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` are set
-  - [ ] `.env` is in `.gitignore`
+  - [ ] `local.env` is in `.gitignore`
 
 ---
 

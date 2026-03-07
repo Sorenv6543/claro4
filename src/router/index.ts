@@ -28,8 +28,7 @@ const router = createRouter({
       name: 'register',
       component: () => import('@/pages/auth/register.vue'),
       meta: {
-        layout: 'auth',
-        role: 'guest'
+        layout: 'auth'
       }
     },
 
