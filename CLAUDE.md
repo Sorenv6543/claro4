@@ -48,7 +48,7 @@ Owner and Admin have separate component trees throughout:
 - `src/components/smart/{admin,owner,shared}/`
 - `src/components/dumb/{admin,owner,shared}/`
 - `src/pages/{admin,owner,auth}/`
-- `src/composables/{owner,owner/admin,shared,supabase}/`
+- `src/composables/{owner,admin,shared,supabase}/`
 - `src/layouts/{admin,owner,auth,default}.vue`
 
 ### State Management
@@ -62,7 +62,7 @@ Owner and Admin have separate component trees throughout:
 ### Composables Organization
 
 - `src/composables/owner/` - Owner-specific data access (useOwnerBookings, useOwnerProperties, etc.)
-- `src/composables/owner/admin/` - Admin-specific data access (useAdminBookings, useCleanerManagement, etc.)
+- `src/composables/admin/` - Admin-specific data access (useAdminBookings, useCleanerManagement, etc.)
 - `src/composables/shared/` - Cross-cutting concerns (useCalendarState, usePerformanceMonitor, etc.)
 - `src/composables/supabase/` - Supabase integration (useSupabaseAuth, useRealtimeSync, etc.)
 - Reuse existing composables before adding new Supabase calls
@@ -98,16 +98,19 @@ Configured in both `vite.config.ts` and `tsconfig.json`:
 ## Domain Rules
 
 ### Booking Model
-- Guest-stay model: `checkout_date` must be strictly after `checkin_date`
+- Guest-stay model: `checkin_date` = guest arrival, `checkout_date` = guest departure
+- `checkout_date` must be **on or after** `checkin_date` (same day is valid for turn bookings)
 - `booking_type === 'turn'`: Same-day short stays; validated via `validateTurnBooking`
 - Priority: Use `calculateBookingPriority` - turn bookings are always at least `high`
 - Conflicts: Use `detectBookingConflicts` and `validateBooking` instead of ad-hoc date math
+- Adjacent bookings (one checkout == another checkin) do **not** conflict
 
 ```typescript
 // Turn booking validation
 import { validateTurnBooking } from '@utils/businessLogic'
 const { valid, errors, warnings } = validateTurnBooking(bookingData, property)
-// Turn rules: checkout and checkin must be same day, must have enough time for cleaning + 30 min buffer
+// Turn rules: checkout and checkin must be on the same calendar day;
+// checkout_time must be after checkin_time; warns on late checkout (>14:00) or early checkin (<14:00)
 ```
 
 ### Cleaning Tasks
@@ -119,11 +122,12 @@ Use system default times for booking forms; don't hard-code time strings in comp
 
 ```typescript
 // Standard vacation rental defaults
-const DEFAULT_CHECKOUT_TIME = '11:00'  // 11:00 AM
-const DEFAULT_CHECKIN_TIME  = '15:00'  // 3:00 PM
+const DEFAULT_CHECKOUT_TIME = '11:00'  // 11:00 AM checkout (guests depart)
+const DEFAULT_CHECKIN_TIME  = '15:00'  // 3:00 PM checkin (guests arrive)
 
 // Pre-populate form fields with these defaults; property-specific overrides take precedence
-// Validate that checkout time is before checkin time, and turns have adequate cleaning window
+// For same-day (turn) bookings: checkout_time must be after checkin_time
+// Warn if checkout > 14:00 or checkin < 14:00 (tight cleaning window)
 ```
 
 ## Auth & Routing
