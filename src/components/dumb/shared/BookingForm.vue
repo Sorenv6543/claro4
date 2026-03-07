@@ -55,26 +55,6 @@
                 md="6"
               >
                 <v-text-field
-                  v-model="form.checkout_date"
-                  label="Checkout Date"
-                  type="date"
-                  :rules="dateRules"
-                  required
-                  variant="outlined"
-                  :disabled="loading"
-                  :error-messages="errors.get('checkout_date')"
-                  hint="When guests leave"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-remove"
-                  @update:model-value="updateBookingType"
-                />
-              </v-col>
-              
-              <v-col
-                cols="12"
-                md="6"
-              >
-                <v-text-field
                   v-model="form.checkin_date"
                   label="Checkin Date"
                   type="date"
@@ -83,34 +63,34 @@
                   variant="outlined"
                   :disabled="loading"
                   :error-messages="errors.get('checkin_date')"
-                  hint="When new guests arrive"
+                  hint="When guests arrive"
                   persistent-hint
                   prepend-inner-icon="mdi-calendar-plus"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
-            </v-row>
-            <v-row>
+
               <v-col
                 cols="12"
-                md="6" 
+                md="6"
               >
                 <v-text-field
-                  v-model="form.checkout_time"
-                  label="Checkout Time"
-                  type="time"
-                  :rules="timeRules"
+                  v-model="form.checkout_date"
+                  label="Checkout Date"
+                  type="date"
+                  :rules="dateRules"
                   required
-                  variant="solo"
+                  variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('checkout_time')"
-                  hint="When guests leave"
+                  :error-messages="errors.get('checkout_date')"
+                  hint="When guests depart"
                   persistent-hint
                   prepend-inner-icon="mdi-calendar-remove"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
-              
+            </v-row>
+            <v-row>
               <v-col
                 cols="12"
                 md="6"
@@ -124,9 +104,29 @@
                   variant="outlined"
                   :disabled="loading"
                   :error-messages="errors.get('checkin_time')"
-                  hint="When new guests arrive"
+                  hint="When guests arrive"
                   persistent-hint
                   prepend-inner-icon="mdi-calendar-plus"
+                  @update:model-value="updateBookingType"
+                />
+              </v-col>
+
+              <v-col
+                cols="12"
+                md="6"
+              >
+                <v-text-field
+                  v-model="form.checkout_time"
+                  label="Checkout Time"
+                  type="time"
+                  :rules="timeRules"
+                  required
+                  variant="outlined"
+                  :disabled="loading"
+                  :error-messages="errors.get('checkout_time')"
+                  hint="When guests depart"
+                  persistent-hint
+                  prepend-inner-icon="mdi-calendar-remove"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
@@ -410,7 +410,7 @@ const bookingTypeRules = [
 // Time validation rules for time input fields
 const timeRules = [
   (v: string) => !!v || 'Time is required',
-  (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) || 'Invalid time format (HH:mm:ss) sshould be 24-hour)'
+  (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) || 'Invalid time format (HH:MM, 24-hour)'
 ];
 
 // METHODS
@@ -504,13 +504,21 @@ async function validate(): Promise<boolean> {
     errors.value.set('checkin_date', 'Invalid date format');
     return false;
   }
-  
-  // Check if checkout is after checkin
-  if (checkoutDate > checkinDate) {
-    errors.value.set('checkout_date', 'Checkout date must be before or same as checkin date');
+  // Guests check in first (arrival), then check out later (departure).
+  // checkout_date must be on or after checkin_date; same day is valid for turn bookings.
+  if (checkoutDate < checkinDate) {
+    errors.value.set('checkout_date', 'Checkout date must be on or after checkin date');
     return false;
   }
-  
+
+  // For same-day (turn) bookings, checkout time must be after checkin time.
+  if (checkoutDate.toDateString() === checkinDate.toDateString() && form.checkout_time && form.checkin_time) {
+    if (form.checkout_time <= form.checkin_time) {
+      errors.value.set('checkout_time', 'For same-day bookings, checkout time must be after checkin time');
+      return false;
+    }
+  }
+
   // Check turn booking consistency
   if (form.booking_type === 'turn' && !isTurnBooking.value) {
     errors.value.set('booking_type', 'Turn bookings must have checkout and checkin on the same day');

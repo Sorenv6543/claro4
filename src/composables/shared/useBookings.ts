@@ -39,9 +39,9 @@ export function useBookings() {
         throw new Error('Invalid dates provided');
       }
       
-      // Validate dates are in correct order
-      if (checkoutDate > checkinDate) {
-        throw new Error('Checkout date must be before checkin date');
+      // Checkout must be on or after checkin (same day allowed for turn bookings)
+      if (checkoutDate < checkinDate) {
+        throw new Error('Checkout date must be on or after checkin date');
       }
       
       // Determine booking type based on dates if not specified
@@ -59,6 +59,8 @@ export function useBookings() {
         owner_id: formData.owner_id as string,
         checkout_date: formData.checkout_date as string,
         checkin_date: formData.checkin_date as string,
+        checkout_time: formData.checkout_time as string,
+        checkin_time: formData.checkin_time as string,
         booking_type: bookingType as BookingType,
         status: 'pending', // New bookings start as pending
         guest_count: formData.guest_count as number,
@@ -127,9 +129,9 @@ export function useBookings() {
         shouldRecalculateType = true;
       }
       
-      // Validate dates are in correct order
-      if (checkoutDate > checkinDate) {
-        throw new Error('Checkout date must be before checkin date');
+      // Checkout must be on or after checkin (same day allowed for turn bookings)
+      if (checkoutDate < checkinDate) {
+        throw new Error('Checkout date must be on or after checkin date');
       }
       
       // Recalculate booking type if dates changed and type not explicitly set

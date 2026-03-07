@@ -123,27 +123,28 @@ export const validateTurnBooking = (
   const checkoutDate = new Date(booking.checkout_date!);
   const checkinDate = new Date(booking.checkin_date!);
   
-  // Check if same day
+  // Turn bookings are same-day stays: guests arrive and depart on the same calendar date.
   if (checkoutDate.toDateString() !== checkinDate.toDateString()) {
     errors.push('Turn bookings must have checkout and checkin on the same day');
   }
-  
-  // Check minimum time gap
-  const timeDiff = (checkinDate.getTime() - checkoutDate.getTime()) / (1000 * 60); // minutes
-  const minTime = (property.cleaning_duration || 120) + 30; // cleaning time + buffer
-  
-  if (timeDiff < minTime) {
-    errors.push(`Insufficient time for turn cleaning. Need at least ${minTime} minutes, have ${Math.floor(timeDiff)} minutes.`);
+
+  // For same-day stays, validate that checkout time is after checkin time.
+  if (booking.checkout_time && booking.checkin_time) {
+    if (booking.checkout_time <= booking.checkin_time) {
+      errors.push('For turn bookings, checkout time must be after checkin time');
+    }
   }
-  
-  // Check if checkout is after typical checkout time (11 AM)
-  if (checkoutDate.getHours() > 12) {
-    warnings.push('Late checkout may impact cleaning schedule');
+
+  // Warn about late checkout — leaves little time for cleaning before next guests.
+  const checkoutHour = booking.checkout_time ? parseInt(booking.checkout_time.split(':')[0]) : null;
+  if (checkoutHour !== null && checkoutHour > 14) {
+    warnings.push('Late checkout may leave insufficient time for cleaning before next guests');
   }
-  
-  // Check if checkin is before typical checkin time (3 PM)
-  if (checkinDate.getHours() < 15) {
-    warnings.push('Early checkin may require rushed cleaning');
+
+  // Warn about early checkin — cleaners may not finish preparation in time.
+  const checkinHour = booking.checkin_time ? parseInt(booking.checkin_time.split(':')[0]) : null;
+  if (checkinHour !== null && checkinHour < 14) {
+    warnings.push('Early checkin may require rushing cleaning preparation');
   }
   
   return {
@@ -160,25 +161,22 @@ export const detectBookingConflicts = (
   booking: Booking,
   existingBookings: Booking[]
 ): Booking[] => {
-  const checkoutTime = new Date(booking.checkout_date);
-  const checkinTime = new Date(booking.checkin_date);
-  
-  // Check for overlapping bookings
+  // Each booking spans from checkin_date (arrival) to checkout_date (departure).
+  const bookingStart = new Date(booking.checkin_date);
+  const bookingEnd = new Date(booking.checkout_date);
+
+  // Check for overlapping bookings (two stays overlap if one starts before the other ends).
   return existingBookings.filter(otherBooking => {
     if (otherBooking.id === booking.id || otherBooking.property_id !== booking.property_id) {
       return false; // Same booking or different property
     }
-    
-    const otherCheckout = new Date(otherBooking.checkout_date);
-    const otherCheckin = new Date(otherBooking.checkin_date);
-    
-    // Check for overlap
-    return (
-      // Case 1: New booking starts before existing ends AND new booking ends after existing starts
-      (checkoutTime <= otherCheckin && checkinTime >= otherCheckout) ||
-      // Case 2: Existing booking starts before new ends AND existing booking ends after new starts
-      (otherCheckout <= checkinTime && otherCheckin >= checkoutTime)
-    );
+
+    const otherStart = new Date(otherBooking.checkin_date);
+    const otherEnd = new Date(otherBooking.checkout_date);
+
+    // Overlap: booking starts before other ends AND booking ends after other starts.
+    // Adjacent bookings (one checkout == other checkin) do NOT conflict.
+    return bookingStart < otherEnd && bookingEnd > otherStart;
   });
 };
 
@@ -207,9 +205,9 @@ export const validateBooking = (
   const checkoutDate = new Date(booking.checkout_date);
   const checkinDate = new Date(booking.checkin_date);
   
-  // Check if checkin is after checkout
-  if (checkinDate <= checkoutDate) {
-    errors.push('Checkin date must be after checkout date');
+  // Guests check in (arrive) first, then check out (depart). Same day is valid for turn bookings.
+  if (checkoutDate < checkinDate) {
+    errors.push('Checkout date must be on or after checkin date');
   }
   
   // For turn bookings, use the specialized validation
@@ -331,8 +329,8 @@ export const filterBookingsByDateRange = (
   const filtered = new Map<string, Booking>()
   
   bookings.forEach((booking, id) => {
-    const bookingStart = new Date(booking.checkout_date).getTime()
-    const bookingEnd = new Date(booking.checkin_date).getTime()
+    const bookingStart = new Date(booking.checkin_date).getTime()
+    const bookingEnd = new Date(booking.checkout_date).getTime()
     
     if (bookingStart <= end && bookingEnd >= start) {
       filtered.set(id, booking)
