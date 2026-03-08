@@ -7,7 +7,7 @@
         <v-col cols="12">
           <div class="d-flex align-center justify-space-between mb-4">
             <div class="d-flex align-center">
-              <v-btn icon="mdi-arrow-left" variant="text" @click="router.push('/owner/properties')" />
+              <v-btn icon="mdi-arrow-left" variant="text" @click="goBack" />
               <h1 class="text-h4 ml-4">
                 {{ property?.name || 'Property Details' }}
               </h1>
@@ -238,7 +238,7 @@ defineOptions({ name: 'OwnerPropertyViewComponent' });
 
 const router = useRouter();
 const route = useRoute();
-const propertyId = route.params.id as string;
+const propertyId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
 
 const {
   myProperties,
@@ -270,25 +270,34 @@ const upcomingSchedule = computed(() => {
     .slice(0, 10);
 });
 
-const totalBookings = computed(() => propertyBookings.value.length);
-const upcomingCount = computed(() => upcomingSchedule.value.length);
+const totalBookings = computed(() =>
+  myBookings.value.filter(b => b.property_id === propertyId).length
+);
+
+const upcomingCount = computed(() => {
+  const today = new Date();
+  return myBookings.value.filter(
+    b => b.property_id === propertyId && new Date(b.checkin_date) >= today
+  ).length;
+});
 
 onMounted(async () => {
   await Promise.all([fetchMyProperties(), fetchMyBookings()]);
   if (!property.value) router.push('/owner/properties');
 });
 
+const goBack = () => router.push('/owner/properties');
 const handleEdit = () => { editModalOpen.value = true; };
 const handleDelete = () => { deleteDialogOpen.value = true; };
 
 const handleEditSave = async (data: PropertyFormData) => {
-  await updateMyProperty(propertyId, data);
-  editModalOpen.value = false;
+  const ok = await updateMyProperty(propertyId, data);
+  if (ok) editModalOpen.value = false;
 };
 
 const confirmDelete = async () => {
-  await deleteMyProperty(propertyId);
-  router.push('/owner/properties');
+  const ok = await deleteMyProperty(propertyId);
+  if (ok) router.push('/owner/properties');
 };
 
 const formatDate = (dateString: string) =>
