@@ -393,7 +393,7 @@ const handleDeleteProperty = async (propertyId: string): Promise<void> => {
 
 // Navigation functions
 const editProperty = (property: Property): void => {
-  router.push(`/owner/properties/${property.id}/edit`)
+  uiStore.openModal('propertyModal', 'edit', property)
 }
 
 const viewProperty = (property: Property): void => {
