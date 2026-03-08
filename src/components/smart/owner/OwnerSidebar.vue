@@ -132,8 +132,21 @@
             </template>
           
             <div class="property-content">
-              <div class="property-title">
-                {{ property.name }}
+              <div class="d-flex align-center gap-1">
+                <div
+                  class="property-title"
+                  style="cursor: pointer;"
+                  @click.stop="editProperty(property)"
+                >
+                  {{ property.name }}
+                </div>
+                <v-chip
+                  :color="property.active ? 'success' : 'grey'"
+                  size="x-small"
+                  variant="tonal"
+                >
+                  {{ property.active ? 'Active' : 'Off' }}
+                </v-chip>
               </div>
               <div class="property-subtitle">
                 {{ property.address }}
