@@ -340,13 +340,13 @@ async function handleRegister() {
   if (!valid) return
   
   try {
-    const userData = {
+    const success = await authStore.register({
+      email: email.value,
+      password: password.value,
       name: name.value,
       role: selectedRole.value,
       company_name: companyName.value
-    }
-    
-    const success = await authStore.register(email.value, password.value, userData)
+    })
     
     if (success) {
       // Show success message

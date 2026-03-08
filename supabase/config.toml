@@ -21,7 +21,7 @@ port = 54322
 # Port used by db diff command to initialize the shadow database.
 shadow_port = 54320
 # The database major version to use. This has to be the same as your remote database's. Run `SHOW server_version;` on the remote database to check.
-major_version = 15
+major_version = 17
 
 [db.pooler]
 enabled = false
@@ -84,13 +84,13 @@ enable_signup = true
 enable_signup = true
 # If enabled, a user will be required to confirm any email change on both the old, and new email addresses. 
 # If disabled, only the new email is required to confirm.
-double_confirm_changes = true
+double_confirm_changes = false
 # If enabled, users need to confirm their email address before signing in.
 enable_confirmations = false
 
 [auth.sms]
 # Allow/disallow new user signups via SMS to your project.
-enable_signup = true
+enable_signup = false
 # If enabled, users need to confirm their phone number before signing in.
 enable_confirmations = false
 

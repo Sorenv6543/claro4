@@ -1,13 +1,7 @@
-<!-- 
-🏠 ROLE-SPECIFIC INTERFACES
-👤 OWNER INTERFACE - PROPERTIES MANAGEMENT
-src/components/smart/owner/OwnerProperties.vue - 
-
-✅ FILTERED VIEW - Owner sees only their properties
-✅ Uses SAME composables as HomeOwner.vue
-✅ Maintains single source of truth architecture
-✅ Demonstrates 3-layer composables pattern excellence
- -->
+<!-- Owner-specific property management page.
+     Uses owner-scoped composables (useOwnerProperties, useOwnerBookings)
+     to ensure all data is filtered to the current owner only.
+     Do NOT bypass these composables to call stores directly. -->
 
 <template>
   <div class="owner-properties-container">
@@ -30,7 +24,6 @@ src/components/smart/owner/OwnerProperties.vue -
         </v-col>
       </v-row>
 
-      <!-- Property Stats (Using SAME composables as HomeOwner) -->
       <v-row class="mb-2 compact-stats-row">
         <v-col
           cols="6"
@@ -255,7 +248,6 @@ import { useRouter } from 'vue-router'
 import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
 import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
 
-// ✅ SAME COMPOSABLES AS HomeOwner.vue - SINGLE SOURCE OF TRUTH MAINTAINED
 import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
 import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
 import { useUIStore } from '@/stores/ui'
@@ -267,26 +259,23 @@ defineOptions({
   name: 'OwnerProperties'
 })
 
-// ✅ SAME STORE CONNECTIONS AS HomeOwner
 const uiStore = useUIStore()
 const authStore = useAuthStore()
 const router = useRouter()
 
-// ✅ SAME BUSINESS LOGIC AS HomeOwner - NO DUPLICATION
-const { 
-  myProperties,              // ✅ SAME data
-  myActiveProperties,        // ✅ SAME filtered data
-  fetchMyProperties,         // ✅ SAME operations
-  createMyProperty,          // ✅ SAME operations
-  updateMyProperty,          // ✅ SAME operations
-  deleteMyProperty           // ✅ SAME operations
-  // loading removed since not used
+const {
+  myProperties,
+  myActiveProperties,
+  fetchMyProperties,
+  createMyProperty,
+  updateMyProperty,
+  deleteMyProperty
 } = useOwnerProperties()
 
 const {
-  myBookings,               // ✅ SAME filtered data
-  myTodayTurns,            // ✅ SAME filtered data
-  fetchMyBookings          // ✅ SAME operations
+  myBookings,
+  myTodayTurns,
+  fetchMyBookings
 } = useOwnerBookings()
 
 // ============================================================================
@@ -368,7 +357,6 @@ const getPropertyIcon = (propertyType?: string): string => {
 // ============================================================================
 
 const handleCreateProperty = (): void => {
-  // ✅ SAME orchestration as HomeOwner - ensures owner_id is set
   const propertyData = {
     owner_id: authStore.user?.id
   }
@@ -377,7 +365,6 @@ const handleCreateProperty = (): void => {
 
 
 const handleDeleteProperty = async (propertyId: string): Promise<void> => {
-  // ✅ SAME logic as HomeOwner - operates on owner's data only
   const property = myProperties.value.find(p => p.id === propertyId)
   if (!property) return
 
@@ -393,7 +380,7 @@ const handleDeleteProperty = async (propertyId: string): Promise<void> => {
 
 // Navigation functions
 const editProperty = (property: Property): void => {
-  router.push(`/owner/properties/${property.id}/edit`)
+  uiStore.openModal('propertyModal', 'edit', property)
 }
 
 const viewProperty = (property: Property): void => {
@@ -410,7 +397,6 @@ const handlePropertyModalClose = (): void => {
 
 const handlePropertyModalSave = async (data: PropertyFormData): Promise<void> => {
   try {
-    // ✅ SAME logic as HomeOwner - ensures owner_id is set
     const propertyData = {
       ...data,
       owner_id: authStore.user?.id
@@ -432,7 +418,6 @@ const handlePropertyModalSave = async (data: PropertyFormData): Promise<void> =>
 }
 
 const handlePropertyModalDelete = async (propertyId: string): Promise<void> => {
-  // ✅ SAME verification as HomeOwner
   const property = myProperties.value.find(p => p.id === propertyId)
   if (!property || property.owner_id !== authStore.user?.id) {
     console.warn('Cannot delete property not owned by current user')
@@ -481,7 +466,6 @@ const handleConfirmDialogClose = (): void => {
 // ============================================================================
 
 onMounted(async () => {
-  // ✅ SAME initialization pattern as HomeOwner
   if (authStore.isAuthenticated && authStore.user?.role === 'owner') {
     await Promise.all([
       fetchMyProperties(),
@@ -652,7 +636,6 @@ onMounted(async () => {
   color: #f57c00;
 }
 
-/* ✅ SAME THEME VARIABLES AS HomeOwner */
 .owner-properties-container {
   --owner-primary: rgb(var(--v-theme-primary));
   --owner-accent: rgb(var(--v-theme-secondary));
