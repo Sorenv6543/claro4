@@ -133,11 +133,7 @@
           
             <div class="property-content">
               <div class="d-flex align-center gap-1">
-                <div
-                  class="property-title"
-                  style="cursor: pointer;"
-                  @click.stop="editProperty(property)"
-                >
+                <div class="property-title">
                   {{ property.name }}
                 </div>
                 <v-chip

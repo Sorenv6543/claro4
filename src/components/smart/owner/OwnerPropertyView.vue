@@ -111,7 +111,7 @@
                   :key="booking.id"
                 >
                   <v-list-item-title>{{ formatDateRange(booking.checkin_date, booking.checkout_date) }}</v-list-item-title>
-                  <v-list-item-subtitle>Cleaning window: {{ property.cleaning_duration }} min</v-list-item-subtitle>
+                  <v-list-item-subtitle>Cleaning window: {{ booking.cleaning_duration ?? property.cleaning_duration }} min</v-list-item-subtitle>
                   <template #append>
                     <v-chip
                       :color="booking.booking_type === 'turn' ? 'warning' : 'primary'"
@@ -199,7 +199,47 @@
         </v-col>
       </v-row>
 
+      <!-- Error or not-found state -->
+      <v-row v-else>
+        <v-col cols="12">
+          <v-card>
+            <v-card-text class="text-center py-8">
+              <v-icon color="grey" size="64" class="mb-4">mdi-home-alert-outline</v-icon>
+              <div class="text-h6 mb-2">Property not found</div>
+              <div class="text-body-2 text-medium-emphasis mb-4">
+                {{ loadError || 'This property could not be loaded.' }}
+              </div>
+              <v-btn color="primary" @click="goBack">Back to Properties</v-btn>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
     </v-container>
+
+    <!-- Save error alert -->
+    <v-alert
+      v-if="saveError"
+      type="error"
+      variant="tonal"
+      class="mt-4 mx-4"
+      closable
+      @click:close="saveError = null"
+    >
+      {{ saveError }}
+    </v-alert>
+
+    <!-- Delete error alert -->
+    <v-alert
+      v-if="deleteError"
+      type="error"
+      variant="tonal"
+      class="mt-4 mx-4"
+      closable
+      @click:close="deleteError = null"
+    >
+      {{ deleteError }}
+    </v-alert>
 
     <!-- Edit Modal -->
     <PropertyModal
@@ -243,6 +283,7 @@ const propertyId = Array.isArray(route.params.id) ? route.params.id[0] : route.p
 const {
   myProperties,
   loading,
+  error,
   fetchMyProperties,
   updateMyProperty,
   deleteMyProperty
@@ -252,6 +293,7 @@ const { myBookings, fetchMyBookings } = useOwnerBookings();
 
 const editModalOpen = ref(false);
 const deleteDialogOpen = ref(false);
+const loadError = ref<string | null>(null);
 
 const property = computed(() => myProperties.value.find(p => p.id === propertyId) ?? null);
 
@@ -282,22 +324,40 @@ const upcomingCount = computed(() => {
 });
 
 onMounted(async () => {
-  await Promise.all([fetchMyProperties(), fetchMyBookings()]);
-  if (!property.value) router.push('/owner/properties');
+  try {
+    await Promise.all([fetchMyProperties(), fetchMyBookings()]);
+    if (!property.value) router.push('/owner/properties');
+  } catch (err) {
+    console.error('[OwnerPropertyView] Failed to load property data:', err);
+    loadError.value = 'Unable to load property details. Please refresh or go back.';
+  }
 });
 
 const goBack = () => router.push('/owner/properties');
 const handleEdit = () => { editModalOpen.value = true; };
 const handleDelete = () => { deleteDialogOpen.value = true; };
 
+const saveError = ref<string | null>(null);
+const deleteError = ref<string | null>(null);
+
 const handleEditSave = async (data: PropertyFormData) => {
+  saveError.value = null;
   const ok = await updateMyProperty(propertyId, data);
-  if (ok) editModalOpen.value = false;
+  if (ok) {
+    editModalOpen.value = false;
+  } else {
+    saveError.value = error.value ?? 'Failed to save property. Please try again.';
+  }
 };
 
 const confirmDelete = async () => {
+  deleteError.value = null;
   const ok = await deleteMyProperty(propertyId);
-  if (ok) router.push('/owner/properties');
+  if (ok) {
+    router.push('/owner/properties');
+  } else {
+    deleteError.value = error.value ?? 'Failed to delete property. Please try again.';
+  }
 };
 
 const formatDate = (dateString: string) =>
@@ -314,10 +374,12 @@ const formatBookingTitle = (booking: Booking) =>
 
 const getBookingStatusColor = (status: string) => {
   switch (status) {
-    case 'confirmed': return 'success';
-    case 'pending': return 'warning';
-    case 'cancelled': return 'error';
-    default: return 'primary';
+    case 'scheduled':   return 'info';
+    case 'in_progress': return 'warning';
+    case 'completed':   return 'success';
+    case 'pending':     return 'secondary';
+    case 'cancelled':   return 'error';
+    default:            return 'primary';
   }
 };
 </script>
