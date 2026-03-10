@@ -329,7 +329,7 @@
                             size="small"
                             :color="index === 0 ? 'success' : 'primary'"
                           >
-                            #{{ index + 1 }}
+                            {{ (index as number) + 1 }}
                           </v-chip>
                         </template>
                         <v-list-item-title>{{ performer.property.name }}</v-list-item-title>

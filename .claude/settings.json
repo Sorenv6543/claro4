@@ -13,7 +13,8 @@
     "google-search@claude-plugins-official": true,
     "wikipedia@claude-plugins-official": true,
     "github@claude-plugins-official": true,
-    "vercel@claude-plugins-official": true
+    "vercel@claude-plugins-official": true,
+    "claude-code.enableAuthLogin": true
   },
   "hooks": {
     "PreToolUse": [

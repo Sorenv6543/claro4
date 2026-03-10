@@ -468,7 +468,8 @@ export function usePerformanceMonitor() {
 
   // Watch for route changes to track navigation performance
   if (router) {
-    watch(() => router.currentRoute.value.path, (newPath, oldPath) => {
+    const safeRouter = router;
+    watch(() => safeRouter.currentRoute.value.path, (newPath, oldPath) => {
       if (isEnabled.value && oldPath) {
         const navigationTime = performance.now() - measurementStartTime.value
         updateMetric(`navigationTime_${newPath}`, navigationTime, 1000) // 1s navigation threshold

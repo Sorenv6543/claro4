@@ -515,21 +515,18 @@ const props = withDefaults(defineProps<Props>(), {
   currentDate: () => new Date()
 });
 
-// Define emits matching HomeAdmin expectations
-interface Emits {
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'navigateToBooking', bookingId: string): void;
-  (e: 'navigateToDate', date: Date): void;
-  (e: 'filterByProperty', propertyId: string | null): void;
-  (e: 'createBooking'): void;
-  (e: 'createProperty'): void;
-  (e: 'assignCleaner', data: { bookingId: string, cleanerId?: string }): void;
-  (e: 'generateReports'): void;
-  (e: 'manageSystem'): void;
-  (e: 'emergencyResponse'): void;
-}
-
-const emit = defineEmits<Emits>();
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean];
+  navigateToBooking: [bookingId: string];
+  navigateToDate: [date: Date];
+  filterByProperty: [propertyId: string | null];
+  createBooking: [];
+  createProperty: [];
+  assignCleaner: [data: { bookingId: string; cleanerId?: string }];
+  generateReports: [];
+  manageSystem: [];
+  emergencyResponse: [];
+}>();
 
 // Composables
 const router = useRouter();

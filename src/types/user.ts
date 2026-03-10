@@ -6,7 +6,7 @@
 /**
  * Valid user roles in the system
  */
-export type UserRole = 'owner' | 'admin' | 'cleaner' | 'guest';
+export type UserRole = 'owner' | 'admin' | 'cleaner';
 
 /**
  * User settings interface (nested structure)
@@ -26,39 +26,17 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: UserRole; // Database column is 'role'
-  company_name?: string; // for property owners
-  
-  // Contact and verification fields
-  address?: string;
-  city?: string;
-  state?: string;
-  zip_code?: string;
-  phone?: string;
-  email_verified?: boolean;
-  
-  // User preferences
-  date_format?: string;
-  
-  // Flattened settings (primary - matches database schema)
+  role: UserRole;
+  company_name?: string;
   notifications_enabled: boolean;
   timezone: string;
   theme: 'light' | 'dark' | 'system';
   language: string;
-  
-  // Nested settings (for backward compatibility)
-  settings?: UserSettings;
-  
-  // Admin-specific fields
-  access_level?: string;
-  
-  // Cleaner-specific fields
+  access_level?: 'full' | 'limited';
   skills?: string[];
   max_daily_bookings?: number;
-  location?: { lat: number; lng: number; };
   location_lat?: number;
   location_lng?: number;
-  
   created_at?: string;
   updated_at?: string;
   last_sign_in_at?: string;
@@ -110,7 +88,6 @@ export interface Cleaner extends User {
   theme: 'light' | 'dark' | 'system';
   language: string;
   settings?: UserSettings;
-  City?: string;// For useCleanerManagement compatibility
 }
 
 /**

@@ -57,16 +57,12 @@ export function useAuth() {
       role: 'cleaner' as UserRole,
       skills: ['deep clean', 'carpet cleaning', 'window washing'],
       max_daily_bookings: 3,
-      location: {
-        lat: 40.7128,
-        lng: -74.0060
-      },
-      settings: {
-        notifications: true,
-        timezone: 'America/New_York',
-        theme: 'light',
-        language: 'en'
-      }
+      location_lat: 40.7128,
+      location_lng: -74.0060,
+      notifications_enabled: true,
+      timezone: 'America/New_York',
+      theme: 'light',
+      language: 'en',
     } as Cleaner
   ];
 
@@ -259,14 +255,7 @@ export function useAuth() {
       // Update user in store with new settings
       const updatedUser = {
         ...userStore.user,
-        settings: {
-          notifications: true,
-          timezone: 'America/New_York',
-          theme: 'light' as const,
-          language: 'en',
-          ...userStore.user.settings,
-          ...settings
-        },
+        ...settings,
         updated_at: new Date().toISOString()
       };
       

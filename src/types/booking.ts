@@ -31,13 +31,9 @@ export interface Booking {
   booking_type: BookingType;
   status: BookingStatus;
   guest_count?: number;
-  notes?: string; // General notes and instructions for the booking
-  special_instructions?: string; // Legacy field for backward compatibility
-  priority?: 'low' | 'normal' | 'high' | 'urgent';
+  notes?: string;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
   assigned_cleaner_id?: string;
-  upcharge_reason?: string;
-  upcharge_amount?: number;
-  cleaning_duration?: number; // minutes
   created_at?: string;
   updated_at?: string;
   // Add index signature to allow conversion to Record<string, unknown>

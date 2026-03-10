@@ -114,7 +114,6 @@ const { valid, errors, warnings } = validateTurnBooking(bookingData, property)
 ```
 
 ### Cleaning Tasks
-- Operational work modeled via `cleaning_tasks` table and `src/types/cleaningTask.ts`
 - `getCleaningWindow` / `canScheduleCleaning` in businessLogic.ts are deprecated
 
 ### Time Validation

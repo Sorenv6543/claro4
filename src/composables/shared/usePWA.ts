@@ -2,19 +2,9 @@ import { ref, computed, onMounted } from 'vue'
 import { usePushNotifications } from './usePushNotifications'
 import { useBackgroundSync } from './useBackgroundSync'
 
-// PWA Install Event Interface
-interface BeforeInstallPromptEvent extends Event {
-  readonly platforms: string[]
-  readonly userChoice: Promise<{
-    outcome: 'accepted' | 'dismissed'
-    platform: string
-  }>
-  prompt(): Promise<void>
-}
 
 export const usePWA = () => {
   // PWA Installation
-  const _deferredPrompt = ref<BeforeInstallPromptEvent | null>(null)
   const isPWAInstallable = ref(false)
   const isPWAInstalled = ref(false)
   
@@ -24,7 +14,6 @@ export const usePWA = () => {
   // Service Worker - Mock in development
   const needRefresh = ref(false)
   const offlineReady = ref(false)
-  const _updateServiceWorker = async () => Promise.resolve()
 
   // Check if running as PWA
   const isPWA = computed(() => {

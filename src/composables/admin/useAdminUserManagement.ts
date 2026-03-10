@@ -63,7 +63,8 @@ async function createUser(userData: Partial<User> & { password: string }): Promi
         access_level: userData.access_level || null,
         skills: userData.skills || null,
         max_daily_bookings: userData.max_daily_bookings || null,
-        location: userData.location || null,
+        location_lat: userData.location_lat || null,
+        location_lng: userData.location_lng || null,
         timezone: userData.timezone || null,
         language: userData.language || null,
         notifications_enabled: userData.notifications_enabled ?? true

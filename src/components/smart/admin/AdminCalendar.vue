@@ -142,7 +142,6 @@ const {
   allProperties,
   
   // Functions
-  handleAdminEventClick,
   setCalendarView,
   goToDate
 } = useAdminCalendarState();

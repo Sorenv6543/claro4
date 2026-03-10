@@ -202,8 +202,11 @@ export function useAdminBookings() {
         owner_id: (bookingData.owner_id as string) || '',
         checkout_date: (bookingData.checkout_date as string) || new Date().toISOString(),
         checkin_date: (bookingData.checkin_date as string) || new Date().toISOString(),
+        checkin_time: (bookingData.checkin_time as string) || '15:00:00',
+        checkout_time: (bookingData.checkout_time as string) || '11:00:00',
         status: (bookingData.status as BookingStatus) || 'pending',
         booking_type: (bookingData.booking_type as BookingType) || 'standard',
+        priority: (bookingData.priority as Booking['priority']) || 'normal',
         assigned_cleaner_id: (bookingData.assigned_cleaner_id as string | undefined) ?? undefined,
         notes: (bookingData.notes as string) || '',
         created_at: new Date().toISOString(),
@@ -234,8 +237,11 @@ export function useAdminBookings() {
         owner_id: (bookingData.owner_id as string) || '',
         checkout_date: (bookingData.checkout_date as string) || new Date().toISOString(),
         checkin_date: (bookingData.checkin_date as string) || new Date().toISOString(),
+        checkin_time: (bookingData.checkin_time as string) || '15:00:00',
+        checkout_time: (bookingData.checkout_time as string) || '11:00:00',
         status: (bookingData.status as BookingStatus) || 'pending',
         booking_type: (bookingData.booking_type as BookingType) || 'standard',
+        priority: (bookingData.priority as Booking['priority']) || 'normal',
         assigned_cleaner_id: (bookingData.assigned_cleaner_id as string | undefined) ?? undefined,
         notes: (bookingData.notes as string) || '',
         created_at: new Date().toISOString(),
@@ -288,17 +294,6 @@ export function useAdminBookings() {
       loading.value = false;
     }
   };
-
-  // Role-specific performance metrics (prefixed with _ to indicate intentionally unused)
-  const _getAdminPerformanceMetrics = computed(() => {
-    return {
-      totalBookingsProcessed: allBookings.value.length,
-      totalPropertiesManaged: allProperties.value.length,
-      systemLoad: allBookings.value.length > 100 ? 'high' : 
-                 allBookings.value.length > 50 ? 'medium' : 'low',
-      dataProcessingEfficiency: allBookings.value.length > 0 ? 'optimal' : 'idle'
-    };
-  });
 
   // Permission functions expected by tests
   function canManageAnyBooking(): boolean {

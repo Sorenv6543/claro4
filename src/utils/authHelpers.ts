@@ -233,25 +233,11 @@ export function createUserWithSettings(userData: Partial<User> & {
     name: userData.name || '',
     role: userData.role || 'owner',
     
-    // Flattened settings (primary)
     notifications_enabled: userData.settings?.notifications ?? userData.notifications_enabled ?? true,
     timezone: userData.settings?.timezone ?? userData.timezone ?? 'UTC',
     theme: userData.settings?.theme ?? userData.theme ?? 'light',
     language: userData.settings?.language ?? userData.language ?? 'en',
-    
-    // Nested settings (for backward compatibility)
-    settings: userData.settings ? {
-      notifications: userData.settings.notifications,
-      timezone: userData.settings.timezone,
-      theme: userData.settings.theme,
-      language: userData.settings.language,
-    } : {
-      notifications: userData.notifications_enabled ?? true,
-      timezone: userData.timezone ?? 'UTC',
-      theme: userData.theme ?? 'light',
-      language: userData.language ?? 'en',
-    },
-    
+
     // Optional fields
     company_name: userData.company_name,
     access_level: userData.access_level,

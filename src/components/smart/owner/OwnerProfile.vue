@@ -65,15 +65,6 @@
                   </div>
                 </v-col>
                 <v-col
-                  cols="12"
-                  sm="6"
-                >
-                  <div class="profile-field">
-                    <strong>Phone:</strong>
-                    <div>{{ user.phone || 'Not specified' }}</div>
-                  </div>
-                </v-col>
-                <v-col
                   v-if="user.company_name"
                   cols="12"
                   sm="6"
@@ -137,69 +128,6 @@
                   <div class="profile-field">
                     <strong>Language:</strong>
                     <div>{{ user.language || 'English' }}</div>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="6"
-                >
-                  <div class="profile-field">
-                    <strong>Date Format:</strong>
-                    <div>{{ user.date_format || 'MM/DD/YYYY' }}</div>
-                  </div>
-                </v-col>
-              </v-row>
-            </v-card-text>
-          </v-card>
-
-          <!-- Address Information Card -->
-          <v-card
-            v-if="user.address || user.city || user.state || user.zip_code"
-            class="mb-4"
-          >
-            <v-card-title>
-              <v-icon
-                color="success"
-                class="mr-2"
-              >
-                mdi-map-marker
-              </v-icon>
-              Address Information
-            </v-card-title>
-
-            <v-card-text>
-              <v-row>
-                <v-col cols="12">
-                  <div class="profile-field">
-                    <strong>Address:</strong>
-                    <div>{{ user.address || 'Not specified' }}</div>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                >
-                  <div class="profile-field">
-                    <strong>City:</strong>
-                    <div>{{ user.city || 'Not specified' }}</div>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                >
-                  <div class="profile-field">
-                    <strong>State:</strong>
-                    <div>{{ user.state || 'Not specified' }}</div>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="4"
-                >
-                  <div class="profile-field">
-                    <strong>ZIP Code:</strong>
-                    <div>{{ user.zip_code || 'Not specified' }}</div>
                   </div>
                 </v-col>
               </v-row>
@@ -280,7 +208,7 @@
               </div>
               <div class="stat-item">
                 <div class="stat-value">
-                  {{ user.email_verified ? 'Verified' : 'Not Verified' }}
+                  Verified
                 </div>
                 <div class="stat-label">
                   Email Status

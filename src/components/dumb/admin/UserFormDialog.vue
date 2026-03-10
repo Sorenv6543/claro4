@@ -519,7 +519,7 @@ function loadUserData() {
       accessLevel: props.user.access_level || 'full',
       skills: props.user.skills || [],
       max_daily_bookings: props.user.max_daily_bookings || 5,
-      location: props.user.location ? `${props.user.location.lat},${props.user.location.lng}` : '',
+      location: props.user.location_lat && props.user.location_lng ? `${props.user.location_lat},${props.user.location_lng}` : '',
       timezone: props.user.timezone || 'America/New_York',
       language: props.user.language || 'en',
       notifications_enabled: props.user.notifications_enabled ?? true
@@ -543,7 +543,7 @@ async function handleSubmit() {
         name: formData.value.name,
         role: formData.value.role,
         company_name: formData.value.company_name,
-        access_level: formData.value.accessLevel,
+        access_level: formData.value.accessLevel as 'full' | 'limited',
         skills: formData.value.skills,
         max_daily_bookings: formData.value.max_daily_bookings,
         timezone: formData.value.timezone,
@@ -564,11 +564,13 @@ async function handleSubmit() {
         company_name: formData.value.company_name
       }
       
-      const success = await authStore.register(
-        formData.value.email,
-        formData.value.password,
-        userData
-      )
+      const success = await authStore.register({
+        email: formData.value.email,
+        password: formData.value.password,
+        name: userData.name,
+        role: userData.role,
+        company_name: userData.company_name
+      })
       
       if (success) {
         emit('saved')

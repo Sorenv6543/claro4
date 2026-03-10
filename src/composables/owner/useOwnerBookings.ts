@@ -448,8 +448,11 @@ function useOwnerBookingsPinia() {
         owner_id: currentUserId.value,
         checkout_date: formData.checkout_date || '',
         checkin_date: formData.checkin_date || '',
+        checkin_time: formData.checkin_time || '15:00:00',
+        checkout_time: formData.checkout_time || '11:00:00',
         booking_type: formData.booking_type || 'standard',
         status: formData.status || 'pending',
+        priority: formData.priority || 'normal',
       };
       // Optionally add to store if needed for test
       try {

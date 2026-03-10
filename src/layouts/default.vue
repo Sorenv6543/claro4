@@ -59,21 +59,17 @@
     </v-app-bar> -->
   
     <!-- Main Content Area - Full Height for Mobile Calendar -->
-    <v-main class="main-content-area">
+    <!-- <v-main class="main-content-area">
       <div class="viewport-container">
         <router-view />
       </div>
-    </v-main>
+    </v-main> -->
   
     <!-- Global Notification Area -->
-    <div id="notification-area">
-      <!-- Global notifications will be mounted here -->
-    </div>
+    <!-- <div id="notification-area" /> -->
   
     <!-- Global Modal Area -->
-    <div id="modal-area">
-      <!-- Global modals will be mounted here -->
-    </div>
+    <!-- <div id="modal-area" /> -->
   </v-app>
 </template>
   

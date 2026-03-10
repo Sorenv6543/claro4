@@ -110,8 +110,8 @@ export const canScheduleCleaning = (booking: Booking, property: Property): {
  * Validate a turn booking for potential issues
  */
 export const validateTurnBooking = (
-  booking: Partial<Booking>, 
-  property: Property
+  booking: Partial<Booking>,
+  _property: Property
 ): { valid: boolean; errors: string[]; warnings: string[] } => {
   const errors: string[] = [];
   const warnings: string[] = [];
