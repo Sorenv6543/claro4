@@ -273,6 +273,7 @@ export function useAdminBookings() {
     } catch (err: unknown) {
       error.value = `Failed to update booking: ${err instanceof Error ? err.message : String(err)}`;
       trackCachePerformance('admin-update-booking', false); // Changed to boolean
+      throw err;
     } finally {
       loading.value = false;
     }
@@ -687,7 +688,7 @@ export function useAdminBookings() {
     fetchAllBookings,
     assignCleaner,
     assignCleanerToBooking: (bookingId: string, cleanerId: string) => {
-      // Synchronous version for test compatibility
+      // Synchronous store update — does not persist to Supabase. Use assignCleaner() for the async Supabase version.
       try {
         const booking = bookingStore.bookings.get(bookingId);
         if (booking) {
@@ -695,7 +696,9 @@ export function useAdminBookings() {
           return true;
         }
         return false;
-      } catch {
+      } catch (err) {
+        error.value = `Failed to assign cleaner: ${err instanceof Error ? err.message : String(err)}`;
+        console.error('[useAdminBookings] assignCleanerToBooking error:', err);
         return false;
       }
     },
