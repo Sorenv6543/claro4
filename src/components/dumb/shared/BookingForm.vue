@@ -54,18 +54,13 @@
                 cols="12"
                 md="6"
               >
-                <v-text-field
+                <DatePickerField
                   v-model="form.checkin_date"
                   label="Checkin Date"
-                  type="date"
                   :rules="dateRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('checkin_date')"
                   hint="When guests arrive"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-plus"
+                  :error-messages="errors.get('checkin_date')"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
@@ -74,18 +69,13 @@
                 cols="12"
                 md="6"
               >
-                <v-text-field
+                <DatePickerField
                   v-model="form.checkout_date"
                   label="Checkout Date"
-                  type="date"
                   :rules="dateRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('checkout_date')"
                   hint="When guests depart"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-remove"
+                  :error-messages="errors.get('checkout_date')"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
@@ -95,19 +85,13 @@
                 cols="12"
                 md="6"
               >
-                <v-text-field
+                <TimePickerField
                   v-model="form.checkin_time"
                   label="Checkin Time"
-                  type="time"
                   :rules="timeRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('checkin_time')"
                   hint="When guests arrive"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-plus"
-                  @update:model-value="updateBookingType"
+                  :error-messages="errors.get('checkin_time')"
                 />
               </v-col>
 
@@ -115,19 +99,13 @@
                 cols="12"
                 md="6"
               >
-                <v-text-field
+                <TimePickerField
                   v-model="form.checkout_time"
                   label="Checkout Time"
-                  type="time"
                   :rules="timeRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('checkout_time')"
                   hint="When guests depart"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-remove"
-                  @update:model-value="updateBookingType"
+                  :error-messages="errors.get('checkout_time')"
                 />
               </v-col>
             </v-row>
