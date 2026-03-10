@@ -281,10 +281,9 @@ export function createAdmin(adminData: Partial<Admin> & {
   } as Admin;
 }
 
-/**
- * Creates a Cleaner object with both flattened and nested settings
- * Ensures compatibility with Cleaner interface requirements
- */
+// Creates a Cleaner object from partial data, populating flat settings fields.
+// Values from the optional `settings` parameter are written to flat fields only
+// (notifications_enabled, timezone, theme, language).
 export function createCleaner(cleanerData: Partial<Cleaner> & {
   settings?: UserSettings;
 }): Cleaner {
