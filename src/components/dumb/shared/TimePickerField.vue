@@ -29,7 +29,7 @@
 import { ref, computed } from 'vue'
 
 const props = withDefaults(defineProps<{
-  modelValue: string
+  modelValue: string | undefined
   label: string
   hint?: string
   rules?: ((v: string) => boolean | string)[]
@@ -59,7 +59,7 @@ const displayValue = computed(() => {
 
 // Rules validate the stored modelValue (HH:mm), not the display string.
 const wrappedRules = computed(() =>
-  (props.rules ?? []).map(rule => () => rule(props.modelValue))
+  (props.rules ?? []).map(rule => () => rule(props.modelValue ?? ''))
 )
 
 function onUpdate(value: string) {

@@ -30,7 +30,7 @@
 import { ref, computed } from 'vue'
 
 const props = withDefaults(defineProps<{
-  modelValue: string | null
+  modelValue: string | null | undefined
   label: string
   min?: string
   max?: string

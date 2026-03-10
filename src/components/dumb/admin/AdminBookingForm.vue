@@ -451,6 +451,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
+import DatePickerField from '@/components/dumb/shared/DatePickerField.vue'
+import TimePickerField from '@/components/dumb/shared/TimePickerField.vue'
 import type { Property } from '@/types/property'
 import type { Booking, BookingFormData } from '@/types/booking'
 import type { Cleaner } from '@/types/user'

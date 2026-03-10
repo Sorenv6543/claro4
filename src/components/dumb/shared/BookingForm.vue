@@ -254,6 +254,8 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue';
+import DatePickerField from '@/components/dumb/shared/DatePickerField.vue'
+import TimePickerField from '@/components/dumb/shared/TimePickerField.vue'
 import { usePropertyStore } from '@/stores/property';
 import type { Booking, BookingFormData, BookingStatus, BookingType, Property } from '@/types';
 import type { VForm } from 'vuetify/components';
