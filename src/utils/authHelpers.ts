@@ -221,8 +221,9 @@ export function getRoleSpecificSuccessMessage(action: 'login' | 'logout' | 'regi
  */
 
 /**
- * Creates a User object with both flattened and nested settings
- * Ensures compatibility with both old and new patterns
+ * Creates a User object from partial data, populating flat settings fields.
+ * The optional `settings` parameter is accepted for convenience but values
+ * are always written to the flat fields only (notifications_enabled, timezone, theme, language).
  */
 export function createUserWithSettings(userData: Partial<User> & {
   settings?: UserSettings;
@@ -298,14 +299,6 @@ export function createCleaner(cleanerData: Partial<Cleaner> & {
     timezone: cleanerData.settings?.timezone ?? cleanerData.timezone ?? 'UTC',
     theme: cleanerData.settings?.theme ?? cleanerData.theme ?? 'light',
     language: cleanerData.settings?.language ?? cleanerData.language ?? 'en',
-    
-    // Nested settings (for compatibility)
-    settings: {
-      notifications: cleanerData.settings?.notifications ?? cleanerData.notifications_enabled ?? true,
-      timezone: cleanerData.settings?.timezone ?? cleanerData.timezone ?? 'UTC',
-      theme: cleanerData.settings?.theme ?? cleanerData.theme ?? 'light',
-      language: cleanerData.settings?.language ?? cleanerData.language ?? 'en'
-    },
     
     // Cleaner-specific properties
     skills: cleanerData.skills ?? [],
