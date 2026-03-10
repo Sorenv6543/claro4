@@ -20,7 +20,7 @@ export interface UserSettings {
 
 /**
  * Base User interface
- * Core data model for all users - supports both flattened and nested settings
+ * Core data model for all users. Settings are stored as flat fields only.
  */
 export interface User {
   id: string;
@@ -49,12 +49,6 @@ export interface User {
 export interface PropertyOwner extends User {
   role: 'owner';
   company_name?: string;
-  // Ensure settings compatibility
-  notifications_enabled: boolean;
-  timezone: string;
-  theme: 'light' | 'dark' | 'system';
-  language: string;
-  settings?: UserSettings;
 }
 
 /**
@@ -64,12 +58,6 @@ export interface PropertyOwner extends User {
 export interface Admin extends User {
   role: 'admin';
   access_level: 'full' | 'limited';
-  // Ensure settings compatibility
-  notifications_enabled: boolean;
-  timezone: string;
-  theme: 'light' | 'dark' | 'system';
-  language: string;
-  settings?: UserSettings;
 }
 
 /**
@@ -80,14 +68,6 @@ export interface Cleaner extends User {
   role: 'cleaner';
   skills: string[];
   max_daily_bookings: number;
-  location_lat?: number;
-  location_lng?: number;
-  // Ensure settings compatibility and location support
-  notifications_enabled: boolean;
-  timezone: string;
-  theme: 'light' | 'dark' | 'system';
-  language: string;
-  settings?: UserSettings;
 }
 
 /**
