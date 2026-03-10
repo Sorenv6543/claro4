@@ -52,40 +52,70 @@
                 cols="12"
                 sm="6"
               >
-                <v-text-field
-                  v-model="form.checkin_date"
-                  label="Checkin Date"
-                  type="date"
-                  :rules="dateRules"
-                  required
-                  variant="outlined"
-                  :disabled="loading"
-                  :error-messages="errors.get('checkin_date')"
-                  hint="When new guests arrive"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-import"
-                  @update:model-value="updateBookingType"
-                />
+                <v-menu
+                  v-model="checkinDateMenu"
+                  :close-on-content-click="false"
+                >
+                  <template #activator="{ props: menuProps }">
+                    <v-text-field
+                      v-bind="menuProps"
+                      :model-value="form.checkin_date"
+                      label="Checkin Date"
+                      :rules="dateRules"
+                      required
+                      variant="outlined"
+                      :disabled="loading"
+                      :error-messages="errors.get('checkin_date')"
+                      hint="When new guests arrive"
+                      persistent-hint
+                      prepend-inner-icon="mdi-calendar-import"
+                      readonly
+                    />
+                  </template>
+                  <v-date-picker
+                    :model-value="strToDate(form.checkin_date)"
+                    color="primary"
+                    elevation="4"
+                    hide-title
+                    :min="todayIso"
+                    @update:model-value="(d) => { form.checkin_date = dateToStr(d); updateBookingType(); checkinDateMenu = false }"
+                  />
+                </v-menu>
               </v-col>
 
               <v-col
                 cols="12"
                 sm="6"
               >
-                <v-text-field
-                  v-model="form.checkout_date"
-                  label="Checkout Date"
-                  type="date"
-                  :rules="dateRules"
-                  required
-                  variant="outlined"
-                  :disabled="loading"
-                  :error-messages="errors.get('checkout_date')"
-                  hint="When guests leave"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-export"
-                  @update:model-value="updateBookingType"
-                />
+                <v-menu
+                  v-model="checkoutDateMenu"
+                  :close-on-content-click="false"
+                >
+                  <template #activator="{ props: menuProps }">
+                    <v-text-field
+                      v-bind="menuProps"
+                      :model-value="form.checkout_date"
+                      label="Checkout Date"
+                      :rules="dateRules"
+                      required
+                      variant="outlined"
+                      :disabled="loading"
+                      :error-messages="errors.get('checkout_date')"
+                      hint="When guests leave"
+                      persistent-hint
+                      prepend-inner-icon="mdi-calendar-export"
+                      readonly
+                    />
+                  </template>
+                  <v-date-picker
+                    :model-value="strToDate(form.checkout_date)"
+                    color="primary"
+                    elevation="4"
+                    hide-title
+                    :min="todayIso"
+                    @update:model-value="(d) => { form.checkout_date = dateToStr(d); updateBookingType(); checkoutDateMenu = false }"
+                  />
+                </v-menu>
               </v-col>
             </v-row>
             
@@ -221,6 +251,27 @@ const emit = defineEmits<Emits>()
 const formRef = ref()
 const formValid = ref(false)
 const autoDetectType = ref(true)
+
+// Date picker state
+const checkinDateMenu = ref(false)
+const checkoutDateMenu = ref(false)
+const todayIso = new Date().toISOString().slice(0, 10)
+
+function strToDate(str: unknown): Date | undefined {
+  const s = typeof str === 'string' ? str : ''
+  if (!s) return undefined
+  const [y, m, d] = s.split('-').map(Number)
+  return new Date(y, m - 1, d)
+}
+
+function dateToStr(date: unknown): string {
+  const d = date as Date
+  if (!(d instanceof Date) || isNaN(d.getTime())) return ''
+  const y = d.getFullYear()
+  const mo = String(d.getMonth() + 1).padStart(2, '0')
+  const dy = String(d.getDate()).padStart(2, '0')
+  return `${y}-${mo}-${dy}`
+}
 
 // Form data
 const form = ref<BookingFormData>({
