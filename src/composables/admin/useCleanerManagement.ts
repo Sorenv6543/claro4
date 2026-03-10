@@ -26,10 +26,8 @@ export interface CleanerFormData {
   email: string;
   skills: string[];
   max_daily_bookings: number;
-  location?: {
-    lat: number;
-    lng: number;
-  };
+  location_lat?: number;
+  location_lng?: number;
 }
 
 export interface CleanerAvailability {
@@ -91,8 +89,7 @@ export function useCleanerManagement() {
    * Get ALL cleaners in the system (admin-only access)
    */
   const allCleaners = computed((): Cleaner[] => {
-    // In a real app, this would come from a dedicated cleaners collection
-    // For now, we'll simulate cleaner data based on user role
+    // Mock data — replace with: supabase.from('user_profiles').select('*').eq('role', 'cleaner')
     const mockCleaners: Cleaner[] = [
       {
         id: 'cleaner-001',
