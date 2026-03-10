@@ -550,7 +550,7 @@ const priorityOptions = [
 
 const showDateError = computed(() => {
   if (!form.value.checkout_date || !form.value.checkin_date) return false
-  return new Date(form.value.checkin_date as string) < new Date(form.value.checkout_date as string)
+  return new Date(form.value.checkout_date as string) < new Date(form.value.checkin_date as string)
 })
 
 const showBusinessImpactAlert = computed(() => {
@@ -735,15 +735,12 @@ const handleSubmit = async () => {
     return
   }
   
-  // Clean form data - convert empty strings to undefined for UUID fields and fix date order
+  // Clean form data - convert empty strings to undefined for UUID fields
   const cleanFormData: BookingFormData = {
     ...form.value,
     assigned_cleaner_id: form.value.assigned_cleaner_id || undefined,
     owner_id: form.value.owner_id || '',
     property_id: form.value.property_id || '',
-    // Swap dates back to database order: checkout_date (guests leave) should be earlier than checkin_date (new guests arrive)
-    checkout_date: form.value.checkin_date, // Earlier date (guests check out)
-    checkin_date: form.value.checkout_date  // Later date (new guests check in)
   }
 
   console.log('🚀 [AdminBookingForm] Submitting cleaned form data:', cleanFormData)
@@ -792,9 +789,8 @@ watch(() => props.booking, (newBooking) => {
     form.value = {
       owner_id: newBooking.owner_id,
       property_id: newBooking.property_id,
-      // Swap dates to match logical flow: checkin first (earlier), checkout later (later)
-      checkin_date: formatDateForInput(newBooking.checkout_date), // Earlier date
-      checkout_date: formatDateForInput(newBooking.checkin_date), // Later date
+      checkin_date: formatDateForInput(newBooking.checkin_date),
+      checkout_date: formatDateForInput(newBooking.checkout_date),
       checkin_time: newBooking.checkin_time || '15:00',
       checkout_time: newBooking.checkout_time || '11:00',
       booking_type: newBooking.booking_type,
