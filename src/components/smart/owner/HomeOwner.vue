@@ -258,7 +258,7 @@ import { useCalendarState } from '@/composables/shared/useCalendarState';
 import { useOwnerBookings } from '@/composables/owner/useOwnerBookings';
 import { useOwnerProperties } from '@/composables/owner/useOwnerProperties';
 // Types
-import type { Booking, Property, BookingFormData, PropertyFormData,  } from '@/types';
+import type { Booking, Property, PropertyRecord, BookingFormData, PropertyFormData,  } from '@/types';
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core';
 
 // Import event logger for component communication
@@ -534,7 +534,7 @@ const handleEditProperty = (property: Property): void => {
     property,
     'receive'
   );
-  uiStore.openModal('propertyModal', 'edit', property as Record<string, unknown>);
+  uiStore.openModal('propertyModal', 'edit', property as PropertyRecord);
 };
 
 const handleViewProperty = (property: Property): void => {
@@ -545,7 +545,7 @@ const handleViewProperty = (property: Property): void => {
     property,
     'receive'
   );
-  uiStore.openModal('propertyModal', 'view', property as Record<string, unknown>);
+  uiStore.openModal('propertyModal', 'view', property as PropertyRecord);
 };
 
 const handleCreateTurn = (): void => {
