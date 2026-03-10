@@ -88,5 +88,9 @@ export function isAdmin(user: User): user is Admin {
  * Type guard for Cleaner
  */
 export function isCleaner(user: User): user is Cleaner {
-  return user.role === 'cleaner';
+  return (
+    user.role === 'cleaner' &&
+    Array.isArray(user.skills) &&
+    typeof user.max_daily_bookings === 'number'
+  );
 }
