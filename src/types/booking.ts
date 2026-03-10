@@ -84,6 +84,13 @@ export function isBooking(obj: unknown): obj is Booking {
     typeof b.checkout_date === 'string' &&
     typeof b.checkin_date === 'string' &&
     typeof b.priority === 'string' &&
-    ['low', 'normal', 'high', 'urgent'].includes(b.priority as string)
+    ['low', 'normal', 'high', 'urgent'].includes(b.priority as string) &&
+    typeof b.owner_id === 'string' &&
+    typeof b.checkin_time === 'string' &&
+    typeof b.checkout_time === 'string' &&
+    typeof b.booking_type === 'string' &&
+    ['standard', 'turn'].includes(b.booking_type as string) &&
+    typeof b.status === 'string' &&
+    ['pending', 'scheduled', 'in_progress', 'completed', 'cancelled'].includes(b.status as string)
   );
 }
