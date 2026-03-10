@@ -271,8 +271,7 @@ export function useAdminBookings() {
       
       success.value = 'Booking updated successfully';
     } catch (err: unknown) {
-      const errorObj = err as Error;
-      error.value = `Failed to update booking: ${errorObj.message}`;
+      error.value = `Failed to update booking: ${err instanceof Error ? err.message : String(err)}`;
       trackCachePerformance('admin-update-booking', false); // Changed to boolean
     } finally {
       loading.value = false;
@@ -288,8 +287,7 @@ export function useAdminBookings() {
       
       success.value = 'Booking deleted successfully';
     } catch (err: unknown) {
-      const errorObj = err as Error;
-      error.value = `Failed to delete booking: ${errorObj.message}`;
+      error.value = `Failed to delete booking: ${err instanceof Error ? err.message : String(err)}`;
     } finally {
       loading.value = false;
     }
