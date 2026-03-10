@@ -32,6 +32,7 @@ import type { Booking, Property } from '@/types';
 import { getMobileCalendarOptions, handleViewportResize } from '@/utils/mobileViewport';
 import OwnerDayViewBottomSheet from '@/components/dumb/owner/OwnerDayViewBottomSheet.vue';
 import { useAuthStore } from '@/stores/auth';
+import { bookingToCalendarEvent } from '@/utils/calendarHelpers';
 
 // Import event logger for component communication
 import eventLogger from '@/composables/shared/useComponentEventLogger';
@@ -70,22 +71,19 @@ const selectedDayBookings = ref<Booking[]>([]);
 
 // Convert bookings Map to FullCalendar events
 const calendarEvents = computed(() => {
-  const bookingsArray = Array.from(props.bookings.values());
-   
-  const events = bookingsArray.map(booking => {
+  return Array.from(props.bookings.values()).map(booking => {
     const property = props.properties.get(booking.property_id);
     const isTurn = booking.booking_type === 'turn';
     const isUrgent = booking.priority === 'urgent';
-    
+
     const eventColor = getEventColor(booking);
     const borderColor = getEventBorderColor(booking);
     const textColor = getEventTextColor(booking);
-    
+
+    const base = bookingToCalendarEvent(booking, property);
+
     return {
-      id: booking.id,
-      title: `${property?.name || 'Unknown Property'} - ${isTurn ? 'TURN' : 'Standard'}`,
-      start: booking.checkout_date,
-      end: addOneDay(booking.checkin_date), // Add one day to make end date inclusive
+      ...base,
       backgroundColor: eventColor,
       borderColor: borderColor,
       textColor: textColor,
@@ -94,13 +92,7 @@ const calendarEvents = computed(() => {
       durationEditable: true,
       overlap: true,
       extendedProps: {
-        booking,
-        property,
-        bookingType: booking.booking_type,
-        status: booking.status,
-        priority: booking.priority,
-        guestCount: booking.guest_count,
-        notes: booking.notes,
+        ...base.extendedProps,
         eventColor,
         borderColor,
         textColor
@@ -116,16 +108,7 @@ const calendarEvents = computed(() => {
       ].filter(Boolean)
     };
   });
-   
-  return events;
 });
-
-// Helper function to add one day to a date string
-const addOneDay = (dateString: string): string => {
-  const date = new Date(dateString);
-  date.setDate(date.getDate() + 1);
-  return date.toISOString().split('T')[0];
-};
 
 // Enhanced dynamic color system with more variety
 const getEventColor = (booking: Booking): string => {
@@ -518,8 +501,8 @@ const handleCompleteBooking = (booking: Booking): void => {
   
   emit('updateBooking', {
     id: booking.id,
-    start: booking.checkout_date,
-    end: booking.checkin_date
+    start: booking.checkin_date,
+    end: booking.checkout_date
   });
   
   console.log('✅ [FullCalendar] Complete booking from day view:', booking.id);
@@ -685,8 +668,8 @@ const handleManualMoreLinkClick = (event: Event): void => {
     const checkinDate = new Date(booking.checkin_date);
     
     // Check if the clicked date falls within the booking period
-    const bookingStartsOnDate = checkoutDate.toDateString() === clickedDateStr;
-    const bookingSpansDate = clickedDate >= checkoutDate && clickedDate < checkinDate;
+    const bookingStartsOnDate = checkinDate.toDateString() === clickedDateStr;
+    const bookingSpansDate = clickedDate >= checkinDate && clickedDate <= checkoutDate;
     
     const dateMatches = bookingStartsOnDate || bookingSpansDate;
     const ownerMatches = !currentUserId || booking.owner_id === currentUserId;
