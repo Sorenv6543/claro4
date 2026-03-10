@@ -228,8 +228,11 @@ const form = ref<BookingFormData>({
   owner_id: '',
   checkout_date: '',
   checkin_date: '',
+  checkin_time: '15:00',
+  checkout_time: '11:00',
   booking_type: 'standard',
   status: 'pending',
+  priority: 'normal',
   guest_count: undefined,
   notes: ''
 })
@@ -311,8 +314,11 @@ const resetForm = () => {
     owner_id: '',
     checkout_date: '',
     checkin_date: '',
+    checkin_time: '15:00',
+    checkout_time: '11:00',
     booking_type: 'standard',
     status: 'pending',
+    priority: 'normal',
     guest_count: undefined,
     notes: ''
   }
@@ -328,8 +334,11 @@ const populateForm = (booking: Booking) => {
     owner_id: booking.owner_id,
     checkout_date: booking.checkout_date,
     checkin_date: booking.checkin_date,
+    checkin_time: booking.checkin_time || '15:00',
+    checkout_time: booking.checkout_time || '11:00',
     booking_type: booking.booking_type,
     status: booking.status,
+    priority: booking.priority || 'normal',
     guest_count: booking.guest_count,
     notes: booking.notes || ''
   }

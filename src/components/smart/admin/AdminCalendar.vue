@@ -124,7 +124,7 @@ import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue';
 import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts';
 import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts';
 import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts';
-import type { Booking } from '@/types/booking.ts';
+import type { Booking, BookingFormData } from '@/types/booking.ts';
 import type{ User, Cleaner } from '@/types/user.ts';
 
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
@@ -406,7 +406,7 @@ const handleCleanerAssignment = async (cleanerId: string): Promise<void> => {
 };
 
 // Admin booking form event handlers
-const handleAdminBookingFormSubmit = async (data: Record<string, unknown>): Promise<void> => {
+const handleAdminBookingFormSubmit = async (data: BookingFormData): Promise<void> => {
   adminBookingFormModal.value.loading = true;
   try {
     if (adminBookingFormModal.value.mode === 'create') {

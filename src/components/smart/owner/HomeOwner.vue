@@ -602,14 +602,14 @@ const handleEventClick = (clickInfo: EventClickArg): void => {
   if (extendedProps && extendedProps.isEdit && extendedProps.booking) {
     // Use the booking data directly from the bottom sheet
     const booking = extendedProps.booking as Booking;
-    uiStore.openModal('eventModal', 'edit', booking);
+    uiStore.openModal('eventModal', 'edit', booking as unknown as Record<string, unknown>);
     return;
   }
-  
+
   // Fallback: Only allow editing owner's bookings
   const booking = ownerBookingsMap.value.get(clickInfo.event.id);
   if (booking) {
-    uiStore.openModal('eventModal', 'edit', booking);
+    uiStore.openModal('eventModal', 'edit', booking as unknown as Record<string, unknown>);
   } else {
     console.warn('Cannot edit booking not owned by current user');
   }
