@@ -241,7 +241,7 @@
         <v-btn
           color="primary"
           variant="text"
-          :disabled="!formValid || loading || showTurnError"
+          :disabled="formValid === false || loading || showTurnError"
           :loading="loading"
           @click="handleSubmit"
         >
@@ -288,7 +288,7 @@ const propertyStore = usePropertyStore();
 
 // FORM REFS
 const formRef = ref<VForm | null>(null);
-const formValid = ref<boolean>(false);
+const formValid = ref<boolean | null>(null);
 const loading = ref<boolean>(false);
 const errors = ref<Map<string, string>>(new Map());
 const autoDetectType = ref<boolean>(true);
@@ -424,8 +424,8 @@ function resetForm(): void {
       property_id: props.booking.property_id,
       checkout_date: formatDateForInput(checkoutDate),
       checkin_date: formatDateForInput(checkinDate),
-      checkin_time: props.booking.checkin_time || '15:00',
-      checkout_time: props.booking.checkout_time || '11:00',
+      checkin_time: (props.booking.checkin_time || '15:00').slice(0, 5),
+      checkout_time: (props.booking.checkout_time || '11:00').slice(0, 5),
       booking_type: props.booking.booking_type,
       guest_count: props.booking.guest_count,
       notes: props.booking.notes,
@@ -617,7 +617,6 @@ onMounted(() => {
 // WATCHERS
 watch(() => props.open, (newValue) => {
   if (newValue) {
-    // Add small delay to ensure props are fully updated
     nextTick(() => {
       resetForm();
     });
