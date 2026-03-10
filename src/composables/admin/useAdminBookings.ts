@@ -207,7 +207,7 @@ export function useAdminBookings() {
         status: (bookingData.status as BookingStatus) || 'pending',
         booking_type: (bookingData.booking_type as BookingType) || 'standard',
         priority: (bookingData.priority as Booking['priority']) || 'normal',
-        assigned_cleaner_id: (bookingData.assigned_cleaner_id as string | undefined) ?? undefined,
+        assigned_cleaner_id: (bookingData.assigned_cleaner_id as string | null) ?? null,
         notes: (bookingData.notes as string) || '',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -242,7 +242,7 @@ export function useAdminBookings() {
         status: (bookingData.status as BookingStatus) || 'pending',
         booking_type: (bookingData.booking_type as BookingType) || 'standard',
         priority: (bookingData.priority as Booking['priority']) || 'normal',
-        assigned_cleaner_id: (bookingData.assigned_cleaner_id as string | undefined) ?? undefined,
+        assigned_cleaner_id: (bookingData.assigned_cleaner_id as string | null) ?? null,
         notes: (bookingData.notes as string) || '',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
@@ -289,6 +289,7 @@ export function useAdminBookings() {
       success.value = 'Booking deleted successfully';
     } catch (err: unknown) {
       error.value = `Failed to delete booking: ${err instanceof Error ? err.message : String(err)}`;
+      throw err;
     } finally {
       loading.value = false;
     }

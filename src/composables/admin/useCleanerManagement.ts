@@ -560,7 +560,7 @@ export function useCleanerManagement() {
       await new Promise(resolve => setTimeout(resolve, 400));
       
       // Update booking in store (simulate the unassignment)
-      const updatedBooking = { ...booking, assigned_cleaner_id: undefined, status: 'pending' as const };
+      const updatedBooking = { ...booking, assigned_cleaner_id: null, status: 'pending' as const };
       bookingStore.bookings.set(bookingId, updatedBooking);
       
       success.value = `Successfully unassigned ${cleanerName} from booking ${bookingId}`;

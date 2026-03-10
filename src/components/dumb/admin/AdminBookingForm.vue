@@ -113,45 +113,68 @@
               </v-col>
             </v-row>
             
-            <!-- Dates and Times -->
+            <!-- Dates -->
             <v-row>
               <v-col
                 cols="12"
                 sm="6"
               >
-                <v-text-field
+                <DatePickerField
                   v-model="form.checkin_date"
                   label="Checkin Date"
-                  type="date"
+                  :min="todayIso"
+                  hint="When new guests arrive"
                   :rules="dateRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
                   :error-messages="errors.get('checkin_date')"
-                  hint="When new guests arrive"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-import"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
-               
+
               <v-col
                 cols="12"
                 sm="6"
               >
-                <v-text-field
+                <DatePickerField
                   v-model="form.checkout_date"
                   label="Checkout Date"
-                  type="date"
+                  :min="todayIso"
+                  hint="When guests depart"
                   :rules="dateRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
                   :error-messages="errors.get('checkout_date')"
-                  hint="When guests depart"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-export"
                   @update:model-value="updateBookingType"
+                />
+              </v-col>
+            </v-row>
+
+            <!-- Times -->
+            <v-row>
+              <v-col
+                cols="12"
+                md="6"
+              >
+                <TimePickerField
+                  v-model="form.checkin_time"
+                  label="Checkin Time"
+                  hint="When new guests arrive"
+                  :rules="timeRules"
+                  :disabled="loading"
+                  :error-messages="errors.get('checkin_time')"
+                />
+              </v-col>
+
+              <v-col
+                cols="12"
+                md="6"
+              >
+                <TimePickerField
+                  v-model="form.checkout_time"
+                  label="Checkout Time"
+                  hint="When guests depart"
+                  :rules="timeRules"
+                  :disabled="loading"
+                  :error-messages="errors.get('checkout_time')"
                 />
               </v-col>
             </v-row>
@@ -428,6 +451,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
+import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
+import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
 import type { Property } from '@/types/property'
 import type { Booking, BookingFormData } from '@/types/booking'
 import type { Cleaner } from '@/types/user'
@@ -464,6 +489,10 @@ const emit = defineEmits<Emits>()
 // Form state
 const formRef = ref()
 const formValid = ref(false)
+
+// Date picker state
+const _now = new Date()
+const todayIso = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, '0')}-${String(_now.getDate()).padStart(2, '0')}`
 
 // Default form data
 const defaultForm: BookingFormData = {
@@ -550,7 +579,7 @@ const priorityOptions = [
 
 const showDateError = computed(() => {
   if (!form.value.checkout_date || !form.value.checkin_date) return false
-  return new Date(form.value.checkin_date as string) < new Date(form.value.checkout_date as string)
+  return new Date(form.value.checkout_date as string) < new Date(form.value.checkin_date as string)
 })
 
 const showBusinessImpactAlert = computed(() => {
@@ -589,60 +618,43 @@ const dateRules = [
   (v: string) => !!v || 'Date is required',
   (v: string) => {
     if (!v) return true
-    
-    // Debug logging to see what's happening
-    console.log('🔍 [AdminBookingForm] Validating date:', v)
-    
+
     // Parse date as local date to avoid timezone issues
     const [year, month, day] = v.split('-').map(Number)
     const selectedDate = new Date(year, month - 1, day) // month is 0-indexed
     const today = new Date()
-    
-    console.log('🔍 [AdminBookingForm] Selected date object:', selectedDate)
-    console.log('🔍 [AdminBookingForm] Today object:', today)
-    
+
     // Set both dates to midnight for fair comparison (date only, no time)
     const selectedDateOnly = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate())
     const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-    
-    console.log('🔍 [AdminBookingForm] Selected date only:', selectedDateOnly)
-    console.log('🔍 [AdminBookingForm] Today only:', todayOnly)
-    console.log('🔍 [AdminBookingForm] Comparison result:', selectedDateOnly >= todayOnly)
-    
-    const isValid = selectedDateOnly >= todayOnly
-    console.log('🔍 [AdminBookingForm] Validation result:', isValid ? 'VALID' : 'INVALID - Date in past')
-    
-    return isValid || 'Date cannot be in the past'
+
+    return selectedDateOnly >= todayOnly || 'Date cannot be in the past'
   }
+]
+
+const timeRules = [
+  (v: string) => !!v || 'Time is required',
+  (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) || 'Invalid time format'
 ]
 
 // Methods
 const updateBookingType = () => {
   if (!form.value.checkout_date || !form.value.checkin_date) return
-  
-  console.log('🔄 [AdminBookingForm] updateBookingType called')
-  console.log('🔄 [AdminBookingForm] checkout_date:', form.value.checkout_date)
-  console.log('🔄 [AdminBookingForm] checkin_date:', form.value.checkin_date)
-  
+
   // Parse dates as local dates to avoid timezone issues
   const parseDateString = (dateStr: string) => {
     if (!dateStr) return null
     const [year, month, day] = dateStr.split('-').map(Number)
     return new Date(year, month - 1, day).toDateString()
   }
-  
+
   const checkoutDate = parseDateString(form.value.checkout_date as string)
   const checkinDate = parseDateString(form.value.checkin_date as string)
-  
-  console.log('🔄 [AdminBookingForm] parsed checkoutDate:', checkoutDate)
-  console.log('🔄 [AdminBookingForm] parsed checkinDate:', checkinDate)
-  
+
   if (checkoutDate === checkinDate) {
-    console.log('🔄 [AdminBookingForm] Same day - setting to turn/urgent')
     form.value.booking_type = 'turn'
     form.value.priority = 'urgent'
   } else {
-    console.log('🔄 [AdminBookingForm] Different days - setting to standard')
     form.value.booking_type = 'standard'
     if (form.value.priority === 'urgent') {
       form.value.priority = 'normal'
@@ -720,33 +732,19 @@ const openCleanerAssignmentModal = () => {
 }
 
 const handleSubmit = async () => {
-  console.log('🚀 [AdminBookingForm] handleSubmit called')
-  
-  if (!formRef.value) {
-    console.error('🚀 [AdminBookingForm] No form ref')
-    return
-  }
-  
+  if (!formRef.value) return
+
   const { valid } = await formRef.value.validate()
-  console.log('🚀 [AdminBookingForm] Form validation result:', valid)
-  
-  if (!valid) {
-    console.error('🚀 [AdminBookingForm] Form validation failed')
-    return
-  }
-  
-  // Clean form data - convert empty strings to undefined for UUID fields and fix date order
+  if (!valid) return
+
+  // Clean form data - convert empty strings to undefined for UUID fields
   const cleanFormData: BookingFormData = {
     ...form.value,
     assigned_cleaner_id: form.value.assigned_cleaner_id || undefined,
     owner_id: form.value.owner_id || '',
     property_id: form.value.property_id || '',
-    // Swap dates back to database order: checkout_date (guests leave) should be earlier than checkin_date (new guests arrive)
-    checkout_date: form.value.checkin_date, // Earlier date (guests check out)
-    checkin_date: form.value.checkout_date  // Later date (new guests check in)
   }
 
-  console.log('🚀 [AdminBookingForm] Submitting cleaned form data:', cleanFormData)
   emit('submit', cleanFormData)
 }
 
@@ -792,9 +790,8 @@ watch(() => props.booking, (newBooking) => {
     form.value = {
       owner_id: newBooking.owner_id,
       property_id: newBooking.property_id,
-      // Swap dates to match logical flow: checkin first (earlier), checkout later (later)
-      checkin_date: formatDateForInput(newBooking.checkout_date), // Earlier date
-      checkout_date: formatDateForInput(newBooking.checkin_date), // Later date
+      checkin_date: formatDateForInput(newBooking.checkin_date),
+      checkout_date: formatDateForInput(newBooking.checkout_date),
       checkin_time: newBooking.checkin_time || '15:00',
       checkout_time: newBooking.checkout_time || '11:00',
       booking_type: newBooking.booking_type,

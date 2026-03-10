@@ -92,7 +92,7 @@ CREATE TABLE public.bookings (
   assigned_cleaner_id UUID REFERENCES public.user_profiles(id),
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  CONSTRAINT booking_dates_valid CHECK (checkin_date >= checkout_date)
+  CONSTRAINT booking_dates_valid CHECK (checkout_date >= checkin_date)
 );
 
 COMMENT ON TABLE public.bookings IS 'Cleaning bookings with owner_id and property_id relationships';

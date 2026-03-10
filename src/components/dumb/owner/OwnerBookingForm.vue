@@ -52,39 +52,62 @@
                 cols="12"
                 sm="6"
               >
-                <v-text-field
-                  v-model="form.checkout_date"
-                  label="Checkout Date"
-                  type="date"
+                <DatePickerField
+                  v-model="form.checkin_date"
+                  label="Checkin Date"
+                  :min="todayIso"
+                  hint="When new guests arrive"
                   :rules="dateRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('checkout_date')"
-                  hint="When guests leave"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-export"
+                  :error-messages="errors.get('checkin_date')"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
-              
+
               <v-col
                 cols="12"
                 sm="6"
               >
-                <v-text-field
-                  v-model="form.checkin_date"
-                  label="Checkin Date"
-                  type="date"
+                <DatePickerField
+                  v-model="form.checkout_date"
+                  label="Checkout Date"
+                  :min="todayIso"
+                  hint="When guests leave"
                   :rules="dateRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('checkin_date')"
-                  hint="When new guests arrive"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-import"
+                  :error-messages="errors.get('checkout_date')"
                   @update:model-value="updateBookingType"
+                />
+              </v-col>
+            </v-row>
+
+            <!-- Times -->
+            <v-row>
+              <v-col
+                cols="12"
+                md="6"
+              >
+                <TimePickerField
+                  v-model="form.checkin_time"
+                  label="Checkin Time"
+                  hint="When new guests arrive"
+                  :rules="timeRules"
+                  :disabled="loading"
+                  :error-messages="errors.get('checkin_time')"
+                />
+              </v-col>
+
+              <v-col
+                cols="12"
+                md="6"
+              >
+                <TimePickerField
+                  v-model="form.checkout_time"
+                  label="Checkout Time"
+                  hint="When guests leave"
+                  :rules="timeRules"
+                  :disabled="loading"
+                  :error-messages="errors.get('checkout_time')"
                 />
               </v-col>
             </v-row>
@@ -150,7 +173,7 @@
                   type="error"
                   variant="tonal"
                   title="Invalid Dates"
-                  text="Checkin date cannot be before checkout date. Please check your dates."
+                  text="Checkout date cannot be before checkin date. Please check your dates."
                   class="mb-0"
                 />
               </v-col>
@@ -189,6 +212,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
+import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
+import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
 import type { Property } from '@/types/property'
 import type { Booking, BookingFormData } from '@/types/booking'
 
@@ -221,6 +246,10 @@ const emit = defineEmits<Emits>()
 const formRef = ref()
 const formValid = ref(false)
 const autoDetectType = ref(true)
+
+// Date picker state
+const _now = new Date()
+const todayIso = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, '0')}-${String(_now.getDate()).padStart(2, '0')}`
 
 // Form data
 const form = ref<BookingFormData>({
@@ -270,7 +299,7 @@ const showDateError = computed(() => {
   const checkinDate = new Date(String(form.value.checkin_date || ''))
   const checkoutDate = new Date(String(form.value.checkout_date || ''))
   if (isNaN(checkinDate.getTime()) || isNaN(checkoutDate.getTime())) return false
-  return checkinDate < checkoutDate
+  return checkoutDate < checkinDate
 })
 
 // Validation rules
@@ -286,6 +315,11 @@ const dateRules = [
     today.setHours(0, 0, 0, 0)
     return date >= today || 'Date cannot be in the past'
   }
+]
+
+const timeRules = [
+  (v: string) => !!v || 'Time is required',
+  (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) || 'Invalid time format'
 ]
 
 // Methods

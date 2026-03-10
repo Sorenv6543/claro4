@@ -66,7 +66,7 @@ export function useBookings() {
         guest_count: formData.guest_count as number,
         notes: formData.notes as string,
         priority: formData.priority as 'low' | 'normal' | 'high' | 'urgent',
-        assigned_cleaner_id: formData.assigned_cleaner_id as string,
+        assigned_cleaner_id: formData.assigned_cleaner_id as string | null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };

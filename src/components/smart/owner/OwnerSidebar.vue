@@ -315,6 +315,12 @@
       @save="handlePropertySave"
       @delete="handlePropertyDelete"
     />
+    <EnhancedToast
+      v-if="errorToast"
+      :notification="errorToast"
+      location="bottom"
+      @close="errorToast = null"
+    />
   </v-navigation-drawer>
 </template>
 
@@ -325,6 +331,7 @@ import { useDisplay } from 'vuetify';
 import { useAuthStore } from '@/stores/auth';
 import { usePropertyStore } from '@/stores/property';
 import PropertyModal from '@/components/dumb/shared/PropertyModal.vue';
+import EnhancedToast, { type ToastNotification } from '@/components/dumb/shared/EnhancedToast.vue';
 import type { Property, PropertyFormData, PricingTier } from '@/types';
 
 // Constants for consistent sizing
@@ -368,6 +375,15 @@ const selectedPropertyId = ref<string | null>(null);
 const showPropertyModal = ref(false);
 const propertyModalMode = ref<'create' | 'edit'>('create');
 const selectedPropertyForEdit = ref<Property | undefined>(undefined);
+const errorToast = ref<ToastNotification | null>(null);
+
+const showErrorToast = (message: string) => {
+  errorToast.value = {
+    id: crypto.randomUUID(),
+    type: 'error',
+    message
+  };
+};
 
 // v-model support
 const sidebarOpen = computed({
@@ -464,7 +480,7 @@ const handlePropertySave = async (propertyData: PropertyFormData) => {
     closePropertyModal();
   } catch (error) {
     console.error('Failed to save property:', error);
-    // TODO: Show error toast/snackbar
+    showErrorToast('Failed to save property. Please try again.');
   }
 };
 
@@ -479,7 +495,7 @@ const handlePropertyDelete = async (propertyId: string) => {
     closePropertyModal();
   } catch (error) {
     console.error('Failed to delete property:', error);
-    // TODO: Show error toast/snackbar
+    showErrorToast('Failed to delete property. Please try again.');
   }
 };
 
@@ -494,7 +510,7 @@ const deleteProperty = async (property: Property) => {
       }
     } catch (error) {
       console.error('Failed to delete property:', error);
-      // TODO: Show error toast/snackbar
+      showErrorToast('Failed to delete property. Please try again.');
     }
   }
 };

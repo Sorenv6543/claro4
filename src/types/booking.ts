@@ -33,7 +33,7 @@ export interface Booking {
   guest_count?: number;
   notes?: string;
   priority: 'low' | 'normal' | 'high' | 'urgent';
-  assigned_cleaner_id?: string;
+  assigned_cleaner_id?: string | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -91,6 +91,7 @@ export function isBooking(obj: unknown): obj is Booking {
     typeof b.booking_type === 'string' &&
     ['standard', 'turn'].includes(b.booking_type as string) &&
     typeof b.status === 'string' &&
-    ['pending', 'scheduled', 'in_progress', 'completed', 'cancelled'].includes(b.status as string)
+    ['pending', 'scheduled', 'in_progress', 'completed', 'cancelled'].includes(b.status as string) &&
+    new Date(b.checkout_date as string) >= new Date(b.checkin_date as string)
   );
 }

@@ -29,6 +29,7 @@ export const calculateBookingPriority = (booking: Booking): 'low' | 'normal' | '
 
 /**
  * Calculate the cleaning window for a booking
+ * @deprecated Use the cleaning_window metadata from BookingWithMetadata instead.
  */
 export const getCleaningWindow = (booking: Booking, property: Property): {
   start: string;
@@ -79,6 +80,7 @@ export const getCleaningWindow = (booking: Booking, property: Property): {
 
 /**
  * Check if a cleaning can be scheduled for a booking
+ * @deprecated Use the cleaning_window metadata from BookingWithMetadata instead.
  */
 export const canScheduleCleaning = (booking: Booking, property: Property): {
   possible: boolean;
@@ -120,15 +122,13 @@ export const validateTurnBooking = (
     return { valid: true, errors, warnings };
   }
   
-  const checkoutDate = new Date(booking.checkout_date!);
-  const checkinDate = new Date(booking.checkin_date!);
-  
-  // Turn bookings are same-day stays: guests arrive and depart on the same calendar date.
-  if (checkoutDate.toDateString() !== checkinDate.toDateString()) {
+  // A turn booking is a same-day stay: the guest arrives and departs on the same calendar date
+  // (checkin_date == checkout_date).
+  if (booking.checkout_date!.slice(0, 10) !== booking.checkin_date!.slice(0, 10)) {
     errors.push('Turn bookings must have checkout and checkin on the same day');
   }
 
-  // For same-day stays, validate that checkout time is after checkin time.
+  // For same-day stays, guests must depart (checkout) after they arrive (checkin).
   if (booking.checkout_time && booking.checkin_time) {
     if (booking.checkout_time <= booking.checkin_time) {
       errors.push('For turn bookings, checkout time must be after checkin time');
@@ -215,12 +215,6 @@ export const validateBooking = (
     const turnValidation = validateTurnBooking(booking, property);
     errors.push(...turnValidation.errors);
     warnings.push(...turnValidation.warnings);
-  } else {
-    // Standard booking validation
-    const timeDiff = (checkinDate.getTime() - checkoutDate.getTime()) / (1000 * 60 * 60); // hours
-    if (timeDiff < 3) {
-      warnings.push('Very short time between checkout and checkin. Consider marking as a turn booking.');
-    }
   }
   
   // Check for conflicts with existing bookings
@@ -302,9 +296,9 @@ export const calculateSystemMetrics = (
       upcomingBookings++
     }
     
-    if (booking.booking_type === 'turn' && 
-        booking.status === 'pending' && 
-        checkoutDate <= twentyFourHours) {
+    if (booking.booking_type === 'turn' &&
+        booking.status === 'pending' &&
+        checkoutDate <= twentyFourHours) { // checkout_date is when current guests depart; turn urgency is measured against that departure time
       urgentTurns++
     }
   })

@@ -205,12 +205,12 @@ export function useProperties() {
     const bookedDays = new Set();
     
     propertyBookings.forEach(booking => {
-      const checkoutDate = new Date(booking.checkout_date);
       const checkinDate = new Date(booking.checkin_date);
-      
-      // Count days between checkout and checkin
-      let currentDate = new Date(checkoutDate);
-      while (currentDate <= checkinDate) {
+      const checkoutDate = new Date(booking.checkout_date);
+
+      // Count days of guest stay from checkin to checkout
+      let currentDate = new Date(checkinDate);
+      while (currentDate <= checkoutDate) {
         bookedDays.add(currentDate.toISOString().split('T')[0]);
         currentDate.setDate(currentDate.getDate() + 1);
       }
@@ -226,18 +226,18 @@ export function useProperties() {
     let totalGapDays = 0;
     let gapCount = 0;
     
-    // Sort bookings by checkout date
+    // Sort bookings by checkin date (chronological order of arrivals)
     const sortedBookings = [...propertyBookings].sort((a, b) => {
-      return new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime();
+      return new Date(a.checkin_date).getTime() - new Date(b.checkin_date).getTime();
     });
-    
+
     // Calculate gaps between consecutive bookings
     for (let i = 0; i < sortedBookings.length - 1; i++) {
-      const currentCheckout = new Date(sortedBookings[i].checkin_date);
-      const nextCheckin = new Date(sortedBookings[i + 1].checkout_date);
-      
-      if (nextCheckin > currentCheckout) {
-        const gapDays = Math.round((nextCheckin.getTime() - currentCheckout.getTime()) / (1000 * 60 * 60 * 24));
+      const currentEnd = new Date(sortedBookings[i].checkout_date);
+      const nextStart = new Date(sortedBookings[i + 1].checkin_date);
+
+      if (nextStart > currentEnd) {
+        const gapDays = Math.round((nextStart.getTime() - currentEnd.getTime()) / (1000 * 60 * 60 * 24));
         totalGapDays += gapDays;
         gapCount++;
       }
@@ -318,4 +318,4 @@ export function useProperties() {
     // Business logic
     calculatePropertyMetrics
   };
-} 
+}

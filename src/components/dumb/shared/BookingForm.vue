@@ -54,18 +54,13 @@
                 cols="12"
                 md="6"
               >
-                <v-text-field
+                <DatePickerField
                   v-model="form.checkin_date"
                   label="Checkin Date"
-                  type="date"
                   :rules="dateRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('checkin_date')"
                   hint="When guests arrive"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-plus"
+                  :error-messages="errors.get('checkin_date')"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
@@ -74,18 +69,13 @@
                 cols="12"
                 md="6"
               >
-                <v-text-field
+                <DatePickerField
                   v-model="form.checkout_date"
                   label="Checkout Date"
-                  type="date"
                   :rules="dateRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('checkout_date')"
                   hint="When guests depart"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-remove"
+                  :error-messages="errors.get('checkout_date')"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
@@ -95,19 +85,13 @@
                 cols="12"
                 md="6"
               >
-                <v-text-field
+                <TimePickerField
                   v-model="form.checkin_time"
                   label="Checkin Time"
-                  type="time"
                   :rules="timeRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('checkin_time')"
                   hint="When guests arrive"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-plus"
-                  @update:model-value="updateBookingType"
+                  :error-messages="errors.get('checkin_time')"
                 />
               </v-col>
 
@@ -115,19 +99,13 @@
                 cols="12"
                 md="6"
               >
-                <v-text-field
+                <TimePickerField
                   v-model="form.checkout_time"
                   label="Checkout Time"
-                  type="time"
                   :rules="timeRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('checkout_time')"
                   hint="When guests depart"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-remove"
-                  @update:model-value="updateBookingType"
+                  :error-messages="errors.get('checkout_time')"
                 />
               </v-col>
             </v-row>
@@ -276,6 +254,8 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, watch, onMounted, nextTick } from 'vue';
+import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
+import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
 import { usePropertyStore } from '@/stores/property';
 import type { Booking, BookingFormData, BookingStatus, BookingType, Property } from '@/types';
 import type { VForm } from 'vuetify/components';
@@ -474,9 +454,9 @@ function resetForm(): void {
     const formData = { 
       ...defaults, 
       ...initialData,
-      // Map calendar date properties to form properties
-      checkout_date: initialData.start || initialData.checkout_date || '',
-      checkin_date: initialData.end || initialData.checkin_date || ''
+      // FullCalendar events use 'start' for arrival (checkin) and 'end' for departure (checkout)
+      checkin_date: initialData.start || initialData.checkin_date || '',
+      checkout_date: initialData.end || initialData.checkout_date || ''
     };
     
     // Format dates if they exist
