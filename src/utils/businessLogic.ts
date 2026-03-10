@@ -215,12 +215,6 @@ export const validateBooking = (
     const turnValidation = validateTurnBooking(booking, property);
     errors.push(...turnValidation.errors);
     warnings.push(...turnValidation.warnings);
-  } else {
-    // Standard booking validation
-    const timeDiff = (checkinDate.getTime() - checkoutDate.getTime()) / (1000 * 60 * 60); // hours
-    if (timeDiff < 3) {
-      warnings.push('Very short time between checkout and checkin. Consider marking as a turn booking.');
-    }
   }
   
   // Check for conflicts with existing bookings
