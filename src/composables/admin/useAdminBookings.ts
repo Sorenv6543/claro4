@@ -252,11 +252,11 @@ export function useAdminBookings() {
       trackCachePerformance('admin-create-booking', true); // Changed to boolean
       
       success.value = 'Booking created successfully';
-         } catch (err: unknown) {
-       const errorMsg = err as Error;
-       error.value = `Failed to create booking: ${errorMsg.message}`;
-       trackCachePerformance('admin-create-booking', false); // Changed to boolean
-     } finally {
+    } catch (err: unknown) {
+      error.value = `Failed to create booking: ${err instanceof Error ? err.message : String(err)}`;
+      trackCachePerformance('admin-create-booking', false);
+      throw err;
+    } finally {
       loading.value = false;
     }
   };

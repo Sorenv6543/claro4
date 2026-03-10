@@ -455,11 +455,7 @@ function useOwnerBookingsPinia() {
         priority: formData.priority || 'normal',
       };
       // Optionally add to store if needed for test
-      try {
-        bookingStore.addBooking(booking);
-      } catch {
-        // ignore
-      }
+      bookingStore.addBooking(booking);
       return booking;
     }
 
