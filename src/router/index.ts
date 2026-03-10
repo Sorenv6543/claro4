@@ -7,7 +7,7 @@
 // ✅ Declares role requirements via meta.role
 // ✅ Applies navigation guards
 
-import { createRouter, createWebHistory } from 'vue-router' 
+import { createRouter, createWebHistory } from 'vue-router'
 import { developmentGuard, loadingGuard, authGuard, afterNavigationGuard } from './guards'
 
 const router = createRouter({
@@ -50,8 +50,8 @@ const router = createRouter({
     },
     {
       path: '/owner/calendar',
-      name: 'OwnerCalendarPage',
-      component: () => import('@/components/smart/owner/OwnerCalendarPage.vue'),
+      name: 'owner-calendar',
+      component: () => import('@/pages/owner/calendar.vue'),
       meta: {
         layout: 'owner',
         role: 'owner',
@@ -202,151 +202,6 @@ const router = createRouter({
         requiresAuth: true
       }
     },
-
-    // Development Demo Routes - Admin Demos
-    // Only available in development mode for testing composables
-    // {
-    //   path: '/dev/admin/calendar-demo',
-    //   name: 'admin-calendar-demo',
-    //   component: () => import('@/dev/demos/Admin/AdminCalendarDemo.vue'),
-    //   meta: {
-    //     layout: 'auth',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/data-store-demo',
-    //   name: 'admin-data-store-demo',
-    //   component: () => import('@/dev/demos/Admin/AdminDataStoreDemo.vue'),
-    //   meta: {
-    //     layout: 'auth',
-    //     role: 'admin',
-       
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/quick-actions-demo',
-    //   name: 'admin-quick-actions-demo',
-    //   component: () => import('@/dev/demos/Admin/AdminQuickActionsDemo.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-       
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/sidebar-demo',
-    //   name: 'admin-sidebar-demo',
-    //   component: () => import('@/dev/demos/Admin/AdminSidebarDemo.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/user-management-demo',
-    //   name: 'admin-user-management-demo',
-    //   component: () => import('@/dev/demos/Admin/AdminUserManagementDemo.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/user-manage-v1',
-    //   name: 'admin-user-manage-v1',
-    //   component: () => import('@/dev/demos/Admin/AdminUserManagev1.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/home-demo',
-    //   name: 'home-admin-demo',
-    //   component: () => import('@/dev/demos/Admin/HomeAdminDemo.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/turn-alerts-demo',
-    //   name: 'turn-alerts-demo',
-    //   component: () => import('@/dev/demos/Admin/TurnAlertsDemo.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/ui-ux-enhancements-demo',
-    //   name: 'ui-ux-enhancements-demo',
-    //   component: () => import('@/dev/demos/Admin/UIUXEnhancementsDemo.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/use-admin-bookings-demo',
-    //   name: 'use-admin-bookings-demo',
-    //   component: () => import('@/dev/demos/Admin/UseAdminBookingsDemo.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/use-admin-calendar-state-demo',
-    //   name: 'use-admin-calendar-state-demo',
-    //   component: () => import('@/dev/demos/Admin/UseAdminCalendarStateDemo.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/use-admin-properties-demo',
-    //   name: 'use-admin-properties-demo',
-    //   component: () => import('@/dev/demos/Admin/UseAdminPropertiesDemo.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/orphaned-components',
-    //   name: 'orphaned-components-demo',
-    //   component: () => import('@/dev/demos/Admin/OrphanedComponentsDemo.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // },
-    // {
-    //   path: '/dev/admin/turn-visual-indicators',
-    //   name: 'turn-visual-indicators',
-    //   component: () => import('@/dev/demos/Admin/turn-visual-indicators.vue'),
-    //   meta: {
-    //     layout: 'admin',
-    //     role: 'admin',
-    //     development: true
-    //   }
-    // }
   ]
 })
 
@@ -356,4 +211,4 @@ router.beforeEach(loadingGuard)
 router.beforeEach(authGuard)
 router.afterEach(afterNavigationGuard)
 
-export default router 
+export default router
