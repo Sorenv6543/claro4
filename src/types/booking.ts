@@ -36,9 +36,6 @@ export interface Booking {
   assigned_cleaner_id?: string;
   created_at?: string;
   updated_at?: string;
-  // Add index signature to allow conversion to Record<string, unknown>
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  [key: string]: any;
 }
 
 /**
@@ -52,7 +49,6 @@ export interface BookingWithMetadata extends Booking {
     end: string;
     duration: number; // minutes
   };
-  priority: 'low' | 'normal' | 'high' | 'urgent';
 }
 
 /**
@@ -86,6 +82,8 @@ export function isBooking(obj: unknown): obj is Booking {
     typeof b.id === 'string' &&
     typeof b.property_id === 'string' &&
     typeof b.checkout_date === 'string' &&
-    typeof b.checkin_date === 'string'
+    typeof b.checkin_date === 'string' &&
+    typeof b.priority === 'string' &&
+    ['low', 'normal', 'high', 'urgent'].includes(b.priority as string)
   );
 }
