@@ -53,7 +53,7 @@ export async function authGuard(
 }
 
 export function loadingGuard(
-  to: RouteLocationNormalized,
+  _to: RouteLocationNormalized,
   _from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) {
