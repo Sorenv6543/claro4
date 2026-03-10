@@ -474,7 +474,7 @@ function resetForm(): void {
     const formData = { 
       ...defaults, 
       ...initialData,
-      // Map calendar date properties to form properties
+      // FullCalendar events use 'start' for arrival (checkin) and 'end' for departure (checkout)
       checkin_date: initialData.start || initialData.checkin_date || '',
       checkout_date: initialData.end || initialData.checkout_date || ''
     };

@@ -589,60 +589,38 @@ const dateRules = [
   (v: string) => !!v || 'Date is required',
   (v: string) => {
     if (!v) return true
-    
-    // Debug logging to see what's happening
-    console.log('🔍 [AdminBookingForm] Validating date:', v)
-    
+
     // Parse date as local date to avoid timezone issues
     const [year, month, day] = v.split('-').map(Number)
     const selectedDate = new Date(year, month - 1, day) // month is 0-indexed
     const today = new Date()
-    
-    console.log('🔍 [AdminBookingForm] Selected date object:', selectedDate)
-    console.log('🔍 [AdminBookingForm] Today object:', today)
-    
+
     // Set both dates to midnight for fair comparison (date only, no time)
     const selectedDateOnly = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate())
     const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-    
-    console.log('🔍 [AdminBookingForm] Selected date only:', selectedDateOnly)
-    console.log('🔍 [AdminBookingForm] Today only:', todayOnly)
-    console.log('🔍 [AdminBookingForm] Comparison result:', selectedDateOnly >= todayOnly)
-    
-    const isValid = selectedDateOnly >= todayOnly
-    console.log('🔍 [AdminBookingForm] Validation result:', isValid ? 'VALID' : 'INVALID - Date in past')
-    
-    return isValid || 'Date cannot be in the past'
+
+    return selectedDateOnly >= todayOnly || 'Date cannot be in the past'
   }
 ]
 
 // Methods
 const updateBookingType = () => {
   if (!form.value.checkout_date || !form.value.checkin_date) return
-  
-  console.log('🔄 [AdminBookingForm] updateBookingType called')
-  console.log('🔄 [AdminBookingForm] checkout_date:', form.value.checkout_date)
-  console.log('🔄 [AdminBookingForm] checkin_date:', form.value.checkin_date)
-  
+
   // Parse dates as local dates to avoid timezone issues
   const parseDateString = (dateStr: string) => {
     if (!dateStr) return null
     const [year, month, day] = dateStr.split('-').map(Number)
     return new Date(year, month - 1, day).toDateString()
   }
-  
+
   const checkoutDate = parseDateString(form.value.checkout_date as string)
   const checkinDate = parseDateString(form.value.checkin_date as string)
-  
-  console.log('🔄 [AdminBookingForm] parsed checkoutDate:', checkoutDate)
-  console.log('🔄 [AdminBookingForm] parsed checkinDate:', checkinDate)
-  
+
   if (checkoutDate === checkinDate) {
-    console.log('🔄 [AdminBookingForm] Same day - setting to turn/urgent')
     form.value.booking_type = 'turn'
     form.value.priority = 'urgent'
   } else {
-    console.log('🔄 [AdminBookingForm] Different days - setting to standard')
     form.value.booking_type = 'standard'
     if (form.value.priority === 'urgent') {
       form.value.priority = 'normal'

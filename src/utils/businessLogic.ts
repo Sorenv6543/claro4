@@ -29,6 +29,7 @@ export const calculateBookingPriority = (booking: Booking): 'low' | 'normal' | '
 
 /**
  * Calculate the cleaning window for a booking
+ * @deprecated Use the cleaning_window metadata from BookingWithMetadata instead.
  */
 export const getCleaningWindow = (booking: Booking, property: Property): {
   start: string;
@@ -79,6 +80,7 @@ export const getCleaningWindow = (booking: Booking, property: Property): {
 
 /**
  * Check if a cleaning can be scheduled for a booking
+ * @deprecated Use the cleaning_window metadata from BookingWithMetadata instead.
  */
 export const canScheduleCleaning = (booking: Booking, property: Property): {
   possible: boolean;
@@ -120,11 +122,9 @@ export const validateTurnBooking = (
     return { valid: true, errors, warnings };
   }
   
-  const checkoutDate = new Date(booking.checkout_date!);
-  const checkinDate = new Date(booking.checkin_date!);
-  
-  // Turn bookings are same-day stays: guests arrive and depart on the same calendar date.
-  if (checkoutDate.toDateString() !== checkinDate.toDateString()) {
+  // Turn bookings represent a same-day changeover: previous guests' checkout_date and
+  // incoming guests' checkin_date fall on the same calendar day.
+  if (booking.checkout_date!.slice(0, 10) !== booking.checkin_date!.slice(0, 10)) {
     errors.push('Turn bookings must have checkout and checkin on the same day');
   }
 
@@ -296,9 +296,9 @@ export const calculateSystemMetrics = (
       upcomingBookings++
     }
     
-    if (booking.booking_type === 'turn' && 
-        booking.status === 'pending' && 
-        checkoutDate <= twentyFourHours) {
+    if (booking.booking_type === 'turn' &&
+        booking.status === 'pending' &&
+        checkoutDate <= twentyFourHours) { // checkout_date is when current guests depart; turn urgency is measured against that departure time
       urgentTurns++
     }
   })

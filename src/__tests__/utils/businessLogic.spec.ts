@@ -65,16 +65,17 @@ describe('validateBooking — date ordering', () => {
     expect(result.errors).toContain('Checkout date must be on or after checkin date')
   })
 
-  it('does not warn about short time for standard bookings with different dates', () => {
+  it('produces no warnings for a standard booking with sufficient time between dates', () => {
     const result = validateBooking(
-      { ...baseBooking, checkin_date: '2026-04-01', checkout_date: '2026-04-02' },
+      { ...baseBooking, checkin_date: '2026-04-01', checkout_date: '2026-04-05' },
       mockProperty
     )
-    expect(result.warnings.some(w => w.includes('turn booking'))).toBe(false)
+    expect(result.valid).toBe(true)
+    expect(result.warnings).toHaveLength(0)
   })
 })
 
-describe('validateTurnBooking — time ordering under Model A', () => {
+describe('validateTurnBooking — time ordering (checkout_time must follow checkin_time)', () => {
   it('rejects turn booking where checkout_time is before checkin_time', () => {
     const result = validateTurnBooking(
       {
@@ -139,5 +140,84 @@ describe('detectBookingConflicts', () => {
       checkout_date: '2026-04-10',
     }
     expect(detectBookingConflicts(booking, [existing])).toHaveLength(0)
+  })
+
+  it('does not conflict when bookings are on different properties', () => {
+    const booking: Booking = {
+      ...existing,
+      id: 'b3',
+      property_id: 'prop2',
+      checkin_date: '2026-04-05',
+      checkout_date: '2026-04-09',
+    }
+    expect(detectBookingConflicts(booking, [existing])).toHaveLength(0)
+  })
+})
+
+describe('validateTurnBooking — warnings', () => {
+  it('warns when checkout is after 14:00 (late checkout)', () => {
+    const result = validateTurnBooking(
+      {
+        ...baseBooking,
+        booking_type: 'turn',
+        checkin_date: '2026-04-01',
+        checkout_date: '2026-04-01',
+        checkin_time: '10:00',
+        checkout_time: '15:00',
+      },
+      mockProperty
+    )
+    expect(result.valid).toBe(true)
+    expect(result.warnings.some(w => w.includes('Late checkout'))).toBe(true)
+  })
+
+  it('warns when checkin is before 14:00 (early checkin)', () => {
+    const result = validateTurnBooking(
+      {
+        ...baseBooking,
+        booking_type: 'turn',
+        checkin_date: '2026-04-01',
+        checkout_date: '2026-04-01',
+        checkin_time: '13:00',
+        checkout_time: '22:00',
+      },
+      mockProperty
+    )
+    expect(result.valid).toBe(true)
+    expect(result.warnings.some(w => w.includes('Early checkin'))).toBe(true)
+  })
+
+  it('returns valid with no errors for a non-turn booking', () => {
+    const result = validateTurnBooking(
+      { ...baseBooking, booking_type: 'standard', checkin_date: '2026-04-01', checkout_date: '2026-04-05' },
+      mockProperty
+    )
+    expect(result.valid).toBe(true)
+    expect(result.errors).toHaveLength(0)
+    expect(result.warnings).toHaveLength(0)
+  })
+})
+
+describe('validateBooking — conflict detection', () => {
+  it('populates conflicts when existingBookings overlap', () => {
+    const existing: Booking = {
+      id: 'b2',
+      property_id: 'prop1',
+      owner_id: 'owner1',
+      checkin_date: '2026-04-03',
+      checkout_date: '2026-04-07',
+      checkin_time: '15:00',
+      checkout_time: '11:00',
+      booking_type: 'standard',
+      status: 'pending',
+      priority: 'normal',
+    }
+    const result = validateBooking(
+      { ...baseBooking, checkin_date: '2026-04-05', checkout_date: '2026-04-09' },
+      mockProperty,
+      [existing]
+    )
+    expect(result.warnings.some(w => w.includes('scheduling conflicts'))).toBe(true)
+    expect(result.conflicts).toHaveLength(1)
   })
 })
