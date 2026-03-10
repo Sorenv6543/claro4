@@ -53,26 +53,6 @@
                 sm="6"
               >
                 <v-text-field
-                  v-model="form.checkout_date"
-                  label="Checkout Date"
-                  type="date"
-                  :rules="dateRules"
-                  required
-                  variant="outlined"
-                  :disabled="loading"
-                  :error-messages="errors.get('checkout_date')"
-                  hint="When guests leave"
-                  persistent-hint
-                  prepend-inner-icon="mdi-calendar-export"
-                  @update:model-value="updateBookingType"
-                />
-              </v-col>
-              
-              <v-col
-                cols="12"
-                sm="6"
-              >
-                <v-text-field
                   v-model="form.checkin_date"
                   label="Checkin Date"
                   type="date"
@@ -84,6 +64,26 @@
                   hint="When new guests arrive"
                   persistent-hint
                   prepend-inner-icon="mdi-calendar-import"
+                  @update:model-value="updateBookingType"
+                />
+              </v-col>
+
+              <v-col
+                cols="12"
+                sm="6"
+              >
+                <v-text-field
+                  v-model="form.checkout_date"
+                  label="Checkout Date"
+                  type="date"
+                  :rules="dateRules"
+                  required
+                  variant="outlined"
+                  :disabled="loading"
+                  :error-messages="errors.get('checkout_date')"
+                  hint="When guests leave"
+                  persistent-hint
+                  prepend-inner-icon="mdi-calendar-export"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
@@ -150,7 +150,7 @@
                   type="error"
                   variant="tonal"
                   title="Invalid Dates"
-                  text="Checkin date cannot be before checkout date. Please check your dates."
+                  text="Checkout date cannot be before checkin date. Please check your dates."
                   class="mb-0"
                 />
               </v-col>
@@ -270,7 +270,7 @@ const showDateError = computed(() => {
   const checkinDate = new Date(String(form.value.checkin_date || ''))
   const checkoutDate = new Date(String(form.value.checkout_date || ''))
   if (isNaN(checkinDate.getTime()) || isNaN(checkoutDate.getTime())) return false
-  return checkinDate < checkoutDate
+  return checkoutDate < checkinDate
 })
 
 // Validation rules
