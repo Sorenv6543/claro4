@@ -174,7 +174,7 @@
                   :key="booking.id"
                 >
                   <v-list-item-title>{{ formatDateRange(booking.checkin_date, booking.checkout_date) }}</v-list-item-title>
-                  <v-list-item-subtitle>Cleaning window: {{ booking.cleaning_duration ?? property.cleaning_duration }} min</v-list-item-subtitle>
+                  <v-list-item-subtitle>Cleaning window: {{ property.cleaning_duration }} min</v-list-item-subtitle>
                   <template #append>
                     <v-chip
                       :color="booking.booking_type === 'turn' ? 'warning' : 'primary'"
