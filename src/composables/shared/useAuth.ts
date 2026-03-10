@@ -30,25 +30,21 @@ export function useAuth() {
       name: 'Property Owner',
       role: 'owner' as UserRole,
       company_name: 'Luxury Rentals Inc.',
-      settings: {
-        notifications: true,
-        timezone: 'America/New_York',
-        theme: 'light',
-        language: 'en'
-      }
+      notifications_enabled: true,
+      timezone: 'America/New_York',
+      theme: 'light' as const,
+      language: 'en',
     } as PropertyOwner,
     {
       id: 'admin-1',
       email: 'admin@example.com',
       name: 'Admin User',
       role: 'admin' as UserRole,
-      access_level: 'full',
-      settings: {
-        notifications: true,
-        timezone: 'America/New_York',
-        theme: 'dark',
-        language: 'en'
-      }
+      access_level: 'full' as const,
+      notifications_enabled: true,
+      timezone: 'America/New_York',
+      theme: 'dark' as const,
+      language: 'en',
     } as Admin,
     {
       id: 'cleaner-1',
@@ -170,17 +166,9 @@ export function useAuth() {
         throw new Error('Email already in use');
       }
       
-      // Create default user settings
-      const settings: UserSettings = {
-        notifications: true,
-        timezone: 'America/New_York',
-        theme: 'light',
-        language: 'en'
-      };
-      
       // Create user based on role
       let newUser: User;
-      
+
       if (userData.role === 'owner') {
         newUser = {
           id: `owner-${uuidv4()}`,
@@ -188,7 +176,10 @@ export function useAuth() {
           name: userData.name,
           role: 'owner',
           company_name: userData.company_name || '',
-          settings,
+          notifications_enabled: true,
+          timezone: 'America/New_York',
+          theme: 'light' as const,
+          language: 'en',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         } as PropertyOwner;
@@ -199,7 +190,10 @@ export function useAuth() {
           name: userData.name,
           role: 'admin',
           access_level: 'limited',
-          settings,
+          notifications_enabled: true,
+          timezone: 'America/New_York',
+          theme: 'dark' as const,
+          language: 'en',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         } as Admin;
@@ -211,7 +205,10 @@ export function useAuth() {
           role: 'cleaner',
           skills: [],
           max_daily_bookings: 2,
-          settings,
+          notifications_enabled: true,
+          timezone: 'America/New_York',
+          theme: 'light' as const,
+          language: 'en',
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         } as unknown as Cleaner;
@@ -252,10 +249,24 @@ export function useAuth() {
       // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 500));
       
-      // Update user in store with new settings
+      // Update user in store with new settings, mapping UserSettings keys to flat User fields
+      const settingsMap: Record<keyof UserSettings, keyof User> = {
+        notifications: 'notifications_enabled',
+        timezone: 'timezone',
+        theme: 'theme',
+        language: 'language',
+      };
+
+      const patch: Partial<User> = {};
+      for (const [settingsKey, userKey] of Object.entries(settingsMap) as [keyof UserSettings, keyof User][]) {
+        if (settingsKey in settings) {
+          (patch as Record<string, unknown>)[userKey as string] = settings[settingsKey as keyof UserSettings];
+        }
+      }
+
       const updatedUser = {
         ...userStore.user,
-        ...settings,
+        ...patch,
         updated_at: new Date().toISOString()
       };
       
