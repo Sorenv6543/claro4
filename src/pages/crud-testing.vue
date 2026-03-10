@@ -69,8 +69,11 @@ const testBooking = reactive<BookingFormData>({
   owner_id: 'test-owner-123',
   checkout_date: new Date().toISOString().split('T')[0],
   checkin_date: new Date().toISOString().split('T')[0],
+  checkin_time: '15:00',
+  checkout_time: '11:00',
   booking_type: 'turn',
   status: 'pending',
+  priority: 'normal',
   guest_count: 2,
   notes: 'This is a test booking for CRUD testing',
 });
@@ -80,8 +83,11 @@ const testBookingStandard = reactive<BookingFormData>({
     owner_id: 'test-owner-123',
   checkout_date: new Date().toISOString().split('T')[0],
   checkin_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 days later
+  checkin_time: '15:00',
+  checkout_time: '11:00',
   booking_type: 'standard',
   status: 'pending',
+  priority: 'normal',
   guest_count: 4,
   notes: 'This is a test standard booking for CRUD testing',
 });

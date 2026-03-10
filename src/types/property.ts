@@ -27,8 +27,6 @@ export interface Property {
   active: boolean;
   created_at?: string;
   updated_at?: string;
-  // Add index signature to allow conversion to Record<string, unknown>
-  [key: string]: unknown;
 }
 
 /**
@@ -50,6 +48,12 @@ export interface PropertyWithMetrics extends Property {
  * Used for creating/editing properties
  */
 export type PropertyFormData = Omit<Property, 'id' | 'created_at' | 'updated_at'>;
+
+/**
+ * Use this type at Supabase realtime/modal boundaries that need Record<string, unknown>.
+ * Never add [key: string]: unknown to Property itself.
+ */
+export type PropertyRecord = Property & Record<string, unknown>;
 
 /**
  * Map type for property collections

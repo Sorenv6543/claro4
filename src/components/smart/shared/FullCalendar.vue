@@ -246,7 +246,8 @@ const calendarOptions = computed<CalendarOptions>(() => ({
   // Event handlers
   select: handleDateSelect,
   eventClick: handleEventClick,
-  eventDrop: handleEventDrop,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  eventDrop: handleEventDrop as any,
   
   // Loading state
   loading: handleLoading,

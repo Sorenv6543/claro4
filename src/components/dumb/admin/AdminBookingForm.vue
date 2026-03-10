@@ -471,6 +471,8 @@ const defaultForm: BookingFormData = {
   property_id: '',
   checkout_date: '',
   checkin_date: '',
+  checkin_time: '15:00',
+  checkout_time: '11:00',
   booking_type: 'standard',
   guest_count: undefined,
   notes: '',
@@ -733,17 +735,17 @@ const handleSubmit = async () => {
     return
   }
   
-  // Clean form data - convert empty strings to null for UUID fields and fix date order
-  const cleanFormData = {
+  // Clean form data - convert empty strings to undefined for UUID fields and fix date order
+  const cleanFormData: BookingFormData = {
     ...form.value,
-    assigned_cleaner_id: form.value.assigned_cleaner_id || null,
-    owner_id: form.value.owner_id || null,
-    property_id: form.value.property_id || null,
+    assigned_cleaner_id: form.value.assigned_cleaner_id || undefined,
+    owner_id: form.value.owner_id || '',
+    property_id: form.value.property_id || '',
     // Swap dates back to database order: checkout_date (guests leave) should be earlier than checkin_date (new guests arrive)
     checkout_date: form.value.checkin_date, // Earlier date (guests check out)
     checkin_date: form.value.checkout_date  // Later date (new guests check in)
   }
-  
+
   console.log('🚀 [AdminBookingForm] Submitting cleaned form data:', cleanFormData)
   emit('submit', cleanFormData)
 }
@@ -793,6 +795,8 @@ watch(() => props.booking, (newBooking) => {
       // Swap dates to match logical flow: checkin first (earlier), checkout later (later)
       checkin_date: formatDateForInput(newBooking.checkout_date), // Earlier date
       checkout_date: formatDateForInput(newBooking.checkin_date), // Later date
+      checkin_time: newBooking.checkin_time || '15:00',
+      checkout_time: newBooking.checkout_time || '11:00',
       booking_type: newBooking.booking_type,
       guest_count: newBooking.guest_count,
       notes: newBooking.notes || '',

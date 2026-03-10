@@ -448,15 +448,14 @@ function useOwnerBookingsPinia() {
         owner_id: currentUserId.value,
         checkout_date: formData.checkout_date || '',
         checkin_date: formData.checkin_date || '',
+        checkin_time: formData.checkin_time || '15:00:00',
+        checkout_time: formData.checkout_time || '11:00:00',
         booking_type: formData.booking_type || 'standard',
         status: formData.status || 'pending',
+        priority: formData.priority || 'normal',
       };
       // Optionally add to store if needed for test
-      try {
-        bookingStore.addBooking(booking);
-      } catch {
-        // ignore
-      }
+      bookingStore.addBooking(booking);
       return booking;
     }
 
@@ -480,13 +479,23 @@ function useOwnerBookingsPinia() {
     
     // Performance-monitored owner actions
     const createBooking = async (bookingData: BookingFormData): Promise<Booking | null> => {
-      return measureRolePerformance('owner', 'create-booking', async () => {
-        // Ensure owner_id is set for owner role
-        await bookingStore.addBooking(bookingData as Booking);
-        trackCachePerformance('owner-create-booking', true);
-        // Since addBooking returns void, we cannot get the bookingId here
+      loading.value = true;
+      error.value = null;
+      try {
+        const result = await measureRolePerformance('owner', 'create-booking', async () => {
+          // Ensure owner_id is set for owner role
+          await bookingStore.addBooking(bookingData as Booking);
+          trackCachePerformance('owner-create-booking', true);
+          // Since addBooking returns void, we cannot get the bookingId here
+          return null;
+        });
+        return result;
+      } catch (err) {
+        error.value = err instanceof Error ? err.message : String(err);
         return null;
-      });
+      } finally {
+        loading.value = false;
+      }
     }
 
     // Role-specific performance metrics

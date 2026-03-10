@@ -26,10 +26,8 @@ export interface CleanerFormData {
   email: string;
   skills: string[];
   max_daily_bookings: number;
-  location?: {
-    lat: number;
-    lng: number;
-  };
+  location_lat?: number;
+  location_lng?: number;
 }
 
 export interface CleanerAvailability {
@@ -91,8 +89,7 @@ export function useCleanerManagement() {
    * Get ALL cleaners in the system (admin-only access)
    */
   const allCleaners = computed((): Cleaner[] => {
-    // In a real app, this would come from a dedicated cleaners collection
-    // For now, we'll simulate cleaner data based on user role
+    // Mock data — replace with: supabase.from('user_profiles').select('*').eq('role', 'cleaner')
     const mockCleaners: Cleaner[] = [
       {
         id: 'cleaner-001',
@@ -101,13 +98,8 @@ export function useCleanerManagement() {
         role: 'cleaner',
         skills: ['deep-cleaning', 'eco-friendly', 'luxury-properties'],
         max_daily_bookings: 4,
-        location: { lat: 40.7128, lng: -74.0060 },
-        settings: {
-          notifications: true,
-          timezone: 'America/New_York',
-          theme: 'light',
-          language: 'en'
-        },
+        location_lat: 40.7128,
+        location_lng: -74.0060,
         notifications_enabled: true,
         timezone: 'America/New_York',
         theme: 'light',
@@ -122,13 +114,8 @@ export function useCleanerManagement() {
         role: 'cleaner',
         skills: ['standard-cleaning', 'turn-specialist', 'quick-turnaround'],
         max_daily_bookings: 6,
-        location: { lat: 40.7589, lng: -73.9851 },
-        settings: {
-          notifications: true,
-          timezone: 'America/New_York',
-          theme: 'dark',
-          language: 'en'
-        },
+        location_lat: 40.7589,
+        location_lng: -73.9851,
         notifications_enabled: true,
         timezone: 'America/New_York',
         theme: 'dark',
@@ -143,13 +130,8 @@ export function useCleanerManagement() {
         role: 'cleaner',
         skills: ['premium-cleaning', 'detail-oriented', 'luxury-properties', 'eco-friendly'],
         max_daily_bookings: 3,
-        location: { lat: 40.7505, lng: -73.9934 },
-        settings: {
-          notifications: true,
-          timezone: 'America/New_York',
-          theme: 'light',
-          language: 'es'
-        },
+        location_lat: 40.7505,
+        location_lng: -73.9934,
         notifications_enabled: true,
         timezone: 'America/New_York',
         theme: 'light',
@@ -164,13 +146,8 @@ export function useCleanerManagement() {
         role: 'cleaner',
         skills: ['standard-cleaning', 'maintenance', 'equipment-specialist'],
         max_daily_bookings: 5,
-        location: { lat: 40.7282, lng: -73.7949 },
-        settings: {
-          notifications: true,
-          timezone: 'America/New_York',
-          theme: 'system',
-          language: 'en'
-        },
+        location_lat: 40.7282,
+        location_lng: -73.7949,
         notifications_enabled: true,
         timezone: 'America/New_York',
         theme: 'system',
@@ -185,13 +162,8 @@ export function useCleanerManagement() {
         role: 'cleaner',
         skills: ['deep-cleaning', 'luxury-properties', 'detail-oriented', 'premium-cleaning'],
         max_daily_bookings: 3,
-        location: { lat: 40.6782, lng: -73.9442 },
-        settings: {
-          notifications: true,
-          timezone: 'America/New_York',
-          theme: 'light',
-          language: 'ru'
-        },
+        location_lat: 40.6782,
+        location_lng: -73.9442,
         notifications_enabled: true,
         timezone: 'America/New_York',
         theme: 'light',

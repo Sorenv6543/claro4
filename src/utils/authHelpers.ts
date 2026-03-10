@@ -221,8 +221,9 @@ export function getRoleSpecificSuccessMessage(action: 'login' | 'logout' | 'regi
  */
 
 /**
- * Creates a User object with both flattened and nested settings
- * Ensures compatibility with both old and new patterns
+ * Creates a User object from partial data, populating flat settings fields.
+ * The optional `settings` parameter is accepted for convenience but values
+ * are always written to the flat fields only (notifications_enabled, timezone, theme, language).
  */
 export function createUserWithSettings(userData: Partial<User> & {
   settings?: UserSettings;
@@ -233,25 +234,11 @@ export function createUserWithSettings(userData: Partial<User> & {
     name: userData.name || '',
     role: userData.role || 'owner',
     
-    // Flattened settings (primary)
     notifications_enabled: userData.settings?.notifications ?? userData.notifications_enabled ?? true,
     timezone: userData.settings?.timezone ?? userData.timezone ?? 'UTC',
     theme: userData.settings?.theme ?? userData.theme ?? 'light',
     language: userData.settings?.language ?? userData.language ?? 'en',
-    
-    // Nested settings (for backward compatibility)
-    settings: userData.settings ? {
-      notifications: userData.settings.notifications,
-      timezone: userData.settings.timezone,
-      theme: userData.settings.theme,
-      language: userData.settings.language,
-    } : {
-      notifications: userData.notifications_enabled ?? true,
-      timezone: userData.timezone ?? 'UTC',
-      theme: userData.theme ?? 'light',
-      language: userData.language ?? 'en',
-    },
-    
+
     // Optional fields
     company_name: userData.company_name,
     access_level: userData.access_level,
@@ -294,10 +281,9 @@ export function createAdmin(adminData: Partial<Admin> & {
   } as Admin;
 }
 
-/**
- * Creates a Cleaner object with both flattened and nested settings
- * Ensures compatibility with Cleaner interface requirements
- */
+// Creates a Cleaner object from partial data, populating flat settings fields.
+// Values from the optional `settings` parameter are written to flat fields only
+// (notifications_enabled, timezone, theme, language).
 export function createCleaner(cleanerData: Partial<Cleaner> & {
   settings?: UserSettings;
 }): Cleaner {
@@ -312,14 +298,6 @@ export function createCleaner(cleanerData: Partial<Cleaner> & {
     timezone: cleanerData.settings?.timezone ?? cleanerData.timezone ?? 'UTC',
     theme: cleanerData.settings?.theme ?? cleanerData.theme ?? 'light',
     language: cleanerData.settings?.language ?? cleanerData.language ?? 'en',
-    
-    // Nested settings (for compatibility)
-    settings: {
-      notifications: cleanerData.settings?.notifications ?? cleanerData.notifications_enabled ?? true,
-      timezone: cleanerData.settings?.timezone ?? cleanerData.timezone ?? 'UTC',
-      theme: cleanerData.settings?.theme ?? cleanerData.theme ?? 'light',
-      language: cleanerData.settings?.language ?? cleanerData.language ?? 'en'
-    },
     
     // Cleaner-specific properties
     skills: cleanerData.skills ?? [],

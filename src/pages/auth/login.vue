@@ -27,7 +27,7 @@
 
           <!-- Loading States -->
           <div
-            v-if="authStore.initializing"
+            v-if="authStore.loading"
             class="text-center py-8"
           >
             <v-progress-circular
@@ -202,7 +202,7 @@ async function handleLogin() {
     
     if (success) {
       console.log('✅ Login successful, setting up navigation...');
-      successMessage.value = authStore.getSuccessMessage() ?? ''
+      successMessage.value = authStore.getSuccessMessage('login') ?? ''
       
       // Wait for user to be populated
       let attempts = 0;

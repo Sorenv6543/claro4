@@ -66,14 +66,10 @@
     </v-main>
   
     <!-- Global Notification Area -->
-    <div id="notification-area">
-      <!-- Global notifications will be mounted here -->
-    </div>
+    <!-- <div id="notification-area" /> -->
   
     <!-- Global Modal Area -->
-    <div id="modal-area">
-      <!-- Global modals will be mounted here -->
-    </div>
+    <!-- <div id="modal-area" /> -->
   </v-app>
 </template>
   

@@ -444,10 +444,13 @@ function resetForm(): void {
       property_id: props.booking.property_id,
       checkout_date: formatDateForInput(checkoutDate),
       checkin_date: formatDateForInput(checkinDate),
+      checkin_time: props.booking.checkin_time || '15:00',
+      checkout_time: props.booking.checkout_time || '11:00',
       booking_type: props.booking.booking_type,
       guest_count: props.booking.guest_count,
       notes: props.booking.notes,
       status: props.booking.status,
+      priority: props.booking.priority || 'normal',
       owner_id: props.booking.owner_id
     });
   } else {
@@ -456,10 +459,13 @@ function resetForm(): void {
       property_id: '',
       checkout_date: '',
       checkin_date: '',
+      checkin_time: '15:00',
+      checkout_time: '11:00',
       booking_type: 'standard',
       guest_count: undefined,
       notes: '',
       status: 'pending',
+      priority: 'normal' as const,
       owner_id: ''
     };
     
@@ -552,8 +558,11 @@ async function handleSubmit(): Promise<void> {
       property_id: form.property_id,
       checkout_date: form.checkout_date,
       checkin_date: form.checkin_date,
+      checkin_time: (form.checkin_time as string) || '15:00',
+      checkout_time: (form.checkout_time as string) || '11:00',
       booking_type: form.booking_type as BookingType,
       status: (form.status as BookingStatus) || 'pending',
+      priority: (form.priority as 'low' | 'normal' | 'high' | 'urgent') || 'normal',
       owner_id: form.owner_id as string,
       guest_count: form.guest_count,
       notes: form.notes

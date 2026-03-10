@@ -252,7 +252,7 @@ import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
 import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
 import { useUIStore } from '@/stores/ui'
 import { useAuthStore } from '@/stores/auth'
-import type { Property, PropertyFormData } from '@/types'
+import type { Property, PropertyFormData, PropertyRecord } from '@/types'
 
 // Component metadata
 defineOptions({
@@ -380,7 +380,7 @@ const handleDeleteProperty = async (propertyId: string): Promise<void> => {
 
 // Navigation functions
 const editProperty = (property: Property): void => {
-  uiStore.openModal('propertyModal', 'edit', property)
+  uiStore.openModal('propertyModal', 'edit', property as PropertyRecord)
 }
 
 const viewProperty = (property: Property): void => {

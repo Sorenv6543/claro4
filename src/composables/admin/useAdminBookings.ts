@@ -202,8 +202,11 @@ export function useAdminBookings() {
         owner_id: (bookingData.owner_id as string) || '',
         checkout_date: (bookingData.checkout_date as string) || new Date().toISOString(),
         checkin_date: (bookingData.checkin_date as string) || new Date().toISOString(),
+        checkin_time: (bookingData.checkin_time as string) || '15:00:00',
+        checkout_time: (bookingData.checkout_time as string) || '11:00:00',
         status: (bookingData.status as BookingStatus) || 'pending',
         booking_type: (bookingData.booking_type as BookingType) || 'standard',
+        priority: (bookingData.priority as Booking['priority']) || 'normal',
         assigned_cleaner_id: (bookingData.assigned_cleaner_id as string | undefined) ?? undefined,
         notes: (bookingData.notes as string) || '',
         created_at: new Date().toISOString(),
@@ -234,8 +237,11 @@ export function useAdminBookings() {
         owner_id: (bookingData.owner_id as string) || '',
         checkout_date: (bookingData.checkout_date as string) || new Date().toISOString(),
         checkin_date: (bookingData.checkin_date as string) || new Date().toISOString(),
+        checkin_time: (bookingData.checkin_time as string) || '15:00:00',
+        checkout_time: (bookingData.checkout_time as string) || '11:00:00',
         status: (bookingData.status as BookingStatus) || 'pending',
         booking_type: (bookingData.booking_type as BookingType) || 'standard',
+        priority: (bookingData.priority as Booking['priority']) || 'normal',
         assigned_cleaner_id: (bookingData.assigned_cleaner_id as string | undefined) ?? undefined,
         notes: (bookingData.notes as string) || '',
         created_at: new Date().toISOString(),
@@ -246,11 +252,11 @@ export function useAdminBookings() {
       trackCachePerformance('admin-create-booking', true); // Changed to boolean
       
       success.value = 'Booking created successfully';
-         } catch (err: unknown) {
-       const errorMsg = err as Error;
-       error.value = `Failed to create booking: ${errorMsg.message}`;
-       trackCachePerformance('admin-create-booking', false); // Changed to boolean
-     } finally {
+    } catch (err: unknown) {
+      error.value = `Failed to create booking: ${err instanceof Error ? err.message : String(err)}`;
+      trackCachePerformance('admin-create-booking', false);
+      throw err;
+    } finally {
       loading.value = false;
     }
   };
@@ -265,9 +271,9 @@ export function useAdminBookings() {
       
       success.value = 'Booking updated successfully';
     } catch (err: unknown) {
-      const errorObj = err as Error;
-      error.value = `Failed to update booking: ${errorObj.message}`;
+      error.value = `Failed to update booking: ${err instanceof Error ? err.message : String(err)}`;
       trackCachePerformance('admin-update-booking', false); // Changed to boolean
+      throw err;
     } finally {
       loading.value = false;
     }
@@ -282,23 +288,11 @@ export function useAdminBookings() {
       
       success.value = 'Booking deleted successfully';
     } catch (err: unknown) {
-      const errorObj = err as Error;
-      error.value = `Failed to delete booking: ${errorObj.message}`;
+      error.value = `Failed to delete booking: ${err instanceof Error ? err.message : String(err)}`;
     } finally {
       loading.value = false;
     }
   };
-
-  // Role-specific performance metrics (prefixed with _ to indicate intentionally unused)
-  const _getAdminPerformanceMetrics = computed(() => {
-    return {
-      totalBookingsProcessed: allBookings.value.length,
-      totalPropertiesManaged: allProperties.value.length,
-      systemLoad: allBookings.value.length > 100 ? 'high' : 
-                 allBookings.value.length > 50 ? 'medium' : 'low',
-      dataProcessingEfficiency: allBookings.value.length > 0 ? 'optimal' : 'idle'
-    };
-  });
 
   // Permission functions expected by tests
   function canManageAnyBooking(): boolean {
@@ -694,7 +688,7 @@ export function useAdminBookings() {
     fetchAllBookings,
     assignCleaner,
     assignCleanerToBooking: (bookingId: string, cleanerId: string) => {
-      // Synchronous version for test compatibility
+      // Synchronous store update — does not persist to Supabase. Use assignCleaner() for the async Supabase version.
       try {
         const booking = bookingStore.bookings.get(bookingId);
         if (booking) {
@@ -702,7 +696,9 @@ export function useAdminBookings() {
           return true;
         }
         return false;
-      } catch {
+      } catch (err) {
+        error.value = `Failed to assign cleaner: ${err instanceof Error ? err.message : String(err)}`;
+        console.error('[useAdminBookings] assignCleanerToBooking error:', err);
         return false;
       }
     },

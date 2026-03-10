@@ -9,48 +9,6 @@ import type { ThemeDefinition } from 'vuetify';
 import 'vuetify/styles';
 import '@mdi/font/css/materialdesignicons.css';
 
-// Theme configuration
-const lightTheme: ThemeDefinition = {
-  dark: false,
-  colors: {
-    primary: '#1976d2', 
-    secondary: '#e0e7f81e;',
-    accent: '#045ecc', 
-    error: '#80b3ec', 
-    info: '#6b7280',
-    success: '#093d8b',
-    warning: '#FF9800',
-    background: '#ffffff', 
-    surface: '#ffffff',  
-    'on-background': '#1C1B1F',
-    'on-surface': '#1C1B1F',
-    'surface-variant': '#69acfa', 
-    'on-surface-variant': '#49454F',
-    'turn-urgent': '#F44336',
-    'turn-standard': '#FF9800', 
-    'booking-standard': '#2196F3', 
-  }
-};
-
-const darkTheme: ThemeDefinition = {
-  dark: true,
-  colors: {
-    primary: '#42A5F5',   
-    error: '#2eacb1', 
-    info: '#29B6F6',
-    success: '#66BB6A',
-    warning: '#ffc164', 
-    background: '#121212', 
-    surface: '#1E1E1E', 
-    'on-background': '#E6E1E5',
-    'on-surface': '#E6E1E5',
-    'surface-variant': '#2D2D2D',
-    'on-surface-variant': '#CAC4D0',
-    'turn-urgent': '#bcffae', 
-    'turn-standard': '#FFA726',
-    'booking-standard': '#42A5F5',
-  }
-};
 // Green Theme (Nature)
 const greenTheme: ThemeDefinition = {
   dark: false,

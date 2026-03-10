@@ -8,7 +8,7 @@
     @keydown.esc="handleClose"
   >
     <v-card class="modal-card">
-      <v-card-title class="text-h5 pb-2 flex-shrink-0">
+      <v-card-title class="text-h5 pb-2 shrink-0">
         {{ formTitle }}
         <v-chip
           v-if="form.active"

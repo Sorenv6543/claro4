@@ -207,7 +207,7 @@ const loading = computed(() => {
 
 // Convert arrays to Maps for component compatibility
 const ownerBookingsMap = computed(() => {
-  const map = new Map<string, any>();
+  const map = new Map<string, typeof ownerBookings.value[number]>();
   ownerBookings.value.forEach(booking => {
     map.set(booking.id, booking);
   });
@@ -215,7 +215,7 @@ const ownerBookingsMap = computed(() => {
 });
 
 const ownerPropertiesMap = computed(() => {
-  const map = new Map<string, any>();
+  const map = new Map<string, typeof ownerProperties.value[number]>();
   ownerProperties.value.forEach(property => {
     map.set(property.id, property);
   });
@@ -246,7 +246,7 @@ const handleEventDrop = async (dropInfo: EventDropArg): Promise<void> => {
         checkin_date: dropInfo.event.endStr || dropInfo.event.startStr
       });
       uiStore.showNotification('Booking updated successfully', 'success');
-    } catch (_error) {
+    } catch {
       uiStore.showNotification('Failed to update booking', 'error');
       dropInfo.revert();
     }
@@ -264,7 +264,7 @@ const handleUpdateBooking = async (data: { id: string; start: string; end: strin
       checkin_date: data.end
     });
     uiStore.showNotification('Booking updated successfully', 'success');
-  } catch (_error) {
+  } catch {
     uiStore.showNotification('Failed to update booking', 'error');
   }
 };

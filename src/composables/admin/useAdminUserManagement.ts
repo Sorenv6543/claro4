@@ -63,7 +63,8 @@ async function createUser(userData: Partial<User> & { password: string }): Promi
         access_level: userData.access_level || null,
         skills: userData.skills || null,
         max_daily_bookings: userData.max_daily_bookings || null,
-        location: userData.location || null,
+        location_lat: userData.location_lat || null,
+        location_lng: userData.location_lng || null,
         timezone: userData.timezone || null,
         language: userData.language || null,
         notifications_enabled: userData.notifications_enabled ?? true
@@ -94,7 +95,19 @@ async function updateUser(userId: string, updateData: Partial<User>): Promise<bo
     const { error: updateError } = await supabase
       .from('user_profiles')
       .update({
-        ...updateData,
+        name: updateData.name,
+        email: updateData.email,
+        role: updateData.role,
+        company_name: updateData.company_name,
+        notifications_enabled: updateData.notifications_enabled,
+        timezone: updateData.timezone,
+        theme: updateData.theme,
+        language: updateData.language,
+        access_level: updateData.access_level,
+        skills: updateData.skills,
+        max_daily_bookings: updateData.max_daily_bookings,
+        location_lat: updateData.location_lat,
+        location_lng: updateData.location_lng,
         updated_at: new Date().toISOString()
       })
       .eq('id', userId)
@@ -130,8 +143,12 @@ async function deleteUser(userId: string): Promise<boolean> {
     // Delete from auth.users using admin API
     const { error: authError } = await supabase.auth.admin.deleteUser(userId)
     if (authError) {
-      // Warn but do not throw, since profile deletion succeeded
-      console.warn('Auth user deletion failed:', authError)
+      // Profile was deleted but auth account remains — user can still log in.
+      // Refresh the list so the UI reflects the partial deletion.
+      await fetchAllUsers()
+      error.value = 'User profile deleted, but the auth account could not be removed. Contact your Supabase admin to delete the auth record manually.'
+      loading.value = false
+      return false
     }
     await fetchAllUsers()
     return true
@@ -181,7 +198,7 @@ async function resetUserPassword(userId: string, newPassword: string): Promise<b
   loading.value = true
   error.value = null
   try {
-    // Supabase admin API does not send password reset emails directly; must use client API
+    // Directly sets a new password via the Supabase admin API — does not send a reset email.
     const { error: resetError } = await supabase.auth.admin.updateUserById(userId, {
       password: newPassword
     })
@@ -191,9 +208,9 @@ async function resetUserPassword(userId: string, newPassword: string): Promise<b
     return true
   } catch (err: unknown) {
     if (err && typeof err === 'object' && 'message' in err) {
-      error.value = (err as { message?: string }).message || 'Failed to send password reset email'
+      error.value = (err as { message?: string }).message || 'Failed to update password'
     } else {
-      error.value = 'Failed to send password reset email'
+      error.value = 'Failed to update password'
     }
     return false
   } finally {

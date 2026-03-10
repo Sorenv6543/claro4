@@ -214,7 +214,6 @@ import { ref, computed, onMounted } from 'vue';
 import HomeAdmin from '@components/smart/admin/HomeAdmin.vue';
 import { usePropertyStore } from '@/stores/property';
 import { useBookingStore } from '@/stores/booking';
-import { useAuthStore } from '@/stores/auth';
 import type { Booking, Property } from '@/types';
 
 // Demo state
@@ -228,7 +227,6 @@ const eventLog = ref<Array<{
 // Store connections
 const propertyStore = usePropertyStore();
 const bookingStore = useBookingStore();
-const authStore = useAuthStore();
 
 // Sample data for multiple owners (admin sees ALL)
 const sampleOwners = [
@@ -365,7 +363,9 @@ const loadSampleData = (): void => {
       property_id: 'prop-1',
       owner_id: '1', // John Smith
       checkout_date: new Date().toISOString().split('T')[0] + 'T11:00:00Z',
+      checkout_time: '11:00',
       checkin_date: new Date().toISOString().split('T')[0] + 'T15:00:00Z',
+      checkin_time: '15:00',
       booking_type: 'turn',
       guest_count: 4,
       notes: 'Same-day turnaround, high priority',
@@ -378,7 +378,9 @@ const loadSampleData = (): void => {
       property_id: 'prop-3',
       owner_id: '2', // Sarah Johnson
       checkout_date: new Date().toISOString().split('T')[0] + 'T10:00:00Z',
+      checkout_time: '10:00',
       checkin_date: new Date().toISOString().split('T')[0] + 'T16:00:00Z',
+      checkin_time: '16:00',
       booking_type: 'turn',
       guest_count: 2,
       notes: 'Mountain cabin turnaround',
@@ -392,7 +394,9 @@ const loadSampleData = (): void => {
       property_id: 'prop-5',
       owner_id: '3', // Mike Wilson
       checkout_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T11:00:00Z',
+      checkout_time: '11:00',
       checkin_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T15:00:00Z',
+      checkin_time: '15:00',
       booking_type: 'standard',
       guest_count: 6,
       notes: 'Regular cleaning, family with kids',
@@ -405,7 +409,9 @@ const loadSampleData = (): void => {
       property_id: 'prop-6',
       owner_id: '4', // Lisa Brown
       checkout_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T12:00:00Z',
+      checkout_time: '12:00',
       checkin_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T14:00:00Z',
+      checkin_time: '14:00',
       booking_type: 'standard',
       guest_count: 2,
       notes: 'Historic home, careful cleaning',
@@ -418,7 +424,9 @@ const loadSampleData = (): void => {
       property_id: 'prop-2',
       owner_id: '1', // John Smith
       checkout_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T09:00:00Z',
+      checkout_time: '09:00',
       checkin_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T17:00:00Z',
+      checkin_time: '17:00',
       booking_type: 'turn',
       guest_count: 3,
       notes: 'Downtown loft quick turn',
@@ -431,7 +439,9 @@ const loadSampleData = (): void => {
       property_id: 'prop-4',
       owner_id: '2', // Sarah Johnson
       checkout_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T10:00:00Z',
+      checkout_time: '10:00',
       checkin_date: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0] + 'T16:00:00Z',
+      checkin_time: '16:00',
       booking_type: 'standard',
       guest_count: 1,
       notes: 'Studio apartment, minimal cleaning',
@@ -542,22 +552,6 @@ const getEventColor = (action: string): string => {
 
 // Initialize demo
 onMounted(() => {
-  // Set up admin user for demo
-  authStore.user = {
-    id: 'admin-1',
-    email: 'admin@cleaningcompany.com',
-    name: 'Admin User',
-    role: 'admin',
-    settings: {
-      notifications: true,
-      timezone: 'America/New_York',
-      theme: 'light',
-      language: 'en'
-    },
-    created_at: '2024-01-01T00:00:00Z',
-    updated_at: '2024-01-01T00:00:00Z'
-  };
-  
   // Load sample data automatically
   loadSampleData();
 });
