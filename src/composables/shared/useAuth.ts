@@ -1,7 +1,6 @@
-// Mock auth composable — used only by push notification components.
-// The auth store delegates to useSupabaseAuth (not this file).
-// This file provides a standalone user ref for UI components that
-// are not wired to the main auth store.
+// Mock auth composable — wraps a mock user store with login/logout/register.
+// NOT used by the main auth store (which delegates to useSupabaseAuth).
+// Use for development/testing flows that need auth-like behavior without Supabase.
 
 import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/user';
