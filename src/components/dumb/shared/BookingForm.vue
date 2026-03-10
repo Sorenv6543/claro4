@@ -475,8 +475,8 @@ function resetForm(): void {
       ...defaults, 
       ...initialData,
       // Map calendar date properties to form properties
-      checkout_date: initialData.start || initialData.checkout_date || '',
-      checkin_date: initialData.end || initialData.checkin_date || ''
+      checkin_date: initialData.start || initialData.checkin_date || '',
+      checkout_date: initialData.end || initialData.checkout_date || ''
     };
     
     // Format dates if they exist
