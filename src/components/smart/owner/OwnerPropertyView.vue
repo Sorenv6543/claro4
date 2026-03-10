@@ -139,16 +139,16 @@
             </v-card-text>
           </v-card>
 
-          <!-- Cleaning Schedule -->
+          <!-- Upcoming Arrivals -->
           <v-card class="mb-4">
             <v-card-title>
               <v-icon
                 color="warning"
                 class="mr-2"
               >
-                mdi-broom
+                mdi-calendar-account
               </v-icon>
-              Cleaning Schedule
+              Upcoming Arrivals
             </v-card-title>
             <v-card-text>
               <div
@@ -510,7 +510,7 @@ const getBookingStatusColor = (status: string) => {
 <style scoped>
 .property-view-page {
   min-height: 100vh;
-  background: #f8f9fa;
+  background: rgb(var(--v-theme-background));
 }
 
 .property-detail {
@@ -533,7 +533,7 @@ const getBookingStatusColor = (status: string) => {
   align-items: center;
   text-align: center;
   padding: 16px 0;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
 .stat-item:last-child {
