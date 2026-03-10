@@ -1,10 +1,7 @@
-// 🔐 AUTHENTICATION LAYER
-
-// src/composables/shared/useAuth.ts - 🔧 AUTH OPERATIONS
-// ✅ Contains actual authentication logic
-// ✅ Currently mock implementation
-// ✅ Called by auth store
-// ✅ Future: Will contain real Supabase calls (TODO: TASK-039O) - 
+// Mock auth composable — used only by push notification components.
+// The auth store delegates to useSupabaseAuth (not this file).
+// This file provides a standalone user ref for UI components that
+// are not wired to the main auth store.
 
 import { ref, computed } from 'vue';
 import { useUserStore } from '@/stores/user';

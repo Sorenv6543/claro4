@@ -57,23 +57,15 @@ export function loadingGuard(
   _from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) {
-  // TODO: set loading state here
-  if (to.meta.requiresAuth || to.meta.role) {
-    console.log('⏳ Loading guard: Setting loading state for protected route');
-  }
+  // TODO: set loading state here (e.g. uiStore.setLoading(true))
   
   next();
 }
 
 export function afterNavigationGuard(
-  to: RouteLocationNormalized
+  _to: RouteLocationNormalized
 ) {
-  console.log('📍 Navigation completed to:', to.path);
-  
-  // Initialize real-time sync if on protected routes
-  if (to.meta.requiresAuth) {
-    console.log('🔄 Protected route accessed, ensuring real-time sync is active');
-  }
+  // Post-navigation hook — add analytics, page title updates, etc. here
 }
 
 export function developmentGuard(
@@ -83,7 +75,6 @@ export function developmentGuard(
 ) {
   // Block development routes in production
   if (to.path.startsWith('/dev') && import.meta.env.PROD) {
-    console.log('❌ Development route blocked in production');
     next('/404');
     return;
   }
