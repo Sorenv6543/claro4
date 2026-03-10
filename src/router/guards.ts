@@ -1,4 +1,3 @@
-// src/router/guards.ts - Enhanced with Supabase Authentication
 import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { getDefaultRouteForRole } from '@/utils/authHelpers';
@@ -10,66 +9,44 @@ export async function authGuard(
   next: NavigationGuardNext
 ) {
   const authStore = useAuthStore();
-  
-  console.log('🔄 Auth guard: Checking authentication...');
-  
-  // Check auth state
-  await authStore.checkAuth();
-  
-  console.log('🛡️ Auth guard check:', {
-    route: to.path,
-    authenticated: authStore.isAuthenticated,
-    userRole: authStore.user?.role,
-    requiresAuth: to.meta.requiresAuth,
-    requiredRole: to.meta.role
-  });
-  
+
+  // Only call checkAuth on initial load (no cached session yet)
+  if (!authStore.isAuthenticated && !authStore.user) {
+    await authStore.checkAuth();
+  }
+
   // Check if route requires authentication
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    console.log('❌ Route requires auth but user not authenticated, redirecting to login');
     next('/auth/login');
     return;
   }
-  
+
   // Check role-based access
   const requiredRole = to.meta.role as UserRole;
   if (requiredRole && authStore.user?.role !== requiredRole) {
-    console.log('❌ User role mismatch:', {
-      required: requiredRole,
-      actual: authStore.user?.role
-    });
-    
-    // Redirect to appropriate dashboard for user's role
     const defaultRoute = getDefaultRouteForRole(authStore.user?.role);
     next(defaultRoute);
     return;
   }
-  
-  // Special handling for admin routes
+
+  // Block admin routes for non-admins
   if (to.path.startsWith('/admin') && !authStore.isAdmin) {
-    console.log('❌ Admin route access denied for non-admin user');
-    const defaultRoute = getDefaultRouteForRole(authStore.user?.role);
-    next(defaultRoute);
+    next(getDefaultRouteForRole(authStore.user?.role));
     return;
   }
-  
-  // Special handling for owner routes
+
+  // Block owner routes for non-owners
   if (to.path.startsWith('/owner') && !authStore.isOwner) {
-    console.log('❌ Owner route access denied for non-owner user');
-    const defaultRoute = getDefaultRouteForRole(authStore.user?.role);
-    next(defaultRoute);
+    next(getDefaultRouteForRole(authStore.user?.role));
     return;
   }
-  
+
   // Redirect authenticated users away from auth/login pages
   if ((to.path === '/' || to.path.startsWith('/auth')) && authStore.isAuthenticated) {
-    console.log('✅ Authenticated user accessing auth page, redirecting to dashboard');
-    const defaultRoute = getDefaultRouteForRole(authStore.user?.role);
-    next(defaultRoute);
+    next(getDefaultRouteForRole(authStore.user?.role));
     return;
   }
-  
-  console.log('✅ Auth guard passed, proceeding to route');
+
   next();
 }
 
@@ -78,7 +55,7 @@ export function loadingGuard(
   _from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) {
-  // Set loading state for better UX
+  // TODO: set loading state here
   if (to.meta.requiresAuth || to.meta.role) {
     console.log('⏳ Loading guard: Setting loading state for protected route');
   }
@@ -107,23 +84,6 @@ export function developmentGuard(
     console.log('❌ Development route blocked in production');
     next('/404');
     return;
-  }
-  
-  next();
-}
-
-// New: Real-time sync guard
-export function realtimeSyncGuard(
-  to: RouteLocationNormalized,
-  _from: RouteLocationNormalized,
-  next: NavigationGuardNext
-) {
-  const authStore = useAuthStore();
-  
-  // Initialize real-time sync for authenticated routes
-  if (to.meta.requiresAuth && authStore.isAuthenticated) {
-    // This will be handled by the useRealtimeSync composable
-    console.log('🔄 Route requires real-time sync, will initialize in component');
   }
   
   next();
