@@ -289,6 +289,7 @@ export function useAdminBookings() {
       success.value = 'Booking deleted successfully';
     } catch (err: unknown) {
       error.value = `Failed to delete booking: ${err instanceof Error ? err.message : String(err)}`;
+      throw err;
     } finally {
       loading.value = false;
     }

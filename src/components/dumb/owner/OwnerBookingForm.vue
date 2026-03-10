@@ -212,8 +212,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import DatePickerField from '@/components/dumb/shared/DatePickerField.vue'
-import TimePickerField from '@/components/dumb/shared/TimePickerField.vue'
+import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
+import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
 import type { Property } from '@/types/property'
 import type { Booking, BookingFormData } from '@/types/booking'
 
@@ -248,7 +248,8 @@ const formValid = ref(false)
 const autoDetectType = ref(true)
 
 // Date picker state
-const todayIso = new Date().toISOString().slice(0, 10)
+const _now = new Date()
+const todayIso = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, '0')}-${String(_now.getDate()).padStart(2, '0')}`
 
 // Form data
 const form = ref<BookingFormData>({

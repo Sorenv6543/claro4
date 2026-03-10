@@ -451,8 +451,8 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick } from 'vue'
-import DatePickerField from '@/components/dumb/shared/DatePickerField.vue'
-import TimePickerField from '@/components/dumb/shared/TimePickerField.vue'
+import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
+import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
 import type { Property } from '@/types/property'
 import type { Booking, BookingFormData } from '@/types/booking'
 import type { Cleaner } from '@/types/user'
@@ -491,7 +491,8 @@ const formRef = ref()
 const formValid = ref(false)
 
 // Date picker state
-const todayIso = new Date().toISOString().slice(0, 10)
+const _now = new Date()
+const todayIso = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, '0')}-${String(_now.getDate()).padStart(2, '0')}`
 
 // Default form data
 const defaultForm: BookingFormData = {
@@ -731,21 +732,11 @@ const openCleanerAssignmentModal = () => {
 }
 
 const handleSubmit = async () => {
-  console.log('🚀 [AdminBookingForm] handleSubmit called')
-  
-  if (!formRef.value) {
-    console.error('🚀 [AdminBookingForm] No form ref')
-    return
-  }
-  
+  if (!formRef.value) return
+
   const { valid } = await formRef.value.validate()
-  console.log('🚀 [AdminBookingForm] Form validation result:', valid)
-  
-  if (!valid) {
-    console.error('🚀 [AdminBookingForm] Form validation failed')
-    return
-  }
-  
+  if (!valid) return
+
   // Clean form data - convert empty strings to undefined for UUID fields
   const cleanFormData: BookingFormData = {
     ...form.value,
@@ -754,7 +745,6 @@ const handleSubmit = async () => {
     property_id: form.value.property_id || '',
   }
 
-  console.log('🚀 [AdminBookingForm] Submitting cleaned form data:', cleanFormData)
   emit('submit', cleanFormData)
 }
 

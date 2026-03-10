@@ -122,13 +122,13 @@ export const validateTurnBooking = (
     return { valid: true, errors, warnings };
   }
   
-  // Turn bookings represent a same-day changeover: previous guests' checkout_date and
-  // incoming guests' checkin_date fall on the same calendar day.
+  // A turn booking is a same-day stay: the guest arrives and departs on the same calendar date
+  // (checkin_date == checkout_date).
   if (booking.checkout_date!.slice(0, 10) !== booking.checkin_date!.slice(0, 10)) {
     errors.push('Turn bookings must have checkout and checkin on the same day');
   }
 
-  // For same-day stays, validate that checkout time is after checkin time.
+  // For same-day stays, guests must depart (checkout) after they arrive (checkin).
   if (booking.checkout_time && booking.checkin_time) {
     if (booking.checkout_time <= booking.checkin_time) {
       errors.push('For turn bookings, checkout time must be after checkin time');
