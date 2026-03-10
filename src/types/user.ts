@@ -33,7 +33,7 @@ export interface User {
   theme: 'light' | 'dark' | 'system';
   language: string;
   access_level?: 'full' | 'limited';
-  skills?: string[];
+  skills?: string[] | null;
   max_daily_bookings?: number;
   location_lat?: number;
   location_lng?: number;

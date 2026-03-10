@@ -33,7 +33,7 @@ export interface Booking {
   guest_count?: number;
   notes?: string;
   priority: 'low' | 'normal' | 'high' | 'urgent';
-  assigned_cleaner_id?: string;
+  assigned_cleaner_id?: string | null;
   created_at?: string;
   updated_at?: string;
 }
