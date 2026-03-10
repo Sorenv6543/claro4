@@ -38,6 +38,10 @@ export const useAuthStore = defineStore('auth', () => {
   const storeLoading = ref(false);
   const storeError = ref<string | null>(null);
 
+  // Tracks whether checkAuth() has been called at least once this session.
+  // Reset on sign-out so the next navigation re-checks the session.
+  const authChecked = ref(false);
+
   // Computed properties
   const user = computed(() => supabaseUser.value);
   const isAuthenticated = computed(() => {
@@ -109,6 +113,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (success) {
         console.log('✅ [Auth Store] Logout successful');
+        authChecked.value = false;
         clearError();
         return true;
       }
@@ -299,6 +304,7 @@ export const useAuthStore = defineStore('auth', () => {
     session,
     loading,
     error,
+    authChecked,
 
     // Computed
     isAuthenticated,

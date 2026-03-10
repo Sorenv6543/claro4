@@ -3,8 +3,6 @@ import { useAuthStore } from '@/stores/auth';
 import { getDefaultRouteForRole } from '@/utils/authHelpers';
 import type { UserRole } from '@/types';
 
-let authInitialized = false;
-
 export async function authGuard(
   to: RouteLocationNormalized,
   _from: RouteLocationNormalized,
@@ -12,10 +10,11 @@ export async function authGuard(
 ) {
   const authStore = useAuthStore();
 
-  // Only call checkAuth once per app session to avoid redundant calls on redirect
-  if (!authInitialized) {
+  // Only call checkAuth once per session. After logout, the auth store's
+  // signOut action resets authChecked so the next navigation re-checks.
+  if (!authStore.authChecked) {
     await authStore.checkAuth();
-    authInitialized = true;
+    authStore.authChecked = true;
   }
 
   // Check if route requires authentication
