@@ -143,7 +143,9 @@ async function deleteUser(userId: string): Promise<boolean> {
     // Delete from auth.users using admin API
     const { error: authError } = await supabase.auth.admin.deleteUser(userId)
     if (authError) {
-      // Profile was deleted but auth account remains — user can still log in
+      // Profile was deleted but auth account remains — user can still log in.
+      // Refresh the list so the UI reflects the partial deletion.
+      await fetchAllUsers()
       error.value = 'User profile deleted, but the auth account could not be removed. Contact your Supabase admin to delete the auth record manually.'
       loading.value = false
       return false
@@ -196,7 +198,7 @@ async function resetUserPassword(userId: string, newPassword: string): Promise<b
   loading.value = true
   error.value = null
   try {
-    // Supabase admin API does not send password reset emails directly; must use client API
+    // Directly sets a new password via the Supabase admin API — does not send a reset email.
     const { error: resetError } = await supabase.auth.admin.updateUserById(userId, {
       password: newPassword
     })
@@ -206,9 +208,9 @@ async function resetUserPassword(userId: string, newPassword: string): Promise<b
     return true
   } catch (err: unknown) {
     if (err && typeof err === 'object' && 'message' in err) {
-      error.value = (err as { message?: string }).message || 'Failed to send password reset email'
+      error.value = (err as { message?: string }).message || 'Failed to update password'
     } else {
-      error.value = 'Failed to send password reset email'
+      error.value = 'Failed to update password'
     }
     return false
   } finally {
