@@ -288,7 +288,8 @@ const darkBrownTheme: ThemeDefinition = {
 export default createVuetify({
   components,
   directives,
-  
+  date: {},        // ← add this line
+
   // Icon configuration
   icons: {
     defaultSet: 'mdi',
