@@ -30,6 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
     updateProfile,
     resetPassword,
     checkAuth,
+    clearError: supabaseClearError,
     getAllUsers,
     updateUserRole
   } = useSupabaseAuth();
@@ -57,7 +58,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   function clearError() {
     storeError.value = null;
-    supabaseError.value = null;
+    supabaseClearError();
   }
 
   // Authentication methods

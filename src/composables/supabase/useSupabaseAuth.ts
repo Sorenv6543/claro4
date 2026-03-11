@@ -54,16 +54,19 @@ export function useSupabaseAuth() {
         }
       });
 
-      // Check current session as fallback in case onAuthStateChange is delayed
+      // Check current session as fallback in case onAuthStateChange is delayed.
+      // Only load profile if INITIAL_SESSION hasn't already loaded it (!user.value guard).
       supabase.auth.getSession().then(({ data: { session: currentSession }, error: sessionError }) => {
         if (sessionError) {
           console.error('Session check failed:', sessionError);
         }
         if (currentSession) {
           session.value = currentSession;
-          loadUserProfile(currentSession.user.id).catch(err => {
-            console.error('Existing session profile loading failed:', err);
-          });
+          if (!user.value) {
+            loadUserProfile(currentSession.user.id).catch(err => {
+              console.error('Existing session profile loading failed:', err);
+            });
+          }
         }
         if (initializing.value) {
           initializing.value = false;
@@ -458,6 +461,10 @@ export function useSupabaseAuth() {
     }
   }, 1000);
 
+  function clearError() {
+    error.value = null;
+  }
+
   return {
     // State
     user,
@@ -477,10 +484,10 @@ export function useSupabaseAuth() {
     updateProfile,
     resetPassword,
     checkAuth,
+    clearError,
     getAllUsers,
     updateUserRole,
     deleteUser,
-    createAdminUser,
-    loadUserProfile
+    createAdminUser
   };
 }
