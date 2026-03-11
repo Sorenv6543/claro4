@@ -101,6 +101,6 @@ const currentYear = computed(() => new Date().getFullYear());
 /* Footer styling */
 .v-footer {
   backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(209, 207, 207, 0.2);
+  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.12);
 }
 </style>

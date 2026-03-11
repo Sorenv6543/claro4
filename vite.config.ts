@@ -244,7 +244,12 @@ export default defineConfig({
             return 'admin-app'
           }
 
-          // Core app code
+          // Core app code.
+          // NOTE: 3 circular chunk warnings (app→admin-app→app, app→owner-app→app,
+          // vuetify→app→owner-app→vuetify) are pre-existing and stem from the router
+          // eagerly importing admin/owner pages. Eliminating them requires converting
+          // all routes to lazy imports: () => import('./pages/...'). Tracked as a
+          // follow-up task.
           if (id.includes('/stores/') || id.includes('\\stores\\') ||
               id.includes('/composables/shared/') || id.includes('\\composables\\shared\\') ||
               id.includes('/utils/') || id.includes('\\utils\\')) {

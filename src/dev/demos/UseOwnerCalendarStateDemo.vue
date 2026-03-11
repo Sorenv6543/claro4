@@ -215,12 +215,12 @@
                   <template #item="{ props, item }">
                     <v-list-item v-bind="props">
                       <template #prepend>
-                        <v-icon :color="item.raw.active ? 'success' : 'warning'">
-                          {{ item.raw.active ? 'mdi-home' : 'mdi-home-off' }}
+                        <v-icon :color="item.active ? 'success' : 'warning'">
+                          {{ item.active ? 'mdi-home' : 'mdi-home-off' }}
                         </v-icon>
                       </template>
-                      <v-list-item-title>{{ item.raw.name }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ item.raw.address }}</v-list-item-subtitle>
+                      <v-list-item-title>{{ item.name }}</v-list-item-title>
+                      <v-list-item-subtitle>{{ item.address }}</v-list-item-subtitle>
                     </v-list-item>
                   </template>
                 </v-select>
