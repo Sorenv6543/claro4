@@ -13,11 +13,11 @@ import { computed, markRaw } from 'vue'
 import { useRoute } from 'vue-router'
 
 // Import layouts
-import DefaultLayout from '@layouts/default.vue';
-import AuthLayout from '@layouts/auth.vue';
-import AdminLayout from '@layouts/admin.vue';
-import OwnerLayout from '@layouts/owner.vue';
-import PWANotificationsEnhanced from '@components/dumb/shared/PWANotificationsEnhanced.vue'
+import DefaultLayout from '@/layouts/default.vue'
+import AuthLayout from '@/layouts/auth.vue'
+import AdminLayout from '@/layouts/admin.vue'
+import OwnerLayout from '@/layouts/owner.vue'
+import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
 
 // Available layouts
 const layouts = {
@@ -34,11 +34,6 @@ const layout = computed(() => {
   const layoutName = route.meta.layout as string || 'default'
   return layouts[layoutName as keyof typeof layouts] || layouts.default
 })
-
-
-
-
-
 </script>
 
 <style>

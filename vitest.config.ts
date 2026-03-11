@@ -2,6 +2,7 @@ import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
 import path from 'path'
 import vuetify from 'vite-plugin-vuetify'
+export { defineConfig }
 
 export default defineConfig({
   plugins: [
@@ -16,10 +17,20 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'happy-dom',
+    clearMocks: true,
+    restoreMocks: true,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html'],
-      exclude: ['node_modules/', 'src/assets/']
+      include: ['src/**/*.{ts,vue}'],
+      exclude: [
+        'node_modules/',
+        'src/assets/',
+        'src/**/*.{test,spec}.{ts,js}',
+        'src/__tests__/**',
+        'src/types/**',
+        'src/main.ts'
+      ]
     },
     include: ['src/**/*.{test,spec}.{js,ts,jsx,tsx}'],
     css: true,
@@ -37,4 +48,4 @@ export default defineConfig({
       '@assets': path.resolve(__dirname, './src/assets')
     }
   }
-}) 
+})

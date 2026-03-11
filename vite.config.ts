@@ -25,14 +25,16 @@ export default defineConfig({
             configFile: 'src/styles/variables.scss'
           }
     }),  
-    devtoolsJson(),
-vueDevTools({
-  componentInspector: {
-    enabled: false,
-    toggleComboKey: 'alt-shift',
-    launchEditor: 'code',
-  }
-}),
+    ...(process.env.NODE_ENV !== 'production' ? [
+      devtoolsJson(),
+      vueDevTools({
+        componentInspector: {
+          enabled: false,
+          toggleComboKey: 'alt-shift',
+          launchEditor: 'code',
+        }
+      }),
+    ] : []),
     // Only include PWA plugin in production to prevent manifest errors in development
     ...(process.env.NODE_ENV === 'production' ? [VitePWA({
       registerType: 'autoUpdate',
@@ -155,7 +157,6 @@ vueDevTools({
 
   ],    
 
-    // Temporarily disable Vue DevTools to resolve login ha
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
@@ -181,7 +182,7 @@ vueDevTools({
     __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString()),
     // Ensure Vue feature flags are properly set
     __VUE_OPTIONS_API__: JSON.stringify(true),
-    __VUE_PROD_DEVTOOLS__: JSON.stringify(true),
+    __VUE_PROD_DEVTOOLS__: JSON.stringify(process.env.NODE_ENV !== 'production'),
     // Suppress Sass deprecation warnings
     'process.env.SASS_SILENCE_DEPRECATION_WARNINGS': JSON.stringify('legacy-js-api')
   },
@@ -189,19 +190,10 @@ vueDevTools({
     css: {
       devSourcemap: true, // Enable CSS sourcemaps in development
       preprocessorOptions: {
-        scss: {
-          sourceMap: true, // Enable SCSS sourcemaps
-          sourceMapContents: true,
-          sourceMapEmbed: false,
-          // Fix Sass legacy API deprecation warnings
-          api: 'modern-compiler',
-          silenceDeprecations: ['legacy-js-api'],
-          // Additional options to suppress deprecation warnings
+        // Suppress Sass deprecation warnings and set load paths for Vuetify styles
+        scss: { 
           quietDeps: true,
-          style: 'compressed',
-          // Use modern Sass API to avoid deprecation warnings
-          loadPaths: ['node_modules'],
-          charset: false
+          loadPaths: ['node_modules']
         }
       }
     },
@@ -252,7 +244,12 @@ vueDevTools({
             return 'admin-app'
           }
 
-          // Core app code
+          // Core app code.
+          // NOTE: 3 circular chunk warnings (app→admin-app→app, app→owner-app→app,
+          // vuetify→app→owner-app→vuetify) are pre-existing and stem from the router
+          // eagerly importing admin/owner pages. Eliminating them requires converting
+          // all routes to lazy imports: () => import('./pages/...'). Tracked as a
+          // follow-up task.
           if (id.includes('/stores/') || id.includes('\\stores\\') ||
               id.includes('/composables/shared/') || id.includes('\\composables\\shared\\') ||
               id.includes('/utils/') || id.includes('\\utils\\')) {
@@ -267,7 +264,7 @@ vueDevTools({
     // Re-enable CSS code splitting
     cssCodeSplit: true,
     // Use esbuild for better compatibility
-    minify: process.env.NODE_ENV === 'production' ? 'esbuild' : false
+    minify: process.env.NODE_ENV === 'production' ? true : false
   },
   optimizeDeps: {
     include: [

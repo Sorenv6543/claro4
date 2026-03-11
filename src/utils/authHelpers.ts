@@ -1,10 +1,4 @@
-// 🔐 AUTHENTICATION LAYER
-
-// src/utils/authHelpers.ts - 🛠️ AUTH UTILITIES
-// ✅ Route mapping for each role
-// ✅ Role-specific UI messages
-// ✅ Navigation validation helpers
-// ✅ State cleanup utilities
+// src/utils/authHelpers.ts
 
 import type { UserRole, User, UserSettings, PropertyOwner, Admin, Cleaner } from '@/types'
 
@@ -122,8 +116,6 @@ export function getRoleSpecificErrorMessage(error: string, userRole?: UserRole):
 export function clearAllRoleSpecificState() {
   // Note: This function will be called from components that have access to stores
   // The actual store clearing will be done in the auth store
-  console.log('Clearing all role-specific state...')
-  
   // Clear any cached data in localStorage that might be role-specific
   const keysToRemove = [
     'owner-preferences',
@@ -235,7 +227,7 @@ export function createUserWithSettings(userData: Partial<User> & {
     role: userData.role || 'owner',
     
     notifications_enabled: userData.settings?.notifications ?? userData.notifications_enabled ?? true,
-    timezone: userData.settings?.timezone ?? userData.timezone ?? 'UTC',
+    timezone: userData.settings?.timezone ?? userData.timezone ?? 'America/Los_Angeles',
     theme: userData.settings?.theme ?? userData.theme ?? 'light',
     language: userData.settings?.language ?? userData.language ?? 'en',
 
@@ -295,7 +287,7 @@ export function createCleaner(cleanerData: Partial<Cleaner> & {
     
     // Flattened settings (primary)
     notifications_enabled: cleanerData.settings?.notifications ?? cleanerData.notifications_enabled ?? true,
-    timezone: cleanerData.settings?.timezone ?? cleanerData.timezone ?? 'UTC',
+    timezone: cleanerData.settings?.timezone ?? cleanerData.timezone ?? 'America/Los_Angeles',
     theme: cleanerData.settings?.theme ?? cleanerData.theme ?? 'light',
     language: cleanerData.settings?.language ?? cleanerData.language ?? 'en',
     

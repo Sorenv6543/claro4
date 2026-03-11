@@ -1,20 +1,12 @@
 {
   "permissions": {
     "allow": [
-      "mcp__plugin_serena_serena__search_for_pattern",
+     
       "Bash(supabase start:*)",
       "Bash(test:*)",
-      "mcp__plugin_serena_serena__find_symbol",
-      "mcp__plugin_serena_serena__replace_content"
+
+      "Bash(powershell -Command \"$vars = [System.Environment]::GetEnvironmentVariables\\(''User''\\); foreach\\($k in \\($vars.Keys | Sort-Object\\)\\) { Write-Output \\($k + ''='' + $vars[$k]\\) }\")"
     ]
-  },
-  "enabledPlugins": {
-    "claude-plugins-official": true,
-    "google-search@claude-plugins-official": true,
-    "wikipedia@claude-plugins-official": true,
-    "github@claude-plugins-official": true,
-    "vercel@claude-plugins-official": true,
-    "claude-code.enableAuthLogin": true
   },
   "hooks": {
     "PreToolUse": [
@@ -23,7 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 -c \"import sys,json,os; d=json.loads(os.environ.get('CLAUDE_TOOL_INPUT','{}')); sys.exit(2) if '.env.local' in d.get('file_path','') else sys.exit(0)\"",
+            "command": "node -e \"const d=JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}'); process.exit(d.file_path && d.file_path.includes('.env.local') ? 2 : 0)\"",
             "timeout": 5000
           }
         ]
@@ -35,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "FILE=$(python3 -c \"import json,os; print(json.loads(os.environ.get('CLAUDE_TOOL_INPUT','{}')).get('file_path',''))\" 2>/dev/null); [[ \"$FILE\" == *.vue || \"$FILE\" == *.ts ]] && cd /c/Users/Soren/claro4 && npx eslint --fix \"$FILE\" 2>&1 | tail -3 || true",
+            "command": "FILE=$(node -e \"console.log((JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}')).file_path||'')\" 2>/dev/null); [[ \"$FILE\" == *.vue || \"$FILE\" == *.ts ]] && cd /c/Users/Soren/claro4 && npx eslint --fix \"$FILE\" 2>&1 | tail -3 || true",
             "timeout": 15000
           }
         ]
@@ -45,11 +37,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "FILE=$(python3 -c \"import json,os; print(json.loads(os.environ.get('CLAUDE_TOOL_INPUT','{}')).get('file_path',''))\" 2>/dev/null); [[ \"$FILE\" == *supabase/migrations* ]] && supabase gen types typescript --project-id aejkrsvemqnftivzkkxd > /c/Users/Soren/claro4/src/types/supabase.ts && echo 'Types regenerated from schema' || true",
+            "command": "FILE=$(node -e \"console.log((JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}')).file_path||'')\" 2>/dev/null); [[ \"$FILE\" == *supabase/migrations* ]] && supabase gen types typescript --project-id aejkrsvemqnftivzkkxd > /c/Users/Soren/claro4/src/types/supabase.ts && echo 'Types regenerated from schema' || true",
             "timeout": 30000
           }
         ]
       }
     ]
-  }
+  },
+  "enabledPlugins": {},
+  "enabledMcpjsonServers": []
 }

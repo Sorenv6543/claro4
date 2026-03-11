@@ -62,7 +62,7 @@ const wrappedRules = computed(() =>
   (props.rules ?? []).map(rule => () => rule(props.modelValue ?? ''))
 )
 
-function onUpdate(value: string) {
-  emit('update:modelValue', value)
+function onUpdate(value: string | null) {
+  if (value !== null) emit('update:modelValue', value)
 }
 </script>

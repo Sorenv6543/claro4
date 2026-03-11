@@ -21,10 +21,10 @@ export interface Property {
   bathrooms?: number;
   square_feet?: number;
   property_type?: 'apartment' | 'house' | 'condo' | 'townhouse';
-  cleaning_duration: number; // minutes
+  cleaning_duration: number;
   special_instructions?: string;
   pricing_tier: PricingTier;
-  active: boolean;
+  active: boolean; // Soft-delete flag; preserves historical data while removing from active scheduling
   created_at?: string;
   updated_at?: string;
 }

@@ -5,7 +5,6 @@
     :timeout="computedTimeout"
     :location="location"
     :class="toastClasses"
-    :multi-line="isMultiLine"
     :vertical="isVertical"
     elevation="8"
     @after-leave="handleAfterLeave"
@@ -217,12 +216,6 @@ const toastClasses = computed(() => ({
   'toast-has-actions': hasActions.value,
   'toast-critical': props.notification.priority === 'critical'
 }));
-
-const isMultiLine = computed(() => {
-  return Boolean(props.notification.title) || 
-         props.notification.message.length > 60 ||
-         hasActions.value;
-});
 
 const isVertical = computed(() => {
   return hasActions.value && props.notification.actions!.length > 2;
