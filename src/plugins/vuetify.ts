@@ -348,7 +348,6 @@ export default createVuetify({
   // Default configuration for components
   defaults: {
     VBtn: {
-      style: 'text-transform: none;', // Remove uppercase transform
       variant: 'flat',
       rounded: true,
       elevation: 1

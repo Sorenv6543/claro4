@@ -66,7 +66,7 @@
                   </span>
                 </v-avatar>
                 
-                <div class="flex-grow-1">
+                <div class="grow">
                   <p class="font-weight-medium mb-1">
                     {{ user.name }}
                   </p>
@@ -109,12 +109,12 @@
               <v-list-item v-bind="itemProps">
                 <template #prepend>
                   <v-icon
-                    :icon="item.raw.icon"
-                    :color="item.raw.color"
+                    :icon="item.icon"
+                    :color="item.color"
                   />
                 </template>
-                <v-list-item-title>{{ item.raw.title }}</v-list-item-title>
-                <v-list-item-subtitle>{{ item.raw.description }}</v-list-item-subtitle>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+                <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
               </v-list-item>
             </template>
           </v-select>

@@ -8,6 +8,7 @@
     :temporary="mobile"
     location="left"
     :permanent="!mobile"
+   
   >
     <!-- Main Content Wrapper -->
     <div class="sidebar-content-wrapper">
@@ -78,7 +79,7 @@
           <v-list-item
             class="nav-item"
             prepend-icon="mdi-calendar-check"
-            title="Schedule"
+            title="Upcoming"
             @click="navigateTo('/owner/bookings')"
           />
         

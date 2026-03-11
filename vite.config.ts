@@ -190,19 +190,10 @@ export default defineConfig({
     css: {
       devSourcemap: true, // Enable CSS sourcemaps in development
       preprocessorOptions: {
-        scss: {
-          sourceMap: true, // Enable SCSS sourcemaps
-          sourceMapContents: true,
-          sourceMapEmbed: false,
-          // Fix Sass legacy API deprecation warnings
-          api: 'modern-compiler',
-          silenceDeprecations: ['legacy-js-api'],
-          // Additional options to suppress deprecation warnings
+        // Suppress Sass deprecation warnings and set load paths for Vuetify styles
+        scss: { 
           quietDeps: true,
-          style: 'compressed',
-          // Use modern Sass API to avoid deprecation warnings
-          loadPaths: ['node_modules'],
-          charset: false
+          loadPaths: ['node_modules']
         }
       }
     },

@@ -44,22 +44,9 @@ export const useAuthStore = defineStore('auth', () => {
 
   // Computed properties
   const user = computed(() => supabaseUser.value);
-  const isAuthenticated = computed(() => {
-    const authenticated = supabaseIsAuthenticated.value;
-    console.log('[Auth Store] isAuthenticated:', authenticated, { user: !!user.value });
-    return authenticated;
-  });
+  const isAuthenticated = computed(() => supabaseIsAuthenticated.value);
 
-  // Combined loading state - true if either Supabase or store operations are loading
-  const loading = computed(() => {
-    const isLoading = storeLoading.value || supabaseLoading.value;
-    console.log('[Auth Store] loading state:', {
-      storeLoading: storeLoading.value,
-      supabaseLoading: supabaseLoading.value,
-      combined: isLoading
-    });
-    return isLoading;
-  });
+  const loading = computed(() => storeLoading.value || supabaseLoading.value);
 
   // Combined error state
   const error = computed(() => storeError.value || supabaseError.value);
@@ -68,9 +55,9 @@ export const useAuthStore = defineStore('auth', () => {
   const isOwner = computed(() => user.value?.role === 'owner');
   const isCleaner = computed(() => user.value?.role === 'cleaner');
 
-  // Clear errors helper
   function clearError() {
     storeError.value = null;
+    supabaseError.value = null;
   }
 
   // Authentication methods
@@ -79,11 +66,9 @@ export const useAuthStore = defineStore('auth', () => {
       storeLoading.value = true;
       storeError.value = null;
 
-      console.log('🔐 [Auth Store] Attempting login for:', email);
       const success = await signIn(email, password);
 
       if (success) {
-        console.log('✅ [Auth Store] Login successful for role:', user.value?.role);
         clearError();
         return true;
       }
@@ -91,7 +76,6 @@ export const useAuthStore = defineStore('auth', () => {
       storeError.value = 'Invalid email or password';
       return false;
     } catch (err) {
-      console.error('❌ [Auth Store] Login error:', err);
       storeError.value = err instanceof Error ? err.message : 'Login failed';
       return false;
     } finally {
@@ -104,15 +88,12 @@ export const useAuthStore = defineStore('auth', () => {
       storeLoading.value = true;
       storeError.value = null;
 
-      console.log('🚪 [Auth Store] Logging out user:', user.value?.email);
-
       // Clear role-specific state before logout
       clearAllRoleSpecificState();
 
       const success = await supabaseSignOut();
 
       if (success) {
-        console.log('✅ [Auth Store] Logout successful');
         authChecked.value = false;
         clearError();
         return true;
@@ -120,7 +101,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       return false;
     } catch (err) {
-      console.error('❌ [Auth Store] Logout error:', err);
       storeError.value = err instanceof Error ? err.message : 'Logout failed';
       return false;
     } finally {
@@ -133,8 +113,6 @@ export const useAuthStore = defineStore('auth', () => {
       storeLoading.value = true;
       storeError.value = null;
 
-      console.log('📝 [Auth Store] Registering user:', userData.email, 'as', userData.role);
-
       const success = await signUp(userData.email, userData.password, {
         name: userData.name,
         role: userData.role,
@@ -142,7 +120,6 @@ export const useAuthStore = defineStore('auth', () => {
       });
 
       if (success) {
-        console.log('✅ [Auth Store] Registration successful');
         clearError();
         return true;
       }
@@ -150,7 +127,6 @@ export const useAuthStore = defineStore('auth', () => {
       storeError.value = 'Registration failed';
       return false;
     } catch (err) {
-      console.error('❌ [Auth Store] Registration error:', err);
       storeError.value = err instanceof Error ? err.message : 'Registration failed';
       return false;
     } finally {
@@ -159,13 +135,12 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   // Role switching (for admin users)
-  function switchToOwnerView(ownerId?: string): boolean {
+  function switchToOwnerView(_ownerId?: string): boolean {
     if (!isAdmin.value) {
       storeError.value = 'Only administrators can switch views';
       return false;
     }
 
-    console.log('🔄 [Auth Store] Switching to owner view:', ownerId || 'all owners');
     return true;
   }
 
@@ -175,7 +150,6 @@ export const useAuthStore = defineStore('auth', () => {
       return false;
     }
 
-    console.log('🔄 [Auth Store] Switching to admin view');
     return true;
   }
 
@@ -195,14 +169,12 @@ export const useAuthStore = defineStore('auth', () => {
       const success = await updateProfile(updates as Partial<User>);
 
       if (success) {
-        console.log('✅ [Auth Store] Profile updated successfully');
         clearError();
         return true;
       }
 
       return false;
     } catch (err) {
-      console.error('❌ [Auth Store] Profile update error:', err);
       storeError.value = err instanceof Error ? err.message : 'Profile update failed';
       return false;
     } finally {
@@ -218,14 +190,12 @@ export const useAuthStore = defineStore('auth', () => {
       const success = await resetPassword(email);
 
       if (success) {
-        console.log('✅ [Auth Store] Password reset email sent');
         clearError();
         return true;
       }
 
       return false;
     } catch (err) {
-      console.error('❌ [Auth Store] Password reset error:', err);
       storeError.value = err instanceof Error ? err.message : 'Password reset failed';
       return false;
     } finally {
@@ -243,7 +213,6 @@ export const useAuthStore = defineStore('auth', () => {
       storeLoading.value = true;
       return await getAllUsers();
     } catch (err) {
-      console.error('❌ [Auth Store] Failed to fetch users:', err);
       storeError.value = err instanceof Error ? err.message : 'Failed to fetch users';
       throw err;
     } finally {
@@ -262,14 +231,12 @@ export const useAuthStore = defineStore('auth', () => {
       const success = await updateUserRole(userId, newRole);
 
       if (success) {
-        console.log('✅ [Auth Store] User role updated successfully');
         clearError();
         return true;
       }
 
       return false;
     } catch (err) {
-      console.error('❌ [Auth Store] Role update error:', err);
       storeError.value = err instanceof Error ? err.message : 'Role update failed';
       return false;
     } finally {
@@ -285,15 +252,8 @@ export const useAuthStore = defineStore('auth', () => {
   // Initialize auth state
   async function initialize() {
     try {
-      console.log('🚀 [Auth Store] Initializing auth store...');
       await checkAuth();
-      if (user.value) {
-        console.log('✅ [Auth Store] User authenticated:', user.value.email, 'as', user.value.role);
-      } else {
-        console.log('ℹ️ [Auth Store] No authenticated user found');
-      }
     } catch (err) {
-      console.error('❌ [Auth Store] Auth initialization error:', err);
       storeError.value = err instanceof Error ? err.message : 'Initialization failed';
     }
   }

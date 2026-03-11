@@ -78,7 +78,7 @@
                         </v-avatar>
                       </template>
                       <template #subtitle>
-                        {{ getPropertyOwnerName(item.raw.owner_id) }} • {{ item.raw.address }}
+                        {{ getPropertyOwnerName(item.owner_id) }} • {{ item.address }}
                       </template>
                     </v-list-item>
                   </template>
@@ -215,22 +215,22 @@
                             <v-list-item v-bind="itemProps">
                               <template #prepend>
                                 <v-avatar
-                                  :color="getCleanerAvailabilityColor(item.raw)"
+                                  :color="getCleanerAvailabilityColor(item)"
                                   size="small"
                                 >
                                   <v-icon>mdi-account</v-icon>
                                 </v-avatar>
                               </template>
                               <template #subtitle>
-                                {{ getCleanerSubtitle(item.raw) }}
+                                {{ getCleanerSubtitle(item) }}
                               </template>
                               <template #append>
                                 <v-chip
-                                  :color="getCleanerAvailabilityColor(item.raw)"
+                                  :color="getCleanerAvailabilityColor(item)"
                                   size="x-small"
                                   variant="tonal"
                                 >
-                                  {{ getCleanerAvailabilityText(item.raw) }}
+                                  {{ getCleanerAvailabilityText(item) }}
                                 </v-chip>
                               </template>
                             </v-list-item>
