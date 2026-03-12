@@ -358,7 +358,7 @@ const activeTab = computed(() => {
 <!-- src/layouts/owner.vue -->
 <template>
   <v-app>
-    <v-app-bar height="56" flat color="white" border="b">
+    <v-app-bar height="40" flat color="white" border="b">
       <v-app-bar-nav-icon
         :icon="sidebarOpen ? 'mdi-menu-open' : 'mdi-menu'"
         @click="sidebarOpen = !sidebarOpen"
