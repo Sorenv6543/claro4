@@ -914,7 +914,7 @@ watch(isOwnerAuthenticated, async (newValue, oldValue) => {
 /* ================================================================ */
 
 .home-owner-page {
-  height: 100%;
+  height: 100vh;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -951,7 +951,7 @@ watch(isOwnerAuthenticated, async (newValue, oldValue) => {
   overflow: hidden;
   position: relative;
   /* Mobile-specific height management */
-  height: calc(100% - 70px); /* Subtract prominent header card height */
+  height: calc(100vh - 70px); /* Subtract prominent header card height */
 }
 
 /* Clean Calendar Header Layout */
@@ -1037,7 +1037,7 @@ watch(isOwnerAuthenticated, async (newValue, oldValue) => {
 /* Mobile viewport stretching with safe area support */
 @media (max-width: 959px) {
   .home-owner-page {
-    height: 100vh !important;
+   
     /* Support for devices with notches/safe areas */
     height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
   }
@@ -1053,7 +1053,7 @@ watch(isOwnerAuthenticated, async (newValue, oldValue) => {
   }
   
   .calendar-content {
-    height: calc(100% - 60px) !important;
+    height: calc(100vh - 60px) !important;
   }
   
   /* Compact navigation on mobile */
