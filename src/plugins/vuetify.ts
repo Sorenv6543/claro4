@@ -16,17 +16,17 @@ const greenTheme: ThemeDefinition = {
     primary: '#4CAF50', // Green
     secondary: '#8BC34A', // Light Green
     accent: '#00BCD4', // Cyan
-    error: '#d8c5c4', // #979191
+    error: '#F44336', // Red
     info: '#2196F3', // Blue
     success: '#4CAF50', // Green
-    warning: '#2697f3', // #1e8ae2
-    background: '#ffffff', // Light Grey Blue
-    surface: '#899ae6', // #82a0f1
+    warning: '#FF9800', // Orange
+    background: '#F5F7FA', // Light Grey Blue
+    surface: '#FFFFFF', // White
     'on-background': '#1C1B1F',
     'on-surface': '#1C1B1F',
-    'surface-variant': '#90d4fc',
+    'surface-variant': '#E8F5E9', // Light Green tint
     'on-surface-variant': '#49454F',
-    'turn-urgent': '#1572ec', // Red
+    'turn-urgent': '#F44336', // Red
     'turn-standard': '#FF9800', // Orange
     'booking-standard': '#4CAF50', // Green
   }
@@ -39,10 +39,10 @@ const darkGreenTheme: ThemeDefinition = {
     primary: '#66BB6A', // Lighter Green
     secondary: '#9CCC65', // Lighter Light Green
     accent: '#26C6DA', // Lighter Cyan
-    error: '#41e4ae', // Lighter Red
+    error: '#EF5350', // Lighter Red
     info: '#29B6F6', // Lighter Blue
     success: '#66BB6A', // Lighter Green
-    warning: '#b37e2f', // Lighter Orange
+    warning: '#FFA726', // Lighter Orange
     background: '#121212', // Dark Grey
     surface: '#1E1E1E', // Slightly lighter dark grey
     'on-background': '#E6E1E5',
@@ -66,11 +66,11 @@ const purpleTheme: ThemeDefinition = {
     info: '#2196F3', // Blue
     success: '#4CAF50', // Green
     warning: '#FF9800', // Orange
-    background: '#4d8ef0', // Light #812323 Blue
-    surface: '#f16767', // #e93f3f
+    background: '#F5F7FA', // Light Grey Blue
+    surface: '#FFFFFF', // White
     'on-background': '#1C1B1F',
     'on-surface': '#1C1B1F',
-    'surface-variant': '#ff2b2b',
+    'surface-variant': '#EDE7F6', // Light Purple tint
     'on-surface-variant': '#49454F',
     'turn-urgent': '#F44336', // Red
     'turn-standard': '#FF9800', // Orange
@@ -85,7 +85,7 @@ const darkPurpleTheme: ThemeDefinition = {
     primary: '#AB47BC', // Lighter Purple
     secondary: '#7E57C2', // Lighter Deep Purple
     accent: '#5C6BC0', // Lighter Indigo
-    error: '#7a50ef', // Lighter Red
+    error: '#EF5350', // Lighter Red
     info: '#29B6F6', // Lighter Blue
     success: '#66BB6A', // Lighter Green
     warning: '#d19e51', // Lighter Orange
@@ -151,8 +151,8 @@ const darkOrangeTheme: ThemeDefinition = {
 const tealTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    primary: '#e61352', // Teal
-    secondary: '#f6f6f6', // Cyan
+    primary: '#009688', // Teal
+    secondary: '#26C6DA', // Cyan
     accent: '#4CAF50', // Green
     error: '#F44336', // Red
     info: '#2196F3', // Blue
@@ -306,12 +306,18 @@ export default createVuetify({
       light: {
         colors: {
           primary: '#1976D2',
-          secondary: '#e0e7f81e',
+          secondary: '#5C6BC0',
           accent: '#82B1FF',
           error: '#FF5252',
           info: '#2196F3',
           success: '#4CAF50',
           warning: '#FFC107',
+          background: '#F5F7FA',
+          surface: '#FFFFFF',
+          'surface-variant': '#E8EAF6',
+          'turn-urgent': '#F44336',
+          'turn-standard': '#FF9800',
+          'booking-standard': '#4CAF50',
         },
       },
       dark: {
