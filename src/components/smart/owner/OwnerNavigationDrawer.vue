@@ -72,7 +72,7 @@
               v-for="(property, index) in properties"
               :key="property.id"
               :to="`/owner/properties/${property.id}`"
-              :active="route.path === `/owner/properties/${property.id}`"
+              :active="isActive(`/owner/properties/${property.id}`)"
               active-color="primary"
               rounded="lg"
               class="property-nav-item"
@@ -104,7 +104,7 @@ import { useDisplay } from 'vuetify'
 import { useAuthStore } from '@stores/auth'
 import { useOwnerProperties } from '@composables/owner/useOwnerProperties'
 
-const props = defineProps<{
+defineProps<{
   modelValue: boolean
 }>()
 
@@ -144,7 +144,7 @@ function propertyColor(index: number): string {
 
 // ── User info ──────────────────────────────────────────────────
 const userName = computed(() => {
-  return authStore.user?.user_metadata?.full_name
+  return authStore.user?.name
     || authStore.user?.email?.split('@')[0]
     || 'Owner'
 })
