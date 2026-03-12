@@ -10,111 +10,68 @@ src/components/smart/owner/HomeOwner.vue -
  -->
 
 <template>
-  <div class="home-owner-layout">
-    <!-- Brand Overlay - Fixed on top of everything -->
-
-
-    <!-- Main App Header -->
-    <v-app-bar
-      order="0"
-      app
-      flat
-      height="56"
-      class="main-app-header"
-      :class="{ 'sidebar-open': sidebarOpen && !mobile }"
-      color="white"
-    >
-      <v-app-bar-nav-icon
-        color="black"
-        @click="toggleSidebar"
-      />
-      <!--logo-->
-      <v-app-bar-title class="app-title">
-        <div class="brand-container">
-          <div class="brand-icon">
-            C
-          </div>
-          <span class="brand-text">Claro</span>
-        </div>
-      </v-app-bar-title>
-      <!--logo-->
-    </v-app-bar>
-    <!--test-->
-    <!-- Owner Sidebar -->
-    <OwnerSidebar
-      v-model="sidebarOpen"
-      @create-booking="handleCreateBooking"
-      @create-property="handleCreateProperty"
-      @edit-property="handleEditProperty"
-      @view-property="handleViewProperty"
-    />
-
-    <!-- Main Calendar Area -->
-    <div
-      class="calendar-main-container"
-      :class="{ 'sidebar-open': sidebarOpen && !mobile }"
-    >
-      <div class="calendar-layout">
-        <!-- Calendar Header - Fixed height -->
-        <v-card
-          flat
-          density="compact"
-          class="calendar-header-card shrink-0 prominent-header"
-          elevation="3"
-        >
-          <v-card-text class="pa-4">
-            <div class="d-flex align-center justify-space-between">
-              <!-- Left Navigation Arrow -->
-              <v-btn
-                icon="mdi-chevron-left"
-                variant="elevated"
-                density="comfortable"
-                size="default"
-                class="nav-arrow-prominent"
-                color="primary"
-                @click="handlePrevious"
-              />
+  <div class="home-owner-page">
+    <!-- Calendar -->
+    <div class="calendar-layout">
+      <!-- Calendar Header - Fixed height -->
+      <v-card
+        flat
+        density="compact"
+        class="calendar-header-card shrink-0 prominent-header"
+        elevation="3"
+      >
+        <v-card-text class="pa-4">
+          <div class="d-flex align-center justify-space-between">
+            <!-- Left Navigation Arrow -->
+            <v-btn
+              icon="mdi-chevron-left"
+              variant="elevated"
+              density="comfortable"
+              size="default"
+              class="nav-arrow-prominent"
+              color="primary"
+              @click="handlePrevious"
+            />
               
-              <!-- Centered Month Display -->
-              <div class="month-display-prominent">
-                <div class="month-title">
-                  {{ formattedMonthYear }}
-                </div>
+            <!-- Centered Month Display -->
+            <div class="month-display-prominent">
+              <div class="month-title">
+                {{ formattedMonthYear }}
               </div>
-              
-              <!-- Right Navigation Arrow -->
-              <v-btn
-                icon="mdi-chevron-right"
-                variant="elevated"
-                density="comfortable"
-                size="default"
-                class="nav-arrow-prominent"
-                color="primary"
-                @click="handleNext"
-              />
             </div>
-          </v-card-text>
-        </v-card>
+              
+            <!-- Right Navigation Arrow -->
+            <v-btn
+              icon="mdi-chevron-right"
+              variant="elevated"
+              density="comfortable"
+              size="default"
+              class="nav-arrow-prominent"
+              color="primary"
+              @click="handleNext"
+            />
+          </div>
+        </v-card-text>
+      </v-card>
 
-        <!-- Calendar Content - Flexible height -->
-        <div class="calendar-content grow">
-          <OwnerCalendar
-            ref="calendarRef"
-            :bookings="ownerFilteredBookings"
-            :loading="loading"
-            :current-view="currentView"
-            :current-date="currentDate"
-            :properties="ownerPropertiesMap"
-            @date-select="handleDateSelect"
-            @event-click="handleEventClick"
-            @event-drop="handleEventDrop"
-            @event-resize="handleEventResize"
-            @view-change="handleCalendarViewChange"
-            @date-change="handleCalendarDateChange"
-            @create-booking="handleCreateBookingFromCalendar"
-            @update-booking="handleUpdateBooking"
-          />
-        </div>
+      <!-- Calendar Content - Flexible height -->
+      <div class="calendar-content grow">
+        <OwnerCalendar
+          ref="calendarRef"
+          :bookings="ownerFilteredBookings"
+          :loading="loading"
+          :current-view="currentView"
+          :current-date="currentDate"
+          :properties="ownerPropertiesMap"
+          @date-select="handleDateSelect"
+          @event-click="handleEventClick"
+          @event-drop="handleEventDrop"
+          @event-resize="handleEventResize"
+          @view-change="handleCalendarViewChange"
+          @date-change="handleCalendarDateChange"
+          @create-booking="handleCreateBookingFromCalendar"
+          @update-booking="handleUpdateBooking"
+        />
       </div>
     </div>
 
@@ -215,18 +172,6 @@ src/components/smart/owner/HomeOwner.vue -
           @click="handleCreateBooking"
         />
       </div>
-      
-      <!-- Dashboard -->
-      <div class="speed-dial-action">
-        <span class="text-body-2 font-weight-medium">Dashboard</span>
-        <v-fab
-          icon="mdi-view-dashboard"
-          size="large"
-          color="secondary"
-          rounded="circle"
-          @click="toggleSidebar"
-        />
-      </div>
     </v-speed-dial>
   </div>
 </template>
@@ -240,7 +185,6 @@ import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
 import { useDisplay } from 'vuetify';
 
 // Owner-specific components
-import OwnerSidebar from '@/components/smart/owner/OwnerSidebar.vue';
 import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue';
 import BookingForm from '@/components/dumb/shared/BookingForm.vue';
 import PropertyModal from '@/components/dumb/shared/PropertyModal.vue';
@@ -258,7 +202,7 @@ import { useCalendarState } from '@/composables/shared/useCalendarState';
 import { useOwnerBookings } from '@/composables/owner/useOwnerBookings';
 import { useOwnerProperties } from '@/composables/owner/useOwnerProperties';
 // Types
-import type { Booking, Property, PropertyRecord, BookingFormData, PropertyFormData,  } from '@/types';
+import type { Booking, Property, BookingFormData, PropertyFormData } from '@/types';
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core';
 
 // Import event logger for component communication
@@ -274,7 +218,7 @@ const propertyStore = usePropertyStore();
 const bookingStore = useBookingStore();
 const uiStore = useUIStore();
 const authStore = useAuthStore();
-const { xs, mobile } = useDisplay();
+const { mobile } = useDisplay();
 
 // ============================================================================
 // COMPOSABLES - BUSINESS LOGIC
@@ -307,7 +251,6 @@ const {
 // LOCAL STATE
 // ============================================================================
 const calendarRef = ref<InstanceType<typeof OwnerCalendar> | null>(null);
-const sidebarOpen = ref(false);
 const selectedPropertyFilter = ref<string | null>(null);
 const speedDialOpen = ref(false);
 
@@ -493,9 +436,9 @@ const confirmDialogData = computed(() => {
 
 const handleCreateBooking = (data?: Partial<BookingFormData>): void => {
       eventLogger.logEvent(
-      'OwnerSidebar',
+      'SpeedDial',
       'HomeOwner',
-      'createBooking', 
+      'createBooking',
     data, 
     'receive'
   );
@@ -511,9 +454,9 @@ const handleCreateBooking = (data?: Partial<BookingFormData>): void => {
 
 const handleCreateProperty = (): void => {
       eventLogger.logEvent(
-      'OwnerSidebar',
+      'SpeedDial',
       'HomeOwner',
-      'createProperty', 
+      'createProperty',
     null, 
     'receive'
   );
@@ -524,28 +467,6 @@ const handleCreateProperty = (): void => {
   };
   
   uiStore.openModal('propertyModal', 'create', propertyData);
-};
-
-const handleEditProperty = (property: Property): void => {
-  eventLogger.logEvent(
-    'OwnerSidebar',
-    'HomeOwner',
-    'editProperty',
-    property,
-    'receive'
-  );
-  uiStore.openModal('propertyModal', 'edit', property as PropertyRecord);
-};
-
-const handleViewProperty = (property: Property): void => {
-  eventLogger.logEvent(
-    'OwnerSidebar',
-    'HomeOwner',
-    'viewProperty',
-    property,
-    'receive'
-  );
-  uiStore.openModal('propertyModal', 'view', property as PropertyRecord);
 };
 
 const handleCreateTurn = (): void => {
@@ -885,13 +806,6 @@ const handleConfirmDialogClose = (): void => {
   uiStore.closeConfirmDialog('confirmDialog');
 };
 
-// ============================================================================
-// SIDEBAR MANAGEMENT
-// ============================================================================
-
-const toggleSidebar = (): void => {
-  sidebarOpen.value = !sidebarOpen.value;
-};
 
 // ============================================================================
 // LIFECYCLE HOOKS
@@ -968,12 +882,6 @@ onUnmounted(() => {
 // RESPONSIVE BEHAVIOR
 // ============================================================================
 
-watch(xs, (newValue) => {
-  if (newValue) {
-    sidebarOpen.value = false;
-  }
-});
-
 // Watch for authentication changes
 watch(isOwnerAuthenticated, async (newValue, oldValue) => {
   console.log('🔄 [HomeOwner] isOwnerAuthenticated changed:', { 
@@ -1005,36 +913,11 @@ watch(isOwnerAuthenticated, async (newValue, oldValue) => {
 /* MOBILE-FIRST CALENDAR VIEWPORT LAYOUT */
 /* ================================================================ */
 
-.home-owner-layout {
+.home-owner-page {
   height: 100%;
   width: 100%;
   display: flex;
-}
-
-.calendar-main-container {
-  flex: 1;
-  height: 100vh;
-  display: flex;
   flex-direction: column;
-  position: relative;
-  overflow: hidden;
-  transition: margin-left 0.3s ease-in-out;
-  margin-left: 0;
-}
-
-.calendar-main-container.sidebar-open {
-  margin-left: 280px; /* Match sidebar width */
-}
-
-/* Responsive behavior - overlay on mobile */
-@media (max-width: 959px) {
-  .calendar-main-container.sidebar-open {
-    margin-left: 0; /* No push on mobile */
-  }
-  
-  .main-app-header.sidebar-open {
-    margin-left: 0; /* No push on mobile */
-  }
 }
 
 .calendar-layout {
@@ -1153,20 +1036,12 @@ watch(isOwnerAuthenticated, async (newValue, oldValue) => {
 
 /* Mobile viewport stretching with safe area support */
 @media (max-width: 959px) {
-  .home-owner-layout {
+  .home-owner-page {
     height: 100vh !important;
     /* Support for devices with notches/safe areas */
     height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
   }
-  
-  .calendar-main-container {
-    /* Account for app bar + safe area top */
-    height: calc(100vh - 56px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
-    margin-top: calc(56px + env(safe-area-inset-top)) !important;
-    /* Prevent content from being hidden behind navigation bars */
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-  
+
   .calendar-header-card .v-card-text {
     padding: 4px 8px !important;
   }
@@ -1235,12 +1110,6 @@ watch(isOwnerAuthenticated, async (newValue, oldValue) => {
 
 /* Desktop optimizations */
 @media (min-width: 960px) {
-  .calendar-main-container {
-    margin-left: 0; /* No permanent sidebar offset - toggleable sidebar */
-    height: calc(100vh - 56px) !important;
-    margin-top: 56px !important;
-  }
-  
   /* Full size navigation on desktop */
   .month-pill-display {
     font-size: 1.1rem !important;
@@ -1342,64 +1211,6 @@ watch(isOwnerAuthenticated, async (newValue, oldValue) => {
 .v-speed-dial {
   z-index: 1000 !important;
 }
-
-/* ================================================================ */
-/* MAIN APP HEADER */
-/* ================================================================ */
-
-.main-app-header {
-  background: white !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  border-bottom: 1px solid #e0e0e0 !important;
-  z-index: 19 !important; /* Lower than sidebar z-index */
-  transition: margin-left 0.3s ease-in-out;
-  margin-left: 0;
-}
-
-.main-app-header.sidebar-open {
-  margin-left: 280px; /* Match sidebar width */
-}
-
-.app-title {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-}
-
-.brand-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.brand-icon {
-  background: #1976d2;
-  color: white;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.brand-text {
-  color: black;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.main-app-header .v-app-bar-nav-icon {
-  color: black !important;
-}
-
-.main-app-header .v-app-bar-nav-icon:hover {
-  background: rgba(0, 0, 0, 0.05) !important;
-}
-
-
 
 /* ================================================================ */
 </style> 

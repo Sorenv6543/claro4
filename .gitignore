@@ -56,6 +56,9 @@ dist-ssr
 
 .vercel
 
+# Visual brainstorming mockups
+.superpowers/
+
 # MCP configuration files (contain credentials)
 .mcp.json
 .cursor/mcp.json

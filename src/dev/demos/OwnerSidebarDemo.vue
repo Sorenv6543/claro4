@@ -22,18 +22,11 @@
           <v-card>
             <v-card-title>Owner Sidebar</v-card-title>
             <v-card-text class="pa-0">
-              <div style="height: 600px;">
-                <OwnerSidebar
-                  :today-turns="sampleOwnerTodayTurns"
-                  :upcoming-cleanings="sampleOwnerUpcomingCleanings"
-                  :properties="sampleOwnerProperties"
-                  :loading="loading"
-                  @navigate-to-booking="handleNavigateToBooking"
-                  @navigate-to-date="handleNavigateToDate"
-                  @filter-by-property="handleFilterByProperty"
-                  @create-booking="handleCreateBooking"
-                  @create-property="handleCreateProperty"
-                />
+              <div style="height: 600px;" class="d-flex align-center justify-center">
+                <v-alert type="info" variant="tonal">
+                  OwnerSidebar was replaced by OwnerNavigationDrawer in the layout shell
+                  (src/layouts/owner.vue). This demo is kept for historical reference only.
+                </v-alert>
               </div>
             </v-card-text>
           </v-card>
@@ -142,7 +135,9 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import OwnerSidebar from '@components/smart/owner/OwnerSidebar.vue';
+// NOTE: OwnerSidebar.vue was deleted in owner layout restructure (sub-project #1).
+// The sidebar is now part of the layout shell (OwnerNavigationDrawer.vue in src/layouts/owner.vue).
+// This demo file is retained for reference only.
 import type { Booking, Property } from '@/types';
 
 // Demo state
