@@ -26,7 +26,8 @@
           class="mr-1"
         />
 
-        <!-- DEV: theme picker -->
+        <!-- DEV: theme picker (dev builds only) -->
+        <template v-if="import.meta.env.DEV">
         <!-- Note: global VChip default is rounded="pill"; rounded="0" overrides it for the label look -->
         <v-chip
           size="x-small"
@@ -74,6 +75,7 @@
             </div>
           </v-card>
         </v-menu>
+        </template>
 
         <!-- Avatar / user menu -->
         <v-menu location="bottom end">
