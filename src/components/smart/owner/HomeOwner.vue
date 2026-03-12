@@ -437,9 +437,9 @@ const confirmDialogData = computed(() => {
 
 const handleCreateBooking = (data?: Partial<BookingFormData>): void => {
       eventLogger.logEvent(
-      'OwnerSidebar',
+      'SpeedDial',
       'HomeOwner',
-      'createBooking', 
+      'createBooking',
     data, 
     'receive'
   );
@@ -455,9 +455,9 @@ const handleCreateBooking = (data?: Partial<BookingFormData>): void => {
 
 const handleCreateProperty = (): void => {
       eventLogger.logEvent(
-      'OwnerSidebar',
+      'SpeedDial',
       'HomeOwner',
-      'createProperty', 
+      'createProperty',
     null, 
     'receive'
   );

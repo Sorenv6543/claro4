@@ -72,7 +72,7 @@ const sidebarOpen = ref(mdAndUp.value)
 const userInitials = computed(() => {
   const name =
     authStore.user?.name ||
-    authStore.user?.email ||
+    authStore.user?.email?.split('@')[0] ||
     'U'
   return name
     .split(' ')
