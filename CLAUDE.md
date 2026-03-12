@@ -66,6 +66,7 @@ Owner and Admin have separate component trees throughout:
 - `src/composables/shared/` - Cross-cutting concerns (useCalendarState, usePerformanceMonitor, etc.)
 - `src/composables/supabase/` - Supabase integration (useSupabaseAuth, useRealtimeSync, etc.)
 - Reuse existing composables before adding new Supabase calls
+- `useOwnerProperties()` returns `myProperties` (not `properties`): `const { myProperties } = useOwnerProperties()`
 
 ### Key Utilities
 
@@ -163,6 +164,7 @@ router.push(getDefaultRouteForRole(user.value?.role))
 - Guards in `src/router/guards.ts` and `src/router/index.ts`
 - Use `meta.requiresAuth` / `meta.role` on routes
 - `getDefaultRouteForRole` handles post-login redirects
+- Layout selection: `App.vue` reads `route.meta.layout` and renders `src/layouts/{name}.vue` — all owner routes use `meta: { layout: 'owner' }`
 
 ## Supabase Integration
 
@@ -341,6 +343,8 @@ These areas require careful modification - extend existing patterns rather than 
 ## Gotchas
 
 - Strict TypeScript: `pnpm build` runs `vue-tsc --noEmit`; keep `src/types/` in sync with Supabase migrations
+- `src/pages/owner/properties/create.vue` and `edit.vue` exist as files but have **no router entries** — they are unreachable; property CRUD uses in-place modals on the Properties page
+- Property card color cycling (consistent across cards, sidebar, calendar): `const COLORS = ['#5c6bc0', '#43a047', '#8e24aa', '#f57c00']` — use `COLORS[index % COLORS.length]`
 - Don't duplicate business rules in components - call helpers in `businessLogic.ts` (validateBooking, calculateBookingPriority, detectBookingConflicts)
 - Before finishing changes: run `pnpm test:run` and `pnpm build`
 - For auth/routing or subscription changes: also run `pnpm test:performance`
