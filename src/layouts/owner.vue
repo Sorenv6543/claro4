@@ -1,10 +1,15 @@
 <!-- src/layouts/owner.vue -->
 <template>
   <v-app>
-    <v-app-bar height="40" flat color="white" border="b">
+    <v-app-bar
+      height="56"
+      flat
+      color="white"
+      border="b"
+    >
       <v-app-bar-nav-icon
         :icon="sidebarOpen ? 'mdi-menu-open' : 'mdi-menu'"
-        size="small"
+
         @click="sidebarOpen = !sidebarOpen"
       />
       <v-app-bar-title>
@@ -13,7 +18,13 @@
 
       <template #append>
         <!-- Notification bell (stub) -->
-        <v-btn icon="mdi-bell-outline" variant="text" color="default" size="small" class="mr-1" />
+        <v-btn
+          icon="mdi-bell-outline"
+          variant="text"
+          color="default"
+          size="small"
+          class="mr-1"
+        />
 
         <v-menu location="bottom end">
           <template #activator="{ props: menuProps }">
@@ -24,10 +35,16 @@
               class="mr-2"
               style="cursor: pointer"
             >
-              <span class="text-caption font-weight-bold" style="font-size:0.6rem">{{ userInitials }}</span>
+              <span
+                class="text-caption font-weight-bold"
+                style="font-size:0.6rem"
+              >{{ userInitials }}</span>
             </v-avatar>
           </template>
-          <v-list density="compact" min-width="160">
+          <v-list
+            density="compact"
+            min-width="160"
+          >
             <v-list-item
               prepend-icon="mdi-account-outline"
               title="Profile"

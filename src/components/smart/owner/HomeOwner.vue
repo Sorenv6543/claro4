@@ -13,66 +13,66 @@ src/components/smart/owner/HomeOwner.vue -
   <div class="home-owner-page">
     <!-- Calendar -->
     <div class="calendar-layout">
-        <!-- Calendar Header - Fixed height -->
-        <v-card
-          flat
-          density="compact"
-          class="calendar-header-card shrink-0 prominent-header"
-          elevation="3"
-        >
-          <v-card-text class="pa-4">
-            <div class="d-flex align-center justify-space-between">
-              <!-- Left Navigation Arrow -->
-              <v-btn
-                icon="mdi-chevron-left"
-                variant="elevated"
-                density="comfortable"
-                size="default"
-                class="nav-arrow-prominent"
-                color="primary"
-                @click="handlePrevious"
-              />
+      <!-- Calendar Header - Fixed height -->
+      <v-card
+        flat
+        density="compact"
+        class="calendar-header-card shrink-0 prominent-header"
+        elevation="3"
+      >
+        <v-card-text class="pa-4">
+          <div class="d-flex align-center justify-space-between">
+            <!-- Left Navigation Arrow -->
+            <v-btn
+              icon="mdi-chevron-left"
+              variant="elevated"
+              density="comfortable"
+              size="default"
+              class="nav-arrow-prominent"
+              color="primary"
+              @click="handlePrevious"
+            />
               
-              <!-- Centered Month Display -->
-              <div class="month-display-prominent">
-                <div class="month-title">
-                  {{ formattedMonthYear }}
-                </div>
+            <!-- Centered Month Display -->
+            <div class="month-display-prominent">
+              <div class="month-title">
+                {{ formattedMonthYear }}
               </div>
-              
-              <!-- Right Navigation Arrow -->
-              <v-btn
-                icon="mdi-chevron-right"
-                variant="elevated"
-                density="comfortable"
-                size="default"
-                class="nav-arrow-prominent"
-                color="primary"
-                @click="handleNext"
-              />
             </div>
-          </v-card-text>
-        </v-card>
+              
+            <!-- Right Navigation Arrow -->
+            <v-btn
+              icon="mdi-chevron-right"
+              variant="elevated"
+              density="comfortable"
+              size="default"
+              class="nav-arrow-prominent"
+              color="primary"
+              @click="handleNext"
+            />
+          </div>
+        </v-card-text>
+      </v-card>
 
-        <!-- Calendar Content - Flexible height -->
-        <div class="calendar-content grow">
-          <OwnerCalendar
-            ref="calendarRef"
-            :bookings="ownerFilteredBookings"
-            :loading="loading"
-            :current-view="currentView"
-            :current-date="currentDate"
-            :properties="ownerPropertiesMap"
-            @date-select="handleDateSelect"
-            @event-click="handleEventClick"
-            @event-drop="handleEventDrop"
-            @event-resize="handleEventResize"
-            @view-change="handleCalendarViewChange"
-            @date-change="handleCalendarDateChange"
-            @create-booking="handleCreateBookingFromCalendar"
-            @update-booking="handleUpdateBooking"
-          />
-        </div>
+      <!-- Calendar Content - Flexible height -->
+      <div class="calendar-content grow">
+        <OwnerCalendar
+          ref="calendarRef"
+          :bookings="ownerFilteredBookings"
+          :loading="loading"
+          :current-view="currentView"
+          :current-date="currentDate"
+          :properties="ownerPropertiesMap"
+          @date-select="handleDateSelect"
+          @event-click="handleEventClick"
+          @event-drop="handleEventDrop"
+          @event-resize="handleEventResize"
+          @view-change="handleCalendarViewChange"
+          @date-change="handleCalendarDateChange"
+          @create-booking="handleCreateBookingFromCalendar"
+          @update-booking="handleUpdateBooking"
+        />
+      </div>
     </div>
 
     <!-- Owner-focused Modals -->
@@ -172,7 +172,6 @@ src/components/smart/owner/HomeOwner.vue -
           @click="handleCreateBooking"
         />
       </div>
-      
     </v-speed-dial>
   </div>
 </template>
