@@ -50,13 +50,7 @@ const router = createRouter({
     },
     {
       path: '/owner/calendar',
-      name: 'owner-calendar',
-      component: () => import('@/pages/owner/calendar.vue'),
-      meta: {
-        layout: 'owner',
-        role: 'owner',
-        requiresAuth: true
-      }
+      redirect: '/owner/dashboard'
     },
     {
       path: '/owner/bookings',
@@ -92,6 +86,16 @@ const router = createRouter({
       path: '/owner/properties/:id',
       name: 'owner-property-view',
       component: () => import('@/pages/owner/properties/view.vue'),
+      meta: {
+        layout: 'owner',
+        role: 'owner',
+        requiresAuth: true
+      }
+    },
+    {
+      path: '/owner/settings',
+      name: 'owner-settings',
+      component: () => import('@/pages/owner/settings.vue'),
       meta: {
         layout: 'owner',
         role: 'owner',
