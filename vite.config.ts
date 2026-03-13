@@ -25,13 +25,6 @@ export default defineConfig(({ mode }) => {
   const isDevelopment = mode === 'development'
 
   const plugins: PluginOption[] = [
-    vueDevTools({
-      componentInspector: {
-        enabled: false,
-        toggleComboKey: 'alt-shift',
-        launchEditor: 'code',
-      },
-    }),
     vue({
       template: {
         compilerOptions: {
@@ -42,7 +35,7 @@ export default defineConfig(({ mode }) => {
     vuetify({
       autoImport: true,
       // NOTE: vuetify plugin's styles.configFile option is currently required to avoid a warning about missing SASS variables, even though the variables are actually being loaded correctly via the main.scss entry point. Tracked as a follow-up task to investigate and eliminate this quirk.
-      // as of vuetify@3.3.0-beta.0, the plugin doesn't support an array of config files, so we point it to the main variables file that imports all others. Tracked as a follow-up task to verify if this is still required after upgrading vuetify to a stable release.
+      // The plugin doesn't support an array of config files, so we point it to the main variables file that imports all others.
       // styles.configFile is relative to the project root, and should use forward slashes even on Windows
       styles: {
         configFile: 'src/styles/variables.scss',
