@@ -55,6 +55,7 @@ watch(selected, entry => {
 
 // Error boundary — catches load-time AND runtime/mount errors
 const currentError = ref<string | null>(null)
+const retryKey = ref(0)
 
 onErrorCaptured((err) => {
   currentError.value = err instanceof Error ? err.message : String(err)
@@ -145,7 +146,7 @@ function selectEntry(entry: LabEntry) {
             variant="tonal"
           >
             <template #append>
-              <v-btn size="small" variant="tonal" @click="currentError = null; selected = { ...selected! }">
+              <v-btn size="small" variant="tonal" @click="currentError = null; retryKey++">
                 Retry
               </v-btn>
             </template>
@@ -153,7 +154,7 @@ function selectEntry(entry: LabEntry) {
         </v-container>
       </template>
 
-      <component :is="selected.component" v-else />
+      <component :is="selected.component" :key="`${selected.path}-${retryKey}`" v-else />
     </template>
   </v-main>
 </template>
