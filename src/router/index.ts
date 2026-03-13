@@ -206,6 +206,20 @@ const router = createRouter({
         requiresAuth: true
       }
     },
+
+    // ── DEV: UI Mockup browser (ui-mockups worktree only) ──────────────────
+    {
+      path: '/dev/demos',
+      name: 'dev-demos-index',
+      component: () => import('@/pages/dev/demos/index.vue'),
+      meta: { layout: 'default' }
+    },
+    {
+      path: '/dev/demos/:demo(.*)',
+      name: 'dev-demos-viewer',
+      component: () => import('@/pages/dev/demos/[demo].vue'),
+      meta: { layout: 'default' }
+    },
   ]
 })
 
