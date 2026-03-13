@@ -35,22 +35,46 @@ A file-drop component lab at `/lab` in the `ui-mockups` worktree. Claude writes 
 
 ```
 src/
-  ai-mockups/
-    _README.md            ← Claude reads this for project context
-    example.vue           ← starter file; lab shows this on first open
+  ai-mockups/                 ← must exist before first pnpm dev run
+    _README.md                ← Claude reads this for project context
+    example.vue               ← starter file; lab shows this on first open
 
 src/pages/lab/
-  index.vue               ← AiLab shell component
+  index.vue                   ← AiLab shell component
 
 src/styles/
-  tailwind.css            ← @tailwind base (minus preflight) / components / utilities
+  tailwind.css                ← @tailwind base (minus preflight) / components / utilities
+
+src/layouts/
+  bare.vue                    ← <v-app><router-view /></v-app> (cherry-pick from main or recreate)
 
 vite-plugins/
-  lab-promote.ts          ← (v2 placeholder) Vite plugin for promote endpoint
+  lab-promote.ts              ← (v2 placeholder) Vite plugin for promote endpoint
 
-tailwind.config.js        ← content scoped to ai-mockups + pages/lab only
+tailwind.config.js            ← content scoped to ai-mockups + pages/lab only
 postcss.config.js
 ```
+
+---
+
+## Router Guards
+
+Two guard changes are required:
+
+**`authGuard` in `src/router/guards.ts`** — extend the early-return to skip Supabase auth for `/lab`:
+```ts
+if (to.path.startsWith('/dev') || to.path.startsWith('/lab')) return next()
+```
+
+**`developmentGuard` in `src/router/guards.ts`** — extend the production-block to include `/lab`:
+```ts
+if ((to.path.startsWith('/dev') || to.path.startsWith('/lab')) && import.meta.env.PROD) {
+  next('/404')
+  return
+}
+```
+
+Without these changes, `/lab` is reachable in production and still triggers the Supabase auth check.
 
 ---
 
@@ -62,8 +86,9 @@ postcss.config.js
 - Sidebar list: auto-discovered files from `src/ai-mockups/**/*.vue` via `import.meta.glob`, grouped by subfolder
 - Last-selected component persisted in `localStorage` (key: `lab:selected`)
 - Main area: renders selected component via `defineAsyncComponent` (lazy)
-- Error boundary: if the component throws on mount, shows an error card with the error message instead of crashing the shell
+- **Error boundary:** use `onErrorCaptured` in `<script setup>` to catch render/mount errors from the dynamically-loaded component. Maintain a `currentError` ref; when set, render an error card showing the message instead of the component. Note: `defineAsyncComponent`'s built-in `errorComponent` option only catches load-time errors — `onErrorCaptured` is required for runtime/mount errors.
 - Toolbar above preview: component name + file path chip
+- **Empty state:** when `src/ai-mockups/` contains no `.vue` files, show a placeholder card instructing the user to ask Claude to generate a component
 
 **Route:**
 ```ts
@@ -71,15 +96,34 @@ postcss.config.js
   path: '/lab',
   name: 'lab',
   component: () => import('@/pages/lab/index.vue'),
-  meta: { layout: 'bare' }
+  meta: { layout: 'bare', demo: true }
 }
 ```
 
-**Auth:** none — `authGuard` short-circuits for `/dev/*` and `/lab` paths.
+**Auth:** none — `authGuard` short-circuits for `/lab` paths (see Router Guards above).
+
+---
+
+## TypeScript Configuration
+
+Add `src/ai-mockups` and `src/pages/lab` to `tsconfig.json` `exclude` so that in-progress mockup files do not break `pnpm build` (which runs `vue-tsc --noEmit`):
+
+```json
+{
+  "exclude": [
+    "src/ai-mockups",
+    "src/pages/lab"
+  ]
+}
+```
+
+This is required. Without it, any TypeScript error in a mockup file will break the production build.
 
 ---
 
 ## Tailwind Configuration
+
+**ESM note:** The project uses `"type": "module"` in `package.json` (standard Vite setup). Config files using `export default` in `.js` files are valid. If in doubt, use `.mjs` extension for both config files.
 
 **`tailwind.config.js`:**
 ```js
@@ -104,10 +148,13 @@ export default {
 }
 ```
 
-**Import order in `main.ts`:**
+**Import in `main.ts`** — add one line after the existing `main.scss` import. Do NOT add a second `vuetify/styles` import — it is already handled by `vite-plugin-vuetify` via `styles.configFile`:
+
 ```ts
-import 'vuetify/styles'      // Vuetify first
-import './styles/tailwind.css' // Tailwind after — Vuetify wins specificity ties
+// existing:
+import './styles/main.scss'
+// add after:
+import './styles/tailwind.css'
 ```
 
 Tailwind's `content` is scoped only to `src/ai-mockups/` and `src/pages/lab/` — it does not scan the rest of the app, keeping the bundle clean.
@@ -126,20 +173,9 @@ A markdown file that Claude reads at the start of any lab session. Contains:
 
 ---
 
-## Workflow
-
-1. Open `http://localhost:3000/lab`
-2. Ask Claude (with `/ui-designer` skill loaded): *"Build a booking dashboard card — property name, time window, status badge, action buttons"*
-3. Claude reads `_README.md`, writes `src/ai-mockups/BookingDashboardCard.vue`
-4. File appears in sidebar, HMR reloads, component renders
-5. Iterate: *"Make it more compact on mobile"* / *"Add a loading state"* / *"Refactor into sub-components"*
-6. When satisfied: *"Promote `BookingDashboardCard.vue` to `src/components/dumb/owner/`"* — Claude copies, fixes imports, deletes original
-
----
-
 ## `ui-designer` Skill
 
-A Claude Code skill stored at `.claude/skills/ui-designer.md`. Loaded via `/ui-designer` at the start of a lab session.
+A Claude Code custom command stored at `.claude/commands/ui-designer.md`. Loaded via `/ui-designer` at the start of a lab session.
 
 **Instruction set:**
 - Stack: Vue 3 `<script setup lang="ts">`, Vuetify 4, Tailwind CSS (no preflight)
@@ -153,17 +189,31 @@ A Claude Code skill stored at `.claude/skills/ui-designer.md`. Loaded via `/ui-d
 
 ---
 
+## Workflow
+
+1. Open `http://localhost:3000/lab`
+2. Ask Claude (with `/ui-designer` command loaded): *"Build a booking dashboard card — property name, time window, status badge, action buttons"*
+3. Claude reads `_README.md`, writes `src/ai-mockups/BookingDashboardCard.vue`
+4. File appears in sidebar, HMR reloads, component renders
+5. Iterate: *"Make it more compact on mobile"* / *"Add a loading state"* / *"Refactor into sub-components"*
+6. When satisfied: *"Promote `BookingDashboardCard.vue` to `src/components/dumb/owner/`"* — Claude copies, fixes imports, deletes original
+
+---
+
 ## Implementation Order
 
-1. Install Tailwind + PostCSS (`pnpm add -D tailwindcss postcss autoprefixer`)
-2. Create `tailwind.config.js` and `postcss.config.js`
-3. Create `src/styles/tailwind.css` and import in `main.ts`
-4. Add `/lab` route to router (alongside existing `/dev/demos`)
-5. Add `'bare'` to `RouteMeta.layout` union type (already done on `main` branch)
-6. Create `src/layouts/bare.vue` (already done on `main` branch — cherry-pick or recreate)
-7. Register `BareLayout` in `App.vue`
-8. Create `src/pages/lab/index.vue` (AiLab shell)
-9. Create `src/ai-mockups/_README.md` (project context for Claude)
-10. Create `src/ai-mockups/example.vue` (starter file)
-11. Create `.claude/skills/ui-designer.md`
-12. Verify: `pnpm dev` → navigate to `/lab` → sidebar shows `example.vue` → renders correctly
+1. Verify `package.json` has `"type": "module"` (or use `.mjs` for config files)
+2. Install Tailwind + PostCSS: `pnpm add -D tailwindcss postcss autoprefixer`
+3. Create `tailwind.config.js` and `postcss.config.js`
+4. Create `src/styles/tailwind.css` and add `import './styles/tailwind.css'` to `main.ts` after `main.scss`
+5. Add `src/ai-mockups` and `src/pages/lab` to `tsconfig.json` `exclude`
+6. Cherry-pick or recreate `src/layouts/bare.vue` from `main` branch (content: `<template><v-app><router-view /></v-app></template>`)
+7. Add `'bare'` to `RouteMeta.layout` union in `src/types/router.ts` (cherry-pick from `main` or add manually)
+8. Register `BareLayout` in `App.vue` `layouts` map (cherry-pick from `main` or add manually)
+9. Update `authGuard` and `developmentGuard` in `src/router/guards.ts` to cover `/lab` (see Router Guards section)
+10. Add `/lab` route to `src/router/index.ts` with `meta: { layout: 'bare', demo: true }`
+11. Create `src/ai-mockups/example.vue` (starter file — must exist before `pnpm dev` first run)
+12. Create `src/ai-mockups/_README.md`
+13. Create `src/pages/lab/index.vue` (AiLab shell with `onErrorCaptured`, `localStorage` persistence, empty state)
+14. Create `.claude/commands/ui-designer.md`
+15. Verify: `pnpm dev` → navigate to `/lab` → sidebar shows `example.vue` → renders correctly → error in a component shows error card, not crash
