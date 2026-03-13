@@ -182,6 +182,8 @@ export default defineConfig(({ mode }) => {
         '@pages': resolveAlias('./src/pages'),
         '@plugins': resolveAlias('./src/plugins'),
         '@assets': resolveAlias('./src/assets'),
+        // NOTE: Full Vue build (includes runtime template compiler). Normally unnecessary
+        // with Vite SFCs — remove and test once FullCalendar runtime compilation is confirmed safe.
         'vue': 'vue/dist/vue.esm-bundler.js',
       },
     },
@@ -193,7 +195,6 @@ export default defineConfig(({ mode }) => {
       '__BUILD_TIMESTAMP__': JSON.stringify(new Date().toISOString()),
       '__VUE_OPTIONS_API__': JSON.stringify(true),
       '__VUE_PROD_DEVTOOLS__': JSON.stringify(!isProduction),
-      'process.env.SASS_SILENCE_DEPRECATION_WARNINGS': JSON.stringify('legacy-js-api'),
     },
     css: {
       devSourcemap: true,
@@ -202,6 +203,9 @@ export default defineConfig(({ mode }) => {
           quietDeps: true,
           loadPaths: ['node_modules'],
         },
+        // Vuetify's internal .sass source (loaded when styles.configFile is set)
+        // also benefits from sass-embedded, which Vite 7 uses by default.
+        sass: {},
       },
     },
     server: {
