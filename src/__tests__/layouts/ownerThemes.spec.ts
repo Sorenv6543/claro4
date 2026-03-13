@@ -9,8 +9,8 @@ describe('THEMES swatch array', () => {
     }
   })
 
-  it('has exactly 2 entries', () => {
-    expect(THEMES).toHaveLength(2)
+  it('has an entry for every registered theme key', () => {
+    expect(THEMES).toHaveLength(REGISTERED_THEME_KEYS.length)
   })
 
   it('every entry has non-empty id, label, primary, background, surface', () => {
