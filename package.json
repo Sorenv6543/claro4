@@ -72,6 +72,7 @@
     "cross-env": "^10.1.0",
     "dotenv": "^17.3.1",
     "eslint": "^10.0.3",
+    "eslint-config-vuetify": "4.3.5-beta.1",
     "eslint-plugin-vue": "^10.8.0",
     "globals": "^17.4.0",
     "happy-dom": "^20.8.3",
