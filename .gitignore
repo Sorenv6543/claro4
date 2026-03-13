@@ -63,3 +63,4 @@ dist-ssr
 .mcp.json
 .cursor/mcp.json
 .claude/mcp.json
+.claude/*.local.md
