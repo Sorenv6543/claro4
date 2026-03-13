@@ -1,14 +1,22 @@
-// src/plugins/vuetify.ts
-import { createVuetify } from 'vuetify';
-import * as components from 'vuetify/components';
-import * as directives from 'vuetify/directives';
-import { aliases, mdi } from 'vuetify/iconsets/mdi';
-import type { ThemeDefinition } from 'vuetify';
+// Vuetify plugin configuration
+// https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
+
+// Vuetify
+import  { createVuetify, ThemeDefinition } from 'vuetify'
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
 
 // Import Vuetify styles
-import 'vuetify/styles';
-import '@mdi/font/css/materialdesignicons.css';
+import 'vuetify/styles'
+import '@mdi/font/css/materialdesignicons.css'
 
+/*
+@use 'vuetify/styles' with (
+  $body-font-family: 'Roboto, sans-serif',
+  $heading-font-family: 'Roboto, sans-serif',
+  $default-border-radius: 8px,
+  $border-radius-root: 8px,
+);
+*/
 // Dark Teal Theme
 const darkTealTheme: ThemeDefinition = {
   dark: true,
@@ -33,10 +41,6 @@ const darkTealTheme: ThemeDefinition = {
 };
 
 export default createVuetify({
-  components,
-  directives,
-  date: {},        // ← add this line
-
   // Icon configuration
   icons: {
     defaultSet: 'mdi',
@@ -65,14 +69,16 @@ export default createVuetify({
           'turn-urgent': '#F44336',
           'turn-standard': '#FF9800',
           'booking-standard': '#4CAF50',
+          'on-background': '#1C1B1F',
+          'on-surface': '#1C1B1F',
         },
       },
       darkTeal: darkTealTheme,
     },
     variations: {
       colors: ['primary', 'secondary', 'accent', 'error', 'info', 'success', 'warning'],
-      lighten: 5,
-      darken: 5
+      lighten: 3,
+      darken: 3
     }
   },
   
