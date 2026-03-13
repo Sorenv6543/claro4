@@ -202,10 +202,10 @@ onMounted(() => {
 - Clean up subscriptions on unmount to keep performance tests green
 - Run `pnpm test:performance` after significant data flow changes
 
-## Vuetify 3 UI/UX Patterns
+## Vuetify UI/UX Patterns
 
 ### Setup
-- **Version**: Vuetify 3.11.8 with `vite-plugin-vuetify` for auto-imports
+- **Version**: Vuetify 4 (`^4.0.1`) with `vite-plugin-vuetify` for auto-imports
 - **Icons**: MDI (`mdi-*`) via `@mdi/font`
 - **Config**: `src/plugins/vuetify.ts` - theme colors, component defaults, breakpoints
 
