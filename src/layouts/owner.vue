@@ -27,7 +27,7 @@
         />
 
         <!-- DEV: theme picker (dev builds only) -->
-        <template v-if="import.meta.env.DEV">
+        <template v-if="isDev">
           <!-- Use slot-based activator (idiomatic Vuetify 4 — ID-string activator is unreliable) -->
           <v-menu location="bottom end" :close-on-content-click="false">
             <template #activator="{ props: menuProps }">
@@ -124,6 +124,7 @@ import { THEMES } from '@/layouts/ownerThemes'
 import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
 import OwnerBottomNav from '@/components/smart/owner/OwnerBottomNav.vue'
 
+const isDev = import.meta.env.DEV
 const { mdAndUp } = useDisplay()
 const theme = useTheme()
 const router = useRouter()

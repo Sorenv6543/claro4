@@ -202,10 +202,10 @@ onMounted(() => {
 - Clean up subscriptions on unmount to keep performance tests green
 - Run `pnpm test:performance` after significant data flow changes
 
-## Vuetify 3 UI/UX Patterns
+## Vuetify UI/UX Patterns
 
 ### Setup
-- **Version**: Vuetify 3.11.8 with `vite-plugin-vuetify` for auto-imports
+- **Version**: Vuetify 4 (`^4.0.1`) with `vite-plugin-vuetify` for auto-imports
 - **Icons**: MDI (`mdi-*`) via `@mdi/font`
 - **Config**: `src/plugins/vuetify.ts` - theme colors, component defaults, breakpoints
 
@@ -282,6 +282,20 @@ Use semantic colors, not hex values:
 ### Existing Dumb Components
 Check `src/components/dumb/shared/` before creating new UI:
 - `ConfirmationDialog.vue`, `LoadingSpinner.vue`, `ErrorAlert.vue`, `SkeletonLoader.vue`, `EnhancedToast.vue`
+
+## Vuetify MCP
+
+Use `mcp__vuetify-mcp__*` tools instead of guessing at v4 APIs or component props.
+
+| Situation | Tool |
+|-----------|------|
+| Check props / events / slots for any component | `get_component_api_by_version` — pass `version: "latest"` for v4 |
+| Something broke after a Vuetify upgrade | `get_v4_breaking_changes` — filter by category (`v-btn`, `theme`, `v-select`, etc.) |
+| Configure theme, SASS vars, icons, i18n, display | `get_feature_guide` — topics: `theme`, `sass-variables`, `icon-fonts`, `display-and-platform`, `global-configuration` |
+| Directive API (`v-ripple`, `v-intersect`, etc.) | `get_directive_api_by_version` |
+| Release notes for a specific version | `get_release_notes_by_version` |
+| Migrate v3 → v4 | `get_upgrade_guide` with `version: "v3"` |
+| Create a repro or file a Vuetify bug | `create_vuetify_bin` + `create_bug_report` |
 
 ## Fixing Type Errors
 
