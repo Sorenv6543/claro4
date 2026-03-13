@@ -30,7 +30,7 @@ Also remove the two lines in `<script setup>`:
 const theme = useTheme()
 
 function applyTheme(id: string) {
-  theme.name.value = id
+  theme.global.name.value = id
 }
 ```
 

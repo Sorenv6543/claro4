@@ -13,7 +13,7 @@
         @click="sidebarOpen = !sidebarOpen"
       />
       <v-app-bar-title>
-        <span class="text-subtitle-1 font-weight-bold text-primary">Claro</span>
+        <span class="text-body-large font-weight-bold text-primary">Claro</span>
       </v-app-bar-title>
 
       <template #append>
@@ -26,46 +26,48 @@
           class="mr-1"
         />
 
-        <!-- Theme picker -->
-        <!-- Use slot-based activator (idiomatic Vuetify 4 — ID-string activator is unreliable) -->
-        <v-menu location="bottom end" :close-on-content-click="false">
-          <template #activator="{ props: menuProps }">
-            <v-btn
-              v-bind="menuProps"
-              icon="mdi-palette"
-              variant="text"
-              size="small"
-              class="mr-1"
-            />
-          </template>
-          <v-card elevation="4" rounded="lg" style="padding:12px;width:296px">
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
-              <div
-                v-for="t in THEMES"
-                :key="t.id"
-                style="position:relative;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent"
-                :style="theme.name.value === t.id ? { borderColor: t.primary } : {}"
-                @click="applyTheme(t.id)"
-              >
-                <!-- Three colour bands -->
-                <div style="display:flex;height:36px">
-                  <div :style="{ flex:1, background: t.primary }" />
-                  <div :style="{ flex:1, background: t.background }" />
-                  <div :style="{ flex:1, background: t.surface }" />
+        <!-- DEV: theme picker (dev builds only) -->
+        <template v-if="import.meta.env.DEV">
+          <!-- Use slot-based activator (idiomatic Vuetify 4 — ID-string activator is unreliable) -->
+          <v-menu location="bottom end" :close-on-content-click="false">
+            <template #activator="{ props: menuProps }">
+              <v-btn
+                v-bind="menuProps"
+                icon="mdi-palette"
+                variant="text"
+                size="small"
+                class="mr-1"
+              />
+            </template>
+            <v-card elevation="2" rounded="lg" style="padding:12px;width:296px">
+              <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
+                <div
+                  v-for="t in THEMES"
+                  :key="t.id"
+                  style="position:relative;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent"
+                  :style="theme.global.name.value === t.id ? { borderColor: t.primary } : {}"
+                  @click="applyTheme(t.id)"
+                >
+                  <!-- Three colour bands -->
+                  <div style="display:flex;height:36px">
+                    <div :style="{ flex:1, background: t.primary }" />
+                    <div :style="{ flex:1, background: t.background }" />
+                    <div :style="{ flex:1, background: t.surface }" />
+                  </div>
+                  <!-- Label -->
+                  <div style="padding:3px 6px;font-size:11px;background:#fff;color:#333">{{ t.label }}</div>
+                  <!-- Active checkmark -->
+                  <v-icon
+                    v-if="theme.global.name.value === t.id"
+                    size="14"
+                    color="white"
+                    style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.45);border-radius:50%;padding:2px"
+                  >mdi-check</v-icon>
                 </div>
-                <!-- Label -->
-                <div class="py-1 px-2 text-caption bg-surface text-surface">{{ t.label }}</div>
-                <!-- Active checkmark -->
-                <v-icon
-                  v-if="theme.name.value === t.id"
-                  size="14"
-                  color="white"
-                  style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.45);border-radius:50%;padding:2px"
-                >mdi-check</v-icon>
               </div>
-            </div>
-          </v-card>
-        </v-menu>
+            </v-card>
+          </v-menu>
+        </template>
 
         <!-- Avatar / user menu -->
         <v-menu location="bottom end">
@@ -78,7 +80,7 @@
               style="cursor: pointer"
             >
               <span
-                class="text-caption font-weight-bold"
+                class="text-body-small font-weight-bold"
                 style="font-size:0.6rem"
               >{{ userInitials }}</span>
             </v-avatar>
