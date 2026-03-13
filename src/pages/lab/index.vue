@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, defineAsyncComponent, onErrorCaptured, watch } from 'vue'
+import type { Component } from 'vue'
 
 // Auto-discover all .vue files in src/ai-mockups/
-const modules = import.meta.glob('/src/ai-mockups/**/*.vue')
+const modules = import.meta.glob<{ default: Component }>('/src/ai-mockups/**/*.vue')
 
 interface LabEntry {
   name: string
@@ -24,7 +25,7 @@ const entries: LabEntry[] = Object.entries(modules).map(([path, loader]) => {
     name,
     path,
     group,
-    component: defineAsyncComponent(loader as () => Promise<unknown>),
+    component: defineAsyncComponent(loader),
   }
 })
 

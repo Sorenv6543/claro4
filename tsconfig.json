@@ -55,7 +55,11 @@
     "docs",
     "docs/**/*",
     "scripts",
-    "scripts/**/*"
+    "scripts/**/*",
+    "src/ai-mockups",
+    "src/ai-mockups/**/*",
+    "src/pages/lab",
+    "src/pages/lab/**/*"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 } 
