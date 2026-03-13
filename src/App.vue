@@ -17,6 +17,7 @@ import DefaultLayout from '@/layouts/default.vue'
 import AuthLayout from '@/layouts/auth.vue'
 import AdminLayout from '@/layouts/admin.vue'
 import OwnerLayout from '@/layouts/owner.vue'
+import BareLayout from '@/layouts/bare.vue'
 import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
 
 // Available layouts
@@ -25,6 +26,7 @@ const layouts = {
   auth: markRaw(AuthLayout),
   admin: markRaw(AdminLayout),
   owner: markRaw(OwnerLayout),
+  bare: markRaw(BareLayout),
 }
 
 const route = useRoute()
