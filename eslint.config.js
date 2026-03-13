@@ -1,6 +1,6 @@
+// @ts-check
 import typescript from '@typescript-eslint/eslint-plugin'
 import vuetify from 'eslint-config-vuetify'
-// @ts-check
 import vue from 'eslint-plugin-vue'
 
 export default vuetify(
