@@ -1,42 +1,67 @@
-import { defineConfig } from 'vite'
+import type { PluginOption } from 'vite'
+
+import { fileURLToPath, URL } from 'node:url'
 import vue from '@vitejs/plugin-vue'
-import vuetify from 'vite-plugin-vuetify'
-import path from 'path'
-import vueDevTools from 'vite-plugin-vue-devtools'
-import devtoolsJson from 'vite-plugin-devtools-json';
+import { defineConfig } from 'vite'
+import devtoolsJson from 'vite-plugin-devtools-json'
 import { VitePWA } from 'vite-plugin-pwa'
+import vueDevTools from 'vite-plugin-vue-devtools'
+import vuetify from 'vite-plugin-vuetify'
 
+const chunkNames = [
+  'admin-components',
+  'owner-components',
+  'shared-ui',
+  'admin-logic',
+  'owner-logic',
+  'shared-logic',
+]
 
-
+const resolveAlias = (relativePath: string) => fileURLToPath(new URL(relativePath, import.meta.url))
 
 // https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [
+export default defineConfig(({ mode }) => {
+  const isProduction = mode === 'production'
+  const isDevelopment = mode === 'development'
+
+  const plugins: PluginOption[] = [
     vue({
       template: {
         compilerOptions: {
-          sourceMap: true
-        }
-      }
+          sourceMap: true,
+        },
+      },
     }),
     vuetify({ 
-          autoImport: true, // Enable auto-import for Vuetify components
+          autoImport: true,
+      // NOTE: vuetify plugin's styles.configFile option is currently required to avoid a warning about missing SASS variables, even though the variables are actually being loaded correctly via the main.scss entry point. Tracked as a follow-up task to investigate and eliminate this quirk.
+
+       
           styles: {
-            configFile: 'src/styles/variables.scss'
-          }
-    }),  
-    ...(process.env.NODE_ENV !== 'production' ? [
-      devtoolsJson(),
-      vueDevTools({
+            configFile: 'src/styles/variables.scss',
+      },
+    }),
+  ]
+
+  if (isDevelopment) {
+    plugins.push(devtoolsJson())
+
+    const vueDevToolsPlugin = vueDevTools({
         componentInspector: {
           enabled: false,
           toggleComboKey: 'alt-shift',
           launchEditor: 'code',
-        }
-      }),
-    ] : []),
-    // Only include PWA plugin in production to prevent manifest errors in development
-    ...(process.env.NODE_ENV === 'production' ? [VitePWA({
+        },
+    })
+
+    if (vueDevToolsPlugin) {
+      plugins.push(vueDevToolsPlugin)
+    }
+  }
+
+  if (isProduction) {
+    plugins.push(
+VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['pwa-icon.svg'],
       manifest: {
@@ -55,25 +80,25 @@ export default defineConfig({
           {
             src: 'pwa-icon.svg',
             sizes: 'any',
-            type: 'image/svg+xml'
+            type: 'image/svg+xml',
           },
           {
             src: 'pwa-icon.svg',
             sizes: '192x192',
-            type: 'image/svg+xml'
-          },
-          {
-            src: 'pwa-icon.svg',
-            sizes: '512x512',
-            type: 'image/svg+xml'
+            type: 'image/svg+xml',
           },
           {
             src: 'pwa-icon.svg',
             sizes: '512x512',
             type: 'image/svg+xml',
-            purpose: 'maskable'
-          }
-        ]
+          },
+          {
+            src: 'pwa-icon.svg',
+            sizes: '512x512',
+            type: 'image/svg+xml',
+            purpose: 'maskable',
+            },
+          ],
       },
       workbox: {
         globPatterns: [
@@ -84,187 +109,181 @@ export default defineConfig({
           '**/*.woff2',
           '**/*.woff',
           '**/*.ttf',
-          '**/*.eot'
+          '**/*.eot',
         ],
-        globDirectory: 'dist', // Explicitly set the build output directory
+        globDirectory: 'dist',
         runtimeCaching: [
           {
-            // Cache your role-based chunks
-            urlPattern: ({ url }) => {
-              const chunkNames = [
-                'admin-components', 'owner-components', 'shared-ui',
-                'admin-logic', 'owner-logic', 'shared-logic'
-              ];
-              return chunkNames.some(chunk => url.pathname.includes(chunk));
-            },
+                        urlPattern: ({ url }) => chunkNames.some(chunk => url.pathname.includes(chunk)),
             handler: 'StaleWhileRevalidate',
             options: {
               cacheName: 'role-based-chunks',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+                maxAgeSeconds: 30 * 24 * 60 * 60,
               },
             },
           },
           {
-            // Cache API calls with role-specific strategies
-            urlPattern: ({ url }) => url.pathname.startsWith('/api'),
+                        urlPattern: ({ url }) => url.pathname.startsWith('/api'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'api-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 24 * 60 * 60, // 24 hours
+                maxAgeSeconds: 24 * 60 * 60,
+                },
+                networkTimeoutSeconds: 3,
               },
-              networkTimeoutSeconds: 3,
-            }
-          },
+                        },
           {
-            // Cache images
-            urlPattern: ({ request }) => request.destination === 'image',
+                        urlPattern: ({ request }) => request.destination === 'image',
             handler: 'CacheFirst',
             options: {
               cacheName: 'images',
               expiration: {
                 maxEntries: 60,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+                maxAgeSeconds: 30 * 24 * 60 * 60,
+                },
               },
             },
-          }
-        ],
+                  ],
         navigateFallback: '/index.html',
         navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/],
         clientsClaim: true,
         skipWaiting: true,
       },
       devOptions: {
-        enabled: false, // Disable PWA in development to prevent manifest errors
+        enabled: false,
         type: 'module',
-        navigateFallback: '/index.html'
+        navigateFallback: '/index.html',
       },
-      // Enable advanced PWA features only in production
-      mode: 'production',
-      // Handle navigation fallback for SPA
-      injectRegister: 'auto',
-      // Ensure PWA only runs in production builds
-      includeManifestIcons: false,
+            mode: 'production',
+            injectRegister: 'auto',
+            includeManifestIcons: false,
       injectManifest: {
-        injectionPoint: undefined
-      }
-    })] : []),
+        injectionPoint: undefined,
+        },
+      }),
+    )
+  }
 
-
-
-  ],    
-
+  return {
+    plugins,
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-      '@components': path.resolve(__dirname, './src/components'),
-      '@composables': path.resolve(__dirname, './src/composables'),
-      '@stores': path.resolve(__dirname, './src/stores'),
-      '@types': path.resolve(__dirname, './src/types'),
-      '@utils': path.resolve(__dirname, './src/utils'),
-      '@layouts': path.resolve(__dirname, './src/layouts'),
-      '@pages': path.resolve(__dirname, './src/pages'),
-      '@plugins': path.resolve(__dirname, './src/plugins'),
-      '@assets': path.resolve(__dirname, './src/assets'),
-      // Fix Vue runtime compilation warning by using full build with template compiler
-      'vue': 'vue/dist/vue.esm-bundler.js'
-    }
+      '@': resolveAlias('./src'),
+      '@components': resolveAlias('./src/components'),
+      '@composables': resolveAlias('./src/composables'),
+      '@stores': resolveAlias('./src/stores'),
+      '@types': resolveAlias('./src/types'),
+      '@utils': resolveAlias('./src/utils'),
+      '@layouts': resolveAlias('./src/layouts'),
+      '@pages': resolveAlias('./src/pages'),
+      '@plugins': resolveAlias('./src/plugins'),
+      '@assets': resolveAlias('./src/assets'),
+            'vue': 'vue/dist/vue.esm-bundler.js',
+      },
   },
-  // Define build-time feature flags for role-based features
-  define: {
-    __ENABLE_OWNER_FEATURES__: JSON.stringify(true),
-    __ENABLE_ADMIN_FEATURES__: JSON.stringify(true),
-    __DEV_DEMOS_ENABLED__: JSON.stringify(process.env.NODE_ENV === 'development'),
-    __BUILD_VERSION__: JSON.stringify(process.env.npm_package_version || '0.1.0'),
-    __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString()),
-    // Ensure Vue feature flags are properly set
-    __VUE_OPTIONS_API__: JSON.stringify(true),
-    __VUE_PROD_DEVTOOLS__: JSON.stringify(process.env.NODE_ENV !== 'production'),
-    // Suppress Sass deprecation warnings
-    'process.env.SASS_SILENCE_DEPRECATION_WARNINGS': JSON.stringify('legacy-js-api')
+    define: {
+'__ENABLE_OWNER_FEATURES__': JSON.stringify(true),
+'__ENABLE_ADMIN_FEATURES__': JSON.stringify(true),
+'__DEV_DEMOS_ENABLED__': JSON.stringify(isDevelopment),
+'__BUILD_VERSION__': JSON.stringify(process.env.npm_package_version || '0.1.0'),
+'__BUILD_TIMESTAMP__': JSON.stringify(new Date().toISOString()),
+    '__VUE_OPTIONS_API__': JSON.stringify(true),
+'__VUE_PROD_DEVTOOLS__': JSON.stringify(!isProduction),
+        'process.env.SASS_SILENCE_DEPRECATION_WARNINGS': JSON.stringify('legacy-js-api'),
   },
-    // CSS and SCSS sourcemap configuration
-    css: {
-      devSourcemap: true, // Enable CSS sourcemaps in development
+        css: {
+      devSourcemap: true,
       preprocessorOptions: {
-        // Suppress Sass deprecation warnings and set load paths for Vuetify styles
-        scss: { 
+                scss: { 
           quietDeps: true,
-          loadPaths: ['node_modules']
-        }
-      }
+          loadPaths: ['node_modules'],
+        },
+      },
     },
-    // access from local network
   server: {
     port: 3000,
     open: true,
     sourcemapIgnoreList: false,
-    // Fix for requests stalling forever (common Vite issue)
-    hmr: {
-      overlay: false  // Disable HMR overlay which can cause hangs
+        hmr: {
+      overlay: false,
     },
-    // Use native file watching instead of aggressive polling
-    watch: {
-      usePolling: false,  // Disable polling to prevent performance issues
-      // interval: 1000   // If polling needed, use 1000ms not 100ms
-    }
+        watch: {
+      usePolling: false,
+      },
   },
   build: {
     target: 'esnext',
-    sourcemap: process.env.NODE_ENV === 'development' ? true : 'hidden',
-    chunkSizeWarningLimit: 1000, // Increase limit to allow larger chunks
+    sourcemap: isDevelopment ? true : 'hidden',
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
-        manualChunks: (id) => {
+        manualChunks: id => {
           if (id.includes('node_modules')) {
-            if (id.includes('@fullcalendar')) return 'calendar'
-            if (id.includes('/vuetify/')) return 'vuetify'
-            if (id.includes('@supabase/')) return 'supabase'
-            if (id.includes('/vue/') || id.includes('/@vue/') || id.includes('/vue-demi/')) return 'vue-core'
-            if (id.includes('/vue-router/')) return 'vue-core'
-            if (id.includes('/pinia/')) return 'vue-core'
+            if (id.includes('@fullcalendar')) {
+return 'calendar'
+}
+
+            if (id.includes('/vuetify/')) {
+return 'vuetify'
+}
+
+            if (id.includes('@supabase/')) {
+return 'supabase'
+}
+
+            if (id.includes('/vue/') || id.includes('/@vue/') || id.includes('/vue-demi/')) {
+return 'vue-core'
+}
+
+            if (id.includes('/vue-router/')) {
+return 'vue-core'
+}
+
+            if (id.includes('/pinia/')) {
+return 'vue-core'
+}
+
             return 'vendor'
           }
 
-          // Skip dev folder completely in production
-          if ((id.includes('/src/dev/') || id.includes('\\src\\dev\\')) && process.env.NODE_ENV === 'production') {
+                    if ((id.includes('/src/dev/') || id.includes('\\src\\dev\\')) && isProduction) {
             return undefined
           }
 
-          // Group all owner-related code together
-          if (id.includes('/owner/') || id.includes('\\owner\\')) {
+                    if (id.includes('/owner/') || id.includes('\\owner\\')) {
             return 'owner-app'
           }
 
-          // Group all admin-related code together  
-          if (id.includes('/admin/') || id.includes('\\admin\\')) {
+                    if (id.includes('/admin/') || id.includes('\\admin\\')) {
             return 'admin-app'
           }
 
-          // Core app code.
-          // NOTE: 3 circular chunk warnings (app→admin-app→app, app→owner-app→app,
+                    // NOTE: 3 circular chunk warnings (app→admin-app→app, app→owner-app→app,
           // vuetify→app→owner-app→vuetify) are pre-existing and stem from the router
           // eagerly importing admin/owner pages. Eliminating them requires converting
           // all routes to lazy imports: () => import('./pages/...'). Tracked as a
           // follow-up task.
-          if (id.includes('/stores/') || id.includes('\\stores\\') ||
-              id.includes('/composables/shared/') || id.includes('\\composables\\shared\\') ||
-              id.includes('/utils/') || id.includes('\\utils\\')) {
+          if (
+id.includes('/stores/')
+|| id.includes('\\stores\\')
+              || id.includes('/composables/shared/')
+|| id.includes('\\composables\\shared\\')
+              || id.includes('/utils/')
+|| id.includes('\\utils\\')
+) {
             return 'app-core'
           }
 
-          // Default chunk
-          return 'app'
-        }
-      }
+                    return 'app'
+        },
+        },
     },
-    // Re-enable CSS code splitting
-    cssCodeSplit: true,
-    // Use esbuild for better compatibility
-    minify: process.env.NODE_ENV === 'production' ? true : false
+        cssCodeSplit: true,
+        minify: isProduction,
   },
   optimizeDeps: {
     include: [
@@ -276,15 +295,13 @@ export default defineConfig({
       '@fullcalendar/core',
       '@fullcalendar/daygrid',
       '@fullcalendar/timegrid',
-      '@fullcalendar/interaction'
+      '@fullcalendar/interaction',
     ],
-    // Remove force: true to prevent forced re-optimization that can cause hangs
-    // force: true
-  },
-  // Preview configuration for testing builds
-  preview: {
+      },
+    preview: {
     port: 4173,
     open: true,
-    cors: true
+    cors: true,
+    },
   }
 })

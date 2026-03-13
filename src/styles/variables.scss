@@ -1,0 +1,10 @@
+// Vuetify SASS variable overrides
+// Only variables, mixins, and functions here — no actual styles.
+// Docs: https://vuetifyjs.com/features/sass-variables/
+//
+// To override a variable, add the `with (...)` clause:
+//   @use 'vuetify/settings' with (
+//     $body-font-family: ('Roboto', sans-serif),
+//     $border-radius-root: 8px,
+//   );
+@use 'vuetify/settings';
