@@ -54,7 +54,7 @@
                   <div :style="{ flex:1, background: t.surface }" />
                 </div>
                 <!-- Label -->
-                <div style="padding:3px 6px;font-size:11px;background:#fff;color:#333">{{ t.label }}</div>
+                <div class="py-1 px-2 text-caption bg-surface text-surface">{{ t.label }}</div>
                 <!-- Active checkmark -->
                 <v-icon
                   v-if="theme.name.value === t.id"
