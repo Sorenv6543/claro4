@@ -1,4 +1,4 @@
-# Removing the Theme Picker Dev Tool
+# Removing the Theme Picker
 
 ## Files to delete
 
@@ -9,14 +9,7 @@ src/__tests__/layouts/ownerThemes.spec.ts
 
 ## Changes to revert in `src/layouts/owner.vue`
 
-**Template** — delete the entire `<template v-if="import.meta.env.DEV">` block (DEV chip + palette menu):
-
-```vue
-        <!-- DEV: theme picker (dev builds only) -->
-        <template v-if="import.meta.env.DEV">
-        ...
-        </template>
-```
+**Template** — remove the theme picker UI (the theme chip and its palette menu) from the layout template so that no theme-selection controls are rendered.
 
 **Script** — remove these two lines:
 
