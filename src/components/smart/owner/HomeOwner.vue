@@ -924,7 +924,7 @@ watch(isOwnerAuthenticated, async (newValue, oldValue) => {
   }
   
   .calendar-content {
-    height: calc(100vh - 60px) !important;
+    height: calc(100% - 60px) !important;
   }
   
   /* Compact navigation on mobile */
