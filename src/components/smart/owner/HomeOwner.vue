@@ -822,8 +822,7 @@ watch(isOwnerAuthenticated, async (newValue, oldValue) => {
   min-height: 0;
   overflow: hidden;
   position: relative;
-  /* Mobile-specific height management */
-  height: calc(100vh - 70px); /* Subtract prominent header card height */
+  /* Height is managed by flexbox within .calendar-layout */
 }
 
 /* Clean Calendar Header Layout */
