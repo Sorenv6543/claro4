@@ -220,6 +220,14 @@ const router = createRouter({
       component: () => import('@/pages/dev/demos/[demo].vue'),
       meta: { layout: 'default' }
     },
+
+    // ── AI Component Lab (ui-mockups worktree only) ─────────────────────────
+    {
+      path: '/lab',
+      name: 'lab',
+      component: () => import('@/pages/lab/index.vue'),
+      meta: { layout: 'bare', demo: true },
+    },
   ]
 })
 
