@@ -26,16 +26,7 @@
           class="mr-1"
         />
 
-        <!-- DEV: theme picker (dev builds only) -->
-        <template v-if="import.meta.env.DEV">
-        <!-- Note: global VChip default is rounded="pill"; rounded="0" overrides it for the label look -->
-        <v-chip
-          size="x-small"
-          color="warning"
-          rounded="0"
-          class="mr-1"
-          style="font-size:9px;height:16px;padding:0 4px"
-        >DEV</v-chip>
+        <!-- Theme picker -->
         <!-- Use slot-based activator (idiomatic Vuetify 4 — ID-string activator is unreliable) -->
         <v-menu location="bottom end" :close-on-content-click="false">
           <template #activator="{ props: menuProps }">
@@ -75,7 +66,6 @@
             </div>
           </v-card>
         </v-menu>
-        </template>
 
         <!-- Avatar / user menu -->
         <v-menu location="bottom end">

@@ -106,73 +106,6 @@ src/components/smart/owner/HomeOwner.vue -
       @cancel="handleConfirmDialogCancel"
       @close="handleConfirmDialogClose"
     />
-
-    <!-- Custom Scrim Overlay (doesn't affect main FAB) -->
-    <div
-      v-if="mobile && speedDialOpen"
-      class="speed-dial-custom-scrim"
-      @click="speedDialOpen = false"
-    />
-
-    <!-- Mobile Enhanced Speed Dial FAB -->
-    <v-speed-dial
-      v-if="mobile"
-      v-model="speedDialOpen"
-      location="bottom end"
-      transition="scale-y-transition"
-      :open-on-hover="false"
-      :scrim="false"
-    >
-      <!-- Main FAB Button (Activator) -->
-      <template #activator="{ props, isActive }">
-        <v-fab
-          v-bind="props"
-          :icon="isActive ? 'mdi-close' : 'mdi-plus'"
-          size="large"
-          color="primary"
-          rounded="circle"
-          app
-          appear
-        />
-      </template>
-
-      <!-- Speed Dial Actions -->
-      <!-- Add Turn -->
-      <div class="speed-dial-action">
-        <span class="text-body-2 font-weight-medium">Add Turn</span>
-        <v-fab
-          icon="mdi-rotate-right"
-          size="small"
-          color="warning"
-          rounded="circle"
-          @click="handleCreateTurn"
-        />
-      </div>
-      
-      <!-- Add Property -->
-      <div class="speed-dial-action">
-        <span class="text-body-2 font-weight-medium">Add House</span>
-        <v-fab
-          icon="mdi-home-plus"
-          size="small" 
-          color="info"
-          rounded="circle"
-          @click="handleCreateProperty"
-        />
-      </div>
-      
-      <!-- Add Booking -->
-      <div class="speed-dial-action">
-        <span class="text-body-2 font-weight-medium">Add Booking</span>
-        <v-fab
-          icon="mdi-calendar-plus"
-          size="default"
-          color="success"
-          rounded="circle"
-          @click="handleCreateBooking"
-        />
-      </div>
-    </v-speed-dial>
   </div>
 </template>
 
@@ -182,8 +115,6 @@ src/components/smart/owner/HomeOwner.vue -
 
 // Real-time sync will auto-initialize when user is authenticated
 import { ref, computed, watch, onMounted, onUnmounted, nextTick } from 'vue';
-import { useDisplay } from 'vuetify';
-
 // Owner-specific components
 import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue';
 import BookingForm from '@/components/dumb/shared/BookingForm.vue';
@@ -218,7 +149,6 @@ const propertyStore = usePropertyStore();
 const bookingStore = useBookingStore();
 const uiStore = useUIStore();
 const authStore = useAuthStore();
-const { mobile } = useDisplay();
 
 // ============================================================================
 // COMPOSABLES - BUSINESS LOGIC
@@ -252,7 +182,6 @@ const {
 // ============================================================================
 const calendarRef = ref<InstanceType<typeof OwnerCalendar> | null>(null);
 const selectedPropertyFilter = ref<string | null>(null);
-const speedDialOpen = ref(false);
 
 // ============================================================================
 // OWNER-SPECIFIC DATA ACCESS
@@ -429,63 +358,6 @@ const confirmDialogData = computed(() => {
   const dialog = uiStore.getConfirmDialogState('confirmDialog');
   return dialog?.data;
 });
-
-// ============================================================================
-// OWNER-SPECIFIC EVENT HANDLERS
-// ============================================================================
-
-const handleCreateBooking = (data?: Partial<BookingFormData>): void => {
-      eventLogger.logEvent(
-      'SpeedDial',
-      'HomeOwner',
-      'createBooking',
-    data, 
-    'receive'
-  );
-
-  // Ensure owner_id is set for new bookings
-  const bookingData = {
-    ...data,
-    owner_id: currentOwnerId.value
-  };
-  
-  uiStore.openModal('eventModal', 'create', bookingData);
-};
-
-const handleCreateProperty = (): void => {
-      eventLogger.logEvent(
-      'SpeedDial',
-      'HomeOwner',
-      'createProperty',
-    null, 
-    'receive'
-  );
-  
-  // Ensure owner_id is set for new properties
-  const propertyData = {
-    owner_id: currentOwnerId.value
-  };
-  
-  uiStore.openModal('propertyModal', 'create', propertyData);
-};
-
-const handleCreateTurn = (): void => {
-  eventLogger.logEvent(
-    'SpeedDial',
-    'HomeOwner',
-    'createTurn', 
-    null, 
-    'emit'
-  );
-  
-  // Ensure owner_id is set for new turn bookings
-  const turnData = {
-    owner_id: currentOwnerId.value,
-    booking_type: 'turn'
-  };
-  
-  uiStore.openModal('eventModal', 'create', turnData);
-};
 
 // ============================================================================
 // CALENDAR EVENT HANDLERS
@@ -1157,59 +1029,6 @@ watch(isOwnerAuthenticated, async (newValue, oldValue) => {
     box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
     transform: scale(1);
   }
-}
-
-/* ================================================================ */
-/* SPEED DIAL ACTIONS - CSS GRID FOR PERFECT ALIGNMENT */
-/* ================================================================ */
-
-.speed-dial-action {
-  display: grid;
-  grid-template-columns: 1fr auto; /* Text flexible, FAB fixed */
-  align-items: center; /* Center vertically */
-  gap: 8px; /* Space between text and FAB */
-  width: 140px; /* Fixed width for consistent alignment */
-  margin-bottom: 8px; /* Space between actions */
-}
-
-.speed-dial-action .text-body-2 {
-  justify-self: end; /* Align text to right of its column */
-  white-space: nowrap; /* Prevent text wrapping */
-}
-
-.speed-dial-action .v-fab {
-  justify-self: center; /* Center FAB in its column */
-}
-
-/* ================================================================ */
-/* CUSTOM SPEED DIAL SCRIM - EXCLUDES MAIN FAB */
-/* ================================================================ */
-
-.speed-dial-custom-scrim {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 88px; /* Leave space for FAB on the right */
-  bottom: 88px; /* Leave space for FAB at the bottom */
-  background: rgba(255, 255, 255, 0.86); /* White with 86% opacity */
-  z-index: 1500; /* Below speed dial (2000) but above content */
-  pointer-events: auto; /* Allow clicks to close */
-}
-
-/* Additional overlay piece to cover top-right corner */
-.speed-dial-custom-scrim::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  right: -88px;
-  width: 88px;
-  height: calc(100vh - 88px);
-  background: rgba(255, 255, 255, 0.86);
-}
-
-/* Ensure speed dial and its actions are above the custom scrim */
-.v-speed-dial {
-  z-index: 1000 !important;
 }
 
 /* ================================================================ */
