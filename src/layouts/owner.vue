@@ -131,7 +131,7 @@ const authStore = useAuthStore()
 const sidebarOpen = ref(mdAndUp.value)
 
 function applyTheme(id: string) {
-  theme.name.value = id
+  theme.global.name.value = id
 }
 
 const userInitials = computed(() => {
