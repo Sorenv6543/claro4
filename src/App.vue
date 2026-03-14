@@ -33,8 +33,8 @@
 
   // Determine the current layout based on route meta
   const layout = computed(() => {
-    const layoutName = route.meta.layout as string || 'default'
-    return layouts[layoutName as keyof typeof layouts] || layouts.default
+    const name = route.meta.layout ?? 'default'
+    return layouts[name] ?? layouts.default
   })
 </script>
 

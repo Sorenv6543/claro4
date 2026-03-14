@@ -10,9 +10,6 @@ export async function authGuard(
 ) {
   const authStore = useAuthStore();
 
-  // Skip auth entirely for dev/demo routes
-  if (to.path.startsWith('/dev')) return next()
-
   // Only call checkAuth once per session. After logout, the auth store's
   // signOut action resets authChecked so the next navigation re-checks.
   if (!authStore.authChecked) {
@@ -76,8 +73,8 @@ export function developmentGuard(
   _from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) {
-  // Block development routes in production
-  if (to.path.startsWith('/dev') && import.meta.env.PROD) {
+  // Block development/demo routes in production
+  if (import.meta.env.PROD && (to.path.startsWith('/dev') || to.meta.demo)) {
     next('/404');
     return;
   }

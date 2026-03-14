@@ -16,7 +16,9 @@ if (!supabaseUrl || !supabaseAnonKey) {
   console.warn('⚠️ Missing Supabase env vars — running without backend. Components that call Supabase will fail gracefully.')
 }
 
-console.log('🔗 Connecting to Supabase:', supabaseUrl)
+if (import.meta.env.DEV) {
+  console.log('🔗 Connecting to Supabase:', supabaseUrl)
+}
 
 // Create Supabase client with production settings
 export const supabase = createClient(supabaseUrl ?? 'https://placeholder.supabase.co', supabaseAnonKey ?? 'placeholder', {
@@ -43,20 +45,22 @@ if (import.meta.env.VITE_DEBUG_AUTH === 'true') {
   })
 }
 
-// Safe connection test - check auth service instead of protected tables
-supabase.auth.getSession()
-  .then(({ data, error }) => {
-    if (error) {
-      console.error('❌ Supabase connection failed:', error)
-    } else {
-      console.log('✅ Supabase connected successfully. Auth service operational.')
-      if (data.session) {
-        console.log('🔐 Existing session found for user:', data.session.user.id)
+// Safe connection test - only runs when env vars are present
+if (supabaseUrl && supabaseAnonKey) {
+  supabase.auth.getSession()
+    .then(({ data, error }) => {
+      if (error) {
+        console.error('❌ Supabase connection failed:', error)
+      } else {
+        console.log('✅ Supabase connected successfully. Auth service operational.')
+        if (data.session) {
+          console.log('🔐 Existing session found for user:', data.session.user.id)
+        }
       }
-    }
-  })
-  .catch(error => {
-    console.error('❌ Supabase connection failed:', error)
-  })
+    })
+    .catch(error => {
+      console.error('❌ Supabase connection failed:', error)
+    })
+}
 
 export default supabase
