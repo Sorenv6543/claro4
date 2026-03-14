@@ -12,22 +12,21 @@
       <v-app-bar-nav-icon
         @click="toggleSidebar"
       />
-        
+
       <v-app-bar-title class="font-weight-medium">
         Property Cleaning Scheduler
       </v-app-bar-title>
-  
+
       <v-spacer />
-  
-      
+
       <ThemePicker />
-  
+
       <v-menu
         location="bottom end"
         offset="5"
       >
         <template #activator="{ props: menuProps }">
-          <v-btn 
+          <v-btn
             icon
             v-bind="menuProps"
             class="ml-2"
@@ -37,7 +36,7 @@
             </v-avatar>
           </v-btn>
         </template>
-          
+
         <v-list min-width="200">
           <v-list-subheader>User Options</v-list-subheader>
           <v-list-item
@@ -57,52 +56,47 @@
         </v-list>
       </v-menu>
     </v-app-bar> -->
-  
+
     <!-- Main Content Area - Full Height for Mobile Calendar -->
     <v-main class="main-content-area">
       <div class="viewport-container">
         <router-view />
       </div>
     </v-main>
-  
+
     <!-- Global Notification Area -->
     <!-- <div id="notification-area" /> -->
-  
+
     <!-- Global Modal Area -->
     <!-- <div id="modal-area" /> -->
   </v-app>
 </template>
-  
+
   <script setup lang="ts">
-  
- 
-  
+
   // Sidebar state (for future implementation)
 
-  
-
   </script>
-  
+
   <style>
   /* Theme-aware utility classes */
   .border-b {
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12) !important;
   }
-  
+
   .border-r {
     border-right: 1px solid rgba(var(--v-theme-on-surface), 0.12) !important;
   }
-  
+
   /* Navigation drawer theming */
 
-  
   /* App bar theming */
   .v-app-bar {
     background: rgb(var(--v-theme-surface)) !important;
     color: rgb(var(--v-theme-on-surface)) !important;
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12) !important;
   }
-  
+
   /* Main content area - Full height support */
   .v-main {
     background: rgb(var(--v-theme-background)) !important;
@@ -131,26 +125,26 @@
     flex-direction: column;
     position: relative;
   }
-  
+
   /* List items in navigation */
   .v-list-item {
     color: rgb(var(--v-theme-on-surface)) !important;
   }
-  
+
   .v-list-item:hover {
     background: rgba(var(--v-theme-primary), 0.08) !important;
   }
-  
+
   .v-list-item--active {
     background: rgba(var(--v-theme-primary), 0.12) !important;
     color: rgb(var(--v-theme-primary)) !important;
   }
-  
+
   /* Avatar and icons */
   .v-avatar {
     background: rgb(var(--v-theme-primary)) !important;
   }
-  
+
   /* Menu styling */
   .v-menu .v-list {
     background: rgb(var(--v-theme-surface)) !important;

@@ -28,9 +28,9 @@
       <!-- Booking Stats - Compact -->
       <v-row class="mb-2 compact-stats-row">
         <v-col
+          class="pa-1"
           cols="6"
           md="3"
-          class="pa-1"
         >
           <v-card
             class="compact-stat-card stat-card-primary"
@@ -47,9 +47,9 @@
           </v-card>
         </v-col>
         <v-col
+          class="pa-1"
           cols="6"
           md="3"
-          class="pa-1"
         >
           <v-card
             class="compact-stat-card stat-card-warning"
@@ -66,9 +66,9 @@
           </v-card>
         </v-col>
         <v-col
+          class="pa-1"
           cols="6"
           md="3"
-          class="pa-1"
         >
           <v-card
             class="compact-stat-card stat-card-success"
@@ -85,9 +85,9 @@
           </v-card>
         </v-col>
         <v-col
+          class="pa-1"
           cols="6"
           md="3"
-          class="pa-1"
         >
           <v-card
             class="compact-stat-card stat-card-info"
@@ -108,51 +108,51 @@
       <!-- Filters - Compact -->
       <v-row class="mb-2 compact-filters-row">
         <v-col
+          class="pa-1"
           cols="12"
           md="4"
-          class="pa-1"
         >
           <v-select
             v-model="selectedProperty"
-            :items="propertyOptions"
-            label="Property"
             clearable
             density="compact"
-            variant="outlined"
-            prepend-inner-icon="mdi-home"
             hide-details
+            :items="propertyOptions"
+            label="Property"
+            prepend-inner-icon="mdi-home"
+            variant="outlined"
           />
         </v-col>
         <v-col
+          class="pa-1"
           cols="6"
           md="4"
-          class="pa-1"
         >
           <v-select
             v-model="selectedStatus"
-            :items="statusOptions"
-            label="Status"
             clearable
             density="compact"
-            variant="outlined"
-            prepend-inner-icon="mdi-filter"
             hide-details
+            :items="statusOptions"
+            label="Status"
+            prepend-inner-icon="mdi-filter"
+            variant="outlined"
           />
         </v-col>
         <v-col
+          class="pa-1"
           cols="6"
           md="4"
-          class="pa-1"
         >
           <v-select
             v-model="selectedType"
-            :items="typeOptions"
-            label="Type"
             clearable
             density="compact"
-            variant="outlined"
-            prepend-inner-icon="mdi-tag"
             hide-details
+            :items="typeOptions"
+            label="Type"
+            prepend-inner-icon="mdi-tag"
+            variant="outlined"
           />
         </v-col>
       </v-row>
@@ -166,11 +166,11 @@
             </v-card-title>
 
             <v-data-table
+              class="elevation-0"
               :headers="tableHeaders"
+              item-key="id"
               :items="bookingItems"
               :loading="loading"
-              item-key="id"
-              class="elevation-0"
             >
               <template #[`item.property_name`]="{ item }">
                 <div class="d-flex align-center">
@@ -224,10 +224,10 @@
                     @click="handleEditBooking(item)"
                   />
                   <v-btn
+                    color="error"
                     icon="mdi-delete"
                     size="small"
                     variant="text"
-                    color="error"
                     @click="handleDeleteBooking(item)"
                   />
                 </div>
@@ -240,9 +240,9 @@
               class="text-center py-8"
             >
               <v-icon
-                size="64"
-                color="grey-lighten-1"
                 class="mb-4"
+                color="grey-lighten-1"
+                size="64"
               >
                 mdi-calendar-blank
               </v-icon>
@@ -268,156 +268,156 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed, ref } from 'vue';
-import { useOwnerBookings } from '@/composables/owner/useOwnerBookings';
-import { useOwnerProperties } from '@/composables/owner/useOwnerProperties';
-import { useUIStore } from '@/stores/ui';
-import type { Booking, ModalData } from '@/types';
+  import type { Booking, ModalData } from '@/types'
+  import { computed, onMounted, ref } from 'vue'
+  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+  import { useUIStore } from '@/stores/ui'
 
-defineOptions({
-  name: 'OwnerBookingsComponent'
-});
+  defineOptions({
+    name: 'OwnerBookingsComponent',
+  })
 
-// Composables
-const {
-  myBookings: ownerBookings,
-  myTodayTurns: todayBookings,
-  myUpcomingCleanings: upcomingBookings,
-  fetchMyBookings,
-  deleteMyBooking
-} = useOwnerBookings();
+  // Composables
+  const {
+    myBookings: ownerBookings,
+    myTodayTurns: todayBookings,
+    myUpcomingCleanings: upcomingBookings,
+    fetchMyBookings,
+    deleteMyBooking,
+  } = useOwnerBookings()
 
-const {
-  myProperties: ownerProperties,
-  fetchMyProperties
-} = useOwnerProperties();
+  const {
+    myProperties: ownerProperties,
+    fetchMyProperties,
+  } = useOwnerProperties()
 
-// Stores
-const uiStore = useUIStore();
+  // Stores
+  const uiStore = useUIStore()
 
-// Reactive state
-const selectedProperty = ref<string | null>(null);
-const selectedStatus = ref<string | null>(null);
-const selectedType = ref<string | null>(null);
-const loading = ref(false);
+  // Reactive state
+  const selectedProperty = ref<string | null>(null)
+  const selectedStatus = ref<string | null>(null)
+  const selectedType = ref<string | null>(null)
+  const loading = ref(false)
 
-// Computed
-const ownerBookingsArray = computed(() =>
-  Array.from(ownerBookings.value.values())
-);
+  // Computed
+  const ownerBookingsArray = computed(() =>
+    Array.from(ownerBookings.value.values()),
+  )
 
-const turnBookings = computed(() =>
-  ownerBookingsArray.value.filter(b => b.booking_type === 'turn')
-);
+  const turnBookings = computed(() =>
+    ownerBookingsArray.value.filter(b => b.booking_type === 'turn'),
+  )
 
-const propertyOptions = computed(() => [
-  ...Array.from(ownerProperties.value.values()).map(p => ({
-    title: p.name,
-    value: p.id
-  }))
-]);
+  const propertyOptions = computed(() =>
+    Array.from(ownerProperties.value.values()).map(p => ({
+      title: p.name,
+      value: p.id,
+    })),
+  )
 
-const statusOptions = [
-  { title: 'Pending', value: 'pending' },
-  { title: 'Scheduled', value: 'scheduled' },
-  { title: 'In Progress', value: 'in_progress' },
-  { title: 'Completed', value: 'completed' }
-];
+  const statusOptions = [
+    { title: 'Pending', value: 'pending' },
+    { title: 'Scheduled', value: 'scheduled' },
+    { title: 'In Progress', value: 'in_progress' },
+    { title: 'Completed', value: 'completed' },
+  ]
 
-const typeOptions = [
-  { title: 'Standard', value: 'standard' },
-  { title: 'Turn', value: 'turn' }
-];
+  const typeOptions = [
+    { title: 'Standard', value: 'standard' },
+    { title: 'Turn', value: 'turn' },
+  ]
 
-const bookingItems = computed(() => {
-  let filtered = ownerBookingsArray.value;
+  const bookingItems = computed(() => {
+    let filtered = ownerBookingsArray.value
 
-  if (selectedProperty.value) {
-    filtered = filtered.filter(b => b.property_id === selectedProperty.value);
+    if (selectedProperty.value) {
+      filtered = filtered.filter(b => b.property_id === selectedProperty.value)
+    }
+
+    if (selectedStatus.value) {
+      filtered = filtered.filter(b => b.status === selectedStatus.value)
+    }
+
+    if (selectedType.value) {
+      filtered = filtered.filter(b => b.booking_type === selectedType.value)
+    }
+
+    return filtered.map(booking => ({
+      ...booking,
+      property_name: getPropertyName(booking.property_id),
+    })).sort((a, b) =>
+      new Date(b.checkout_date).getTime() - new Date(a.checkout_date).getTime(),
+    )
+  })
+
+  const tableHeaders = [
+    { title: 'Property', key: 'property_name', sortable: false },
+    { title: 'Type', key: 'booking_type', sortable: true },
+    { title: 'Status', key: 'status', sortable: true },
+    { title: 'Dates', key: 'dates', sortable: false },
+    { title: 'Actions', key: 'actions', sortable: false, width: '100px' },
+  ]
+
+  // Methods
+  function getPropertyName (propertyId: string): string {
+    const property = Array.from(ownerProperties.value.values()).find(p => p.id === propertyId)
+    return property?.name || 'Unknown Property'
   }
 
-  if (selectedStatus.value) {
-    filtered = filtered.filter(b => b.status === selectedStatus.value);
+  function getStatusColor (status: string): string {
+    const colors: Record<string, string> = {
+      pending: 'warning',
+      scheduled: 'info',
+      in_progress: 'primary',
+      completed: 'success',
+    }
+    return colors[status] || 'grey'
   }
 
-  if (selectedType.value) {
-    filtered = filtered.filter(b => b.booking_type === selectedType.value);
+  function formatDate (dateString: string): string {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+    })
   }
 
-  return filtered.map(booking => ({
-    ...booking,
-    property_name: getPropertyName(booking.property_id)
-  })).sort((a, b) =>
-    new Date(b.checkout_date).getTime() - new Date(a.checkout_date).getTime()
-  );
-});
+  // Event handlers
+  function handleCreateBooking (): void {
+    uiStore.openModal('eventModal', 'create')
+  }
 
-const tableHeaders = [
-  { title: 'Property', key: 'property_name', sortable: false },
-  { title: 'Type', key: 'booking_type', sortable: true },
-  { title: 'Status', key: 'status', sortable: true },
-  { title: 'Dates', key: 'dates', sortable: false },
-  { title: 'Actions', key: 'actions', sortable: false, width: '100px' }
-];
+  function handleEditBooking (booking: Booking): void {
+    uiStore.openModal('eventModal', 'edit', { booking: booking as unknown as ModalData })
+  }
 
-// Methods
-const getPropertyName = (propertyId: string): string => {
-  const property = Array.from(ownerProperties.value.values()).find(p => p.id === propertyId);
-  return property?.name || 'Unknown Property';
-};
-
-const getStatusColor = (status: string): string => {
-  const colors: Record<string, string> = {
-    pending: 'warning',
-    scheduled: 'info',
-    in_progress: 'primary',
-    completed: 'success'
-  };
-  return colors[status] || 'grey';
-};
-
-const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    weekday: 'short',
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-  });
-};
-
-// Event handlers
-const handleCreateBooking = (): void => {
-  uiStore.openModal('eventModal', 'create');
-};
-
-const handleEditBooking = (booking: Booking): void => {
-  uiStore.openModal('eventModal', 'edit', {booking: booking as unknown as ModalData});
-};
-
-const handleDeleteBooking = async (booking: Booking): Promise<void> => {
-  if (confirm(`Are you sure you want to delete this booking for ${getPropertyName(booking.property_id)}?`)) {
-    try {
-      await deleteMyBooking(booking.id);
-      uiStore.addNotification('success', 'Success', 'Booking deleted successfully');
-    } catch (error: unknown) {
-      console.error('Error deleting booking:', error);
-      uiStore.addNotification('error', 'Error', 'Failed to delete booking');
+  async function handleDeleteBooking (booking: Booking): Promise<void> {
+    if (confirm(`Are you sure you want to delete this booking for ${getPropertyName(booking.property_id)}?`)) {
+      try {
+        await deleteMyBooking(booking.id)
+        uiStore.addNotification('success', 'Success', 'Booking deleted successfully')
+      } catch (error: unknown) {
+        console.error('Error deleting booking:', error)
+        uiStore.addNotification('error', 'Error', 'Failed to delete booking')
+      }
     }
   }
-};
 
-// Initialize data
-onMounted(async () => {
-  loading.value = true;
-  try {
-    await Promise.all([
-      fetchMyBookings(),
-      fetchMyProperties()
-    ]);
-  } finally {
-    loading.value = false;
-  }
-});
+  // Initialize data
+  onMounted(async () => {
+    loading.value = true
+    try {
+      await Promise.all([
+        fetchMyBookings(),
+        fetchMyProperties(),
+      ])
+    } finally {
+      loading.value = false
+    }
+  })
 </script>
 
 <style scoped>

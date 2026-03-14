@@ -26,9 +26,9 @@
 
       <v-row class="mb-2 compact-stats-row">
         <v-col
+          class="pa-1"
           cols="6"
           sm="3"
-          class="pa-1"
         >
           <v-card
             class="compact-stat-card stat-card-primary"
@@ -45,9 +45,9 @@
           </v-card>
         </v-col>
         <v-col
+          class="pa-1"
           cols="6"
           sm="3"
-          class="pa-1"
         >
           <v-card
             class="compact-stat-card stat-card-success"
@@ -64,9 +64,9 @@
           </v-card>
         </v-col>
         <v-col
+          class="pa-1"
           cols="6"
           sm="3"
-          class="pa-1"
         >
           <v-card
             class="compact-stat-card stat-card-info"
@@ -83,9 +83,9 @@
           </v-card>
         </v-col>
         <v-col
+          class="pa-1"
           cols="6"
           sm="3"
-          class="pa-1"
         >
           <v-card
             class="compact-stat-card stat-card-warning"
@@ -108,14 +108,14 @@
         <v-col
           v-for="(property, index) in myProperties"
           :key="property.id"
-          cols="12"
-          sm="6"
-          md="4"
-          lg="3"
           class="pa-2"
+          cols="12"
+          lg="3"
+          md="4"
+          sm="6"
         >
-          <v-card 
-            class="compact-property-card" 
+          <v-card
+            class="compact-property-card"
             :class="getPropertyCardClass(index)"
             elevation="2"
             @click="viewProperty(property)"
@@ -151,33 +151,33 @@
                   </v-list>
                 </v-menu>
               </div>
-              
+
               <div class="property-name mb-1">
                 {{ property.name }}
               </div>
               <div class="property-address mb-2">
                 {{ property.address }}
               </div>
-              
+
               <div class="property-details">
                 <span class="detail-item">
                   <v-icon
-                    size="12"
                     class="mr-1"
+                    size="12"
                   >mdi-bed</v-icon>
                   {{ property.bedrooms || 0 }}
                 </span>
                 <span class="detail-item">
                   <v-icon
-                    size="12"
                     class="mr-1"
+                    size="12"
                   >mdi-shower</v-icon>
                   {{ property.bathrooms || 0 }}
                 </span>
                 <span class="detail-item">
                   <v-icon
-                    size="12"
                     class="mr-1"
+                    size="12"
                   >mdi-home</v-icon>
                   {{ property.property_type || 'N/A' }}
                 </span>
@@ -190,13 +190,13 @@
       <!-- Empty State -->
       <v-row v-if="myProperties.length === 0">
         <v-col
-          cols="12"
           class="text-center py-8"
+          cols="12"
         >
           <v-icon
-            size="64"
-            color="grey-lighten-1"
             class="mb-4"
+            color="grey-lighten-1"
+            size="64"
           >
             mdi-home-outline
           </v-icon>
@@ -219,260 +219,264 @@
 
     <!-- Property Modal - Same modal system as HomeOwner -->
     <PropertyModal
-      :open="propertyModalOpen"
       :mode="propertyModalMode"
+      :open="propertyModalOpen"
       :property="propertyModalData"
       @close="handlePropertyModalClose"
-      @save="handlePropertyModalSave"
       @delete="handlePropertyModalDelete"
+      @save="handlePropertyModalSave"
     />
 
     <!-- Confirmation Dialog - Same system as HomeOwner -->
     <ConfirmationDialog
+      :cancel-text="confirmDialogCancelText"
+      :confirm-text="confirmDialogConfirmText"
+      :dangerous="confirmDialogDangerous"
+      :message="confirmDialogMessage"
       :open="confirmDialogOpen"
       :title="confirmDialogTitle"
-      :message="confirmDialogMessage"
-      :confirm-text="confirmDialogConfirmText"
-      :cancel-text="confirmDialogCancelText"
-      :dangerous="confirmDialogDangerous"
-      @confirm="handleConfirmDialogConfirm"
       @cancel="handleConfirmDialogCancel"
       @close="handleConfirmDialogClose"
+      @confirm="handleConfirmDialogConfirm"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
-import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import type { Property, PropertyFormData, PropertyRecord } from '@/types'
+  import { computed, onMounted } from 'vue'
+  import { useRouter } from 'vue-router'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
 
-import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
-import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-import { useUIStore } from '@/stores/ui'
-import { useAuthStore } from '@/stores/auth'
-import type { Property, PropertyFormData, PropertyRecord } from '@/types'
+  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+  import { useAuthStore } from '@/stores/auth'
+  import { useUIStore } from '@/stores/ui'
 
-// Component metadata
-defineOptions({
-  name: 'OwnerProperties'
-})
-
-const uiStore = useUIStore()
-const authStore = useAuthStore()
-const router = useRouter()
-
-const {
-  myProperties,
-  myActiveProperties,
-  fetchMyProperties,
-  createMyProperty,
-  updateMyProperty,
-  deleteMyProperty
-} = useOwnerProperties()
-
-const {
-  myBookings,
-  myTodayTurns,
-  fetchMyBookings
-} = useOwnerBookings()
-
-// ============================================================================
-// UI STATE - SAME MODAL MANAGEMENT AS HomeOwner
-// ============================================================================
-
-// Property Modal - Same pattern as HomeOwner
-const propertyModalOpen = computed(() => uiStore.isModalOpen('propertyModal'))
-const propertyModalMode = computed(() => {
-  const modal = uiStore.getModalState('propertyModal')
-  return (modal?.mode as 'create' | 'edit') || 'create'
-})
-const propertyModalData = computed(() => {
-  const modal = uiStore.getModalState('propertyModal')
-  return modal?.data as Property | undefined
-})
-
-// Confirmation Dialog - Same pattern as HomeOwner
-const confirmDialogOpen = computed(() => uiStore.isConfirmDialogOpen('confirmDialog'))
-const confirmDialogTitle = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog')
-  return dialog?.title || 'Confirm'
-})
-const confirmDialogMessage = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog')
-  return dialog?.message || 'Are you sure you want to proceed?'
-})
-const confirmDialogConfirmText = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog')
-  return dialog?.confirmText || 'Confirm'
-})
-const confirmDialogCancelText = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog')
-  return dialog?.cancelText || 'Cancel'
-})
-const confirmDialogDangerous = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog')
-  return dialog?.dangerous || false
-})
-const confirmDialogData = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog')
-  return dialog?.data
-})
-
-// ============================================================================
-// HELPER FUNCTIONS - STYLING AND ICONS
-// ============================================================================
-
-// Property card styling based on index
-const getPropertyCardClass = (index: number): string => {
-  const classes = [
-    'property-card-blue',
-    'property-card-green', 
-    'property-card-purple',
-    'property-card-orange'
-  ]
-  return classes[index % classes.length]
-}
-
-// Property icon color based on index
-const getPropertyIconColor = (index: number): string => {
-  const colors = ['primary', 'success', 'secondary', 'warning']
-  return colors[index % colors.length]
-}
-
-// Property type icon mapping
-const getPropertyIcon = (propertyType?: string): string => {
-  switch (propertyType) {
-    case 'house': return 'mdi-home'
-    case 'apartment': return 'mdi-apartment'
-    case 'condo': return 'mdi-office-building'
-    case 'townhouse': return 'mdi-home-group'
-    default: return 'mdi-home-outline'
-  }
-}
-
-// ============================================================================
-// EVENT HANDLERS - SAME ORCHESTRATION PATTERN AS HomeOwner
-// ============================================================================
-
-const handleCreateProperty = (): void => {
-  const propertyData = {
-    owner_id: authStore.user?.id
-  }
-  uiStore.openModal('propertyModal', 'create', propertyData)
-}
-
-
-const handleDeleteProperty = async (propertyId: string): Promise<void> => {
-  const property = myProperties.value.find(p => p.id === propertyId)
-  if (!property) return
-
-  uiStore.openConfirmDialog('confirmDialog', {
-    title: 'Delete Property',
-    message: `Are you sure you want to delete "${property.name}"? This will also delete all associated bookings. This action cannot be undone.`,
-    confirmText: 'Delete',
-    cancelText: 'Cancel',
-    dangerous: true,
-    data: { type: 'property', id: propertyId }
+  // Component metadata
+  defineOptions({
+    name: 'OwnerProperties',
   })
-}
 
-// Navigation functions
-const editProperty = (property: Property): void => {
-  uiStore.openModal('propertyModal', 'edit', property as PropertyRecord)
-}
+  const uiStore = useUIStore()
+  const authStore = useAuthStore()
+  const router = useRouter()
 
-const viewProperty = (property: Property): void => {
-  router.push(`/owner/properties/${property.id}`)
-}
+  const {
+    myProperties,
+    myActiveProperties,
+    fetchMyProperties,
+    createMyProperty,
+    updateMyProperty,
+    deleteMyProperty,
+  } = useOwnerProperties()
 
-// ============================================================================
-// MODAL EVENT HANDLERS - SAME PATTERN AS HomeOwner
-// ============================================================================
+  const {
+    myBookings,
+    myTodayTurns,
+    fetchMyBookings,
+  } = useOwnerBookings()
 
-const handlePropertyModalClose = (): void => {
-  uiStore.closeModal('propertyModal')
-}
+  // ============================================================================
+  // UI STATE - SAME MODAL MANAGEMENT AS HomeOwner
+  // ============================================================================
 
-const handlePropertyModalSave = async (data: PropertyFormData): Promise<void> => {
-  try {
-    const propertyData = {
-      ...data,
-      owner_id: authStore.user?.id
-    }
-    
-    if (propertyModalMode.value === 'create') {
-      await createMyProperty(propertyData as PropertyFormData)
-    } else if (propertyModalData.value) {
-      // Verify owner can update this property (same check as HomeOwner)
-      if (propertyModalData.value.owner_id !== authStore.user?.id) {
-        throw new Error('Cannot update property not owned by current user')
+  // Property Modal - Same pattern as HomeOwner
+  const propertyModalOpen = computed(() => uiStore.isModalOpen('propertyModal'))
+  const propertyModalMode = computed(() => {
+    const modal = uiStore.getModalState('propertyModal')
+    return (modal?.mode as 'create' | 'edit') || 'create'
+  })
+  const propertyModalData = computed(() => {
+    const modal = uiStore.getModalState('propertyModal')
+    return modal?.data as Property | undefined
+  })
+
+  // Confirmation Dialog - Same pattern as HomeOwner
+  const confirmDialogOpen = computed(() => uiStore.isConfirmDialogOpen('confirmDialog'))
+  const confirmDialogTitle = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.title || 'Confirm'
+  })
+  const confirmDialogMessage = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.message || 'Are you sure you want to proceed?'
+  })
+  const confirmDialogConfirmText = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.confirmText || 'Confirm'
+  })
+  const confirmDialogCancelText = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.cancelText || 'Cancel'
+  })
+  const confirmDialogDangerous = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.dangerous || false
+  })
+  const confirmDialogData = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.data
+  })
+
+  // ============================================================================
+  // HELPER FUNCTIONS - STYLING AND ICONS
+  // ============================================================================
+
+  // Property card styling based on index
+  function getPropertyCardClass (index: number): string {
+    const classes = [
+      'property-card-blue',
+      'property-card-green',
+      'property-card-purple',
+      'property-card-orange',
+    ]
+    return classes[index % classes.length]
+  }
+
+  // Property icon color based on index
+  function getPropertyIconColor (index: number): string {
+    const colors = ['primary', 'success', 'secondary', 'warning']
+    return colors[index % colors.length]
+  }
+
+  // Property type icon mapping
+  function getPropertyIcon (propertyType?: string): string {
+    switch (propertyType) {
+      case 'house': { return 'mdi-home'
       }
-      await updateMyProperty(propertyModalData.value.id, propertyData as Partial<PropertyFormData>)
+      case 'apartment': { return 'mdi-apartment'
+      }
+      case 'condo': { return 'mdi-office-building'
+      }
+      case 'townhouse': { return 'mdi-home-group'
+      }
+      default: { return 'mdi-home-outline'
+      }
     }
+  }
+
+  // ============================================================================
+  // EVENT HANDLERS - SAME ORCHESTRATION PATTERN AS HomeOwner
+  // ============================================================================
+
+  function handleCreateProperty (): void {
+    const propertyData = {
+      owner_id: authStore.user?.id,
+    }
+    uiStore.openModal('propertyModal', 'create', propertyData)
+  }
+
+  async function handleDeleteProperty (propertyId: string): Promise<void> {
+    const property = myProperties.value.find(p => p.id === propertyId)
+    if (!property) return
+
+    uiStore.openConfirmDialog('confirmDialog', {
+      title: 'Delete Property',
+      message: `Are you sure you want to delete "${property.name}"? This will also delete all associated bookings. This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      dangerous: true,
+      data: { type: 'property', id: propertyId },
+    })
+  }
+
+  // Navigation functions
+  function editProperty (property: Property): void {
+    uiStore.openModal('propertyModal', 'edit', property as PropertyRecord)
+  }
+
+  function viewProperty (property: Property): void {
+    router.push(`/owner/properties/${property.id}`)
+  }
+
+  // ============================================================================
+  // MODAL EVENT HANDLERS - SAME PATTERN AS HomeOwner
+  // ============================================================================
+
+  function handlePropertyModalClose (): void {
     uiStore.closeModal('propertyModal')
-  } catch (error) {
-    console.error('Failed to save your property:', error)
   }
-}
 
-const handlePropertyModalDelete = async (propertyId: string): Promise<void> => {
-  const property = myProperties.value.find(p => p.id === propertyId)
-  if (!property || property.owner_id !== authStore.user?.id) {
-    console.warn('Cannot delete property not owned by current user')
-    return
-  }
-  
-  uiStore.openConfirmDialog('confirmDialog', {
-    title: 'Delete Property',
-    message: `Are you sure you want to delete "${property.name}"? This will also delete all associated bookings. This action cannot be undone.`,
-    confirmText: 'Delete',
-    cancelText: 'Cancel',
-    dangerous: true,
-    data: { type: 'property', id: propertyId }
-  })
-}
-
-// ============================================================================
-// CONFIRMATION DIALOG HANDLERS - SAME PATTERN AS HomeOwner
-// ============================================================================
-
-const handleConfirmDialogConfirm = async (): Promise<void> => {
-  const data = confirmDialogData.value
-  
-  if (data?.type === 'property' && data?.id) {
+  async function handlePropertyModalSave (data: PropertyFormData): Promise<void> {
     try {
-      await deleteMyProperty(data.id as string)
+      const propertyData = {
+        ...data,
+        owner_id: authStore.user?.id,
+      }
+
+      if (propertyModalMode.value === 'create') {
+        await createMyProperty(propertyData as PropertyFormData)
+      } else if (propertyModalData.value) {
+        // Verify owner can update this property (same check as HomeOwner)
+        if (propertyModalData.value.owner_id !== authStore.user?.id) {
+          throw new Error('Cannot update property not owned by current user')
+        }
+        await updateMyProperty(propertyModalData.value.id, propertyData as Partial<PropertyFormData>)
+      }
       uiStore.closeModal('propertyModal')
     } catch (error) {
-      console.error('Failed to delete your property:', error)
+      console.error('Failed to save your property:', error)
     }
   }
-  
-  uiStore.closeConfirmDialog('confirmDialog')
-}
 
-const handleConfirmDialogCancel = (): void => {
-  uiStore.closeConfirmDialog('confirmDialog')
-}
+  async function handlePropertyModalDelete (propertyId: string): Promise<void> {
+    const property = myProperties.value.find(p => p.id === propertyId)
+    if (!property || property.owner_id !== authStore.user?.id) {
+      console.warn('Cannot delete property not owned by current user')
+      return
+    }
 
-const handleConfirmDialogClose = (): void => {
-  uiStore.closeConfirmDialog('confirmDialog')
-}
-
-// ============================================================================
-// LIFECYCLE - SAME INITIALIZATION AS HomeOwner
-// ============================================================================
-
-onMounted(async () => {
-  if (authStore.isAuthenticated && authStore.user?.role === 'owner') {
-    await Promise.all([
-      fetchMyProperties(),
-      fetchMyBookings()
-    ])
+    uiStore.openConfirmDialog('confirmDialog', {
+      title: 'Delete Property',
+      message: `Are you sure you want to delete "${property.name}"? This will also delete all associated bookings. This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      dangerous: true,
+      data: { type: 'property', id: propertyId },
+    })
   }
-})
+
+  // ============================================================================
+  // CONFIRMATION DIALOG HANDLERS - SAME PATTERN AS HomeOwner
+  // ============================================================================
+
+  async function handleConfirmDialogConfirm (): Promise<void> {
+    const data = confirmDialogData.value
+
+    if (data?.type === 'property' && data?.id) {
+      try {
+        await deleteMyProperty(data.id as string)
+        uiStore.closeModal('propertyModal')
+      } catch (error) {
+        console.error('Failed to delete your property:', error)
+      }
+    }
+
+    uiStore.closeConfirmDialog('confirmDialog')
+  }
+
+  function handleConfirmDialogCancel (): void {
+    uiStore.closeConfirmDialog('confirmDialog')
+  }
+
+  function handleConfirmDialogClose (): void {
+    uiStore.closeConfirmDialog('confirmDialog')
+  }
+
+  // ============================================================================
+  // LIFECYCLE - SAME INITIALIZATION AS HomeOwner
+  // ============================================================================
+
+  onMounted(async () => {
+    if (authStore.isAuthenticated && authStore.user?.role === 'owner') {
+      await Promise.all([
+        fetchMyProperties(),
+        fetchMyBookings(),
+      ])
+    }
+  })
 </script>
 
 <style scoped>

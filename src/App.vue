@@ -3,37 +3,39 @@
   <component :is="layout">
     <router-view />
   </component>
-  
+
   <!-- PWA Notifications Enhanced (global) -->
   <PWANotificationsEnhanced />
 </template>
 
 <script setup lang="ts">
-import { computed, markRaw } from 'vue'
-import { useRoute } from 'vue-router'
+  import { computed, markRaw } from 'vue'
+  import { useRoute } from 'vue-router'
 
-// Import layouts
-import DefaultLayout from '@/layouts/default.vue'
-import AuthLayout from '@/layouts/auth.vue'
-import AdminLayout from '@/layouts/admin.vue'
-import OwnerLayout from '@/layouts/owner.vue'
-import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
+  import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
+  import AdminLayout from '@/layouts/admin.vue'
+  import AuthLayout from '@/layouts/auth.vue'
+  import BareLayout from '@/layouts/bare.vue'
+  // Import layouts
+  import DefaultLayout from '@/layouts/default.vue'
+  import OwnerLayout from '@/layouts/owner.vue'
 
-// Available layouts
-const layouts = {
-  default: markRaw(DefaultLayout),
-  auth: markRaw(AuthLayout),
-  admin: markRaw(AdminLayout),
-  owner: markRaw(OwnerLayout),
-}
+  // Available layouts
+  const layouts = {
+    default: markRaw(DefaultLayout),
+    auth: markRaw(AuthLayout),
+    admin: markRaw(AdminLayout),
+    owner: markRaw(OwnerLayout),
+    bare: markRaw(BareLayout),
+  }
 
-const route = useRoute()
+  const route = useRoute()
 
-// Determine the current layout based on route meta
-const layout = computed(() => {
-  const layoutName = route.meta.layout as string || 'default'
-  return layouts[layoutName as keyof typeof layouts] || layouts.default
-})
+  // Determine the current layout based on route meta
+  const layout = computed(() => {
+    const layoutName = route.meta.layout as string || 'default'
+    return layouts[layoutName as keyof typeof layouts] || layouts.default
+  })
 </script>
 
 <style>
@@ -340,12 +342,12 @@ html, body {
   .urgent-priority {
     border-left-width: 4px !important;
   }
-  
+
   .turn-booking::after {
     font-size: 0.6rem;
     padding: 1px 4px;
   }
-  
+
   .priority-badge {
     font-size: 0.7rem;
     padding: 2px 6px;
@@ -429,24 +431,24 @@ html, body {
 }
 
 @keyframes breathe {
-  0%, 100% { 
+  0%, 100% {
     transform: scale(1);
     opacity: 1;
   }
-  50% { 
+  50% {
     transform: scale(1.05);
     opacity: 0.8;
   }
 }
 
 @keyframes countdown {
-  0% { 
+  0% {
     background-color: rgba(var(--v-theme-success), 0.2);
   }
-  50% { 
+  50% {
     background-color: rgba(var(--v-theme-warning), 0.2);
   }
-  100% { 
+  100% {
     background-color: rgba(var(--v-theme-error), 0.2);
   }
 }
@@ -757,20 +759,20 @@ i {
   .urgent-priority::before {
     background-size: 15px 15px;
   }
-  
+
   .turn-booking::after,
   .standard-booking::after {
     font-size: 0.6rem;
     padding: 1px 4px;
   }
-  
+
   .priority-badge-urgent,
   .priority-badge-high,
   .priority-badge-normal,
   .priority-badge-low {
     font-size: 0.7rem;
   }
-  
+
   .priority-badge-urgent::before,
   .priority-badge-high::before,
   .priority-badge-normal::before,
@@ -778,7 +780,7 @@ i {
     font-size: 0.7rem;
     left: -6px;
   }
-  
+
   .countdown-timer {
     padding: 6px 8px;
     font-size: 0.8rem;
@@ -815,7 +817,7 @@ i {
   .turn-countdown {
     animation: none !important;
   }
-  
+
   .urgent-priority::before,
   .turn-alert-critical::before {
     animation: none !important;
@@ -827,12 +829,12 @@ i {
   .urgent-priority {
     border-left-width: 8px !important;
   }
-  
+
   .turn-booking {
     border-left-width: 8px !important;
     border-right: 4px solid rgb(var(--v-theme-error)) !important;
   }
-  
+
   .priority-badge-urgent,
   .priority-badge-high,
   .priority-badge-normal,
