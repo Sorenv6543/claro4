@@ -5,5 +5,5 @@
 </template>
 
 <script setup lang="ts">
-import OwnerCalendarDemo from '@/components/smart/owner/OwnerCalendarDemo.vue';
+import OwnerCalendarDemo from './OwnerCalendarDemo.vue';
 </script> 
