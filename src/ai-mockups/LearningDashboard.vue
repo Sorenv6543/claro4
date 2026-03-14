@@ -685,11 +685,6 @@ const tableItems = [
   </v-container>
 </template>
 
-<!-- Font import (global — just adds font to browser, no selector side-effects) -->
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap');
-</style>
-
 <style scoped>
 /* ── Font application ───────────────────── */
 .dashboard :deep(*) {
