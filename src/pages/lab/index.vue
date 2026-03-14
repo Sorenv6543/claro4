@@ -2,6 +2,7 @@
 import { ref, computed, defineAsyncComponent, onErrorCaptured, watch } from 'vue'
 import type { Component } from 'vue'
 import { useDisplay } from 'vuetify'
+import LoadingSpinner from '@components/dumb/shared/LoadingSpinner.vue'
 
 // Auto-discover all .vue files in src/ai-mockups/
 const modules = import.meta.glob<{ default: Component }>('/src/ai-mockups/**/*.vue')
@@ -10,7 +11,7 @@ interface LabEntry {
   name: string
   path: string
   group: string
-  component: ReturnType<typeof defineAsyncComponent>
+  component: Component
 }
 
 const entries: LabEntry[] = Object.entries(modules).map(([path, loader]) => {
@@ -26,7 +27,12 @@ const entries: LabEntry[] = Object.entries(modules).map(([path, loader]) => {
     name,
     path,
     group,
-    component: defineAsyncComponent(loader),
+    component: defineAsyncComponent({
+      loader,
+      loadingComponent: LoadingSpinner,
+      delay: 150,
+      timeout: 10000,
+    }),
   }
 })
 
@@ -42,20 +48,44 @@ const groups = computed(() => {
 // Persist last-selected path in localStorage
 const STORAGE_KEY = 'lab:selected'
 
+function safeStorageGet(key: string): string | null {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function safeStorageSet(key: string, value: string) {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // Non-fatal: selection won't persist (private mode or quota exceeded)
+  }
+}
+
+function safeStorageRemove(key: string) {
+  try {
+    localStorage.removeItem(key)
+  } catch {
+    // Non-fatal
+  }
+}
+
 function findEntry(path: string | null) {
   return path ? entries.find(e => e.path === path) ?? null : null
 }
 
 const selected = ref<LabEntry | null>(
-  findEntry(localStorage.getItem(STORAGE_KEY)) ?? entries[0] ?? null
+  findEntry(safeStorageGet(STORAGE_KEY)) ?? entries[0] ?? null
 )
 
 watch(selected, entry => {
-  if (entry) localStorage.setItem(STORAGE_KEY, entry.path)
-  else localStorage.removeItem(STORAGE_KEY)
+  if (entry) safeStorageSet(STORAGE_KEY, entry.path)
+  else safeStorageRemove(STORAGE_KEY)
 })
 
-// Error boundary — catches load-time AND runtime/mount errors
+// Error boundary — catches runtime/mount errors from async child components
 const currentError = ref<string | null>(null)
 const retryKey = ref(0)
 
