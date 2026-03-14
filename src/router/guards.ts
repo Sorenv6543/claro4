@@ -8,6 +8,9 @@ export async function authGuard(
   _from: RouteLocationNormalized,
   next: NavigationGuardNext
 ) {
+  // Skip auth entirely for dev/demo and lab routes
+  if (to.path.startsWith('/dev') || to.path.startsWith('/lab')) return next();
+
   const authStore = useAuthStore();
 
   // Only call checkAuth once per session. After logout, the auth store's
@@ -74,7 +77,7 @@ export function developmentGuard(
   next: NavigationGuardNext
 ) {
   // Block development routes in production
-  if (to.path.startsWith('/dev') && import.meta.env.PROD) {
+  if ((to.path.startsWith('/dev') || to.path.startsWith('/lab')) && import.meta.env.PROD) {
     next('/404');
     return;
   }
