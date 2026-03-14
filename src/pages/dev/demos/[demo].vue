@@ -1,7 +1,12 @@
 <template>
   <v-app>
     <!-- Slim toolbar -->
-    <v-app-bar flat border="b" color="surface" height="48">
+    <v-app-bar
+      flat
+      border="b"
+      color="surface"
+      height="48"
+    >
       <v-btn
         icon="mdi-arrow-left"
         variant="text"
@@ -13,7 +18,14 @@
         {{ label }}
       </v-app-bar-title>
       <template #append>
-        <v-chip size="x-small" color="warning" label class="mr-3">DEV</v-chip>
+        <v-chip
+          size="x-small"
+          color="warning"
+          label
+          class="mr-3"
+        >
+          DEV
+        </v-chip>
         <v-btn
           icon="mdi-content-copy"
           variant="text"
@@ -22,7 +34,12 @@
           @click="copyPath"
         >
           <v-icon>mdi-content-copy</v-icon>
-          <v-tooltip activator="parent" location="bottom">Copy import path</v-tooltip>
+          <v-tooltip
+            activator="parent"
+            location="bottom"
+          >
+            Copy import path
+          </v-tooltip>
         </v-btn>
       </template>
     </v-app-bar>
@@ -38,16 +55,33 @@
       />
 
       <!-- Live preview -->
-      <component :is="resolvedComponent" v-else-if="resolvedComponent" />
+      <component
+        :is="resolvedComponent"
+        v-else-if="resolvedComponent"
+      />
 
-      <div v-else class="d-flex align-center justify-center" style="height:60vh">
-        <v-progress-circular indeterminate color="primary" />
+      <div
+        v-else
+        class="d-flex align-center justify-center"
+        style="height:60vh"
+      >
+        <v-progress-circular
+          indeterminate
+          color="primary"
+        />
       </div>
     </v-main>
 
     <!-- Cherry-pick hint snackbar -->
-    <v-snackbar v-model="copied" timeout="2500" location="bottom right" color="success">
-      <v-icon class="mr-2">mdi-check</v-icon>
+    <v-snackbar
+      v-model="copied"
+      timeout="2500"
+      location="bottom right"
+      color="success"
+    >
+      <v-icon class="mr-2">
+        mdi-check
+      </v-icon>
       Import path copied!
     </v-snackbar>
   </v-app>
@@ -75,7 +109,7 @@ const modulePath = computed(() => {
 const notFound = computed(() => modulePath.value === null)
 
 const resolvedComponent = computed(() =>
-  modulePath.value ? defineAsyncComponent(modules[modulePath.value] as () => Promise<unknown>) : null
+  modulePath.value ? defineAsyncComponent(modules[modulePath.value] as () => Promise<typeof import('*.vue')>) : null
 )
 
 const label = computed(() => {

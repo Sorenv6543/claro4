@@ -1,9 +1,20 @@
 <template>
   <v-app>
-    <v-app-bar flat border="b" color="surface">
+    <v-app-bar
+      flat
+      border="b"
+      color="surface"
+    >
       <v-app-bar-title>
         <span class="font-weight-bold">UI Mockups</span>
-        <v-chip class="ml-2" size="x-small" color="warning" label>DEV</v-chip>
+        <v-chip
+          class="ml-2"
+          size="x-small"
+          color="warning"
+          label
+        >
+          DEV
+        </v-chip>
       </v-app-bar-title>
       <template #append>
         <v-text-field
@@ -22,15 +33,27 @@
     </v-app-bar>
 
     <v-main>
-      <v-container fluid class="pa-6">
+      <v-container
+        fluid
+        class="pa-6"
+      >
         <!-- Group sections -->
-        <div v-for="group in filteredGroups" :key="group.name" class="mb-8">
-          <div class="text-overline text-medium-emphasis mb-3">{{ group.name }}</div>
+        <div
+          v-for="group in filteredGroups"
+          :key="group.name"
+          class="mb-8"
+        >
+          <div class="text-overline text-medium-emphasis mb-3">
+            {{ group.name }}
+          </div>
           <v-row>
             <v-col
               v-for="demo in group.demos"
               :key="demo.path"
-              cols="12" sm="6" md="4" lg="3"
+              cols="12"
+              sm="6"
+              md="4"
+              lg="3"
             >
               <v-card
                 :to="`/dev/demos/${demo.slug}`"
@@ -40,10 +63,19 @@
                 hover
               >
                 <div class="d-flex align-center gap-3">
-                  <v-icon :color="group.color" size="28">{{ group.icon }}</v-icon>
+                  <v-icon
+                    :color="group.color"
+                    size="28"
+                  >
+                    {{ group.icon }}
+                  </v-icon>
                   <div>
-                    <div class="text-body-2 font-weight-medium">{{ demo.label }}</div>
-                    <div class="text-caption text-medium-emphasis">{{ demo.file }}</div>
+                    <div class="text-body-2 font-weight-medium">
+                      {{ demo.label }}
+                    </div>
+                    <div class="text-caption text-medium-emphasis">
+                      {{ demo.file }}
+                    </div>
                   </div>
                 </div>
               </v-card>

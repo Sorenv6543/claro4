@@ -4,7 +4,10 @@
 
 <template>
   <v-container class="py-8">
-    <v-card max-width="480" class="mx-auto">
+    <v-card
+      max-width="480"
+      class="mx-auto"
+    >
       <v-card-title class="text-h5 pt-5 px-5">
         Welcome to AI Lab
       </v-card-title>
@@ -14,13 +17,25 @@
           and it will appear in the sidebar automatically.
         </p>
         <div class="flex flex-col gap-3">
-          <v-chip color="primary" variant="tonal" prepend-icon="mdi-palette">
+          <v-chip
+            color="primary"
+            variant="tonal"
+            prepend-icon="mdi-palette"
+          >
             Vuetify 4 theme tokens available
           </v-chip>
-          <v-chip color="secondary" variant="tonal" prepend-icon="mdi-tailwind">
+          <v-chip
+            color="secondary"
+            variant="tonal"
+            prepend-icon="mdi-tailwind"
+          >
             Tailwind utilities available
           </v-chip>
-          <v-chip color="success" variant="tonal" prepend-icon="mdi-lightning-bolt">
+          <v-chip
+            color="success"
+            variant="tonal"
+            prepend-icon="mdi-lightning-bolt"
+          >
             HMR — changes appear instantly
           </v-chip>
         </div>
