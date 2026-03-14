@@ -6,7 +6,6 @@ You are designing Vue 3 components for the AI Component Lab in this project.
 
 - **Vue 3** `<script setup lang="ts">` — always use the Composition API with script setup
 - **Vuetify 4** — use Vuetify components for all UI elements; they are auto-imported
-- **Tailwind CSS** (preflight disabled) — use utilities for layout and spacing only; do NOT use Tailwind color utilities (e.g., `bg-blue-500`); use Vuetify tokens for color
 
 ## Before Generating
 
@@ -26,7 +25,7 @@ Read `src/ai-mockups/_README.md` to understand:
 ## Design Rules
 
 - Use existing dumb components (`ConfirmationDialog`, `LoadingSpinner`, `ErrorAlert`, `SkeletonLoader`) — never reimplement them
-- Use **Vuetify semantic color tokens** — never hardcode hex values or use Tailwind color classes
+- Use **Vuetify semantic color tokens** — never hardcode hex values
 - Mobile-first: use `v-row` / `v-col` with responsive `cols`/`sm`/`md` props
 - Accessible: add `aria-label` to icon-only buttons, use `<label>` or Vuetify `label` prop on inputs
 - Use Vuetify `density="comfortable"` and `rounded="lg"` (globally configured defaults)

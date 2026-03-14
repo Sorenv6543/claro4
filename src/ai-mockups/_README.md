@@ -72,11 +72,10 @@ import type { Booking, Property } from '@types'
 
 ---
 
-## Tailwind Guidance
+## Styling Guidance
 
-- Use Tailwind **utilities for layout and spacing**: `flex`, `gap-4`, `mt-2`, `px-6`, `grid grid-cols-2`, etc.
-- Use **Vuetify semantic tokens for color** — never Tailwind color utilities (`bg-blue-500`) or hardcoded hex values.
-- Tailwind `preflight` is disabled — Vuetify's CSS reset takes precedence.
+- Use **Vuetify utility classes** for layout and spacing: `d-flex`, `ga-4`, `mt-2`, `px-6`, etc.
+- Use **Vuetify semantic tokens for color** — never hardcode hex values.
 
 ---
 

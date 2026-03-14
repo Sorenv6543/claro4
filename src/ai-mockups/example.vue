@@ -16,7 +16,7 @@
           This is your component scratch space. Ask Claude to generate a component
           and it will appear in the sidebar automatically.
         </p>
-        <div class="flex flex-col gap-3">
+        <div class="d-flex flex-column ga-3">
           <v-chip
             color="primary"
             variant="tonal"
@@ -27,9 +27,9 @@
           <v-chip
             color="secondary"
             variant="tonal"
-            prepend-icon="mdi-tailwind"
+            prepend-icon="mdi-brush-variant"
           >
-            Tailwind utilities available
+            Vuetify components available
           </v-chip>
           <v-chip
             color="success"
