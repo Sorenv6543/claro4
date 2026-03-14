@@ -6,7 +6,6 @@ import router from '@/router'
 
 
 import './assets/main.scss'
-import './styles/tailwind.css'
 
 const app = createApp(App)
 app.use(vuetify) 
