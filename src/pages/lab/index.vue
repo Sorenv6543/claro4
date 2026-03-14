@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, defineAsyncComponent, onErrorCaptured, watch } from 'vue'
 import type { Component } from 'vue'
+import { useDisplay } from 'vuetify'
 
 // Auto-discover all .vue files in src/ai-mockups/
 const modules = import.meta.glob<{ default: Component }>('/src/ai-mockups/**/*.vue')
@@ -67,10 +68,13 @@ function selectEntry(entry: LabEntry) {
   currentError.value = null
   selected.value = entry
 }
+
+const { mobile } = useDisplay()
+const drawerOpen = ref(true)
 </script>
 
 <template>
-  <v-navigation-drawer permanent width="280">
+  <v-navigation-drawer v-model="drawerOpen" :temporary="mobile" width="240">
     <v-list-item
       title="AI Lab"
       subtitle="DEV — scratch space"
@@ -78,7 +82,14 @@ function selectEntry(entry: LabEntry) {
       class="py-4"
     >
       <template #append>
-        <v-chip size="x-small" color="warning" variant="tonal" class="mr-2">DEV</v-chip>
+        <v-chip size="x-small" color="warning" variant="tonal" class="mr-1">DEV</v-chip>
+        <v-btn
+          icon="mdi-chevron-left"
+          variant="text"
+          size="x-small"
+          density="compact"
+          @click="drawerOpen = false"
+        />
       </template>
     </v-list-item>
     <v-divider />
@@ -109,6 +120,17 @@ function selectEntry(entry: LabEntry) {
   </v-navigation-drawer>
 
   <v-main>
+    <!-- Sidebar toggle — visible when drawer is closed -->
+    <v-btn
+      v-show="!drawerOpen"
+      icon="mdi-menu"
+      variant="tonal"
+      size="small"
+      class="position-fixed"
+      style="top: 10px; left: 10px; z-index: 200"
+      @click="drawerOpen = true"
+    />
+
     <!-- Empty state — no files at all -->
     <template v-if="entries.length === 0">
       <v-container class="py-12">
@@ -130,6 +152,13 @@ function selectEntry(entry: LabEntry) {
     <!-- Component preview -->
     <template v-else-if="selected">
       <v-toolbar flat border="b">
+        <v-btn
+          v-if="!drawerOpen"
+          icon="mdi-menu"
+          variant="text"
+          class="mr-1"
+          @click="drawerOpen = true"
+        />
         <v-toolbar-title>{{ selected.name }}</v-toolbar-title>
         <v-spacer />
         <v-chip size="small" color="info" variant="tonal" class="mr-3 font-mono text-xs">
