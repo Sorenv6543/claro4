@@ -223,7 +223,7 @@ interface Props {
   visible: boolean;
   date: Date | null;
   bookings: Booking[];
-  properties: Map<string, Property>;
+  properties: Property[];
 }
 
 interface Emits {
@@ -264,7 +264,7 @@ const formattedDate = computed(() => {
 // Helper functions
 const getPropertyName = (propertyId: string): string => {
   if (!propertyId) return 'Unknown Property';
-  const property = props.properties.get(propertyId);
+  const property = props.properties.find(p => p.id === propertyId);
   return property?.name || 'Unknown Property';
 };
 

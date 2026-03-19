@@ -1,18 +1,22 @@
 <template>
   <div class="calendar-container">
-    <FullCalendar ref="calendarRef" class="custom-calendar" :options="calendarOptions" />
+    <FullCalendar
+      ref="calendarRef"
+      class="custom-calendar"
+      :options="calendarOptions"
+    />
 
     <!-- Owner Day View Bottom Sheet -->
     <OwnerDayViewBottomSheet
-v-model:visible="dayViewVisible"
-:bookings="selectedDayBookings"
-:date="selectedDate"
-      :properties="propertiesMap"
-@add-booking="handleAddBookingFromDayView"
-@complete-booking="handleCompleteBooking"
+      v-model:visible="dayViewVisible"
+      :bookings="selectedDayBookings"
+      :date="selectedDate"
+      :properties="properties"
+      @add-booking="handleAddBookingFromDayView"
+      @complete-booking="handleCompleteBooking"
       @edit-booking="handleEditBooking"
-@view-booking="handleViewBooking"
-/>
+      @view-booking="handleViewBooking"
+    />
   </div>
 </template>
 
@@ -29,14 +33,24 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import FullCalendar from '@fullcalendar/vue3'
-import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from 'vue'
 import { useTheme } from 'vuetify'
 import OwnerDayViewBottomSheet from '@/components/dumb/owner/OwnerDayViewBottomSheet.vue'
 // Import event logger for component communication
 import eventLogger from '@/composables/shared/useComponentEventLogger'
 import { useAuthStore } from '@/stores/auth'
 import { bookingToCalendarEvent } from '@/utils/calendarHelpers'
-import { getMobileCalendarOptions, handleViewportResize } from '@/utils/mobileViewport'
+import {
+  getMobileCalendarOptions,
+  handleViewportResize,
+} from '@/utils/mobileViewport'
 
 interface Props {
   bookings: Booking[]
@@ -49,7 +63,10 @@ interface Emits {
   (e: 'event-click', clickInfo: EventClickArg): void
   (e: 'event-drop', dropInfo: EventDropArg): void
   (e: 'event-resize', resizeInfo: EventResizeDoneArg): void
-  (e: 'create-booking', data: { start: string, end: string, propertyId?: string | undefined }): void
+  (
+    e: 'create-booking',
+    data: { start: string, end: string, propertyId?: string | undefined },
+  ): void
   (e: 'update-booking', data: { id: string, start: string, end: string }): void
 }
 
@@ -70,15 +87,6 @@ const authStore = useAuthStore()
 const dayViewVisible = ref(false)
 const selectedDate = ref<Date | null>(null)
 const selectedDayBookings = ref<Booking[]>([])
-
-// Convert properties array to Map for OwnerDayViewBottomSheet (expects Map<string, Property>)
-const propertiesMap = computed(() => {
-  const map = new Map<string, Property>()
-  for (const p of props.properties) {
-    map.set(p.id, p)
-  }
-  return map
-})
 
 // Convert bookings array to FullCalendar events
 const calendarEvents = computed(() => {
@@ -333,12 +341,28 @@ function handleEventDrop (dropInfo: EventDropArg): void {
 }
 
 // Custom event rendering with enhanced visual variety
-function renderEventContent (eventInfo: { event: { extendedProps: { booking: Booking, property: Property, eventColor?: string, borderColor?: string, textColor?: string }, backgroundColor?: string, borderColor?: string, textColor?: string } }) {
+function renderEventContent (eventInfo: {
+  event: {
+    extendedProps: {
+      booking: Booking
+      property: Property
+      eventColor?: string
+      borderColor?: string
+      textColor?: string
+    }
+    backgroundColor?: string
+    borderColor?: string
+    textColor?: string
+  }
+}) {
   const booking = eventInfo.event.extendedProps.booking as Booking
   const property = eventInfo.event.extendedProps.property as Property
-  const eventColor = eventInfo.event.extendedProps.eventColor || eventInfo.event.backgroundColor
-  const borderColor = eventInfo.event.extendedProps.borderColor || eventInfo.event.borderColor
-  const textColor = eventInfo.event.extendedProps.textColor || eventInfo.event.textColor
+  const eventColor
+    = eventInfo.event.extendedProps.eventColor || eventInfo.event.backgroundColor
+  const borderColor
+    = eventInfo.event.extendedProps.borderColor || eventInfo.event.borderColor
+  const textColor
+    = eventInfo.event.extendedProps.textColor || eventInfo.event.textColor
 
   // Get priority icon
   const getPriorityIcon = (priority: string, type: string) => {
@@ -402,7 +426,10 @@ function renderEventContent (eventInfo: { event: { extendedProps: { booking: Boo
     }
   }
 
-  const priorityIcon = getPriorityIcon(booking.priority || 'normal', booking.booking_type)
+  const priorityIcon = getPriorityIcon(
+    booking.priority || 'normal',
+    booking.booking_type,
+  )
   const statusBadge = getStatusBadge(booking.status || 'pending')
 
   return {
@@ -468,35 +495,39 @@ function refreshEvents (): void {
 // })
 
 // Watch for changes in props from Home
-watch(() => props.bookings, (newBookings, oldBookings) => {
-  console.log('🔍 [FullCalendar] Bookings prop changed:', {
-    newCount: newBookings.length,
-    oldCount: oldBookings?.length || 0,
-    newBookingIds: newBookings.map(b => b.id),
-    newBookings: newBookings.map(b => ({
-      id: b.id,
-      property_id: b.property_id,
-      owner_id: b.owner_id,
-      checkout_date: b.checkout_date,
-      checkin_date: b.checkin_date,
-    })),
-  })
+watch(
+  () => props.bookings,
+  (newBookings, oldBookings) => {
+    console.log('🔍 [FullCalendar] Bookings prop changed:', {
+      newCount: newBookings.length,
+      oldCount: oldBookings?.length || 0,
+      newBookingIds: newBookings.map(b => b.id),
+      newBookings: newBookings.map(b => ({
+        id: b.id,
+        property_id: b.property_id,
+        owner_id: b.owner_id,
+        checkout_date: b.checkout_date,
+        checkin_date: b.checkin_date,
+      })),
+    })
 
-  // Log receiving updated bookings from Home
-  eventLogger.logEvent(
-    'Home',
-    'FullCalendar',
-    'bookingsUpdate',
-    { count: newBookings.length },
-    'receive',
-  )
+    // Log receiving updated bookings from Home
+    eventLogger.logEvent(
+      'Home',
+      'FullCalendar',
+      'bookingsUpdate',
+      { count: newBookings.length },
+      'receive',
+    )
 
-  // FullCalendar will automatically update with the new events
-  // Reattach more link listeners after events update
-  setTimeout(() => {
-    attachMoreLinkListeners()
-  }, 200)
-}, { immediate: true }) // Removed deep: true to prevent excessive re-runs
+    // FullCalendar will automatically update with the new events
+    // Reattach more link listeners after events update
+    setTimeout(() => {
+      attachMoreLinkListeners()
+    }, 200)
+  },
+  { immediate: true },
+) // Removed deep: true to prevent excessive re-runs
 
 // Day view bottom sheet event handlers
 function handleViewBooking (booking: Booking): void {
@@ -565,7 +596,10 @@ function handleAddBookingFromDayView (date: Date): void {
     end: endStr,
   })
 
-  console.log('➕ [FullCalendar] Add booking from day view for date:', startStr)
+  console.log(
+    '➕ [FullCalendar] Add booking from day view for date:',
+    startStr,
+  )
 }
 
 // Add new handler function after the other event handlers
@@ -618,10 +652,17 @@ function attachMoreLinkListeners (): void {
       // Add our custom click handlers with high priority (capture phase)
       link.addEventListener('click', handleManualMoreLinkClick, true)
       link.addEventListener('mousedown', handleManualMoreLinkClick, true)
-      link.addEventListener('touchstart', handleManualMoreLinkClick, { passive: false, capture: true })
+      link.addEventListener('touchstart', handleManualMoreLinkClick, {
+        passive: false,
+        capture: true,
+      })
     }
 
-    console.log('📎 [FullCalendar] Attached listeners to', moreLinks.length, 'more links')
+    console.log(
+      '📎 [FullCalendar] Attached listeners to',
+      moreLinks.length,
+      'more links',
+    )
   } catch (error) {
     console.warn('Error attaching more link listeners:', error)
   }
@@ -637,7 +678,9 @@ function handleManualMoreLinkClick (event: Event): void {
   const linkElement = event.currentTarget as HTMLElement
 
   // Hide any existing popovers immediately
-  const existingPopovers = document.querySelectorAll('.fc-popover, .fc-more-popover')
+  const existingPopovers = document.querySelectorAll(
+    '.fc-popover, .fc-more-popover',
+  )
   for (const popover of existingPopovers) {
     (popover as HTMLElement).style.display = 'none'
     popover.remove()
@@ -710,7 +753,8 @@ function handleManualMoreLinkClick (event: Event): void {
 
     // Check if the clicked date falls within the booking period
     const bookingStartsOnDate = checkinDate.toDateString() === clickedDateStr
-    const bookingSpansDate = clickedDate >= checkinDate && clickedDate <= checkoutDate
+    const bookingSpansDate
+      = clickedDate >= checkinDate && clickedDate <= checkoutDate
 
     const dateMatches = bookingStartsOnDate || bookingSpansDate
     const ownerMatches = !currentUserId || booking.owner_id === currentUserId
@@ -725,7 +769,13 @@ function handleManualMoreLinkClick (event: Event): void {
   selectedDayBookings.value = dayBookings
   dayViewVisible.value = true
 
-  console.log('📅 [FullCalendar] Manual more link clicked for date:', clickedDate.toDateString(), 'with', dayBookings.length, 'owner bookings')
+  console.log(
+    '📅 [FullCalendar] Manual more link clicked for date:',
+    clickedDate.toDateString(),
+    'with',
+    dayBookings.length,
+    'owner bookings',
+  )
 }
 
 // Lifecycle hooks for mobile viewport management
@@ -826,7 +876,7 @@ defineExpose({
 }
 
 .fc-event.booking-turn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -843,7 +893,7 @@ defineExpose({
 }
 
 .fc-event.booking-standard::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -855,7 +905,9 @@ defineExpose({
 
 /* Add elevation to all booking events */
 :deep(.fc-event) {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.06) !important;
   transition: all 0.2s ease !important;
   border-radius: 4px !important;
 }
@@ -946,7 +998,9 @@ defineExpose({
 }
 
 :deep(.fc-event:hover) {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.1) !important;
   transform: translateY(-1px) !important;
   cursor: grab !important;
 }
@@ -1019,7 +1073,10 @@ defineExpose({
   .calendar-container {
     position: relative;
     /* Use calculated height instead of 100% */
-    height: calc(100vh - 56px - 60px - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 20px) !important;
+    height: calc(
+      100vh - 56px - 60px - env(safe-area-inset-top) -
+        env(safe-area-inset-bottom) - 20px
+    ) !important;
     min-height: 400px;
     /* Minimum height for very small screens */
     max-height: calc(100vh - 100px);
