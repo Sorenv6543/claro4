@@ -12,6 +12,7 @@
   import type {
     CalendarOptions,
     DateSelectArg,
+    DatesSetArg,
     EventClickArg,
     EventDropArg,
   } from '@fullcalendar/core'
@@ -26,6 +27,7 @@
     onBeforeUnmount,
     onMounted,
     onUnmounted,
+    reactive,
     ref,
     watch,
   } from 'vue'
@@ -54,6 +56,7 @@
     ): void
     (e: 'update-booking', data: { id: string, start: string, end: string }): void
     (e: 'day-view-open', payload: { date: Date, bookings: Booking[] }): void
+    (e: 'dates-set', arg: DatesSetArg): void
   }
 
   const props = withDefaults(defineProps<Props>(), {
@@ -89,8 +92,9 @@
   const mobileOptions = ref(getMobileCalendarOptions())
   let cleanupViewportListener: (() => void) | null = null
 
-  // Calendar configuration
-  const calendarOptions = computed<CalendarOptions>(() => ({
+  // Calendar configuration — reactive so we can patch individual fields
+  // without rebuilding the entire options object on every booking change
+  const calendarOptions = reactive({
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
 
     // View settings
@@ -101,8 +105,8 @@
       right: '',
     },
 
-    // Event settings - mobile optimized
-    events: calendarEvents.value,
+    // Event settings - mobile optimized (patched via watch below)
+    events: [] as CalendarOptions['events'],
     eventDisplay: mobileOptions.value.eventDisplay,
     eventOverlap: true,
     eventResizableFromStart: true,
@@ -123,7 +127,7 @@
 
     // Use mobile-optimized height calculation
     height: mobileOptions.value.height,
-    aspectRatio: undefined, // Remove aspect ratio constraints for full height
+    aspectRatio: undefined as number | undefined, // Remove aspect ratio constraints for full height
     expandRows: true, // Make calendar rows expand to fill available height
 
     // Custom styling based on theme
@@ -139,7 +143,7 @@
     loading: handleLoading,
 
     // Calendar lifecycle
-    datesSet: handleCalendarMount,
+    datesSet: handleDatesSet,
     viewDidMount: handleViewMount,
 
     // Custom rendering
@@ -163,7 +167,19 @@
     allDaySlot: false,
     nowIndicator: true,
     scrollTime: '08:00:00',
-  }))
+  }) as CalendarOptions
+
+  // Patch events slot incrementally — FullCalendar diffs, not full re-render
+  watch(calendarEvents, (events) => {
+    calendarOptions.events = events
+  }, { immediate: true })
+
+  // Patch mobile-responsive fields when viewport changes
+  watch(mobileOptions, (opts) => {
+    calendarOptions.height = opts.height
+    calendarOptions.dayMaxEvents = opts.dayMaxEvents
+    calendarOptions.eventDisplay = opts.eventDisplay
+  })
 
   // Event handlers
   function handleDateSelect (selectInfo: DateSelectArg): void {
@@ -349,20 +365,7 @@
   // Watch for changes in props from Home
   watch(
     () => props.bookings,
-    (newBookings, oldBookings) => {
-      console.log('🔍 [FullCalendar] Bookings prop changed:', {
-        newCount: newBookings.length,
-        oldCount: oldBookings?.length || 0,
-        newBookingIds: newBookings.map(b => b.id),
-        newBookings: newBookings.map(b => ({
-          id: b.id,
-          property_id: b.property_id,
-          owner_id: b.owner_id,
-          checkout_date: b.checkout_date,
-          checkin_date: b.checkin_date,
-        })),
-      })
-
+    (newBookings) => {
       // Log receiving updated bookings from Home
       eventLogger.logEvent(
         'Home',
@@ -383,9 +386,6 @@
 
   // Add new handler function after the other event handlers
   function handleLoading (isLoading: boolean): void {
-    // You can emit an event or handle loading state changes here
-    console.log('Calendar loading state:', isLoading)
-
     // Log loading state
     eventLogger.logEvent(
       'FullCalendar',
@@ -396,8 +396,9 @@
     )
   }
 
-  // Calendar mount handlers to manually attach more link listeners
-  function handleCalendarMount (): void {
+  // Calendar datesSet handler — fires whenever the visible date range changes
+  function handleDatesSet (arg: DatesSetArg): void {
+    emit('dates-set', arg)
     attachMoreLinkListeners()
   }
 
@@ -437,11 +438,6 @@
         })
       }
 
-      console.log(
-        '📎 [FullCalendar] Attached listeners to',
-        moreLinks.length,
-        'more links',
-      )
     } catch (error) {
       console.warn('Error attaching more link listeners:', error)
     }
@@ -512,15 +508,6 @@
     const [year, month, day] = dateAttr.split('-').map(Number)
     const clickedDate = new Date(year, month - 1, day) // month is 0-indexed in JS Date
 
-    // Debug logging
-    console.log('📅 [FullCalendar] Debug info:', {
-      linkElement,
-      dayCell,
-      dateAttr,
-      clickedDate: clickedDate.toDateString(),
-      iso: clickedDate.toISOString(),
-    })
-
     // Filter bookings for this date (same logic as before)
     const clickedDateStr = clickedDate.toDateString()
     const dayBookings: Booking[] = []
@@ -542,14 +529,6 @@
     }
 
     emit('day-view-open', { date: clickedDate, bookings: dayBookings })
-
-    console.log(
-      '📅 [FullCalendar] Manual more link clicked for date:',
-      clickedDate.toDateString(),
-      'with',
-      dayBookings.length,
-      'bookings',
-    )
   }
 
   // Lifecycle hooks for mobile viewport management

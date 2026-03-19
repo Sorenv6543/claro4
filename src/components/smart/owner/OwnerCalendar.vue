@@ -9,6 +9,7 @@
       :properties="props.properties"
       @create-booking="handleCreateBooking"
       @date-select="handleDateSelect"
+      @dates-set="handleDatesSet"
       @day-view-open="handleDayViewOpen"
       @event-click="handleEventClick"
       @event-drop="handleEventDrop"
@@ -18,13 +19,12 @@
 </template>
 
 <script setup lang="ts">
-  import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, Property } from '@/types'
   import { nextTick, onMounted, ref, watch } from 'vue'
   import FullCalendar from '@/components/smart/shared/FullCalendar.vue'
-
-  console.log('🔄 [OwnerCalendar] Script setup running...')
+  import { useCalendarState } from '@/composables/shared/useCalendarState'
 
   interface Props {
     bookings: Booking[]
@@ -43,6 +43,7 @@
     (e: 'view-change', view: string): void
     (e: 'date-change', date: Date): void
     (e: 'day-view-open', payload: { date: Date, bookings: Booking[] }): void
+    (e: 'dates-set', arg: DatesSetArg): void
   }
 
   const props = withDefaults(defineProps<Props>(), {
@@ -53,33 +54,30 @@
 
   const emit = defineEmits<Emits>()
 
+  const { goToDate: calendarStateGoToDate } = useCalendarState()
+
   // ===== REFS AND REACTIVE DATA =====
   const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
 
   // ===== EVENT HANDLERS (SAFE - SIMPLE EMIT PATTERNS) =====
 
   function handleDateSelect (selectInfo: DateSelectArg): void {
-    console.log('🗓️ [OwnerCalendar] Date selected:', selectInfo.startStr, 'to', selectInfo.endStr)
     emit('date-select', selectInfo)
   }
 
   function handleEventClick (clickInfo: EventClickArg): void {
-    console.log('👆 [OwnerCalendar] Event clicked:', clickInfo.event.id)
     emit('event-click', clickInfo)
   }
 
   function handleEventDrop (dropInfo: EventDropArg): void {
-    console.log('🎯 [OwnerCalendar] Event dropped:', dropInfo.event.id)
     emit('event-drop', dropInfo)
   }
 
   function handleEventResize (resizeInfo: EventResizeDoneArg): void {
-    console.log('🔄 [OwnerCalendar] Event resized:', resizeInfo.event.id)
     emit('event-resize', resizeInfo)
   }
 
   function handleCreateBooking (data: { start: string, end: string, propertyId?: string }): void {
-    console.log('➕ [OwnerCalendar] Create booking:', data)
     emit('create-booking', data)
   }
 
@@ -87,23 +85,32 @@
     emit('day-view-open', payload)
   }
 
+  function handleDatesSet (arg: DatesSetArg): void {
+    calendarStateGoToDate(arg.view.currentStart)
+    emit('dates-set', arg)
+  }
+
   // ===== PROGRAMMATIC CALENDAR METHODS =====
 
   function goToDate (date: string | Date): void {
-    console.log('🗓️ [OwnerCalendar] goToDate called:', date)
     const targetDate = typeof date === 'string' ? new Date(date) : date
-
     if (calendarRef.value) {
       calendarRef.value.goToDate(targetDate)
     }
-
-    // Emit date change event
     emit('date-change', targetDate)
   }
 
-  function changeView (view: string): void {
-    console.log('👁️ [OwnerCalendar] changeView called:', view)
+  function prev (): void {
+    const api = calendarRef.value?.getApi()
+    if (api) api.prev()
+  }
 
+  function next (): void {
+    const api = calendarRef.value?.getApi()
+    if (api) api.next()
+  }
+
+  function changeView (view: string): void {
     if (calendarRef.value) {
       calendarRef.value.changeView(view)
     }
@@ -111,7 +118,6 @@
   }
 
   function refreshEvents (): void {
-    console.log('🔄 [OwnerCalendar] refreshEvents called')
     if (calendarRef.value) {
       calendarRef.value.refreshEvents()
     }
@@ -125,8 +131,6 @@
 
   // Watch for view changes from parent (safe - simple prop watching)
   watch(() => props.currentView, newView => {
-    console.log('🎯 [OwnerCalendar] Current view changed from parent:', newView)
-
     nextTick(() => {
       if (newView && calendarRef.value) {
         changeView(newView)
@@ -136,8 +140,6 @@
 
   // Watch for date changes from parent (safe - simple prop watching)
   watch(() => props.currentDate, newDate => {
-    console.log('📅 [OwnerCalendar] Current date changed from parent:', newDate)
-
     nextTick(() => {
       if (newDate && calendarRef.value) {
         goToDate(newDate)
@@ -148,19 +150,14 @@
   // ===== LIFECYCLE =====
 
   onMounted(async () => {
-    console.log('🎬 [OwnerCalendar] Component mounted')
-
-    // Wait for DOM to be fully ready
     await nextTick()
-
-    console.log('🔗 [OwnerCalendar] Component ready')
   })
-
-  console.log('✅ [OwnerCalendar] Setup complete!')
 
   // ===== EXPOSE METHODS TO PARENT =====
   defineExpose({
     goToDate,
+    prev,
+    next,
     changeView,
     refreshEvents,
     getApi,

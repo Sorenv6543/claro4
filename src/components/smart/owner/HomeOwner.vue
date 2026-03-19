@@ -184,9 +184,6 @@ src/components/smart/owner/HomeOwner.vue -
     currentDate,
     filterBookings,
     setCalendarView,
-    goToDate,
-    next,
-    prev,
   } = useCalendarState()
 
   // ============================================================================
@@ -447,19 +444,11 @@ src/components/smart/owner/HomeOwner.vue -
   // ============================================================================
 
   function handlePrevious (): void {
-    prev()
-    const calendarApi = calendarRef.value?.getApi?.()
-    if (calendarApi) {
-      calendarApi.prev()
-    }
+    calendarRef.value?.prev()
   }
 
   function handleNext (): void {
-    next()
-    const calendarApi = calendarRef.value?.getApi?.()
-    if (calendarApi) {
-      calendarApi.next()
-    }
+    calendarRef.value?.next()
   }
 
   function handleCalendarViewChange (view: string): void {
@@ -473,11 +462,7 @@ src/components/smart/owner/HomeOwner.vue -
   }
 
   function handleCalendarDateChange (date: Date): void {
-    goToDate(date)
-    const calendarApi = calendarRef.value?.getApi?.()
-    if (calendarApi) {
-      calendarApi.gotoDate(date)
-    }
+    calendarRef.value?.goToDate(date)
   }
 
   function handleDayViewOpen (payload: { date: Date, bookings: Booking[] }): void {
@@ -674,46 +659,21 @@ src/components/smart/owner/HomeOwner.vue -
   // LIFECYCLE HOOKS
   // ============================================================================
 
-  console.log('🔄 [HomeOwner] Script setup running...')
-
-  // Watch for template rendering (proper debugging)
-  watch(isOwnerAuthenticated, newValue => {
-    console.log('🎨 [HomeOwner] Template will render, isOwnerAuthenticated:', newValue)
-  }, { immediate: true })
-
   onMounted(async () => {
-    console.log('🚀 [HomeOwner] Component mounted successfully!')
     // Wait for auth to be properly initialized
     if (authStore.loading) {
-      console.log('⏳ [HomeOwner] Auth store still loading, waiting...')
       const maxWait = 5000 // 5 seconds max
       const startTime = Date.now()
       while (authStore.loading && (Date.now() - startTime) < maxWait) {
         await new Promise(resolve => setTimeout(resolve, 100))
       }
     }
-    console.log('🔍 [HomeOwner] Auth state after waiting:', {
-      isAuthenticated: authStore.isAuthenticated,
-      user: authStore.user,
-      loading: authStore.loading,
-      isOwnerAuthenticated: isOwnerAuthenticated.value,
-    })
     if (isOwnerAuthenticated.value) {
-      console.log('✅ [HomeOwner] User is authenticated as owner, loading data...')
       try {
-        // Fetch data using composable methods
         await Promise.all([
           fetchMyProperties(),
           fetchMyBookings(),
         ])
-        console.log('✅ [HomeOwner] Owner data loaded successfully')
-
-        // Debug data after loading
-        console.log('🔍 [HomeOwner] Data state after loading:', {
-          ownerProperties: myProperties.value.length,
-          ownerBookings: myBookings.value.length,
-          filteredBookings: ownerFilteredBookings.value.length,
-        })
       } catch (error) {
         console.error('❌ [HomeOwner] Failed to load your data:', error)
       }
@@ -732,26 +692,15 @@ src/components/smart/owner/HomeOwner.vue -
 
   // Watch for authentication changes
   watch(isOwnerAuthenticated, async (newValue, oldValue) => {
-    console.log('🔄 [HomeOwner] isOwnerAuthenticated changed:', {
-      from: oldValue,
-      to: newValue,
-      user: authStore.user,
-    })
     if (newValue && !oldValue) {
-      // User became authenticated - load data
-      console.log('✅ [HomeOwner] User became authenticated, loading data...')
       try {
         await Promise.all([
           fetchMyProperties(),
           fetchMyBookings(),
         ])
-        console.log('✅ [HomeOwner] Data loaded after auth change')
       } catch (error) {
         console.error('❌ [HomeOwner] Failed to load data after auth change:', error)
       }
-    } else if (!newValue && oldValue) {
-      // User became unauthenticated - could clear data if needed
-      console.log('⚠️ [HomeOwner] User became unauthenticated')
     }
   })
 </script>
