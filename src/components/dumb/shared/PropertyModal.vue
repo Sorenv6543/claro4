@@ -37,38 +37,72 @@
           @submit.prevent="handleSubmit"
         >
           <v-container>
-            <!-- Property Name -->
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="form.name"
-                  label="Property Name"
-                  :rules="nameRules"
-                  required
-                  variant="outlined"
-                  :disabled="loading"
-                  :error-messages="errors.get('name')"
-                  hint="Enter the property name as it should appear in the system"
-                  persistent-hint
-                  prepend-inner-icon="mdi-home"
-                />
-              </v-col>
-            </v-row>
-            
             <!-- Property Address -->
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="form.address"
-                  label="Property Address"
-                  :rules="addressRules"
+                  v-model="form.address_street"
+                  label="Street Address"
+                  :rules="streetRules"
                   required
                   variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('address')"
-                  hint="Full address including street, city, state, and zip code"
-                  persistent-hint
+                  :error-messages="errors.get('address_street')"
+                  placeholder="123 Main St"
+                  prepend-inner-icon="mdi-home"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="4">
+                <v-text-field
+                  v-model="form.address_unit"
+                  label="Unit / Apt"
+                  variant="outlined"
+                  :disabled="loading"
+                  :error-messages="errors.get('address_unit')"
+                  placeholder="Apt 4B"
+                  prepend-inner-icon="mdi-door"
+                />
+              </v-col>
+              <v-col cols="12" sm="8">
+                <v-text-field
+                  v-model="form.address_city"
+                  label="City"
+                  :rules="cityRules"
+                  required
+                  variant="outlined"
+                  :disabled="loading"
+                  :error-messages="errors.get('address_city')"
+                  prepend-inner-icon="mdi-city"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="6" sm="6">
+                <v-text-field
+                  v-model="form.address_state"
+                  label="State"
+                  :rules="stateRules"
+                  required
+                  variant="outlined"
+                  :disabled="loading"
+                  :error-messages="errors.get('address_state')"
+                  placeholder="TX"
                   prepend-inner-icon="mdi-map-marker"
+                />
+              </v-col>
+              <v-col cols="6" sm="6">
+                <v-text-field
+                  v-model="form.address_zip"
+                  label="ZIP Code"
+                  :rules="zipRules"
+                  required
+                  variant="outlined"
+                  :disabled="loading"
+                  :error-messages="errors.get('address_zip')"
+                  placeholder="78701"
+                  prepend-inner-icon="mdi-mailbox"
                 />
               </v-col>
             </v-row>
@@ -227,8 +261,11 @@ const errors = ref<Map<string, string>>(new Map());
 
 // FORM DATA
 const form = reactive<Partial<PropertyFormData>>({
-  name: '',
-  address: '',
+  address_street: '',
+  address_unit: '',
+  address_city: '',
+  address_state: '',
+  address_zip: '',
   cleaning_duration: 60, // Default to 1 hour
   pricing_tier: 'basic',
   special_instructions: '',
@@ -260,14 +297,24 @@ const pricingTierItems = [
 ];
 
 // VALIDATION RULES
-const nameRules = [
-  (v: string) => !!v || 'Property name is required',
-  (v: string) => (v && v.length <= 100) || 'Name must be less than 100 characters'
+const streetRules = [
+  (v: string) => !!v || 'Street address is required',
+  (v: string) => (v && v.length <= 150) || 'Street must be less than 150 characters'
 ];
 
-const addressRules = [
-  (v: string) => !!v || 'Property address is required',
-  (v: string) => (v && v.length <= 250) || 'Address must be less than 250 characters'
+const cityRules = [
+  (v: string) => !!v || 'City is required',
+  (v: string) => (v && v.length <= 100) || 'City must be less than 100 characters'
+];
+
+const stateRules = [
+  (v: string) => !!v || 'State is required',
+  (v: string) => (v && v.length <= 50) || 'State must be less than 50 characters'
+];
+
+const zipRules = [
+  (v: string) => !!v || 'ZIP code is required',
+  (v: string) => /^\d{5}(-\d{4})?$/.test(v) || 'Enter a valid ZIP code (e.g. 78701)'
 ];
 
 const durationRules = [
@@ -289,8 +336,11 @@ function resetForm(): void {
   if (props.mode === 'edit' && props.property) {
     // Populate form with existing property data
     Object.assign(form, {
-      name: props.property.name,
-      address: props.property.address,
+      address_street: props.property.address_street,
+      address_unit: props.property.address_unit || '',
+      address_city: props.property.address_city,
+      address_state: props.property.address_state,
+      address_zip: props.property.address_zip,
       cleaning_duration: props.property.cleaning_duration,
       pricing_tier: props.property.pricing_tier,
       special_instructions: props.property.special_instructions || '',
@@ -300,13 +350,16 @@ function resetForm(): void {
   } else {
     // Reset to defaults for create mode
     Object.assign(form, {
-      name: '',
-      address: '',
+      address_street: '',
+      address_unit: '',
+      address_city: '',
+      address_state: '',
+      address_zip: '',
       cleaning_duration: 60,
       pricing_tier: 'basic',
       special_instructions: '',
       active: true,
-      owner_id: authStore.user?.id || '' // Set owner to current user by default
+      owner_id: authStore.user?.id || ''
     });
   }
 }
@@ -321,13 +374,23 @@ async function validate(): Promise<boolean> {
   if (!valid) return false;
   
   // Additional validation
-  if (!form.name || String(form.name).trim() === '') {
-    errors.value.set('name', 'Property name cannot be empty');
+  if (!form.address_street || String(form.address_street).trim() === '') {
+    errors.value.set('address_street', 'Street address cannot be empty');
     return false;
   }
-  
-  if (!form.address || String(form.address).trim() === '') {
-    errors.value.set('address', 'Property address cannot be empty');
+
+  if (!form.address_city || String(form.address_city).trim() === '') {
+    errors.value.set('address_city', 'City cannot be empty');
+    return false;
+  }
+
+  if (!form.address_state || String(form.address_state).trim() === '') {
+    errors.value.set('address_state', 'State cannot be empty');
+    return false;
+  }
+
+  if (!form.address_zip || String(form.address_zip).trim() === '') {
+    errors.value.set('address_zip', 'ZIP code cannot be empty');
     return false;
   }
   
@@ -357,16 +420,19 @@ async function handleSubmit(): Promise<void> {
     }
     
     // Ensure all required fields are present
-    if (!form.name || !form.address || !form.cleaning_duration || !form.pricing_tier || form.active === undefined) {
+    if (!form.address_street || !form.address_city || !form.address_state || !form.address_zip || !form.cleaning_duration || !form.pricing_tier || form.active === undefined) {
       errors.value.set('form', 'Please fill in all required fields');
       loading.value = false;
       return;
     }
-    
+
     // Prepare data for emission
     const propertyData: PropertyFormData = {
-      name: form.name,
-      address: form.address,
+      address_street: form.address_street,
+      address_unit: form.address_unit || '',
+      address_city: form.address_city,
+      address_state: form.address_state,
+      address_zip: form.address_zip,
       cleaning_duration: form.cleaning_duration,
       pricing_tier: form.pricing_tier as PricingTier,
       special_instructions: form.special_instructions,

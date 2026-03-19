@@ -26,7 +26,7 @@
               Property
             </div>
             <div class="text-body-1">
-              {{ property?.name || 'N/A' }}
+              {{ property ? formatPropertyAddress(property, 'short') : 'N/A' }}
             </div>
           </v-col>
           <v-col
@@ -137,6 +137,7 @@
 
 <script setup lang="ts">
 import type { Booking, Property, User } from '@/types';
+import { formatPropertyAddress } from '@/types/property';
 
 interface Props {
   modelValue: boolean;

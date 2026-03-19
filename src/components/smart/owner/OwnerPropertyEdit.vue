@@ -29,7 +29,7 @@
               >
                 mdi-home-edit
               </v-icon>
-              {{ property.name }}
+              {{ formatPropertyAddress(property, 'short') }}
             </v-card-title>
 
             <v-card-text>
@@ -116,6 +116,7 @@
 
 <script setup lang="ts">
   import type { Property } from '@/types'
+  import { formatPropertyAddress } from '@/types/property'
   import { onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
@@ -162,7 +163,7 @@
   }
 
   async function handleDelete () {
-    if (property.value && confirm(`Are you sure you want to delete "${property.value.name}"?`)) {
+    if (property.value && confirm(`Are you sure you want to delete "${formatPropertyAddress(property.value, 'short')}"?`)) {
       try {
         await propertyStore.removeProperty(property.value.id)
         router.push('/owner/properties')

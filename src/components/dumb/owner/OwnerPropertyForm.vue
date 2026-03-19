@@ -46,38 +46,72 @@
           @submit.prevent="handleSubmit"
         >
           <v-container>
-            <!-- Property Name -->
-            <v-row>
-              <v-col cols="12">
-                <v-text-field
-                  v-model="form.name"
-                  label="Property Name"
-                  :rules="nameRules"
-                  required
-                  variant="outlined"
-                  :disabled="loading"
-                  :error-messages="errors.get('name')"
-                  hint="Give your property a memorable name"
-                  persistent-hint
-                  prepend-inner-icon="mdi-home"
-                />
-              </v-col>
-            </v-row>
-            
             <!-- Property Address -->
             <v-row>
               <v-col cols="12">
                 <v-text-field
-                  v-model="form.address"
-                  label="Property Address"
-                  :rules="addressRules"
+                  v-model="form.address_street"
+                  label="Street Address"
+                  :rules="streetRules"
                   required
                   variant="outlined"
                   :disabled="loading"
-                  :error-messages="errors.get('address')"
-                  hint="Full address for cleaning team reference"
-                  persistent-hint
+                  :error-messages="errors.get('address_street')"
+                  placeholder="123 Main St"
+                  prepend-inner-icon="mdi-home"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="4">
+                <v-text-field
+                  v-model="form.address_unit"
+                  label="Unit / Apt"
+                  variant="outlined"
+                  :disabled="loading"
+                  :error-messages="errors.get('address_unit')"
+                  placeholder="Apt 4B"
+                  prepend-inner-icon="mdi-door"
+                />
+              </v-col>
+              <v-col cols="12" sm="8">
+                <v-text-field
+                  v-model="form.address_city"
+                  label="City"
+                  :rules="cityRules"
+                  required
+                  variant="outlined"
+                  :disabled="loading"
+                  :error-messages="errors.get('address_city')"
+                  prepend-inner-icon="mdi-city"
+                />
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="form.address_state"
+                  label="State"
+                  :rules="stateRules"
+                  required
+                  variant="outlined"
+                  :disabled="loading"
+                  :error-messages="errors.get('address_state')"
+                  placeholder="TX"
                   prepend-inner-icon="mdi-map-marker"
+                />
+              </v-col>
+              <v-col cols="6">
+                <v-text-field
+                  v-model="form.address_zip"
+                  label="ZIP Code"
+                  :rules="zipRules"
+                  required
+                  variant="outlined"
+                  :disabled="loading"
+                  :error-messages="errors.get('address_zip')"
+                  placeholder="78701"
+                  prepend-inner-icon="mdi-mailbox"
                 />
               </v-col>
             </v-row>
@@ -293,8 +327,11 @@ const formValid = ref(false)
 // Form data
 const form = ref<PropertyFormData>({
   owner_id: '',
-  name: '',
-  address: '',
+  address_street: '',
+  address_unit: '',
+  address_city: '',
+  address_state: '',
+  address_zip: '',
   bedrooms: undefined,
   bathrooms: undefined,
   square_feet: undefined,
@@ -335,16 +372,24 @@ const pricingTierItems = [
 ]
 
 // Validation rules
-const nameRules = [
-  (v: string) => !!v || 'Property name is required',
-  (v: string) => (v && v.length >= 2) || 'Name must be at least 2 characters',
-  (v: string) => (v && v.length <= 100) || 'Name must be less than 100 characters'
+const streetRules = [
+  (v: string) => !!v || 'Street address is required',
+  (v: string) => (v && v.length <= 150) || 'Street must be less than 150 characters'
 ]
 
-const addressRules = [
-  (v: string) => !!v || 'Property address is required',
-  (v: string) => (v && v.length >= 10) || 'Please enter a complete address',
-  (v: string) => (v && v.length <= 200) || 'Address must be less than 200 characters'
+const cityRules = [
+  (v: string) => !!v || 'City is required',
+  (v: string) => (v && v.length <= 100) || 'City must be less than 100 characters'
+]
+
+const stateRules = [
+  (v: string) => !!v || 'State is required',
+  (v: string) => (v && v.length <= 50) || 'State must be less than 50 characters'
+]
+
+const zipRules = [
+  (v: string) => !!v || 'ZIP code is required',
+  (v: string) => /^\d{5}(-\d{4})?$/.test(v) || 'Enter a valid ZIP code (e.g. 78701)'
 ]
 
 const durationRules = [
@@ -361,8 +406,11 @@ const pricingTierRules = [
 const resetForm = () => {
   form.value = {
     owner_id: '',
-    name: '',
-    address: '',
+    address_street: '',
+    address_unit: '',
+    address_city: '',
+    address_state: '',
+    address_zip: '',
     bedrooms: undefined,
     bathrooms: undefined,
     square_feet: undefined,
@@ -381,8 +429,11 @@ const resetForm = () => {
 const populateForm = (property: Property) => {
   form.value = {
     owner_id: property.owner_id,
-    name: property.name,
-    address: property.address,
+    address_street: property.address_street,
+    address_unit: property.address_unit || '',
+    address_city: property.address_city,
+    address_state: property.address_state,
+    address_zip: property.address_zip,
     bedrooms: property.bedrooms,
     bathrooms: property.bathrooms,
     square_feet: property.square_feet,

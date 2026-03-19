@@ -10,14 +10,6 @@
     <v-card class="modal-card">
       <v-card-title class="text-h5 pb-2 shrink-0">
         {{ formTitle }}
-        <v-chip
-          v-if="form.booking_type === 'turn'"
-          class="ml-2"
-          color="error"
-          size="small"
-        >
-          URGENT TURN
-        </v-chip>
       </v-card-title>
 
       <v-divider />
@@ -36,7 +28,7 @@
                   v-model="form.property_id"
                   :disabled="loading"
                   :error-messages="errors.get('property_id')"
-                  item-title="name"
+                  item-title="displayAddress"
                   item-value="id"
                   :items="propertiesArray"
                   label="Property"
@@ -61,7 +53,6 @@
                   hint="When guests arrive"
                   label="Checkin Date"
                   :rules="dateRules"
-                  @update:model-value="updateBookingType"
                 />
               </v-col>
 
@@ -76,7 +67,6 @@
                   hint="When guests depart"
                   label="Checkout Date"
                   :rules="dateRules"
-                  @update:model-value="updateBookingType"
                 />
               </v-col>
             </v-row>
@@ -110,28 +100,171 @@
               </v-col>
             </v-row>
 
-            <!-- Booking Type and Guest Count -->
+            <!-- Turn Toggle -->
             <v-row>
-              <v-col>
-                <v-select
-                  v-model="form.booking_type"
-                  :disabled="loading"
-                  :error-messages="errors.get('booking_type')"
-                  :items="bookingTypeItems"
-                  label="Booking Type"
-                  prepend-inner-icon="mdi-tag"
-                  required
-                  :rules="bookingTypeRules"
-                  variant="outlined"
-                />
-
-                <v-checkbox
-                  v-model="autoDetectType"
-                  :disabled="loading"
-                  label="Auto-detect booking type from dates"
-                />
+              <v-col cols="12">
+                <v-card
+                  :color="addTurn ? 'primary' : undefined"
+                  :variant="addTurn ? 'tonal' : 'outlined'"
+                  class="turn-toggle-card"
+                  @click="addTurn = !addTurn"
+                >
+                  <v-card-text class="d-flex align-center pa-3">
+                    <v-icon
+                      :color="addTurn ? 'primary' : 'medium-emphasis'"
+                      class="mr-3"
+                      size="24"
+                    >
+                      mdi-swap-horizontal
+                    </v-icon>
+                    <div class="flex-grow-1">
+                      <div class="text-subtitle-2 font-weight-medium">
+                        Schedule a same-day turn
+                      </div>
+                      <div class="text-caption text-medium-emphasis">
+                        Back-to-back guests? Add a turn cleaning between stays.
+                      </div>
+                    </div>
+                    <v-switch
+                      :model-value="addTurn"
+                      color="primary"
+                      density="compact"
+                      hide-details
+                      @click.stop
+                      @update:model-value="addTurn = $event ?? false"
+                    />
+                  </v-card-text>
+                </v-card>
               </v-col>
+            </v-row>
 
+            <!-- Turn Booking Section -->
+            <v-expand-transition>
+              <div v-if="addTurn">
+                <v-row>
+                  <v-col cols="12">
+                    <v-card
+                      class="turn-section"
+                      elevation="0"
+                    >
+                      <v-card-text class="pb-2">
+                        <div class="d-flex align-center mb-3">
+                          <v-icon
+                            color="warning"
+                            size="20"
+                          >
+                            mdi-alert-circle-outline
+                          </v-icon>
+                          <span class="text-subtitle-2 font-weight-bold ml-2">Turn Booking</span>
+                          <v-chip
+                            class="ml-2"
+                            color="warning"
+                            size="x-small"
+                          >
+                            URGENT
+                          </v-chip>
+                        </div>
+
+                        <!-- Turn Start (defaults to main checkout) -->
+                        <v-row density="comfortable">
+                          <v-col
+                            cols="12"
+                            md="6"
+                          >
+                            <DatePickerField
+                              v-model="turnForm.start_date"
+                              :disabled="loading"
+                              :error-messages="errors.get('turn_start_date')"
+                              hint="Defaults to checkout date above"
+                              label="Turn Start Date"
+                              :rules="dateRules"
+                            />
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            md="6"
+                          >
+                            <TimePickerField
+                              v-model="turnForm.start_time"
+                              :disabled="loading"
+                              :error-messages="errors.get('turn_start_time')"
+                              hint="When previous guests depart"
+                              label="Turn Start Time"
+                              :rules="timeRules"
+                            />
+                          </v-col>
+                        </v-row>
+
+                        <!-- Turn Checkin Time (next guests arrive) -->
+                        <v-row density="comfortable">
+                          <v-col cols="12">
+                            <TimePickerField
+                              v-model="turnForm.checkin_time"
+                              :disabled="loading"
+                              :error-messages="errors.get('turn_checkin_time')"
+                              hint="When next guests arrive"
+                              label="Next Guest Checkin Time"
+                              :rules="timeRules"
+                            />
+                          </v-col>
+                        </v-row>
+
+                        <!-- Turn Checkout (final departure) -->
+                        <v-row density="comfortable">
+                          <v-col
+                            cols="12"
+                            md="6"
+                          >
+                            <DatePickerField
+                              v-model="turnForm.checkout_date"
+                              :disabled="loading"
+                              :error-messages="errors.get('turn_checkout_date')"
+                              hint="When next guests depart"
+                              label="Final Checkout Date"
+                              :min="turnForm.start_date || undefined"
+                              :rules="dateRules"
+                            />
+                          </v-col>
+                          <v-col
+                            cols="12"
+                            md="6"
+                          >
+                            <TimePickerField
+                              v-model="turnForm.checkout_time"
+                              :disabled="loading"
+                              :error-messages="errors.get('turn_checkout_time')"
+                              hint="When next guests depart"
+                              label="Final Checkout Time"
+                              :rules="timeRules"
+                            />
+                          </v-col>
+                        </v-row>
+
+                        <!-- Turn validation warning -->
+                        <v-row
+                          v-if="turnTimeWarning"
+                          density="comfortable"
+                        >
+                          <v-col cols="12">
+                            <v-alert
+                              class="mb-0 mt-1"
+                              density="compact"
+                              type="warning"
+                              variant="tonal"
+                            >
+                              {{ turnTimeWarning }}
+                            </v-alert>
+                          </v-col>
+                        </v-row>
+                      </v-card-text>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </div>
+            </v-expand-transition>
+
+            <!-- Guest Count -->
+            <v-row>
               <v-col
                 cols="12"
                 md="6"
@@ -183,32 +316,6 @@
                 />
               </v-col>
             </v-row>
-
-            <!-- Turn Booking Warning -->
-            <v-row v-if="showTurnWarning">
-              <v-col cols="12">
-                <v-alert
-                  class="mb-0"
-                  text="This booking has same-day checkout and checkin dates, which typically indicates a 'turn' booking (urgent same-day cleaning between guests)."
-                  title="Same-Day Turnover"
-                  type="warning"
-                  variant="tonal"
-                />
-              </v-col>
-            </v-row>
-
-            <!-- Turn Booking Error -->
-            <v-row v-if="showTurnError">
-              <v-col cols="12">
-                <v-alert
-                  class="mb-0"
-                  text="Turn bookings must have checkout and checkin on the same day. Please adjust dates or change booking type to standard."
-                  title="Invalid Turn Booking"
-                  type="error"
-                  variant="tonal"
-                />
-              </v-col>
-            </v-row>
           </v-container>
         </v-form>
       </v-card-text>
@@ -240,7 +347,7 @@
 
         <v-btn
           color="primary"
-          :disabled="formValid === false || loading || showTurnError"
+          :disabled="formValid === false || loading"
           :loading="loading"
           variant="text"
           @click="handleSubmit"
@@ -255,6 +362,7 @@
 <script setup lang="ts">
   import type { VForm } from 'vuetify/components'
   import type { Booking, BookingFormData, BookingStatus, BookingType, Property } from '@/types'
+  import { formatPropertyAddress } from '@/types/property'
   import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
   import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
   import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
@@ -291,9 +399,11 @@
   const formValid = ref<boolean | null>(null)
   const loading = ref<boolean>(false)
   const errors = ref<Map<string, string>>(new Map())
-  const autoDetectType = ref<boolean>(true)
 
-  // FORM DATA
+  // Turn toggle state
+  const addTurn = ref(false)
+
+  // FORM DATA - main booking
   const form = reactive<Partial<BookingFormData>>({
     property_id: '',
     checkout_date: '',
@@ -304,7 +414,16 @@
     guest_count: undefined,
     notes: '',
     status: 'pending',
-    owner_id: '', // Will be set by the parent component
+    owner_id: '',
+  })
+
+  // FORM DATA - turn booking (next guest stay)
+  const turnForm = reactive({
+    start_date: '',
+    start_time: '',
+    checkin_time: '15:00',
+    checkout_date: '',
+    checkout_time: '11:00',
   })
 
   // COMPUTED PROPERTIES
@@ -316,47 +435,44 @@
   })
 
   const formTitle = computed((): string => {
-    return props.mode === 'create' ? 'Create Booking' : 'Edit Booking'
+    if (props.mode === 'edit') return 'Edit Booking'
+    return addTurn.value ? 'Create Booking + Turn' : 'Create Booking'
   })
 
   const submitButtonText = computed((): string => {
-    return props.mode === 'create' ? 'Create' : 'Save'
+    if (props.mode === 'edit') return 'Save'
+    return addTurn.value ? 'Create Both' : 'Create'
   })
 
-  const propertiesArray = computed((): Property[] => {
-    return propertyStore.activeProperties
+  const propertiesArray = computed(() => {
+    return propertyStore.activeProperties.map((p: Property) => ({
+      ...p,
+      displayAddress: formatPropertyAddress(p, 'short'),
+    }))
   })
 
-  // Check if dates indicate a turn booking (same day)
-  const isTurnBooking = computed((): boolean => {
-    if (!form.checkout_date || !form.checkin_date) return false
+  // Turn time validation warning
+  const turnTimeWarning = computed((): string | null => {
+    if (!addTurn.value) return null
+    if (!turnForm.start_time || !turnForm.checkin_time) return null
 
-    const checkoutDate = new Date(form.checkout_date as string)
-    const checkinDate = new Date(form.checkin_date as string)
+    // Warn if cleaning window is tight (less than 1 hour between start and checkin)
+    const [startH, startM] = turnForm.start_time.split(':').map(Number)
+    const [checkinH, checkinM] = turnForm.checkin_time.split(':').map(Number)
+    const startMinutes = startH * 60 + startM
+    const checkinMinutes = checkinH * 60 + checkinM
+    const gap = checkinMinutes - startMinutes
 
-    if (isNaN(checkoutDate.getTime()) || isNaN(checkinDate.getTime())) {
-      return false
+    if (gap < 0) {
+      return 'Next guest checkin time must be after the turn start time.'
     }
-
-    return checkoutDate.toDateString() === checkinDate.toDateString()
-  })
-
-  // Show warning if dates indicate turn but type is standard
-  const showTurnWarning = computed((): boolean => {
-    return isTurnBooking.value && form.booking_type === 'standard'
-  })
-
-  // Show error if type is turn but dates are not same day
-  const showTurnError = computed((): boolean => {
-    return !isTurnBooking.value && form.booking_type === 'turn'
+    if (gap > 0 && gap < 60) {
+      return `Tight cleaning window: only ${gap} minutes between checkout and next checkin.`
+    }
+    return null
   })
 
   // DROPDOWN OPTIONS
-  const bookingTypeItems = [
-    { title: 'Standard Booking', value: 'standard', subtitle: 'Regular cleaning with time gap between guests' },
-    { title: 'Turn (Urgent)', value: 'turn', subtitle: 'Same-day checkout/checkin, high priority' },
-  ]
-
   const statusItems = [
     { title: 'Pending', value: 'pending' },
     { title: 'Scheduled', value: 'scheduled' },
@@ -382,50 +498,49 @@
     },
   ]
 
-  const bookingTypeRules = [
-    (v: string) => !!v || 'Booking type is required',
-    (v: string) => ['standard', 'turn'].includes(v) || 'Invalid booking type',
-  ]
-
   // Time validation rules for time input fields
   const timeRules = [
     (v: string) => !!v || 'Time is required',
     (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) || 'Invalid time format (HH:MM, 24-hour)',
   ]
 
-  // METHODS
-  // Automatically update booking type based on dates if auto-detect is enabled
-  function updateBookingType (): void {
-    if (!autoDetectType.value) return
-    if (!form.checkout_date || !form.checkin_date) return
-
-    const checkoutDate = new Date(form.checkout_date as string)
-    const checkinDate = new Date(form.checkin_date as string)
-
-    if (isNaN(checkoutDate.getTime()) || isNaN(checkinDate.getTime())) {
-      return
+  // Sync turn start date/time from main booking checkout when they change
+  watch([() => form.checkout_date, () => form.checkout_time], ([newDate, newTime]) => {
+    if (addTurn.value) {
+      turnForm.start_date = (newDate as string) || ''
+      turnForm.start_time = (newTime as string) || ''
     }
+  })
 
-    const isSameDay = checkoutDate.toDateString() === checkinDate.toDateString()
-    form.booking_type = isSameDay ? 'turn' : 'standard'
-  }
+  // When turn is toggled on, initialize from current checkout values
+  watch(addTurn, (enabled) => {
+    if (enabled) {
+      turnForm.start_date = (form.checkout_date as string) || ''
+      turnForm.start_time = (form.checkout_time as string) || '11:00'
+      turnForm.checkin_time = '15:00'
+      turnForm.checkout_date = ''
+      turnForm.checkout_time = '11:00'
+    }
+  })
 
   // Reset form to default or to booking data
   function resetForm (): void {
     errors.value.clear()
+    addTurn.value = false
 
     if (props.mode === 'edit' && props.booking) {
-      // Populate form with existing booking data
-      // Convert dates to the format expected by Vuetify date inputs (YYYY-MM-DD)
       const checkoutDate = props.booking.checkout_date
       const checkinDate = props.booking.checkin_date
+      const hasTurnData = !!props.booking.turn_date
 
       Object.assign(form, {
         property_id: props.booking.property_id,
-        checkout_date: formatDateForInput(checkoutDate),
+        checkout_date: formatDateForInput(hasTurnData ? props.booking.turn_date! : checkoutDate),
         checkin_date: formatDateForInput(checkinDate),
         checkin_time: (props.booking.checkin_time || '15:00').slice(0, 5),
-        checkout_time: (props.booking.checkout_time || '11:00').slice(0, 5),
+        checkout_time: hasTurnData
+          ? (props.booking.turn_start_time || '11:00').slice(0, 5)
+          : (props.booking.checkout_time || '11:00').slice(0, 5),
         booking_type: props.booking.booking_type,
         guest_count: props.booking.guest_count,
         notes: props.booking.notes,
@@ -433,33 +548,41 @@
         priority: props.booking.priority || 'normal',
         owner_id: props.booking.owner_id,
       })
+
+      // Populate turn fields if this is a turn booking
+      if (hasTurnData) {
+        addTurn.value = true
+        Object.assign(turnForm, {
+          start_date: formatDateForInput(props.booking.turn_date!),
+          start_time: (props.booking.turn_start_time || '11:00').slice(0, 5),
+          checkin_time: (props.booking.turn_checkin_time || '15:00').slice(0, 5),
+          checkout_date: formatDateForInput(checkoutDate),
+          checkout_time: (props.booking.checkout_time || '11:00').slice(0, 5),
+        })
+      }
     } else {
-      // Reset to defaults for create mode, but use initial data if provided
       const defaults = {
         property_id: '',
         checkout_date: '',
         checkin_date: '',
         checkin_time: '15:00',
         checkout_time: '11:00',
-        booking_type: 'standard',
+        booking_type: 'standard' as const,
         guest_count: undefined,
         notes: '',
-        status: 'pending',
+        status: 'pending' as const,
         priority: 'normal' as const,
         owner_id: '',
       }
 
-      // Merge defaults with initial data, mapping calendar date properties
       const initialData = props.initialData || {}
       const formData = {
         ...defaults,
         ...initialData,
-        // FullCalendar events use 'start' for arrival (checkin) and 'end' for departure (checkout)
         checkin_date: initialData.start || initialData.checkin_date || '',
         checkout_date: initialData.end || initialData.checkout_date || '',
       }
 
-      // Format dates if they exist
       if (formData.checkout_date) {
         formData.checkout_date = formatDateForInput(String(formData.checkout_date))
       }
@@ -468,6 +591,17 @@
       }
 
       Object.assign(form, formData)
+    }
+
+    // Reset turn form only when not editing a turn booking
+    if (!addTurn.value) {
+      Object.assign(turnForm, {
+        start_date: '',
+        start_time: '',
+        checkin_time: '15:00',
+        checkout_date: '',
+        checkout_time: '11:00',
+      })
     }
   }
 
@@ -480,36 +614,66 @@
     const { valid } = await formRef.value.validate()
     if (!valid) return false
 
-    // Additional validation
     const checkoutDate = new Date(String(form.checkout_date || ''))
     const checkinDate = new Date(String(form.checkin_date || ''))
 
-    // Check if dates are valid
     if (isNaN(checkoutDate.getTime()) || isNaN(checkinDate.getTime())) {
       errors.value.set('checkout_date', 'Invalid date format')
       errors.value.set('checkin_date', 'Invalid date format')
       return false
     }
-    // Guests check in first (arrival), then check out later (departure).
-    // checkout_date must be on or after checkin_date; same day is valid for turn bookings.
+
     if (checkoutDate < checkinDate) {
       errors.value.set('checkout_date', 'Checkout date must be on or after checkin date')
       return false
     }
 
-    // For same-day (turn) bookings, checkout time must be after checkin time.
-    if (checkoutDate.toDateString() === checkinDate.toDateString() && form.checkout_time && form.checkin_time && form.checkout_time <= form.checkin_time) {
+    if (checkoutDate.toDateString() === checkinDate.toDateString()
+      && form.checkout_time && form.checkin_time
+      && form.checkout_time <= form.checkin_time) {
       errors.value.set('checkout_time', 'For same-day bookings, checkout time must be after checkin time')
       return false
     }
 
-    // Check turn booking consistency
-    if (form.booking_type === 'turn' && !isTurnBooking.value) {
-      errors.value.set('booking_type', 'Turn bookings must have checkout and checkin on the same day')
-      return false
+    // Validate turn booking fields if enabled
+    if (addTurn.value) {
+      if (!turnForm.start_date) {
+        errors.value.set('turn_start_date', 'Turn start date is required')
+        return false
+      }
+      if (!turnForm.start_time) {
+        errors.value.set('turn_start_time', 'Turn start time is required')
+        return false
+      }
+      if (!turnForm.checkin_time) {
+        errors.value.set('turn_checkin_time', 'Next guest checkin time is required')
+        return false
+      }
+      if (!turnForm.checkout_date) {
+        errors.value.set('turn_checkout_date', 'Final checkout date is required')
+        return false
+      }
+      if (!turnForm.checkout_time) {
+        errors.value.set('turn_checkout_time', 'Final checkout time is required')
+        return false
+      }
+
+      // Turn checkin time must be after turn start time (on the same day)
+      if (turnForm.start_date === turnForm.checkout_date
+        && turnForm.checkin_time <= turnForm.start_time) {
+        errors.value.set('turn_checkin_time', 'Next guest checkin must be after turn start time')
+        return false
+      }
+
+      // Final checkout must be on or after turn start date
+      const turnStart = new Date(turnForm.start_date)
+      const turnEnd = new Date(turnForm.checkout_date)
+      if (turnEnd < turnStart) {
+        errors.value.set('turn_checkout_date', 'Final checkout must be on or after turn start date')
+        return false
+      }
     }
 
-    // All validation passed
     return true
   }
 
@@ -524,32 +688,35 @@
         return
       }
 
-      // Ensure all required fields are present
-      if (!form.property_id || !form.checkout_date || !form.checkin_date || !form.booking_type) {
+      if (!form.property_id || !form.checkout_date || !form.checkin_date) {
         errors.value.set('form', 'Please fill in all required fields')
         loading.value = false
         return
       }
 
-      // Prepare data for emission
+      const hasTurn = addTurn.value
+
       const bookingData: BookingFormData = {
         property_id: form.property_id,
-        checkout_date: form.checkout_date,
         checkin_date: form.checkin_date,
+        // When turn is enabled, the booking spans to the turn's final checkout
+        checkout_date: hasTurn ? turnForm.checkout_date : form.checkout_date,
         checkin_time: (form.checkin_time as string) || '15:00',
-        checkout_time: (form.checkout_time as string) || '11:00',
-        booking_type: form.booking_type as BookingType,
+        checkout_time: hasTurn ? turnForm.checkout_time : ((form.checkout_time as string) || '11:00'),
+        booking_type: (hasTurn ? 'turn' : 'standard') as BookingType,
         status: (form.status as BookingStatus) || 'pending',
-        priority: (form.priority as 'low' | 'normal' | 'high' | 'urgent') || 'normal',
+        priority: hasTurn ? 'high' : ((form.priority as 'low' | 'normal' | 'high' | 'urgent') || 'normal'),
         owner_id: form.owner_id as string,
         guest_count: form.guest_count,
         notes: form.notes,
+        // Turn metadata — only set when turn is enabled
+        turn_date: hasTurn ? turnForm.start_date : null,
+        turn_start_time: hasTurn ? turnForm.start_time : null,
+        turn_checkin_time: hasTurn ? turnForm.checkin_time : null,
       }
 
-      // Emit save event with booking data
       emit('save', bookingData)
 
-      // Reset and close (parent component will handle actual saving)
       loading.value = false
       resetForm()
       isOpen.value = false
@@ -567,7 +734,6 @@
     loading.value = true
     emit('delete', props.booking.id)
 
-    // Parent component will handle actual deletion
     loading.value = false
     isOpen.value = false
   }
@@ -582,12 +748,10 @@
   function formatDateForInput (dateStr: string): string {
     if (!dateStr) return ''
 
-    // If it's already in YYYY-MM-DD format, return as-is
     if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
       return dateStr
     }
 
-    // Try to parse and format the date
     try {
       const date = new Date(dateStr)
       if (isNaN(date.getTime())) {
@@ -595,7 +759,6 @@
         return ''
       }
 
-      // Format as YYYY-MM-DD
       const year = date.getFullYear()
       const month = String(date.getMonth() + 1).padStart(2, '0')
       const day = String(date.getDate()).padStart(2, '0')
@@ -635,10 +798,6 @@
 </script>
 
 <style scoped>
-.v-alert {
-  margin-top: 8px;
-}
-
 /* Modal viewport constraints */
 .modal-card {
   max-height: 90vh;
@@ -649,6 +808,24 @@
 .modal-content {
   overflow-y: auto;
   flex: 1;
-  max-height: calc(90vh - 120px); /* Subtract header and footer space */
+  max-height: calc(90vh - 120px);
+}
+
+/* Turn toggle card */
+.turn-toggle-card {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.turn-toggle-card:hover {
+  border-color: rgb(var(--v-theme-primary)) !important;
+}
+
+/* Turn section styling */
+.turn-section {
+  border: 1px solid rgba(var(--v-theme-warning), 0.4) !important;
+  border-left: 3px solid rgb(var(--v-theme-warning)) !important;
+  background: rgb(var(--v-theme-surface)) !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
 }
 </style>

@@ -10,13 +10,17 @@ export type PricingTier = 'basic' | 'standard' | 'premium' | 'luxury';
 
 /**
  * Property Interface
- * Core data model for properties in the system
+ * Core data model for properties in the system.
+ * Properties are identified by their structured address, not a name.
  */
 export interface Property {
   id: string;
   owner_id: string;
-  name: string;
-  address: string;
+  address_street: string;
+  address_unit?: string;
+  address_city: string;
+  address_state: string;
+  address_zip: string;
   bedrooms?: number;
   bathrooms?: number;
   square_feet?: number;
@@ -61,6 +65,28 @@ export type PropertyRecord = Property & Record<string, unknown>;
 export type PropertyMap = Map<string, Property>;
 
 /**
+ * Format a property address for display.
+ * Short format: "123 Main St" or "123 Main St, Apt 4"
+ * Full format: "123 Main St, Apt 4, Austin, TX 78701"
+ */
+export function formatPropertyAddress(property: Pick<Property, 'address_street' | 'address_unit' | 'address_city' | 'address_state' | 'address_zip'>, format: 'short' | 'full' = 'full'): string {
+  const street = property.address_street || '';
+  const unit = property.address_unit ? `, ${property.address_unit}` : '';
+
+  if (format === 'short') {
+    return `${street}${unit}`.trim() || 'No address';
+  }
+
+  const parts = [
+    `${street}${unit}`,
+    property.address_city,
+    property.address_state ? `${property.address_state} ${property.address_zip || ''}`.trim() : property.address_zip,
+  ].filter(Boolean);
+
+  return parts.join(', ') || 'No address';
+}
+
+/**
  * Type guard for Property objects
  */
 export function isProperty(obj: unknown): obj is Property {
@@ -68,8 +94,10 @@ export function isProperty(obj: unknown): obj is Property {
   const p = obj as Partial<Property>;
   return (
     typeof p.id === 'string' &&
-    typeof p.name === 'string' &&
-    typeof p.address === 'string' &&
+    typeof p.address_street === 'string' &&
+    typeof p.address_city === 'string' &&
+    typeof p.address_state === 'string' &&
+    typeof p.address_zip === 'string' &&
     typeof p.cleaning_duration === 'number' &&
     typeof p.active === 'boolean'
   );

@@ -45,7 +45,11 @@ import { usePropertyStore } from '@/stores/property';
 import { useBookingStore } from '@/stores/booking';
 import { useAuthStore } from '@/stores/auth';
 import { useDisplay } from 'vuetify';
-import { Property } from '@/types';
+import type { Property, PropertyFormData } from '@/types';
+import { formatPropertyAddress } from '@/types/property';
+import AdminDashboard from '@/components/smart/admin/AdminDashboard.vue';
+import PropertyModal from '@/components/dumb/shared/PropertyModal.vue';
+import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue';
 
 const uiStore = useUIStore();
 const propertyStore = usePropertyStore();
@@ -130,12 +134,15 @@ const handlePropertyModalClose = (): void => {
   uiStore.closeModal('propertyModal');
 };
 
-const handlePropertyModalSave = async (property: Property): Promise<void> => {
+const handlePropertyModalSave = async (formData: PropertyFormData): Promise<void> => {
   try {
     if (propertyModalMode.value === 'create') {
-      await propertyStore.addProperty(property);
+      await propertyStore.addProperty(formData as Property);
     } else {
-      await propertyStore.updateProperty(property.id, property);
+      const existingProperty = propertyModalData.value;
+      if (existingProperty) {
+        await propertyStore.updateProperty(existingProperty.id, formData);
+      }
     }
     uiStore.closeModal('propertyModal');
   } catch (error) {
@@ -143,14 +150,16 @@ const handlePropertyModalSave = async (property: Property): Promise<void> => {
   }
 };
 
-const handlePropertyModalDelete = async (property: Property): Promise<void> => {
+const handlePropertyModalDelete = async (propertyId: string): Promise<void> => {
+  const property = propertyStore.getPropertyById(propertyId);
+  const propertyName = property ? formatPropertyAddress(property, 'short') : 'this property';
   uiStore.openConfirmDialog('confirmDialog', {
     title: 'Delete Property',
-    message: `Are you sure you want to delete "${property.name}"? This action cannot be undone.`,
+    message: `Are you sure you want to delete "${propertyName}"? This action cannot be undone.`,
     confirmText: 'Delete',
     cancelText: 'Cancel',
     dangerous: true,
-    data: { type: 'property', id: property.id }
+    data: { type: 'property', id: propertyId }
   });
 };
 

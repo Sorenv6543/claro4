@@ -207,11 +207,28 @@ const router = createRouter({
       }
     },
 
+    {
+      path: '/admin/owners/:id',
+      name: 'admin-owner-detail',
+      component: () => import('@/pages/admin/owners/[id].vue'),
+      meta: {
+        layout: 'admin',
+        role: 'admin',
+        requiresAuth: true
+      }
+    },
+
     // Dev/demo routes - no auth required, blocked in production
     {
       path: '/dev/demos',
       name: 'dev-demos',
       component: () => import('@/pages/demos/index.vue'),
+      meta: { layout: 'bare' }
+    },
+    {
+      path: '/dev/demos/:slug',
+      name: 'dev-demo-viewer',
+      component: () => import('@/pages/demos/[slug].vue'),
       meta: { layout: 'bare' }
     },
 

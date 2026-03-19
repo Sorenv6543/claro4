@@ -67,6 +67,10 @@ export function useBookings() {
         notes: formData.notes as string,
         priority: formData.priority as 'low' | 'normal' | 'high' | 'urgent',
         assigned_cleaner_id: formData.assigned_cleaner_id as string | null,
+        // Turn metadata
+        turn_date: formData.turn_date || null,
+        turn_start_time: formData.turn_start_time || null,
+        turn_checkin_time: formData.turn_checkin_time || null,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };

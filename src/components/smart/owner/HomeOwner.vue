@@ -40,6 +40,32 @@ src/components/smart/owner/HomeOwner.vue -
               </div>
             </div>
 
+            <!-- View Dropdown -->
+            <v-menu location="bottom end">
+              <template #activator="{ props: menuProps }">
+                <v-btn
+                  v-bind="menuProps"
+                  class="view-dropdown-btn ml-2"
+                  variant="elevated"
+                  size="small"
+                  append-icon="mdi-chevron-down"
+                >
+                  {{ viewLabels[activeViewKey] }}
+                </v-btn>
+              </template>
+              <v-list density="compact" min-width="140">
+                <v-list-item
+                  v-for="opt in viewOptions"
+                  :key="opt.value"
+                  :prepend-icon="opt.icon"
+                  :title="opt.label"
+                  :active="activeViewKey === opt.value"
+                  color="primary"
+                  @click="switchView(opt.value)"
+                />
+              </v-list>
+            </v-menu>
+
             <!-- Right Navigation Arrow -->
             <v-btn
               class="nav-arrow-prominent"
@@ -185,6 +211,35 @@ src/components/smart/owner/HomeOwner.vue -
     filterBookings,
     setCalendarView,
   } = useCalendarState()
+
+  // ============================================================================
+  // CALENDAR VIEW OPTIONS
+  // ============================================================================
+  const viewOptions = [
+    { value: 'month', label: 'Month', icon: 'mdi-calendar-month-outline' },
+    { value: 'week', label: 'Week', icon: 'mdi-calendar-week-outline' },
+    { value: 'day', label: 'Day', icon: 'mdi-calendar-today-outline' },
+    { value: 'list', label: 'List', icon: 'mdi-format-list-bulleted' },
+  ] as const
+
+  const viewLabels: Record<string, string> = {
+    month: 'Month',
+    week: 'Week',
+    day: 'Day',
+    list: 'List',
+  }
+
+  const activeViewKey = computed(() => {
+    const v = currentView.value
+    if (v === 'timeGridWeek') return 'week'
+    if (v === 'timeGridDay') return 'day'
+    if (v === 'listWeek') return 'list'
+    return 'month'
+  })
+
+  function switchView (key: string) {
+    handleCalendarViewChange(key)
+  }
 
   // ============================================================================
   // LOCAL STATE
@@ -461,12 +516,13 @@ src/components/smart/owner/HomeOwner.vue -
 
   function handleCalendarViewChange (view: string): void {
     // Map CalendarView to FullCalendar view type
-    const calendarView = view === 'week'
-      ? 'timeGridWeek'
-      : (view === 'day'
-        ? 'timeGridDay'
-        : 'dayGridMonth')
-    setCalendarView(calendarView)
+    const viewMap: Record<string, 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'> = {
+      week: 'timeGridWeek',
+      day: 'timeGridDay',
+      list: 'listWeek',
+      month: 'dayGridMonth',
+    }
+    setCalendarView(viewMap[view] ?? 'dayGridMonth')
   }
 
   function handleCalendarDateChange (date: Date): void {
@@ -733,10 +789,12 @@ src/components/smart/owner/HomeOwner.vue -
 /* ================================================================ */
 
 .home-owner-page {
-  height: 100vh;
+  /* Fill v-main's content area (v-main has padding-top for app bar) */
+  height: 100%;
   width: 100%;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .calendar-layout {
@@ -830,6 +888,18 @@ src/components/smart/owner/HomeOwner.vue -
   backdrop-filter: blur(10px);
 }
 
+/* View dropdown button */
+.view-dropdown-btn {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: rgb(var(--v-theme-primary)) !important;
+  border: 2px solid rgba(255, 255, 255, 0.8) !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+}
+
 .month-title {
   font-weight: 700;
   font-size: 1.1rem;
@@ -855,9 +925,7 @@ src/components/smart/owner/HomeOwner.vue -
 /* Mobile viewport stretching with safe area support */
 @media (max-width: 959px) {
   .home-owner-page {
-
-    /* Support for devices with notches/safe areas */
-    height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+    height: 100% !important;
   }
 
   .calendar-header-card .v-card-text {

@@ -12,7 +12,7 @@
                 @click="goBack"
               />
               <h1 class="text-h4 ml-4">
-                {{ property?.name || 'Property Details' }}
+                {{ property ? formatPropertyAddress(property, 'short') : 'Property Details' }}
               </h1>
               <v-chip
                 v-if="property"
@@ -84,13 +84,10 @@
             </v-card-title>
             <v-card-text>
               <v-row>
-                <v-col
-                  cols="12"
-                  sm="6"
-                >
+                <v-col cols="12">
                   <div class="property-detail">
-                    <strong>Name:</strong>
-                    <div>{{ property.name }}</div>
+                    <strong>Address:</strong>
+                    <div>{{ formatPropertyAddress(property) }}</div>
                   </div>
                 </v-col>
                 <v-col
@@ -100,12 +97,6 @@
                   <div class="property-detail">
                     <strong>Type:</strong>
                     <div>{{ property.property_type || 'Not specified' }}</div>
-                  </div>
-                </v-col>
-                <v-col cols="12">
-                  <div class="property-detail">
-                    <strong>Address:</strong>
-                    <div>{{ property.address }}</div>
                   </div>
                 </v-col>
                 <v-col
@@ -378,7 +369,7 @@
       cancel-text="Cancel"
       confirm-text="Delete"
       :dangerous="true"
-      :message="`Are you sure you want to delete &quot;${property?.name}&quot;? This cannot be undone.`"
+      :message="`Are you sure you want to delete &quot;${property ? formatPropertyAddress(property, 'short') : ''}&quot;? This cannot be undone.`"
       :open="deleteDialogOpen"
       title="Delete Property"
       @cancel="deleteDialogOpen = false"
@@ -390,6 +381,7 @@
 
 <script setup lang="ts">
   import type { Booking, PropertyFormData } from '@/types'
+  import { formatPropertyAddress } from '@/types/property'
   import { computed, onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'

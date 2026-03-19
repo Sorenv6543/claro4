@@ -208,6 +208,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { formatPropertyAddress } from '@/types/property'
 
 // Props
 interface Props {
@@ -247,7 +248,11 @@ type QuickAction = 'add-booking'
 
 interface PropertyOption {
   id: string
-  name: string
+  address_street: string
+  address_unit?: string
+  address_city: string
+  address_state: string
+  address_zip: string
 }
 
 // Reactive data
@@ -307,7 +312,7 @@ const propertyFilterItems = computed(() => {
   
   props.properties.forEach(property => {
     items.push({
-      title: property.name,
+      title: formatPropertyAddress(property, 'short'),
       value: property.id
     })
   })

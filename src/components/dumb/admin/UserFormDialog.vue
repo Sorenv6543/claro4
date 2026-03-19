@@ -340,35 +340,30 @@
 
 <script setup lang="ts">
 import { ref, watch, nextTick } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useAdminErrorHandler } from '@/composables/admin/useAdminErrorHandler'
-import type { User, UserRole } from '@/types'
+import type { User, UserRole, UserFormData } from '@/types/user'
 
 // Props and Emits
 interface Props {
   modelValue: boolean
   user?: User | null
   isEditing?: boolean
+  loading?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   user: null,
-  isEditing: false
+  isEditing: false,
+  loading: false
 })
 
 const emit = defineEmits<{
   'update:modelValue': [value: boolean]
-  saved: []
+  submit: [data: UserFormData]
 }>()
-
-// Composables
-const authStore = useAuthStore()
-const { handleError } = useAdminErrorHandler()
 
 // Form state
 const formRef = ref()
 const formValid = ref(false)
-const loading = ref(false)
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 
@@ -528,63 +523,27 @@ function loadUserData() {
 }
 
 async function handleSubmit() {
+  if (!formRef.value) return
   const { valid } = await formRef.value.validate()
-  
+
   if (!valid) {
     return
   }
 
-  try {
-    loading.value = true
-    
-    if (props.isEditing && props.user) {
-      // Update existing user
-      const updateData = {
-        name: formData.value.name,
-        role: formData.value.role,
-        company_name: formData.value.company_name,
-        access_level: formData.value.accessLevel as 'full' | 'limited',
-        skills: formData.value.skills,
-        max_daily_bookings: formData.value.max_daily_bookings,
-        timezone: formData.value.timezone,
-        language: formData.value.language,
-        notifications_enabled: formData.value.notifications_enabled
-      }
-      
-      const success = await authStore.updateProfile(updateData)
-      if (success) {
-        emit('saved')
-        closeDialog()
-      }
-    } else {
-      // Create new user
-      const userData = {
-        name: formData.value.name,
-        role: formData.value.role,
-        company_name: formData.value.company_name
-      }
-      
-      const success = await authStore.register({
-        email: formData.value.email,
-        password: formData.value.password,
-        name: userData.name,
-        role: userData.role,
-        company_name: userData.company_name
-      })
-      
-      if (success) {
-        emit('saved')
-        closeDialog()
-      }
-    }
-  } catch (error) {
-    handleError(error, {
-      operation: props.isEditing ? 'update_user' : 'create_user',
-      component: 'UserFormDialog'
-    })
-  } finally {
-    loading.value = false
-  }
+  emit('submit', {
+    name: formData.value.name,
+    email: formData.value.email,
+    password: formData.value.password,
+    role: formData.value.role,
+    company_name: formData.value.company_name,
+    access_level: formData.value.accessLevel,
+    skills: formData.value.skills,
+    max_daily_bookings: formData.value.max_daily_bookings,
+    location: formData.value.location,
+    timezone: formData.value.timezone,
+    language: formData.value.language,
+    notifications_enabled: formData.value.notifications_enabled
+  })
 }
 
 // Watchers

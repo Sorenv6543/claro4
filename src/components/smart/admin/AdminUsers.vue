@@ -1,6 +1,5 @@
 <template>
   <div class="admin-system-users">
-    <!-- Main Content -->
     <div class="users-content">
       <!-- Header (Desktop only) -->
       <div
@@ -21,7 +20,7 @@
               <v-btn
                 color="primary"
                 prepend-icon="mdi-account-plus"
-                @click="addUser"
+                @click="openAddUser"
               >
                 Add User
               </v-btn>
@@ -145,6 +144,21 @@
         </v-container>
       </div>
 
+      <!-- Error Alert -->
+      <v-container
+        v-if="error"
+        fluid
+        class="py-2"
+      >
+        <v-alert
+          type="error"
+          closable
+          @click:close="error = null"
+        >
+          {{ error }}
+        </v-alert>
+      </v-container>
+
       <!-- Filters and Search -->
       <div class="filters-section">
         <v-container fluid>
@@ -157,7 +171,6 @@
                 v-model="searchQuery"
                 prepend-inner-icon="mdi-magnify"
                 label="Search users..."
-                variant="outlined"
                 density="compact"
                 clearable
               />
@@ -170,7 +183,6 @@
                 v-model="roleFilter"
                 :items="roleOptions"
                 label="Role"
-                variant="outlined"
                 density="compact"
                 clearable
               />
@@ -183,7 +195,6 @@
                 v-model="statusFilter"
                 :items="statusOptions"
                 label="Status"
-                variant="outlined"
                 density="compact"
                 clearable
               />
@@ -206,10 +217,9 @@
         </v-container>
       </div>
 
-      <!-- Main Content Area -->
+      <!-- Users Table -->
       <div class="main-content">
         <v-container fluid>
-          <!-- Users Table -->
           <v-card>
             <v-data-table
               :headers="tableHeaders"
@@ -218,7 +228,6 @@
               :search="searchQuery"
               class="users-table"
               :mobile-breakpoint="0"
-              @click:row="viewUserDetails"
             >
               <template #[`item.avatar`]="{ item }">
                 <v-avatar
@@ -234,13 +243,13 @@
 
               <template #[`item.name`]="{ item }">
                 <div class="user-name-cell">
-                  <div 
+                  <div
                     class="user-name font-weight-medium"
                     :class="mobile ? 'text-body-2' : 'text-body-1'"
                   >
                     {{ item.name }}
                   </div>
-                  <div 
+                  <div
                     class="user-email text-medium-emphasis"
                     :class="mobile ? 'text-caption' : 'text-body-2'"
                   >
@@ -269,8 +278,8 @@
                 </v-chip>
               </template>
 
-              <template #[`item.lastActivity`]="{ item }">
-                <div 
+              <template #[`item.last_sign_in_at`]="{ item }">
+                <div
                   class="last-activity"
                   :class="mobile ? 'text-caption' : 'text-body-2'"
                 >
@@ -281,24 +290,18 @@
               <template #[`item.actions`]="{ item }">
                 <div class="d-flex align-center gap-1">
                   <v-btn
-                    icon="mdi-eye"
-                    size="small"
-                    variant="text"
-                    @click.stop="viewUserDetails(item)"
-                  />
-                  <v-btn
                     icon="mdi-pencil"
                     size="small"
                     variant="text"
-                    @click.stop="editUser(item)"
+                    @click.stop="openEditUser(item)"
                   />
                   <v-menu>
-                    <template #activator="{ props }">
+                    <template #activator="{ props: menuProps }">
                       <v-btn
                         icon="mdi-dots-vertical"
                         size="small"
                         variant="text"
-                        v-bind="props"
+                        v-bind="menuProps"
                         @click.stop
                       />
                     </template>
@@ -306,15 +309,10 @@
                       <v-list-item @click="resetPassword(item)">
                         <v-list-item-title>Reset Password</v-list-item-title>
                       </v-list-item>
-                      <v-list-item @click="toggleUserStatus(item)">
-                        <v-list-item-title>
-                          {{ getStatusText(item) === 'Active' ? 'Deactivate' : 'Activate' }}
-                        </v-list-item-title>
-                      </v-list-item>
                       <v-divider />
                       <v-list-item
                         class="text-error"
-                        @click="deleteUser(item)"
+                        @click="confirmDeleteUser(item)"
                       >
                         <v-list-item-title>Delete User</v-list-item-title>
                       </v-list-item>
@@ -329,252 +327,228 @@
     </div>
 
     <!-- Add/Edit User Dialog -->
-    <v-dialog
+    <UserFormDialog
       v-model="userDialog"
-      max-width="600px"
-    >
-      <v-card>
-        <v-card-title>
-          {{ editingUser ? 'Edit User' : 'Add New User' }}
-        </v-card-title>
-        <v-card-text>
-          <v-form>
-            <v-text-field
-              v-model="userForm.name"
-              label="Full Name"
-              required
-            />
-            <v-text-field
-              v-model="userForm.email"
-              label="Email"
-              type="email"
-              required
-            />
-            <v-select
-              v-model="userForm.role"
-              :items="roleOptions"
-              label="Role"
-              required
-            />
-            <v-text-field
-              v-if="!editingUser"
-              v-model="userForm.password"
-              label="Password"
-              type="password"
-              required
-            />
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="closeUserDialog">
-            Cancel
-          </v-btn>
-          <v-btn
-            color="primary"
-            @click="saveUser"
-          >
-            {{ editingUser ? 'Update' : 'Create' }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      :user="editingUser"
+      :is-editing="!!editingUser"
+      :loading="saving"
+      @submit="handleUserSubmit"
+    />
+
+    <!-- Delete Confirmation Dialog -->
+    <ConfirmationDialog
+      :open="deleteDialog"
+      title="Delete User"
+      :message="`Are you sure you want to delete ${userToDelete?.name}? This action cannot be undone.`"
+      confirm-text="Delete"
+      dangerous
+      @confirm="handleDeleteConfirm"
+      @cancel="deleteDialog = false"
+      @close="deleteDialog = false"
+    />
+
+    <!-- Mobile FAB -->
+    <v-btn
+      v-if="mobile"
+      icon="mdi-account-plus"
+      color="primary"
+      size="large"
+      class="fab-btn"
+      position="fixed"
+      location="bottom end"
+      @click="openAddUser"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useDisplay } from 'vuetify';
-import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts';
-import type { User, UserRole } from '@/types/user.ts';
+import { ref, computed, onMounted } from 'vue'
+import { useDisplay } from 'vuetify'
+import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
+import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+import type { User, UserRole, UserFormData } from '@/types/user'
 
-// Composables
-const router = useRouter();
-const { mobile } = useDisplay();
-const { 
-  users: allUsers, 
+const { mobile } = useDisplay()
+const {
+  users: allUsers,
   loading,
+  error,
   fetchAllUsers,
   createUser,
   updateUser,
   deleteUser: removeUser
-} = useAdminUserManagement();
+} = useAdminUserManagement()
 
 // Reactive state
-const searchQuery = ref('');
-const roleFilter = ref('');
-const statusFilter = ref('');
-const userDialog = ref(false);
-const editingUser = ref<User | null>(null);
-
-// User form
-const userForm = ref({
-  name: '',
-  email: '',
-  role: 'owner' as UserRole,
-  password: ''
-});
+const searchQuery = ref('')
+const roleFilter = ref('')
+const statusFilter = ref('')
+const userDialog = ref(false)
+const editingUser = ref<User | null>(null)
+const saving = ref(false)
+const deleteDialog = ref(false)
+const userToDelete = ref<User | null>(null)
 
 // Filter options
 const roleOptions = [
   { title: 'Admin', value: 'admin' },
   { title: 'Property Owner', value: 'owner' },
   { title: 'Cleaner', value: 'cleaner' }
-];
+]
 
 const statusOptions = [
   { title: 'Active', value: 'active' },
   { title: 'Inactive', value: 'inactive' }
-];
+]
 
 // Table headers
-const tableHeaders = computed(() => {
-  const baseHeaders = [
-    { title: '', key: 'avatar', sortable: false, width: mobile.value ? 60 : 80 },
-    { title: 'User', key: 'name', sortable: true },
-    { title: 'Role', key: 'role', sortable: true },
-    { title: 'Status', key: 'status', sortable: true },
-    { title: 'Last Activity', key: 'lastActivity', sortable: true },
-    { title: 'Actions', key: 'actions', sortable: false, align: 'end' as const }
-  ];
-
-  return baseHeaders;
-});
+const tableHeaders = computed(() => [
+  { title: '', key: 'avatar', sortable: false, width: mobile.value ? 60 : 80 },
+  { title: 'User', key: 'name', sortable: true },
+  { title: 'Role', key: 'role', sortable: true },
+  { title: 'Status', key: 'status', sortable: true },
+  { title: 'Last Activity', key: 'last_sign_in_at', sortable: true },
+  { title: 'Actions', key: 'actions', sortable: false, align: 'end' as const }
+])
 
 // Computed stats
-const totalUsers = computed(() => allUsers.value.length);
-const adminCount = computed(() => allUsers.value.filter((u: User) => u.role === 'admin').length);
-const ownerCount = computed(() => allUsers.value.filter((u: User) => u.role === 'owner').length);
-const cleanerCount = computed(() => allUsers.value.filter((u: User) => u.role === 'cleaner').length);
+const totalUsers = computed(() => allUsers.value.length)
+const adminCount = computed(() => allUsers.value.filter((u: User) => u.role === 'admin').length)
+const ownerCount = computed(() => allUsers.value.filter((u: User) => u.role === 'owner').length)
+const cleanerCount = computed(() => allUsers.value.filter((u: User) => u.role === 'cleaner').length)
 
 const filteredUsers = computed(() => {
-  let users = [...allUsers.value];
+  let users = [...allUsers.value]
 
-  // Search filter
   if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase();
-    users = users.filter((user: User) => 
+    const query = searchQuery.value.toLowerCase()
+    users = users.filter((user: User) =>
       user.name.toLowerCase().includes(query) ||
       user.email.toLowerCase().includes(query)
-    );
+    )
   }
 
-  // Role filter
   if (roleFilter.value) {
-    users = users.filter((user: User) => user.role === roleFilter.value);
+    users = users.filter((user: User) => user.role === roleFilter.value)
   }
 
-  // Status filter
   if (statusFilter.value) {
-    users = users.filter((user: User) => getStatusText(user).toLowerCase() === statusFilter.value);
+    users = users.filter((user: User) => getStatusText(user).toLowerCase() === statusFilter.value)
   }
 
-  return users;
-});
+  return users
+})
 
-// Methods
+// Helpers
 const getInitials = (name: string): string => {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase();
-};
+  return name.split(' ').map(n => n[0]).join('').toUpperCase()
+}
 
 const getRoleColor = (role: UserRole): string => {
   const colors: Record<UserRole, string> = {
     admin: 'error',
     owner: 'primary',
     cleaner: 'success'
-  };
-  return colors[role] || 'grey';
-};
+  }
+  return colors[role] || 'grey'
+}
 
 const getStatusColor = (user: User): string => {
-  if (!user.created_at) return 'grey';
-  if (user.last_sign_in_at) return 'success';
-  return 'warning';
-};
+  if (!user.created_at) return 'grey'
+  if (user.last_sign_in_at) return 'success'
+  return 'warning'
+}
 
 const getStatusText = (user: User): string => {
-  if (!user.created_at) return 'Pending';
-  if (user.last_sign_in_at) return 'Active';
-  return 'Inactive';
-};
+  if (!user.created_at) return 'Pending'
+  if (user.last_sign_in_at) return 'Active'
+  return 'Inactive'
+}
 
 const formatDate = (dateString: string): string => {
   return new Date(dateString).toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric'
-  });
-};
+  })
+}
 
 // Actions
-const addUser = () => {
-  editingUser.value = null;
-  userForm.value = {
-    name: '',
-    email: '',
-    role: 'owner',
-    password: ''
-  };
-  userDialog.value = true;
-};
+const openAddUser = () => {
+  editingUser.value = null
+  userDialog.value = true
+}
 
-const viewUserDetails = (user: User) => {
-  router.push(`/admin/users/${user.id}`);
-};
+const openEditUser = (user: User) => {
+  editingUser.value = user
+  userDialog.value = true
+}
 
-const editUser = (user: User) => {
-  editingUser.value = user;
-  userForm.value = {
-    name: user.name,
-    email: user.email,
-    role: user.role,
-    password: ''
-  };
-  userDialog.value = true;
-};
-
-const closeUserDialog = () => {
-  userDialog.value = false;
-  editingUser.value = null;
-};
-
-const saveUser = async () => {
+const handleUserSubmit = async (formData: UserFormData) => {
+  saving.value = true
   try {
     if (editingUser.value) {
-      await updateUser(editingUser.value.id, userForm.value);
+      const success = await updateUser(editingUser.value.id, {
+        name: formData.name,
+        role: formData.role,
+        company_name: formData.company_name,
+        access_level: formData.access_level as 'full' | 'limited',
+        skills: formData.skills,
+        max_daily_bookings: formData.max_daily_bookings,
+        timezone: formData.timezone,
+        language: formData.language,
+        notifications_enabled: formData.notifications_enabled
+      })
+      if (success) {
+        userDialog.value = false
+      }
     } else {
-      await createUser(userForm.value);
+      const success = await createUser({
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
+        role: formData.role,
+        company_name: formData.company_name,
+        access_level: formData.access_level as 'full' | 'limited',
+        skills: formData.skills,
+        max_daily_bookings: formData.max_daily_bookings,
+        timezone: formData.timezone,
+        language: formData.language,
+        notifications_enabled: formData.notifications_enabled
+      })
+      if (success) {
+        userDialog.value = false
+      }
     }
-    closeUserDialog();
-    await fetchAllUsers();
-  } catch (error) {
-    console.error('Failed to save user:', error);
+  } catch (err) {
+    console.error('Failed to save user:', err)
+  } finally {
+    saving.value = false
   }
-};
+}
+
+const confirmDeleteUser = (user: User) => {
+  userToDelete.value = user
+  deleteDialog.value = true
+}
+
+const handleDeleteConfirm = async () => {
+  if (!userToDelete.value) return
+  await removeUser(userToDelete.value.id)
+  deleteDialog.value = false
+  userToDelete.value = null
+}
 
 const resetPassword = (user: User) => {
-  console.log('Reset password for:', user.name);
-  // TODO: Implement password reset
-};
-
-const toggleUserStatus = async (_user: User) => {
-  // Status is determined by created_at and last_sign_in_at properties
-  // Cannot be directly toggled - would require database schema changes
-  console.log('User status toggle not implemented - status is derived from user activity');
-};
-
-const deleteUser = async (user: User) => {
-  if (confirm(`Are you sure you want to delete ${user.name}?`)) {
-    await removeUser(user.id);
-    await fetchAllUsers();
-  }
-};
+  console.log('Reset password for:', user.name)
+  // TODO: Implement password reset flow
+}
 
 // Initialize
 onMounted(() => {
-  fetchAllUsers();
-});
+  fetchAllUsers()
+})
 </script>
 
 <style scoped>
@@ -640,6 +614,10 @@ onMounted(() => {
 
 .stat-card:hover {
   transform: translateY(-2px);
+}
+
+.fab-btn {
+  margin: 16px;
 }
 
 @media (max-width: 599px) {

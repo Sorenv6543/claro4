@@ -15,15 +15,15 @@
       <div class="header-content">
         <div class="property-title-section">
           <div class="property-name text-truncate">
-            {{ property.name }}
+            {{ formatPropertyAddress(property, 'short') }}
           </div>
           <div class="property-address text-caption text-medium-emphasis">
-            <v-icon 
-              icon="mdi-map-marker" 
-              size="x-small" 
+            <v-icon
+              icon="mdi-map-marker"
+              size="x-small"
               class="mr-1"
             />
-            {{ property.address }}
+            {{ formatPropertyAddress(property) }}
           </div>
         </div>
         
@@ -230,6 +230,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import type { Property, PricingTier } from '@/types';
+import { formatPropertyAddress } from '@/types/property';
 
 interface Props {
   property: Property;

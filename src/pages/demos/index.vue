@@ -1,22 +1,56 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-const demos = [
-  { title: 'PWA Demo', route: '/demos/pwa', icon: 'mdi-application', description: 'Test PWA functionality' },
-  { title: 'Owner Calendar', route: '/demos/owner-calendar', icon: 'mdi-calendar', description: 'Owner calendar demo' },
-  { title: 'Owner Data Store', route: '/demos/owner-data-store', icon: 'mdi-database', description: 'Owner data store demo' },
-  { title: 'Admin Data Store', route: '/demos/admin-data-store', icon: 'mdi-database', description: 'Admin data store demo' },
-  { title: 'Admin Calendar', route: '/demos/admin-calendar', icon: 'mdi-calendar', description: 'Admin calendar demo' },
-  { title: 'Admin Reports', route: '/demos/admin-reports', icon: 'mdi-chart-bar', description: 'Admin reports demo' },
-  { title: 'Admin Settings', route: '/demos/admin-settings', icon: 'mdi-cog', description: 'Admin settings demo' },
-  { title: 'Admin Users', route: '/demos/admin-users', icon: 'mdi-account', description: 'Admin users demo' },
-  { title: 'Admin Bookings', route: '/demos/admin-bookings', icon: 'mdi-calendar-check', description: 'Admin bookings demo' }
-]
+// Auto-discover all demo files via glob
+const demoModules = import.meta.glob('@/dev/demos/**/*.vue')
 
-const navigateToDemo = (route: string) => {
-  router.push(route)
+// Build demo list from file paths
+const demos = computed(() => {
+  return Object.keys(demoModules)
+    .map((path) => {
+      // Extract relative path after /dev/demos/
+      const match = path.match(/\/dev\/demos\/(.+)\.vue$/)
+      if (!match) return null
+      const filePath = match[1]
+      // Create a URL-friendly slug
+      const slug = filePath.replace(/\//g, '--').toLowerCase()
+      // Create a display title from the filename
+      const name = filePath.split('/').pop()!
+      const title = name
+        .replace(/([A-Z])/g, ' $1')
+        .replace(/[-_]/g, ' ')
+        .replace(/\s+/g, ' ')
+        .trim()
+      // Determine category from subfolder
+      const parts = filePath.split('/')
+      const category = parts.length > 1 ? parts[0] : 'General'
+
+      return { title, slug, category, filePath }
+    })
+    .filter(Boolean)
+    .sort((a, b) => {
+      // Sort by category first, then title
+      const catCmp = a!.category.localeCompare(b!.category)
+      if (catCmp !== 0) return catCmp
+      return a!.title.localeCompare(b!.title)
+    }) as { title: string; slug: string; category: string; filePath: string }[]
+})
+
+// Group by category
+const groupedDemos = computed(() => {
+  const groups: Record<string, typeof demos.value> = {}
+  for (const demo of demos.value) {
+    if (!groups[demo.category]) groups[demo.category] = []
+    groups[demo.category].push(demo)
+  }
+  return groups
+})
+
+const navigateToDemo = (slug: string) => {
+  router.push(`/dev/demos/${slug}`)
 }
 </script>
 
@@ -24,48 +58,36 @@ const navigateToDemo = (route: string) => {
   <v-container>
     <v-row>
       <v-col cols="12">
-        <v-card>
-          <v-card-title class="text-h4 text-center py-4">
-            Demo Components
-          </v-card-title>
-          
-          <v-divider />
-          
-          <v-card-text>
-            <v-row>
-              <v-col 
-                v-for="demo in demos"
-                :key="demo.route"
-                cols="12"
-                md="6"
-                lg="4"
+        <h1 class="text-h4 mb-2">Demo Components</h1>
+        <p class="text-body-2 text-medium-emphasis mb-6">
+          {{ demos.length }} demos available
+        </p>
+
+        <template v-for="(items, category) in groupedDemos" :key="category">
+          <h2 class="text-h6 mb-3 mt-4">{{ category }}</h2>
+          <v-row class="mb-2">
+            <v-col
+              v-for="demo in items"
+              :key="demo.slug"
+              cols="12"
+              sm="6"
+              md="4"
+              lg="3"
+            >
+              <v-card
+                variant="outlined"
+                hover
+                class="cursor-pointer"
+                @click="navigateToDemo(demo.slug)"
               >
-                <v-card
-                  variant="outlined"
-                  hover
-                  class="cursor-pointer"
-                  @click="navigateToDemo(demo.route)"
-                >
-                  <v-card-title class="text-center">
-                    <v-icon
-                      size="48"
-                      :icon="demo.icon"
-                      class="mb-2"
-                    />
-                    <div>{{ demo.title }}</div>
-                  </v-card-title>
-                  <v-card-text class="text-center">
-                    {{ demo.description }}
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
+                <v-card-title class="text-body-1">
+                  {{ demo.title }}
+                </v-card-title>
+              </v-card>
+            </v-col>
+          </v-row>
+        </template>
       </v-col>
     </v-row>
   </v-container>
 </template>
-
-<style scoped>
-</style> 

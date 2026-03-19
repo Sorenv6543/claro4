@@ -6,8 +6,11 @@ import type { Property } from '@/types/property'
 const mockProperty: Property = {
   id: 'prop1',
   owner_id: 'owner1',
-  name: '434 ggg, Palm Springs',
-  address: '434 ggg, Palm springs, CA, 92235',
+  address_street: '434 ggg',
+  address_unit: '',
+  address_city: 'Palm Springs',
+  address_state: 'CA',
+  address_zip: '92235',
   property_type: 'apartment',
   pricing_tier: 'standard',
   cleaning_duration: 120,
@@ -45,9 +48,9 @@ describe('bookingToCalendarEvent', () => {
     expect(event.end).toBe('2026-03-29')
   })
 
-  it('uses property name in the title', () => {
+  it('uses property address in the title', () => {
     const event = bookingToCalendarEvent(makeBooking(), mockProperty)
-    expect(event.title).toContain('434 ggg, Palm Springs')
+    expect(event.title).toContain('434 ggg')
   })
 
   it('includes booking id', () => {
@@ -55,9 +58,12 @@ describe('bookingToCalendarEvent', () => {
     expect(event.id).toBe('b1')
   })
 
-  it('marks turn bookings in the title', () => {
-    const event = bookingToCalendarEvent(makeBooking({ booking_type: 'turn' }), mockProperty)
-    expect(event.title).toContain('TURN')
+  it('includes turn type class for turn bookings', () => {
+    const event = bookingToCalendarEvent(
+      makeBooking({ booking_type: 'turn', turn_date: '2026-03-20' }),
+      mockProperty,
+    )
+    expect(event.classNames).toContain('type-turn')
   })
 
   it('includes type class', () => {

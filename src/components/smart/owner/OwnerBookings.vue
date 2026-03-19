@@ -269,6 +269,7 @@
 
 <script setup lang="ts">
   import type { Booking, ModalData } from '@/types'
+  import { formatPropertyAddress } from '@/types/property'
   import { computed, onMounted, ref } from 'vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
@@ -312,7 +313,7 @@
 
   const propertyOptions = computed(() =>
     Array.from(ownerProperties.value.values()).map(p => ({
-      title: p.name,
+      title: formatPropertyAddress(p, 'short'),
       value: p.id,
     })),
   )
@@ -363,7 +364,7 @@
   // Methods
   function getPropertyName (propertyId: string): string {
     const property = Array.from(ownerProperties.value.values()).find(p => p.id === propertyId)
-    return property?.name || 'Unknown Property'
+    return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
   }
 
   function getStatusColor (status: string): string {

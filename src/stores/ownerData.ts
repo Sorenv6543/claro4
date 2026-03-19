@@ -251,49 +251,37 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
   }
 
   const createOwnerProperty = async (propertyData: Partial<Property>): Promise<Property | null> => {
-    if (!authStore.user?.id) return null
-    
-    try {
-      propertyStore.addProperty({
-        ...propertyData,
-        owner_id: authStore.user.id
-      } as Property)
-      
-      // Invalidate cache to refresh data
-      invalidateCache()
-      
-      // Return the created property from the store
-      const createdProperty = Array.from(propertyStore.properties.values())
-        .find(p => p.owner_id === authStore.user?.id && p.name === propertyData.name)
-      
-      return createdProperty || null
-    } catch (error) {
-      console.error('Failed to create owner property:', error)
-      return null
+    if (!authStore.user?.id) {
+      throw new Error('You must be logged in to create a property')
     }
+
+    const id = propertyData.id || crypto.randomUUID()
+    const newProperty = {
+      ...propertyData,
+      id,
+      owner_id: authStore.user.id
+    } as Property
+
+    propertyStore.addProperty(newProperty)
+    invalidateCache()
+    return propertyStore.properties.get(id) || newProperty
   }
 
   const createOwnerBooking = async (bookingData: Partial<Booking>): Promise<Booking | null> => {
-    if (!authStore.user?.id) return null
-    
-    try {
-      bookingStore.addBooking({
-        ...bookingData,
-        owner_id: authStore.user.id
-      } as Booking)
-      
-      // Invalidate cache to refresh data
-      invalidateCache()
-      
-      // Return the created booking from the store
-      const createdBooking = Array.from(bookingStore.bookings.values())
-        .find(b => b.owner_id === authStore.user?.id && b.property_id === bookingData.property_id)
-      
-      return createdBooking || null
-    } catch (error) {
-      console.error('Failed to create owner booking:', error)
-      return null
+    if (!authStore.user?.id) {
+      throw new Error('You must be logged in to create a booking')
     }
+
+    const id = bookingData.id || crypto.randomUUID()
+    const newBooking = {
+      ...bookingData,
+      id,
+      owner_id: authStore.user.id
+    } as Booking
+
+    bookingStore.addBooking(newBooking)
+    invalidateCache()
+    return bookingStore.bookings.get(id) || newBooking
   }
 
   // Watch for auth changes to invalidate cache

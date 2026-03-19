@@ -1,5 +1,6 @@
 import type { EventClickArg } from '@fullcalendar/core'
 import type { Booking, BookingStatus, BookingType } from '@/types'
+import { formatPropertyAddress } from '@/types/property'
 import { computed, ref } from 'vue'
 import { useCalendarState } from '@/composables/shared/useCalendarState'
 import { useBookingStore } from '@/stores/booking'
@@ -75,8 +76,8 @@ export function useAdminCalendarState () {
 
         return {
           ...booking,
-          property_name: property?.name || 'Unknown Property',
-          property_address: property?.address || 'Unknown Address',
+          property_name: property ? formatPropertyAddress(property, 'short') : 'Unknown Property',
+          property_address: property ? formatPropertyAddress(property) : 'Unknown Address',
           hours_until_checkout: hoursUntil,
           priority: hoursUntil <= 2 ? 'urgent' as const : 'high' as const,
           alert_message: hoursUntil <= 2

@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue';
 import type { EventInput, DateSelectArg, EventClickArg } from '@fullcalendar/core';
 import type { Booking } from '@/types';
+import { formatPropertyAddress } from '@/types/property';
 import { useCalendarState } from '@/composables/shared/useCalendarState';
 import { useOwnerBookings } from '@/composables/owner/useOwnerBookings';
 import { useAuthStore } from '@/stores/auth';
@@ -70,8 +71,8 @@ export function useOwnerCalendarState() {
   const myPropertyOptions = computed(() => {
     return ownerBookings.myProperties.value.map(property => ({
       id: property.id,
-      name: property.name,
-      address: property.address,
+      label: formatPropertyAddress(property, 'short'),
+      fullAddress: formatPropertyAddress(property),
       active: property.active
     }));
   });
@@ -86,7 +87,7 @@ export function useOwnerCalendarState() {
     if (propertyCount === 0) {
       return 'My Calendar - No Properties';
     } else if (propertyCount === 1) {
-      return `My Calendar - ${ownerBookings.myProperties.value[0].name}`;
+      return `My Calendar - ${formatPropertyAddress(ownerBookings.myProperties.value[0], 'short')}`;
     } else {
       return `My Calendar - ${propertyCount} Properties, ${bookingCount} Bookings`;
     }
@@ -218,7 +219,7 @@ export function useOwnerCalendarState() {
       // Use base calendar state's property filter
       baseCalendarState.togglePropertyFilter(propertyId);
       ownerError.value = null;
-      ownerSuccess.value = `Filtered to show ${ownerProperty.name} bookings only`;
+      ownerSuccess.value = `Filtered to show ${formatPropertyAddress(ownerProperty, 'short')} bookings only`;
     } catch (error) {
       ownerError.value = 'Unable to apply property filter. Please try again.';
     }
@@ -270,7 +271,7 @@ export function useOwnerCalendarState() {
    */
   function getPropertyName(propertyId: string): string {
     const property = ownerBookings.myProperties.value.find(p => p.id === propertyId);
-    return property?.name || 'Unknown Property';
+    return property ? formatPropertyAddress(property, 'short') : 'Unknown Property';
   }
   
   /**

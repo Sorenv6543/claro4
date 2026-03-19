@@ -1,14 +1,44 @@
 import { ref } from 'vue'
 import type { Ref } from 'vue'
 import type { User, UserRole } from '@/types/user'
-import { supabase } from '@/plugins/supabase' // adjust import if needed
+import { supabase } from '@/plugins/supabase'
 
-// State
+// State (module-level singleton)
 const users: Ref<User[]> = ref([])
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-// Core Methods (stubs)
+/**
+ * Helper to call the admin-users edge function.
+ * The function verifies the caller is an admin via JWT, then uses the
+ * service role key for auth.admin operations.
+ */
+async function invokeAdminUsers(body: Record<string, unknown>): Promise<{ data: unknown; error: string | null }> {
+  const { data, error: fnError } = await supabase.functions.invoke('admin-users', {
+    body
+  })
+
+  if (fnError) {
+    // Edge function network/invocation error
+    return { data: null, error: fnError.message }
+  }
+
+  // The edge function returns JSON — check for an error field
+  if (data?.error) {
+    return { data: null, error: data.error }
+  }
+
+  return { data, error: null }
+}
+
+function extractErrorMessage(err: unknown, fallback: string): string {
+  if (err && typeof err === 'object' && 'message' in err) {
+    return (err as { message?: string }).message || fallback
+  }
+  return fallback
+}
+
+// Reads — use direct client (works with RLS + anon key)
 async function fetchAllUsers(): Promise<void> {
   loading.value = true
   error.value = null
@@ -23,71 +53,51 @@ async function fetchAllUsers(): Promise<void> {
     }
     users.value = (data as User[]) || []
   } catch (err: unknown) {
-    if (err && typeof err === 'object' && 'message' in err) {
-      error.value = (err as { message?: string }).message || 'Failed to fetch users'
-    } else {
-      error.value = 'Failed to fetch users'
-    }
+    error.value = extractErrorMessage(err, 'Failed to fetch users')
     users.value = []
   } finally {
     loading.value = false
   }
 }
 
+// Writes that need service role key — routed through edge function
+
 async function createUser(userData: Partial<User> & { password: string }): Promise<boolean> {
   loading.value = true
   error.value = null
   try {
-    // 1. Create user in auth.users (Supabase admin API)
-    const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-      email: userData.email!,
+    const { error: fnError } = await invokeAdminUsers({
+      action: 'create',
+      email: userData.email,
       password: userData.password,
-      email_confirm: true,
-      user_metadata: {
-        name: userData.name,
-        role: userData.role,
-      }
+      name: userData.name,
+      role: userData.role,
+      company_name: userData.company_name || null,
+      access_level: userData.access_level || null,
+      skills: userData.skills || null,
+      max_daily_bookings: userData.max_daily_bookings || null,
+      location_lat: userData.location_lat || null,
+      location_lng: userData.location_lng || null,
+      timezone: userData.timezone || null,
+      language: userData.language || null,
+      notifications_enabled: userData.notifications_enabled ?? true
     })
-    if (authError || !authData?.user) {
-      throw authError || new Error('Failed to create auth user')
+
+    if (fnError) {
+      throw new Error(fnError)
     }
-    // 2. Insert into user_profiles
-    const { error: profileError } = await supabase
-      .from('user_profiles')
-      .insert({
-        id: authData.user.id,
-        email: userData.email,
-        name: userData.name,
-        role: userData.role,
-        company_name: userData.company_name || null,
-        access_level: userData.access_level || null,
-        skills: userData.skills || null,
-        max_daily_bookings: userData.max_daily_bookings || null,
-        location_lat: userData.location_lat || null,
-        location_lng: userData.location_lng || null,
-        timezone: userData.timezone || null,
-        language: userData.language || null,
-        notifications_enabled: userData.notifications_enabled ?? true
-      })
-    if (profileError) {
-      // Clean up auth user if profile creation fails
-      await supabase.auth.admin.deleteUser(authData.user.id)
-      throw profileError
-    }
+
     await fetchAllUsers()
     return true
   } catch (err: unknown) {
-    if (err && typeof err === 'object' && 'message' in err) {
-      error.value = (err as { message?: string }).message || 'Failed to create user'
-    } else {
-      error.value = 'Failed to create user'
-    }
+    error.value = extractErrorMessage(err, 'Failed to create user')
     return false
   } finally {
     loading.value = false
   }
 }
 
+// Profile updates — direct client (RLS allows admins to update user_profiles)
 async function updateUser(userId: string, updateData: Partial<User>): Promise<boolean> {
   loading.value = true
   error.value = null
@@ -117,11 +127,7 @@ async function updateUser(userId: string, updateData: Partial<User>): Promise<bo
     await fetchAllUsers()
     return true
   } catch (err: unknown) {
-    if (err && typeof err === 'object' && 'message' in err) {
-      error.value = (err as { message?: string }).message || 'Failed to update user'
-    } else {
-      error.value = 'Failed to update user'
-    }
+    error.value = extractErrorMessage(err, 'Failed to update user')
     return false
   } finally {
     loading.value = false
@@ -132,38 +138,33 @@ async function deleteUser(userId: string): Promise<boolean> {
   loading.value = true
   error.value = null
   try {
-    // Delete from user_profiles first
-    const { error: profileError } = await supabase
-      .from('user_profiles')
-      .delete()
-      .eq('id', userId)
-    if (profileError) {
-      throw profileError
+    const { data, error: fnError } = await invokeAdminUsers({
+      action: 'delete',
+      userId
+    })
+
+    if (fnError) {
+      throw new Error(fnError)
     }
-    // Delete from auth.users using admin API
-    const { error: authError } = await supabase.auth.admin.deleteUser(userId)
-    if (authError) {
-      // Profile was deleted but auth account remains — user can still log in.
-      // Refresh the list so the UI reflects the partial deletion.
+
+    // Edge function returns 207 with a warning if profile deleted but auth remains
+    if (data && typeof data === 'object' && 'warning' in data) {
+      error.value = (data as { warning: string }).warning
       await fetchAllUsers()
-      error.value = 'User profile deleted, but the auth account could not be removed. Contact your Supabase admin to delete the auth record manually.'
-      loading.value = false
       return false
     }
+
     await fetchAllUsers()
     return true
   } catch (err: unknown) {
-    if (err && typeof err === 'object' && 'message' in err) {
-      error.value = (err as { message?: string }).message || 'Failed to delete user'
-    } else {
-      error.value = 'Failed to delete user'
-    }
+    error.value = extractErrorMessage(err, 'Failed to delete user')
     return false
   } finally {
     loading.value = false
   }
 }
 
+// Bulk role change — direct client (RLS)
 async function bulkChangeRoles(userIds: string[], newRole: UserRole): Promise<boolean> {
   loading.value = true
   error.value = null
@@ -183,11 +184,7 @@ async function bulkChangeRoles(userIds: string[], newRole: UserRole): Promise<bo
     await fetchAllUsers()
     return true
   } catch (err: unknown) {
-    if (err && typeof err === 'object' && 'message' in err) {
-      error.value = (err as { message?: string }).message || 'Failed to change user roles'
-    } else {
-      error.value = 'Failed to change user roles'
-    }
+    error.value = extractErrorMessage(err, 'Failed to change user roles')
     return false
   } finally {
     loading.value = false
@@ -198,20 +195,19 @@ async function resetUserPassword(userId: string, newPassword: string): Promise<b
   loading.value = true
   error.value = null
   try {
-    // Directly sets a new password via the Supabase admin API — does not send a reset email.
-    const { error: resetError } = await supabase.auth.admin.updateUserById(userId, {
-      password: newPassword
+    const { error: fnError } = await invokeAdminUsers({
+      action: 'reset-password',
+      userId,
+      newPassword
     })
-    if (resetError) {
-      throw resetError
+
+    if (fnError) {
+      throw new Error(fnError)
     }
+
     return true
   } catch (err: unknown) {
-    if (err && typeof err === 'object' && 'message' in err) {
-      error.value = (err as { message?: string }).message || 'Failed to update password'
-    } else {
-      error.value = 'Failed to update password'
-    }
+    error.value = extractErrorMessage(err, 'Failed to update password')
     return false
   } finally {
     loading.value = false
@@ -230,4 +226,4 @@ export function useAdminUserManagement() {
     bulkChangeRoles,
     resetUserPassword
   }
-} 
+}

@@ -34,6 +34,9 @@ export interface Booking {
   notes?: string;
   priority: 'low' | 'normal' | 'high' | 'urgent';
   assigned_cleaner_id?: string | null;
+  turn_date?: string | null;          // Date of same-day turnover within stay
+  turn_start_time?: string | null;    // When previous guests depart on turn day
+  turn_checkin_time?: string | null;  // When next guests arrive on turn day
   created_at?: string;
   updated_at?: string;
 }

@@ -1,5 +1,6 @@
 import type { Booking } from '@/types'
 import type { Property } from '@/types/property'
+import { formatPropertyAddress } from '@/types/property'
 
 /** Add one day to a YYYY-MM-DD string (for FullCalendar exclusive end dates). */
 function addOneDay(dateString: string): string {
@@ -35,18 +36,18 @@ export interface CalendarBookingEvent {
 /**
  * Convert a Booking to a FullCalendar EventInput.
  *
- * - start = checkin_date  (when guests arrive)
- * - end   = checkout_date + 1 day  (FullCalendar all-day end is exclusive)
+ * Turn bookings render as a single event spanning the full stay.
+ * The turn day indicator is handled by eventContent + dayCellDidMount in FullCalendar.vue.
  */
 export function bookingToCalendarEvent(
   booking: Booking,
   property: Property | undefined
 ): CalendarBookingEvent {
-  const isTurn = booking.booking_type === 'turn'
+  const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
 
   return {
     id: booking.id,
-    title: `${property?.name || 'Unknown Property'} - ${isTurn ? 'TURN' : 'Standard'}`,
+    title: propertyLabel,
     start: booking.checkin_date,
     end: addOneDay(booking.checkout_date),
     classNames: [

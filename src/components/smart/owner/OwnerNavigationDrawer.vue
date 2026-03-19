@@ -18,7 +18,7 @@
           :to="item.disabled ? undefined : item.to"
           :active="isActive(item.to)"
           :disabled="item.disabled"
-          active-color="primary"
+          color="primary"
           rounded="lg"
           @click="item.disabled ? undefined : onNavItemClick()"
         >
@@ -43,7 +43,7 @@
         :title="item.label"
         :to="item.to"
         :active="isActive(item.to)"
-        active-color="primary"
+        color="primary"
         rounded="lg"
         @click="onNavItemClick()"
       />
@@ -73,22 +73,14 @@
               :key="property.id"
               :to="`/owner/properties/${property.id}`"
               :active="isActive(`/owner/properties/${property.id}`)"
-              active-color="primary"
+              color="primary"
+              prepend-icon="mdi-home"
               rounded="lg"
+              :style="{ '--property-icon-color': propertyColor(index) }"
               class="property-nav-item"
+              :title="formatPropertyAddress(property, 'short')"
               @click="onNavItemClick()"
-            >
-              <template #prepend>
-                <v-icon
-                  icon="mdi-home"
-                  :style="{ color: propertyColor(index), opacity: 0.6 }"
-                  size="20"
-                />
-              </template>
-              <v-list-item-title class="text-body-2 font-weight-medium">
-                {{ property.name }}
-              </v-list-item-title>
-            </v-list-item>
+            />
           </v-list>
         </div>
       </div>
@@ -103,6 +95,7 @@ import { useRoute } from 'vue-router'
 import { useDisplay } from 'vuetify'
 import { useAuthStore } from '@stores/auth'
 import { useOwnerProperties } from '@composables/owner/useOwnerProperties'
+import { formatPropertyAddress } from '@/types/property'
 
 defineProps<{
   modelValue: boolean
@@ -171,5 +164,10 @@ function onNavItemClick() {
 <style scoped>
 .property-nav-item :deep(.v-list-item__prepend) {
   width: 36px;
+}
+
+.property-nav-item :deep(.v-list-item__prepend .v-icon) {
+  color: var(--property-icon-color) !important;
+  opacity: 0.6;
 }
 </style>

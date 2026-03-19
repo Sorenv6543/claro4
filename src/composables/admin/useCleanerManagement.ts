@@ -1,8 +1,7 @@
 import { ref, computed } from 'vue';
 import { useAuthStore } from '@/stores/auth.ts';
-// import { useUserStore } from '@/stores/user';
 import { useBookingStore } from '@/stores/booking.ts';
-// import { usePropertyStore } from '@/stores/property';
+import { supabase } from '@/plugins/supabase';
 import type { Cleaner } from '@/types/user.ts';
 
 /**
@@ -83,98 +82,13 @@ export function useCleanerManagement() {
   // Get current admin user ID
   const currentAdminId = computed(() => authStore.user?.id);
   
-  // COMPUTED PROPERTIES - Admin system-wide cleaner access
+  // State — populated by fetchCleaners()
+  const cleaners = ref<Cleaner[]>([]);
 
   /**
-   * Get ALL cleaners in the system (admin-only access)
+   * All cleaners in the system (admin-only access)
    */
-  const allCleaners = computed((): Cleaner[] => {
-    // Mock data — replace with: supabase.from('user_profiles').select('*').eq('role', 'cleaner')
-    const mockCleaners: Cleaner[] = [
-      {
-        id: 'cleaner-001',
-        email: 'maria.santos@cleanpro.com',
-        name: 'Maria Santos',
-        role: 'cleaner',
-        skills: ['deep-cleaning', 'eco-friendly', 'luxury-properties'],
-        max_daily_bookings: 4,
-        location_lat: 40.7128,
-        location_lng: -74.0060,
-        notifications_enabled: true,
-        timezone: 'America/New_York',
-        theme: 'light',
-        language: 'en',
-        created_at: '2024-01-15T08:00:00Z',
-        updated_at: '2024-01-20T10:30:00Z'
-      },
-      {
-        id: 'cleaner-002',
-        email: 'james.wilson@cleanpro.com',
-        name: 'James Wilson',
-        role: 'cleaner',
-        skills: ['standard-cleaning', 'turn-specialist', 'quick-turnaround'],
-        max_daily_bookings: 6,
-        location_lat: 40.7589,
-        location_lng: -73.9851,
-        notifications_enabled: true,
-        timezone: 'America/New_York',
-        theme: 'dark',
-        language: 'en',
-        created_at: '2024-01-10T09:00:00Z',
-        updated_at: '2024-01-22T14:15:00Z'
-      },
-      {
-        id: 'cleaner-003',
-        email: 'sofia.rodriguez@cleanpro.com',
-        name: 'Sofia Rodriguez',
-        role: 'cleaner',
-        skills: ['premium-cleaning', 'detail-oriented', 'luxury-properties', 'eco-friendly'],
-        max_daily_bookings: 3,
-        location_lat: 40.7505,
-        location_lng: -73.9934,
-        notifications_enabled: true,
-        timezone: 'America/New_York',
-        theme: 'light',
-        language: 'es',
-        created_at: '2024-01-08T07:30:00Z',
-        updated_at: '2024-01-21T16:45:00Z'
-      },
-      {
-        id: 'cleaner-004',
-        email: 'david.kim@cleanpro.com',
-        name: 'David Kim',
-        role: 'cleaner',
-        skills: ['standard-cleaning', 'maintenance', 'equipment-specialist'],
-        max_daily_bookings: 5,
-        location_lat: 40.7282,
-        location_lng: -73.7949,
-        notifications_enabled: true,
-        timezone: 'America/New_York',
-        theme: 'system',
-        language: 'en',
-        created_at: '2024-01-12T10:00:00Z',
-        updated_at: '2024-01-19T11:20:00Z'
-      },
-      {
-        id: 'cleaner-005',
-        email: 'anna.petrov@cleanpro.com',
-        name: 'Anna Petrov',
-        role: 'cleaner',
-        skills: ['deep-cleaning', 'luxury-properties', 'detail-oriented', 'premium-cleaning'],
-        max_daily_bookings: 3,
-        location_lat: 40.6782,
-        location_lng: -73.9442,
-        notifications_enabled: true,
-        timezone: 'America/New_York',
-        theme: 'light',
-        language: 'ru',
-        created_at: '2024-01-05T08:45:00Z',
-        updated_at: '2024-01-23T09:30:00Z'
-      }
-    ];
-    
-    return mockCleaners;
-  });
+  const allCleaners = computed((): Cleaner[] => cleaners.value);
   
   /**
    * Get available cleaners (not at max capacity)
@@ -313,22 +227,34 @@ export function useCleanerManagement() {
       error.value = 'Admin authentication required to access cleaner data';
       return false;
     }
-    
+
     loading.value = true;
     error.value = null;
-    
+
     try {
-      // In a real app, this would make an API call to get all cleaners
-      // For now, we simulate the call and use computed data
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
-      success.value = `Loaded ${allCleaners.value.length} cleaners from system`;
-      loading.value = false;
+      const { data, error: supabaseError } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .eq('role', 'cleaner')
+        .order('name', { ascending: true });
+
+      if (supabaseError) {
+        throw supabaseError;
+      }
+
+      cleaners.value = (data ?? []).map(row => ({
+        ...row,
+        skills: row.skills ?? [],
+        max_daily_bookings: row.max_daily_bookings ?? 4
+      })) as Cleaner[];
+
+      success.value = `Loaded ${cleaners.value.length} cleaners from system`;
       return true;
     } catch (err) {
-      error.value = 'Unable to load cleaner data. System impact: High - cleaner assignments may be affected.';
-      loading.value = false;
+      error.value = err instanceof Error ? err.message : 'Unable to load cleaner data.';
       return false;
+    } finally {
+      loading.value = false;
     }
   }
   
@@ -358,17 +284,28 @@ export function useCleanerManagement() {
         throw new Error('At least one skill is required for cleaner');
       }
       
-      // Check for duplicate email
-      const existingCleaner = allCleaners.value.find(c => c.email === data.email);
-      if (existingCleaner) {
-        throw new Error('A cleaner with this email already exists');
+      // Create cleaner via edge function (needs service role for auth.admin.createUser)
+      const { data: fnData, error: fnError } = await supabase.functions.invoke('admin-users', {
+        body: {
+          action: 'create',
+          email: data.email,
+          password: crypto.randomUUID().slice(0, 8) + 'A1!', // Random temp password — cleaner must use password reset to set their own
+          name: data.name,
+          role: 'cleaner',
+          skills: data.skills,
+          max_daily_bookings: data.max_daily_bookings,
+          location_lat: data.location_lat || null,
+          location_lng: data.location_lng || null
+        }
+      });
+
+      if (fnError || fnData?.error) {
+        throw new Error(fnData?.error || fnError?.message || 'Failed to create cleaner');
       }
-      
-      // In a real app, this would make an API call to create the cleaner
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      const newCleanerId = `cleaner-${Date.now()}`;
-      success.value = `Successfully created cleaner: ${data.name}. System capacity increased by ${data.max_daily_bookings} daily bookings.`;
+
+      await fetchCleaners();
+      const newCleanerId = fnData?.user?.id;
+      success.value = `Successfully created cleaner: ${data.name}.`;
       loading.value = false;
       return newCleanerId;
     } catch (err) {
@@ -424,9 +361,24 @@ export function useCleanerManagement() {
         }
       }
       
-      // In a real app, this would make an API call to update the cleaner
-      await new Promise(resolve => setTimeout(resolve, 600));
-      
+      const { error: updateError } = await supabase
+        .from('user_profiles')
+        .update({
+          name: data.name ?? cleaner.name,
+          email: data.email ?? cleaner.email,
+          skills: data.skills ?? cleaner.skills,
+          max_daily_bookings: data.max_daily_bookings ?? cleaner.max_daily_bookings,
+          location_lat: data.location_lat ?? cleaner.location_lat,
+          location_lng: data.location_lng ?? cleaner.location_lng,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', cleanerId);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      await fetchCleaners();
       success.value = `Successfully updated cleaner: ${cleaner.name}`;
       loading.value = false;
       return true;
@@ -468,10 +420,16 @@ export function useCleanerManagement() {
         throw new Error(`Cannot delete cleaner with ${activeBookings.length} active assignments. Please reassign bookings first.`);
       }
       
-      // In a real app, this would make an API call to delete the cleaner
-      await new Promise(resolve => setTimeout(resolve, 700));
-      
-      success.value = `Successfully deleted cleaner: ${cleaner.name}. System capacity reduced by ${cleaner.max_daily_bookings} daily bookings.`;
+      const { data: fnData, error: fnError } = await supabase.functions.invoke('admin-users', {
+        body: { action: 'delete', userId: cleanerId }
+      });
+
+      if (fnError || fnData?.error) {
+        throw new Error(fnData?.error || fnError?.message || 'Failed to delete cleaner');
+      }
+
+      await fetchCleaners();
+      success.value = `Successfully deleted cleaner: ${cleaner.name}.`;
       loading.value = false;
       return true;
     } catch (err) {

@@ -6,6 +6,7 @@ import { useProperties } from '@/composables/shared/useProperties';
 import { useBookings } from '@/composables/shared/useBookings';
 import FullCalendar from '@/components/smart/shared/FullCalendar.vue';
 import type { PropertyFormData, BookingFormData } from '@/types';
+import { formatPropertyAddress } from '@/types/property';
 
 
 // Stores and composables
@@ -54,9 +55,11 @@ const testResults = reactive({
 const testPropertyId = ref<string | null>(null);
 const testBookingId = ref<string | null>(null);
 const testProperty = reactive<PropertyFormData>({
-  name: 'Test Property',
   owner_id: 'test-owner-123',
-  address: '123 Test Lane, Testville, TS 12345',
+  address_street: '123 Test Lane',
+  address_city: 'Testville',
+  address_state: 'TS',
+  address_zip: '12345',
   cleaning_duration: 60,
   pricing_tier: 'basic',
   special_instructions: 'This is a test property for CRUD testing',
@@ -131,7 +134,7 @@ async function runPropertyReadTest() {
     
     if (property) {
       testResults.property.read.status = 'success';
-      testResults.property.read.message = `Property retrieved successfully: ${property.name}`;
+      testResults.property.read.message = `Property retrieved successfully: ${formatPropertyAddress(property, 'short')}`;
     } else {
       testResults.property.read.status = 'failure';
       testResults.property.read.message = 'Property not found in store';

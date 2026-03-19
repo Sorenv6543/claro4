@@ -1,7 +1,8 @@
 import type { Booking, BookingFormData, BookingStatus, Property } from '@/types'
 import { computed, ref } from 'vue'
 import { useBookings } from '@/composables/shared/useBookings'
-import { useCachedComputed } from '@/composables/shared/useCachedComputed'
+// useCachedComputed intentionally not used here — TTL caching delays
+// user-triggered mutations (booking create/edit) from appearing in the UI.
 import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
@@ -39,49 +40,27 @@ function useOwnerBookingsPinia () {
   /**
      * Get all bookings for the current owner only
      */
-  const myBookings = useCachedComputed((): Booking[] => {
-    return measureRolePerformance('owner', 'filter-owner-bookings', () => {
-      if (!currentUserId.value) {
-        trackCachePerformance('owner-bookings-no-user', true)
-        return []
-      }
-
-      const filteredBookings = Array.from(bookingStore.bookings.values())
-        .filter(booking => booking.owner_id === currentUserId.value)
-
-      trackCachePerformance('owner-my-bookings', filteredBookings.length > 0)
-      return filteredBookings
-    })
+  const myBookings = computed((): Booking[] => {
+    if (!currentUserId.value) return []
+    return Array.from(bookingStore.bookings.values())
+      .filter(booking => booking.owner_id === currentUserId.value)
   })
 
   /**
      * Get current owner's properties only
      */
-  const myProperties = useCachedComputed((): Property[] => {
-    return measureRolePerformance('owner', 'filter-owner-properties', () => {
-      if (!currentUserId.value) {
-        trackCachePerformance('owner-properties-no-user', true)
-        return []
-      }
-
-      const filteredProperties = Array.from(propertyStore.properties.values())
-        .filter(property => property.owner_id === currentUserId.value)
-
-      trackCachePerformance('owner-my-properties', filteredProperties.length > 0)
-      return filteredProperties
-    })
+  const myProperties = computed((): Property[] => {
+    if (!currentUserId.value) return []
+    return Array.from(propertyStore.properties.values())
+      .filter(property => property.owner_id === currentUserId.value)
   })
 
   /**
      * Get today's turn bookings for current owner only
      */
-  const myTodayTurns = useCachedComputed(() => {
-    if (!currentUserId.value) {
-      return []
-    }
-
+  const myTodayTurns = computed(() => {
+    if (!currentUserId.value) return []
     const today = new Date().toISOString().split('T')[0]
-
     return myBookings.value.filter(booking =>
       booking.booking_type === 'turn'
       && booking.checkout_date.startsWith(today)
