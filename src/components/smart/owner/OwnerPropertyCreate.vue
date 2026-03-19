@@ -24,8 +24,8 @@
           <v-card>
             <v-card-title>
               <v-icon
-                color="primary"
                 class="mr-2"
+                color="primary"
               >
                 mdi-home-plus
               </v-icon>
@@ -34,10 +34,10 @@
 
             <v-card-text>
               <PropertyModal
-                :show="true"
                 mode="create"
-                @save="handleSave"
+                :show="true"
                 @cancel="handleCancel"
+                @save="handleSave"
               />
             </v-card-text>
           </v-card>
@@ -50,8 +50,8 @@
           <v-card>
             <v-card-title>
               <v-icon
-                color="info"
                 class="mr-2"
+                color="info"
               >
                 mdi-information
               </v-icon>
@@ -73,41 +73,41 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { usePropertyStore } from '@/stores/property';
-import { useAuthStore } from '@/stores/auth';
-import PropertyModal from '@/components/dumb/shared/PropertyModal.vue';
-import type { Property } from '@/types';
+  import type { Property } from '@/types'
+  import { useRouter } from 'vue-router'
+  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+  import { useAuthStore } from '@/stores/auth'
+  import { usePropertyStore } from '@/stores/property'
 
-defineOptions({
-  name: 'OwnerPropertyCreateComponent'
-});
+  defineOptions({
+    name: 'OwnerPropertyCreateComponent',
+  })
 
-const router = useRouter();
-const propertyStore = usePropertyStore();
-const authStore = useAuthStore();
+  const router = useRouter()
+  const propertyStore = usePropertyStore()
+  const authStore = useAuthStore()
 
-const handleSave = async (propertyData: Partial<Property>) => {
-  try {
-    const newProperty = {
-      ...propertyData,
-      owner_id: authStore.user?.id,
-      id: crypto.randomUUID(),
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-      active: true
-    } as Property;
+  async function handleSave (propertyData: Partial<Property>) {
+    try {
+      const newProperty = {
+        ...propertyData,
+        owner_id: authStore.user?.id,
+        id: crypto.randomUUID(),
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        active: true,
+      } as Property
 
-    await propertyStore.addProperty(newProperty);
-    router.push('/owner/properties');
-  } catch (error) {
-    console.error('Failed to create property:', error);
+      await propertyStore.addProperty(newProperty)
+      router.push('/owner/properties')
+    } catch (error) {
+      console.error('Failed to create property:', error)
+    }
   }
-};
 
-const handleCancel = () => {
-  router.push('/owner/properties');
-};
+  function handleCancel () {
+    router.push('/owner/properties')
+  }
 </script>
 
 <style scoped>

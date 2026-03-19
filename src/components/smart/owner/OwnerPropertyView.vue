@@ -16,9 +16,9 @@
               </h1>
               <v-chip
                 v-if="property"
+                class="ml-3"
                 :color="property.active ? 'success' : 'grey'"
                 size="small"
-                class="ml-3"
               >
                 {{ property.active ? 'Active' : 'Inactive' }}
               </v-chip>
@@ -36,8 +36,8 @@
               </v-btn>
               <v-btn
                 color="error"
-                variant="outlined"
                 prepend-icon="mdi-delete"
+                variant="outlined"
                 @click="handleDelete"
               >
                 Delete
@@ -53,8 +53,8 @@
           <v-card>
             <v-card-text class="text-center py-8">
               <v-progress-circular
-                indeterminate
                 color="primary"
+                indeterminate
               />
               <div class="mt-4">
                 Loading property...
@@ -75,8 +75,8 @@
           <v-card class="mb-4">
             <v-card-title>
               <v-icon
-                color="primary"
                 class="mr-2"
+                color="primary"
               >
                 mdi-home
               </v-icon>
@@ -143,8 +143,8 @@
           <v-card class="mb-4">
             <v-card-title>
               <v-icon
-                color="warning"
                 class="mr-2"
+                color="warning"
               >
                 mdi-calendar-account
               </v-icon>
@@ -192,8 +192,8 @@
           <v-card>
             <v-card-title>
               <v-icon
-                color="info"
                 class="mr-2"
+                color="info"
               >
                 mdi-calendar-multiple
               </v-icon>
@@ -247,8 +247,8 @@
           <v-card class="mb-4">
             <v-card-title>
               <v-icon
-                color="success"
                 class="mr-2"
+                color="success"
               >
                 mdi-chart-line
               </v-icon>
@@ -289,8 +289,8 @@
           <v-card>
             <v-card-title>
               <v-icon
-                color="info"
                 class="mr-2"
+                color="info"
               >
                 mdi-information
               </v-icon>
@@ -316,9 +316,9 @@
           <v-card>
             <v-card-text class="text-center py-8">
               <v-icon
+                class="mb-4"
                 color="grey"
                 size="64"
-                class="mb-4"
               >
                 mdi-home-alert-outline
               </v-icon>
@@ -343,10 +343,10 @@
     <!-- Save error alert -->
     <v-alert
       v-if="saveError"
-      type="error"
-      variant="tonal"
       class="mt-4 mx-4"
       closable
+      type="error"
+      variant="tonal"
       @click:close="saveError = null"
     >
       {{ saveError }}
@@ -355,10 +355,10 @@
     <!-- Delete error alert -->
     <v-alert
       v-if="deleteError"
-      type="error"
-      variant="tonal"
       class="mt-4 mx-4"
       closable
+      type="error"
+      variant="tonal"
       @click:close="deleteError = null"
     >
       {{ deleteError }}
@@ -366,8 +366,8 @@
 
     <!-- Edit Modal -->
     <PropertyModal
-      :open="editModalOpen"
       mode="edit"
+      :open="editModalOpen"
       :property="property ?? undefined"
       @close="editModalOpen = false"
       @save="handleEditSave"
@@ -375,136 +375,148 @@
 
     <!-- Delete Confirmation -->
     <ConfirmationDialog
+      cancel-text="Cancel"
+      confirm-text="Delete"
+      :dangerous="true"
+      :message="`Are you sure you want to delete &quot;${property?.name}&quot;? This cannot be undone.`"
       :open="deleteDialogOpen"
       title="Delete Property"
-      :message="`Are you sure you want to delete &quot;${property?.name}&quot;? This cannot be undone.`"
-      confirm-text="Delete"
-      cancel-text="Cancel"
-      :dangerous="true"
-      @confirm="confirmDelete"
       @cancel="deleteDialogOpen = false"
       @close="deleteDialogOpen = false"
+      @confirm="confirmDelete"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import PropertyModal from '@/components/dumb/shared/PropertyModal.vue';
-import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue';
-import { useOwnerProperties } from '@/composables/owner/useOwnerProperties';
-import { useOwnerBookings } from '@/composables/owner/useOwnerBookings';
-import type { PropertyFormData, Booking } from '@/types';
+  import type { Booking, PropertyFormData } from '@/types'
+  import { computed, onMounted, ref } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
 
-defineOptions({ name: 'OwnerPropertyViewComponent' });
+  defineOptions({ name: 'OwnerPropertyViewComponent' })
 
-const router = useRouter();
-const route = useRoute();
-const propertyId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id;
+  const router = useRouter()
+  const route = useRoute()
+  const propertyId = Array.isArray(route.params.id) ? route.params.id[0] : route.params.id
 
-const {
-  myProperties,
-  loading,
-  error,
-  fetchMyProperties,
-  updateMyProperty,
-  deleteMyProperty
-} = useOwnerProperties();
+  const {
+    myProperties,
+    loading,
+    error,
+    fetchMyProperties,
+    updateMyProperty,
+    deleteMyProperty,
+  } = useOwnerProperties()
 
-const { myBookings, fetchMyBookings } = useOwnerBookings();
+  const { myBookings, fetchMyBookings } = useOwnerBookings()
 
-const editModalOpen = ref(false);
-const deleteDialogOpen = ref(false);
-const loadError = ref<string | null>(null);
+  const editModalOpen = ref(false)
+  const deleteDialogOpen = ref(false)
+  const loadError = ref<string | null>(null)
 
-const property = computed(() => myProperties.value.find(p => p.id === propertyId) ?? null);
+  const property = computed(() => myProperties.value.find(p => p.id === propertyId) ?? null)
 
-const propertyBookings = computed(() =>
-  myBookings.value
-    .filter(b => b.property_id === propertyId)
-    .sort((a, b) => new Date(b.checkin_date).getTime() - new Date(a.checkin_date).getTime())
-    .slice(0, 10)
-);
+  const propertyBookings = computed(() =>
+    myBookings.value
+      .filter(b => b.property_id === propertyId)
+      .sort((a, b) => new Date(b.checkin_date).getTime() - new Date(a.checkin_date).getTime())
+      .slice(0, 10),
+  )
 
-const upcomingSchedule = computed(() => {
-  const today = new Date();
-  return myBookings.value
-    .filter(b => b.property_id === propertyId && new Date(b.checkin_date) >= today)
-    .sort((a, b) => new Date(a.checkin_date).getTime() - new Date(b.checkin_date).getTime())
-    .slice(0, 10);
-});
+  const upcomingSchedule = computed(() => {
+    const today = new Date()
+    return myBookings.value
+      .filter(b => b.property_id === propertyId && new Date(b.checkin_date) >= today)
+      .sort((a, b) => new Date(a.checkin_date).getTime() - new Date(b.checkin_date).getTime())
+      .slice(0, 10)
+  })
 
-const totalBookings = computed(() =>
-  myBookings.value.filter(b => b.property_id === propertyId).length
-);
+  const totalBookings = computed(() =>
+    myBookings.value.filter(b => b.property_id === propertyId).length,
+  )
 
-const upcomingCount = computed(() => {
-  const today = new Date();
-  return myBookings.value.filter(
-    b => b.property_id === propertyId && new Date(b.checkin_date) >= today
-  ).length;
-});
+  const upcomingCount = computed(() => {
+    const today = new Date()
+    return myBookings.value.filter(
+      b => b.property_id === propertyId && new Date(b.checkin_date) >= today,
+    ).length
+  })
 
-onMounted(async () => {
-  try {
-    await Promise.all([fetchMyProperties(), fetchMyBookings()]);
-    if (!property.value) router.push('/owner/properties');
-  } catch (err) {
-    console.error('[OwnerPropertyView] Failed to load property data:', err);
-    loadError.value = 'Unable to load property details. Please refresh or go back.';
+  onMounted(async () => {
+    try {
+      await Promise.all([fetchMyProperties(), fetchMyBookings()])
+      if (!property.value) router.push('/owner/properties')
+    } catch (error_) {
+      console.error('[OwnerPropertyView] Failed to load property data:', error_)
+      loadError.value = 'Unable to load property details. Please refresh or go back.'
+    }
+  })
+
+  const goBack = () => router.push('/owner/properties')
+  function handleEdit () {
+    editModalOpen.value = true
   }
-});
-
-const goBack = () => router.push('/owner/properties');
-const handleEdit = () => { editModalOpen.value = true; };
-const handleDelete = () => { deleteDialogOpen.value = true; };
-
-const saveError = ref<string | null>(null);
-const deleteError = ref<string | null>(null);
-
-const handleEditSave = async (data: PropertyFormData) => {
-  saveError.value = null;
-  const ok = await updateMyProperty(propertyId, data);
-  if (ok) {
-    editModalOpen.value = false;
-  } else {
-    saveError.value = error.value ?? 'Failed to save property. Please try again.';
+  function handleDelete () {
+    deleteDialogOpen.value = true
   }
-};
 
-const confirmDelete = async () => {
-  deleteError.value = null;
-  const ok = await deleteMyProperty(propertyId);
-  if (ok) {
-    router.push('/owner/properties');
-  } else {
-    deleteError.value = error.value ?? 'Failed to delete property. Please try again.';
+  const saveError = ref<string | null>(null)
+  const deleteError = ref<string | null>(null)
+
+  async function handleEditSave (data: PropertyFormData) {
+    saveError.value = null
+    const ok = await updateMyProperty(propertyId, data)
+    if (ok) {
+      editModalOpen.value = false
+    } else {
+      saveError.value = error.value ?? 'Failed to save property. Please try again.'
+    }
   }
-};
 
-const formatDate = (dateString: string) =>
-  new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
-
-const formatDateRange = (checkin: string, checkout: string) => {
-  const ci = new Date(checkin).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const co = new Date(checkout).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  return `${ci} — ${co}`;
-};
-
-const formatBookingTitle = (booking: Booking) =>
-  booking.booking_type === 'turn' ? 'Turn Booking' : 'Standard Booking';
-
-const getBookingStatusColor = (status: string) => {
-  switch (status) {
-    case 'scheduled':   return 'info';
-    case 'in_progress': return 'warning';
-    case 'completed':   return 'success';
-    case 'pending':     return 'secondary';
-    case 'cancelled':   return 'error';
-    default:            return 'primary';
+  async function confirmDelete () {
+    deleteError.value = null
+    const ok = await deleteMyProperty(propertyId)
+    if (ok) {
+      router.push('/owner/properties')
+    } else {
+      deleteError.value = error.value ?? 'Failed to delete property. Please try again.'
+    }
   }
-};
+
+  function formatDate (dateString: string) {
+    return new Date(dateString).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
+  }
+
+  function formatDateRange (checkin: string, checkout: string) {
+    const ci = new Date(checkin).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    const co = new Date(checkout).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    return `${ci} — ${co}`
+  }
+
+  function formatBookingTitle (booking: Booking) {
+    return booking.booking_type === 'turn' ? 'Turn Booking' : 'Standard Booking'
+  }
+
+  function getBookingStatusColor (status: string) {
+    switch (status) {
+      case 'scheduled': { return 'info'
+      }
+      case 'in_progress': { return 'warning'
+      }
+      case 'completed': { return 'success'
+      }
+      case 'pending': { return 'secondary'
+      }
+      case 'cancelled': { return 'error'
+      }
+      default: { return 'primary'
+      }
+    }
+  }
 </script>
 
 <style scoped>

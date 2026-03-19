@@ -24,8 +24,8 @@
           <v-card>
             <v-card-title>
               <v-icon
-                color="primary"
                 class="mr-2"
+                color="primary"
               >
                 mdi-home-edit
               </v-icon>
@@ -34,11 +34,11 @@
 
             <v-card-text>
               <PropertyModal
-                :show="true"
                 mode="edit"
                 :property="property"
-                @save="handleSave"
+                :show="true"
                 @cancel="handleCancel"
+                @save="handleSave"
               />
             </v-card-text>
           </v-card>
@@ -51,8 +51,8 @@
           <v-card>
             <v-card-title>
               <v-icon
-                color="info"
                 class="mr-2"
+                color="info"
               >
                 mdi-information
               </v-icon>
@@ -71,8 +71,8 @@
           <v-card class="mt-4">
             <v-card-title>
               <v-icon
-                color="warning"
                 class="mr-2"
+                color="warning"
               >
                 mdi-alert
               </v-icon>
@@ -80,9 +80,9 @@
             </v-card-title>
             <v-card-text>
               <v-btn
+                block
                 color="error"
                 variant="outlined"
-                block
                 @click="handleDelete"
               >
                 Delete Property
@@ -100,8 +100,8 @@
           <v-card>
             <v-card-text class="text-center">
               <v-progress-circular
-                indeterminate
                 color="primary"
+                indeterminate
               />
               <div class="mt-4">
                 Loading property...
@@ -115,70 +115,70 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { usePropertyStore } from '@/stores/property';
-import PropertyModal from '@/components/dumb/shared/PropertyModal.vue';
-import type { Property } from '@/types';
+  import type { Property } from '@/types'
+  import { onMounted, ref } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+  import { usePropertyStore } from '@/stores/property'
 
-defineOptions({
-  name: 'OwnerPropertyEditComponent'
-});
+  defineOptions({
+    name: 'OwnerPropertyEditComponent',
+  })
 
-const router = useRouter();
-const route = useRoute();
-const propertyStore = usePropertyStore();
+  const router = useRouter()
+  const route = useRoute()
+  const propertyStore = usePropertyStore()
 
-const property = ref<Property | null>(null);
-const propertyId = route.params.id as string;
+  const property = ref<Property | null>(null)
+  const propertyId = route.params.id as string
 
-onMounted(async () => {
-  try {
-    await propertyStore.fetchProperties();
-    property.value = propertyStore.properties.get(propertyId) || null;
-
-    if (!property.value) {
-      router.push('/owner/properties');
-    }
-  } catch (error) {
-    console.error('Failed to load property:', error);
-    router.push('/owner/properties');
-  }
-});
-
-const handleSave = async (propertyData: Partial<Property>) => {
-  try {
-    if (property.value) {
-      await propertyStore.updateProperty(property.value.id, propertyData);
-      router.push('/owner/properties');
-    }
-  } catch (error) {
-    console.error('Failed to update property:', error);
-  }
-};
-
-const handleCancel = () => {
-  router.push('/owner/properties');
-};
-
-const handleDelete = async () => {
-  if (property.value && confirm(`Are you sure you want to delete "${property.value.name}"?`)) {
+  onMounted(async () => {
     try {
-      await propertyStore.removeProperty(property.value.id);
-      router.push('/owner/properties');
+      await propertyStore.fetchProperties()
+      property.value = propertyStore.properties.get(propertyId) || null
+
+      if (!property.value) {
+        router.push('/owner/properties')
+      }
     } catch (error) {
-      console.error('Failed to delete property:', error);
+      console.error('Failed to load property:', error)
+      router.push('/owner/properties')
+    }
+  })
+
+  async function handleSave (propertyData: Partial<Property>) {
+    try {
+      if (property.value) {
+        await propertyStore.updateProperty(property.value.id, propertyData)
+        router.push('/owner/properties')
+      }
+    } catch (error) {
+      console.error('Failed to update property:', error)
     }
   }
-};
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
-};
+  function handleCancel () {
+    router.push('/owner/properties')
+  }
+
+  async function handleDelete () {
+    if (property.value && confirm(`Are you sure you want to delete "${property.value.name}"?`)) {
+      try {
+        await propertyStore.removeProperty(property.value.id)
+        router.push('/owner/properties')
+      } catch (error) {
+        console.error('Failed to delete property:', error)
+      }
+    }
+  }
+
+  function formatDate (dateString: string) {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
+  }
 </script>
 
 <style scoped>
