@@ -59,6 +59,18 @@ describe('bookingToCalendarEvent', () => {
     const event = bookingToCalendarEvent(makeBooking({ booking_type: 'turn' }), mockProperty)
     expect(event.title).toContain('TURN')
   })
+
+  it('includes type class', () => {
+    const booking = makeBooking({ booking_type: 'turn', priority: 'normal' })
+    const event = bookingToCalendarEvent(booking, mockProperty)
+    expect(event.classNames).toContain('type-turn')
+  })
+
+  it('includes priority class', () => {
+    const booking = makeBooking({ booking_type: 'standard', priority: 'urgent' })
+    const event = bookingToCalendarEvent(booking, mockProperty)
+    expect(event.classNames).toContain('priority-urgent')
+  })
 })
 
 describe('subtractOneDay', () => {

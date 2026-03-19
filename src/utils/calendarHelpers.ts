@@ -20,6 +20,7 @@ export interface CalendarBookingEvent {
   title: string
   start: string
   end: string
+  classNames: string[]
   extendedProps: {
     booking: Booking
     property: Property | undefined
@@ -48,6 +49,10 @@ export function bookingToCalendarEvent(
     title: `${property?.name || 'Unknown Property'} - ${isTurn ? 'TURN' : 'Standard'}`,
     start: booking.checkin_date,
     end: addOneDay(booking.checkout_date),
+    classNames: [
+      `type-${booking.booking_type}`,
+      `priority-${booking.priority}`,
+    ],
     extendedProps: {
       booking,
       property,

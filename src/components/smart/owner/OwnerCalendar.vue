@@ -203,12 +203,6 @@
 /* Urgent priority styling with owner branding */
 :deep(.fc-event.priority-urgent) {
   animation: pulse-owner-urgent 2s infinite;
-  border-color: #d32f2f !important;
-}
-
-/* High priority styling */
-:deep(.fc-event.priority-high) {
-  border-left: 4px solid #ff9800 !important;
 }
 
 /* Owner calendar specific adjustments */

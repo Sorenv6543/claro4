@@ -1,0 +1,25 @@
+/* Calendar event color tokens — mapped to Vuetify 4 theme variables.
+   Imported once in main.ts. All calendar event colors read from here. */
+:root {
+  --cal-turn-urgent:   rgb(var(--v-theme-error));
+  --cal-turn-high:     rgb(var(--v-theme-warning));
+  --cal-turn-normal:   rgb(var(--v-theme-secondary));
+  --cal-turn-low:      rgb(var(--v-theme-on-surface-variant, 128 128 128));
+
+  --cal-std-urgent:    rgb(var(--v-theme-error));
+  --cal-std-high:      rgb(var(--v-theme-warning));
+  --cal-std-normal:    rgb(var(--v-theme-primary));
+  --cal-std-low:       rgb(var(--v-theme-success));
+}
+
+/* FullCalendar event color classes — set via classNames in bookingToCalendarEvent.
+   Uses type-{bookingType} and priority-{priority} class combinations. */
+.fc-event.type-turn.priority-urgent  { background-color: var(--cal-turn-urgent)  !important; border-color: var(--cal-turn-urgent)  !important; }
+.fc-event.type-turn.priority-high    { background-color: var(--cal-turn-high)    !important; border-color: var(--cal-turn-high)    !important; }
+.fc-event.type-turn.priority-normal  { background-color: var(--cal-turn-normal)  !important; border-color: var(--cal-turn-normal)  !important; }
+.fc-event.type-turn.priority-low     { background-color: var(--cal-turn-low)     !important; border-color: var(--cal-turn-low)     !important; }
+
+.fc-event.type-standard.priority-urgent { background-color: var(--cal-std-urgent) !important; border-color: var(--cal-std-urgent) !important; }
+.fc-event.type-standard.priority-high   { background-color: var(--cal-std-high)   !important; border-color: var(--cal-std-high)   !important; }
+.fc-event.type-standard.priority-normal { background-color: var(--cal-std-normal) !important; border-color: var(--cal-std-normal) !important; }
+.fc-event.type-standard.priority-low    { background-color: var(--cal-std-low)    !important; border-color: var(--cal-std-low)    !important; }
