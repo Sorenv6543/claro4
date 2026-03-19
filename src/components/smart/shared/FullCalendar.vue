@@ -68,9 +68,6 @@
   const calendarEvents = computed(() => {
     return props.bookings.map(booking => {
       const property = props.properties.find(p => p.id === booking.property_id)
-      const isTurn = booking.booking_type === 'turn'
-      const isUrgent = booking.priority === 'urgent'
-
       const base = bookingToCalendarEvent(booking, property)
 
       return {
@@ -83,11 +80,7 @@
           ...base.classNames,
           `booking-${booking.booking_type}`,
           `status-${booking.status}`,
-          `type-${booking.booking_type}-${booking.priority}`,
-          isTurn ? 'turn-booking-event' : 'standard-booking-event',
-          isUrgent && isTurn ? 'turn-urgent-event' : '',
-          isUrgent ? 'urgent-event' : '',
-        ].filter(Boolean),
+        ],
       }
     })
   })
