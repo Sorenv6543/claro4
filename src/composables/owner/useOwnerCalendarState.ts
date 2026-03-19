@@ -1,5 +1,6 @@
 import { ref, computed } from 'vue';
 import type { EventInput, DateSelectArg, EventClickArg } from '@fullcalendar/core';
+import type { Booking } from '@/types';
 import { useCalendarState } from '@/composables/shared/useCalendarState';
 import { useOwnerBookings } from '@/composables/owner/useOwnerBookings';
 import { useAuthStore } from '@/stores/auth';
@@ -34,12 +35,12 @@ export function useOwnerCalendarState() {
   // OWNER-SPECIFIC COMPUTED PROPERTIES
   
   /**
-   * Get calendar events for current owner's bookings only
+   * Get filtered bookings as calendar-ready list for current owner's bookings only
    */
   const myCalendarEvents = computed(() => {
     if (!currentUserId.value) return [];
-    
-    return baseCalendarState.bookingsToEvents(ownerBookings.myBookings.value);
+
+    return baseCalendarState.filterBookings(ownerBookings.myBookings.value);
   });
   
   /**
@@ -103,22 +104,26 @@ export function useOwnerCalendarState() {
     }
     
     try {
-      const events = myCalendarEvents.value.map(event => ({
-        ...event,
+      const events: EventInput[] = myCalendarEvents.value.map((booking: Booking) => ({
+        id: booking.id,
+        start: booking.checkin_date,
+        end: booking.checkout_date,
         // Add owner-specific styling
-        className: `owner-event ${event.extendedProps.booking_type === 'turn' ? 'owner-turn-event' : 'owner-standard-event'}`,
+        className: `owner-event ${booking.booking_type === 'turn' ? 'owner-turn-event' : 'owner-standard-event'}`,
         // Add owner-specific title prefix
-        title: `${event.extendedProps.booking_type === 'turn' ? '🔥 ' : '🏠 '}${event.title}`,
+        title: `${booking.booking_type === 'turn' ? '🔥 ' : '🏠 '}${getPropertyName(booking.property_id)}`,
         // Add owner-specific extended properties
         extendedProps: {
-          ...event.extendedProps,
+          booking_type: booking.booking_type,
+          status: booking.status,
+          property_id: booking.property_id,
           isOwnerBooking: true,
           canEdit: true,
           canDelete: true,
-          propertyName: getPropertyName(event.extendedProps.property_id)
+          propertyName: getPropertyName(booking.property_id)
         }
       }));
-      
+
       ownerError.value = null;
       return events;
     } catch (error) {

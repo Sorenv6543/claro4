@@ -716,9 +716,8 @@ function getStatusColor(status: string) {
           <v-card-title>Calendar View</v-card-title>
           <v-card-text style="height: 600px;">
             <FullCalendar
-              :bookings="bookingStore.bookings" 
-              :properties="propertyStore.properties"
-              \
+              :bookings="bookingStore.bookingsArray"
+              :properties="propertyStore.propertiesArray"
             />
           </v-card-text>
         </v-card>

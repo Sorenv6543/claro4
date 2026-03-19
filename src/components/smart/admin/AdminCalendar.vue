@@ -54,8 +54,8 @@
         >
           <FullCalendar
             ref="calendarRef"
-            :bookings="allBookings"
-            :properties="allProperties"
+            :bookings="calendarBookings"
+            :properties="calendarProperties"
             :loading="loading"
             class="admin-calendar"
             @date-select="handleDateSelect"
@@ -134,18 +134,22 @@ import type { EventResizeDoneArg } from '@fullcalendar/interaction'
 const {
   // State
   loading,
-  
+
   currentView,
   currentDate,
-  
-  // Computed properties
+
+  // Computed properties (Maps from store)
   allBookings,
   allProperties,
-  
+
   // Functions
   setCalendarView,
   goToDate
 } = useAdminCalendarState();
+
+// Convert Maps to arrays for FullCalendar props (which expect Booking[]/Property[])
+const calendarBookings = computed(() => Array.from(allBookings.value.values()))
+const calendarProperties = computed(() => Array.from(allProperties.value.values()))
 
 // Additional composables for admin functionality
 const { updateBooking, deleteBooking, createBooking, assignCleanerToBooking } = useAdminBookings();

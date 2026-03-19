@@ -26,8 +26,8 @@
   console.log('🔄 [OwnerCalendar] Script setup running...')
 
   interface Props {
-    bookings: Map<string, Booking>
-    properties: Map<string, Property>
+    bookings: Booking[]
+    properties: Property[]
     loading?: boolean
     currentView?: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'
     currentDate?: Date

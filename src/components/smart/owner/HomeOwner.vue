@@ -62,7 +62,7 @@ src/components/smart/owner/HomeOwner.vue -
           :current-date="currentDate"
           :current-view="currentView"
           :loading="loading"
-          :properties="ownerPropertiesMap"
+          :properties="myProperties"
           @create-booking="handleCreateBookingFromCalendar"
           @date-change="handleCalendarDateChange"
           @date-select="handleDateSelect"
@@ -133,9 +133,6 @@ src/components/smart/owner/HomeOwner.vue -
   // Import event logger for component communication
   import eventLogger from '@/composables/shared/useComponentEventLogger'
   import { useAuthStore } from '@/stores/auth'
-  import { useBookingStore } from '@/stores/booking'
-  // State management
-  import { usePropertyStore } from '@/stores/property'
 
   import { useUIStore } from '@/stores/ui'
   import { subtractOneDay } from '@/utils/calendarHelpers'
@@ -145,8 +142,6 @@ src/components/smart/owner/HomeOwner.vue -
   // ============================================================================
 
   // useRealtimeSync(); // Just call it for side effects
-  const propertyStore = usePropertyStore()
-  const bookingStore = useBookingStore()
   const uiStore = useUIStore()
   const authStore = useAuthStore()
 
@@ -154,14 +149,18 @@ src/components/smart/owner/HomeOwner.vue -
   // COMPOSABLES - BUSINESS LOGIC
   // ============================================================================
   const {
+    myBookings,
     loading: bookingsLoading,
+    fetchMyBookings,
     createMyBooking,
     updateMyBooking,
     deleteMyBooking,
   } = useOwnerBookings()
 
   const {
+    myProperties,
     loading: propertiesLoading,
+    fetchMyProperties,
     createMyProperty,
     updateMyProperty,
     deleteMyProperty,
@@ -224,85 +223,25 @@ src/components/smart/owner/HomeOwner.vue -
     return currentDate.value.toLocaleDateString('en-US', options)
   })
 
-  // Owner's properties only - stabilized to prevent loops
-  const ownerPropertiesMap = computed(() => {
-    const map = new Map<string, Property>()
-
-    if (!isOwnerAuthenticated.value || !currentOwnerId.value) {
-      return map
-    }
-
-    // Filter properties by owner_id
-    if (propertyStore.properties instanceof Map) {
-      for (const [id, property] of propertyStore.properties.entries()) {
-        if (property.owner_id === currentOwnerId.value) {
-          map.set(id, property)
-        }
-      }
-    } else {
-      for (const property of propertyStore.propertiesArray
-      .filter(property => property.owner_id === currentOwnerId.value)) {
-        if (property && property.id) {
-          map.set(property.id, property)
-        }
-      }
-    }
-
-    return map
-  })
-
-  // Owner's bookings only - stabilized with better error handling
-  const ownerBookingsMap = computed(() => {
-    const map = new Map<string, Booking>()
-
-    if (!isOwnerAuthenticated.value || !currentOwnerId.value) {
-      return map
-    }
-
-    try {
-      // Filter bookings by owner_id
-      const ownerBookings = bookingStore.bookingsArray
-        .filter(booking => booking.owner_id === currentOwnerId.value)
-
-      for (const booking of ownerBookings) {
-        if (booking && booking.id) {
-          map.set(booking.id, booking)
-        }
-      }
-    } catch (error) {
-      console.error('❌ [HomeOwner] Error filtering owner bookings:', error)
-    }
-
-    return map
-  })
-
-  // Owner's filtered bookings - stabilized with better error handling
+  // Owner's filtered bookings using composable data
   const ownerFilteredBookings = computed(() => {
-    const map = new Map<string, Booking>()
-
     try {
-      let bookings = Array.from(ownerBookingsMap.value.values())
+      let bookings = myBookings.value
 
       // Apply property filter if selected (within owner's properties)
       if (selectedPropertyFilter.value) {
         bookings = bookings.filter(booking =>
           booking.property_id === selectedPropertyFilter.value
-          && ownerPropertiesMap.value.has(booking.property_id),
+          && myProperties.value.some(p => p.id === booking.property_id),
         )
       }
 
       // Apply calendar state filters
-      bookings = filterBookings(bookings)
-
-      // Convert to Map for components that expect Map format
-      for (const booking of bookings) {
-        map.set(booking.id, booking)
-      }
+      return filterBookings(bookings)
     } catch (error) {
       console.error('❌ [HomeOwner] Error filtering bookings:', error)
+      return []
     }
-
-    return map
   })
 
   // ============================================================================
@@ -399,7 +338,7 @@ src/components/smart/owner/HomeOwner.vue -
     }
 
     // Fallback: Only allow editing owner's bookings
-    const booking = ownerBookingsMap.value.get(clickInfo.event.id)
+    const booking = myBookings.value.find(b => b.id === clickInfo.event.id)
     if (booking) {
       uiStore.openModal('eventModal', 'edit', booking as unknown as Record<string, unknown>)
     } else {
@@ -411,7 +350,7 @@ src/components/smart/owner/HomeOwner.vue -
     const booking = dropInfo.event.extendedProps.booking as Booking
 
     // Verify owner can modify this booking
-    if (!ownerBookingsMap.value.has(booking.id)) {
+    if (!myBookings.value.some(b => b.id === booking.id)) {
       console.warn('Cannot modify booking not owned by current user')
       dropInfo.revert()
       return
@@ -450,7 +389,7 @@ src/components/smart/owner/HomeOwner.vue -
     const booking = resizeInfo.event.extendedProps.booking as Booking
 
     // Verify owner can modify this booking
-    if (!ownerBookingsMap.value.has(booking.id)) {
+    if (!myBookings.value.some(b => b.id === booking.id)) {
       console.warn('Cannot modify booking not owned by current user')
       resizeInfo.revert()
       return
@@ -533,7 +472,7 @@ src/components/smart/owner/HomeOwner.vue -
 
   function handleUpdateBooking (data: { id: string, start: string, end: string }): void {
     // Verify owner can update this booking
-    if (!ownerBookingsMap.value.has(data.id)) {
+    if (!myBookings.value.some(b => b.id === data.id)) {
       console.warn('Cannot update booking not owned by current user')
       return
     }
@@ -568,8 +507,8 @@ src/components/smart/owner/HomeOwner.vue -
         const booking = eventModalData.value
 
         // Verify owner can update this booking
-        if (!booking?.id || !ownerBookingsMap.value.has(booking.id)) {
-          console.error('🚨 [HomeOwner] Booking ownership check failed - booking not found in owner map')
+        if (!booking?.id || !myBookings.value.some(b => b.id === booking.id)) {
+          console.error('🚨 [HomeOwner] Booking ownership check failed - booking not found in owner bookings')
           throw new Error('Cannot update booking not owned by current user')
         }
         await updateMyBooking(booking.id, bookingData as Partial<BookingFormData>)
@@ -582,7 +521,7 @@ src/components/smart/owner/HomeOwner.vue -
 
   async function handleEventModalDelete (bookingId: string): Promise<void> {
     // Verify owner can delete this booking
-    if (!ownerBookingsMap.value.has(bookingId)) {
+    if (!myBookings.value.some(b => b.id === bookingId)) {
       console.warn('Cannot delete booking not owned by current user')
       return
     }
@@ -613,7 +552,7 @@ src/components/smart/owner/HomeOwner.vue -
         await createMyProperty(propertyData as PropertyFormData)
       } else if (propertyModalData.value) {
         // Verify owner can update this property
-        if (!ownerPropertiesMap.value.has(propertyModalData.value.id)) {
+        if (!myProperties.value.some(p => p.id === propertyModalData.value!.id)) {
           throw new Error('Cannot update property not owned by current user')
         }
         await updateMyProperty(propertyModalData.value.id, propertyData as Partial<PropertyFormData>)
@@ -626,7 +565,7 @@ src/components/smart/owner/HomeOwner.vue -
 
   async function handlePropertyModalDelete (propertyId: string): Promise<void> {
     // Verify owner can delete this property
-    if (!ownerPropertiesMap.value.has(propertyId)) {
+    if (!myProperties.value.some(p => p.id === propertyId)) {
       console.warn('Cannot delete property not owned by current user')
       return
     }
@@ -706,32 +645,18 @@ src/components/smart/owner/HomeOwner.vue -
     if (isOwnerAuthenticated.value) {
       console.log('✅ [HomeOwner] User is authenticated as owner, loading data...')
       try {
-        // Fetch data using store methods directly for better performance
+        // Fetch data using composable methods
         await Promise.all([
-          propertyStore.fetchProperties(),
-          bookingStore.fetchBookings(),
+          fetchMyProperties(),
+          fetchMyBookings(),
         ])
         console.log('✅ [HomeOwner] Owner data loaded successfully')
 
         // Debug data after loading
         console.log('🔍 [HomeOwner] Data state after loading:', {
-          allProperties: propertyStore.propertiesArray.length,
-          allBookings: bookingStore.bookingsArray.length,
-          ownerProperties: ownerPropertiesMap.value.size,
-          ownerBookings: ownerBookingsMap.value.size,
-          filteredBookings: ownerFilteredBookings.value.size,
-        })
-
-        // Debug booking data specifically
-        console.log('🔍 [HomeOwner] Bookings data:', {
-          allBookings: bookingStore.bookingsArray.map(b => ({
-            id: b.id,
-            owner_id: b.owner_id,
-            property_id: b.property_id,
-            checkout_date: b.checkout_date,
-            checkin_date: b.checkin_date,
-          })),
-          currentUserId: currentOwnerId.value,
+          ownerProperties: myProperties.value.length,
+          ownerBookings: myBookings.value.length,
+          filteredBookings: ownerFilteredBookings.value.length,
         })
       } catch (error) {
         console.error('❌ [HomeOwner] Failed to load your data:', error)
@@ -761,8 +686,8 @@ src/components/smart/owner/HomeOwner.vue -
       console.log('✅ [HomeOwner] User became authenticated, loading data...')
       try {
         await Promise.all([
-          propertyStore.fetchProperties(),
-          bookingStore.fetchBookings(),
+          fetchMyProperties(),
+          fetchMyBookings(),
         ])
         console.log('✅ [HomeOwner] Data loaded after auth change')
       } catch (error) {

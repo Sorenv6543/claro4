@@ -138,10 +138,6 @@ export function useCalendarState() {
     end.setHours(23, 59, 59, 999);
     
     dateRange.value = { start, end };
-    
-    // Update UI store
-    uiStore.setFilter('dateRangeStart', start.toISOString());
-    uiStore.setFilter('dateRangeEnd', end.toISOString());
   }
   
   /**
@@ -241,19 +237,7 @@ export function useCalendarState() {
         return false;
       }
 
-      // Check if booking is within current date range (checkin = start, checkout = end)
-      const bookingStart = new Date(booking.checkin_date);
-      const bookingEnd = new Date(booking.checkout_date);
-
-      if (isNaN(bookingStart.getTime()) || isNaN(bookingEnd.getTime())) {
-        return false;
-      }
-
-      return (
-        (bookingStart >= dateRange.value.start && bookingStart <= dateRange.value.end) ||
-        (bookingEnd >= dateRange.value.start && bookingEnd <= dateRange.value.end) ||
-        (bookingStart <= dateRange.value.start && bookingEnd >= dateRange.value.end)
-      );
+      return true;
     });
 
     if (__DEV__) console.log(`[useCalendarState] Filtered ${bookings.length} bookings down to ${filtered.length}`);
@@ -304,8 +288,11 @@ export function useCalendarState() {
   }
   
   /**
+   * @deprecated — event mapping moved to FullCalendar component props. Do not add new callers.
    * Convert bookings to FullCalendar event format
    */
+  // @ts-ignore TS6133 – retained intentionally; body will be deleted once all callers confirmed removed
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   function bookingsToEvents(bookings: Booking[]) {
     return filterBookings(bookings).map(booking => {
       // Get booking status for color coding
@@ -346,7 +333,6 @@ export function useCalendarState() {
     // State
     currentView,
     currentDate,
-    dateRange,
     showPendingBookings,
     showScheduledBookings,
     showInProgressBookings,
@@ -355,29 +341,26 @@ export function useCalendarState() {
     showTurnBookings,
     showStandardBookings,
     selectedPropertyIds,
-    
+
     // Calendar navigation
     setCalendarView,
     goToDate,
     goToToday,
     next,
     prev,
-    updateDateRange,
-    
+
     // Filtering
     toggleStatusFilter,
     toggleTypeFilter,
     togglePropertyFilter,
     clearPropertyFilters,
     filterBookings,
-    
+
     // Formatting and conversion
     getFormattedDateRange,
-    bookingsToEvents,
-    
+
     // Computed properties
     formattedDateRange: computed(() => getFormattedDateRange()),
     filteredBookings: computed(() => filterBookings(bookingStore.bookingsArray)),
-    calendarEvents: computed(() => bookingsToEvents(bookingStore.bookingsArray))
   };
 }

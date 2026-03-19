@@ -7,7 +7,7 @@
 v-model:visible="dayViewVisible"
 :bookings="selectedDayBookings"
 :date="selectedDate"
-      :properties="properties"
+      :properties="propertiesMap"
 @add-booking="handleAddBookingFromDayView"
 @complete-booking="handleCompleteBooking"
       @edit-booking="handleEditBooking"
@@ -39,8 +39,8 @@ import { bookingToCalendarEvent } from '@/utils/calendarHelpers'
 import { getMobileCalendarOptions, handleViewportResize } from '@/utils/mobileViewport'
 
 interface Props {
-  bookings: Map<string, Booking>
-  properties: Map<string, Property>
+  bookings: Booking[]
+  properties: Property[]
   loading?: boolean
 }
 // fullcalendar emits are all lowercase with dashes for consistency and to avoid issues with Vue's event system
@@ -71,10 +71,19 @@ const dayViewVisible = ref(false)
 const selectedDate = ref<Date | null>(null)
 const selectedDayBookings = ref<Booking[]>([])
 
-// Convert bookings Map to FullCalendar events
+// Convert properties array to Map for OwnerDayViewBottomSheet (expects Map<string, Property>)
+const propertiesMap = computed(() => {
+  const map = new Map<string, Property>()
+  for (const p of props.properties) {
+    map.set(p.id, p)
+  }
+  return map
+})
+
+// Convert bookings array to FullCalendar events
 const calendarEvents = computed(() => {
-  return Array.from(props.bookings.values()).map(booking => {
-    const property = props.properties.get(booking.property_id)
+  return props.bookings.map(booking => {
+    const property = props.properties.find(p => p.id === booking.property_id)
     const isTurn = booking.booking_type === 'turn'
     const isUrgent = booking.priority === 'urgent'
 
@@ -461,10 +470,10 @@ function refreshEvents (): void {
 // Watch for changes in props from Home
 watch(() => props.bookings, (newBookings, oldBookings) => {
   console.log('🔍 [FullCalendar] Bookings prop changed:', {
-    newSize: newBookings.size,
-    oldSize: oldBookings?.size || 0,
-    newBookingIds: Array.from(newBookings.keys()),
-    newBookings: Array.from(newBookings.values()).map(b => ({
+    newCount: newBookings.length,
+    oldCount: oldBookings?.length || 0,
+    newBookingIds: newBookings.map(b => b.id),
+    newBookings: newBookings.map(b => ({
       id: b.id,
       property_id: b.property_id,
       owner_id: b.owner_id,
@@ -478,7 +487,7 @@ watch(() => props.bookings, (newBookings, oldBookings) => {
     'Home',
     'FullCalendar',
     'bookingsUpdate',
-    { count: newBookings.size },
+    { count: newBookings.length },
     'receive',
   )
 
@@ -695,7 +704,7 @@ function handleManualMoreLinkClick (event: Event): void {
   const clickedDateStr = clickedDate.toDateString()
   const dayBookings: Booking[] = []
 
-  for (const booking of Array.from(props.bookings.values())) {
+  for (const booking of props.bookings) {
     const checkoutDate = new Date(booking.checkout_date)
     const checkinDate = new Date(booking.checkin_date)
 
