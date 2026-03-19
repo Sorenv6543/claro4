@@ -5,18 +5,6 @@
       class="custom-calendar"
       :options="calendarOptions"
     />
-
-    <!-- Owner Day View Bottom Sheet -->
-    <OwnerDayViewBottomSheet
-      v-model:visible="dayViewVisible"
-      :bookings="selectedDayBookings"
-      :date="selectedDate"
-      :properties="properties"
-      @add-booking="handleAddBookingFromDayView"
-      @complete-booking="handleCompleteBooking"
-      @edit-booking="handleEditBooking"
-      @view-booking="handleViewBooking"
-    />
   </div>
 </template>
 
@@ -42,10 +30,8 @@ import {
   watch,
 } from 'vue'
 import { useTheme } from 'vuetify'
-import OwnerDayViewBottomSheet from '@/components/dumb/owner/OwnerDayViewBottomSheet.vue'
 // Import event logger for component communication
 import eventLogger from '@/composables/shared/useComponentEventLogger'
-import { useAuthStore } from '@/stores/auth'
 import { bookingToCalendarEvent } from '@/utils/calendarHelpers'
 import {
   getMobileCalendarOptions,
@@ -68,6 +54,7 @@ interface Emits {
     data: { start: string, end: string, propertyId?: string | undefined },
   ): void
   (e: 'update-booking', data: { id: string, start: string, end: string }): void
+  (e: 'day-view-open', payload: { date: Date, bookings: Booking[] }): void
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -79,14 +66,6 @@ const emit = defineEmits<Emits>()
 // Theme integration
 const theme = useTheme()
 const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
-
-// Auth store for owner filtering
-const authStore = useAuthStore()
-
-// Day view bottom sheet state
-const dayViewVisible = ref(false)
-const selectedDate = ref<Date | null>(null)
-const selectedDayBookings = ref<Booking[]>([])
 
 // Convert bookings array to FullCalendar events
 const calendarEvents = computed(() => {
@@ -529,79 +508,6 @@ watch(
   { immediate: true },
 ) // Removed deep: true to prevent excessive re-runs
 
-// Day view bottom sheet event handlers
-function handleViewBooking (booking: Booking): void {
-  // Close the bottom sheet first
-  dayViewVisible.value = false
-
-  // Find the FullCalendar event and trigger click
-  const calendarApi = calendarRef.value?.getApi()
-  if (calendarApi) {
-    const event = calendarApi.getEventById(booking.id)
-    if (event) {
-      // Simulate event click
-      const clickInfo = {
-        event: event,
-        jsEvent: new MouseEvent('click'),
-        view: calendarApi.view,
-        el: document.createElement('div'), // Provide a dummy element
-      }
-      handleEventClick(clickInfo as EventClickArg)
-    }
-  }
-
-  console.log('👁️ [FullCalendar] View booking from day view:', booking.id)
-}
-
-function handleEditBooking (booking: Booking): void {
-  // Close the bottom sheet and emit edit event
-  dayViewVisible.value = false
-
-  // Emit edit event (can be handled by parent)
-  emit('event-click', {
-    event: {
-      id: booking.id,
-      extendedProps: { booking, isEdit: true },
-    },
-  } as unknown as EventClickArg)
-
-  console.log('✏️ [FullCalendar] Edit booking from day view:', booking.id)
-}
-
-function handleCompleteBooking (booking: Booking): void {
-  // Update booking status and emit event
-
-  emit('update-booking', {
-    id: booking.id,
-    start: booking.checkin_date,
-    end: booking.checkout_date,
-  })
-
-  console.log('✅ [FullCalendar] Complete booking from day view:', booking.id)
-}
-
-function handleAddBookingFromDayView (date: Date): void {
-  // Close the bottom sheet
-  dayViewVisible.value = false
-
-  // Create date strings for the selected date
-  const startStr = date.toISOString().split('T')[0]
-  const endDate = new Date(date)
-  endDate.setDate(endDate.getDate() + 1)
-  const endStr = endDate.toISOString().split('T')[0]
-
-  // Emit create booking event
-  emit('create-booking', {
-    start: startStr,
-    end: endStr,
-  })
-
-  console.log(
-    '➕ [FullCalendar] Add booking from day view for date:',
-    startStr,
-  )
-}
-
 // Add new handler function after the other event handlers
 function handleLoading (isLoading: boolean): void {
   // You can emit an event or handle loading state changes here
@@ -732,7 +638,6 @@ function handleManualMoreLinkClick (event: Event): void {
   // Fix timezone issue by parsing date components manually
   const [year, month, day] = dateAttr.split('-').map(Number)
   const clickedDate = new Date(year, month - 1, day) // month is 0-indexed in JS Date
-  const currentUserId = authStore.user?.id
 
   // Debug logging
   console.log('📅 [FullCalendar] Debug info:', {
@@ -757,24 +662,20 @@ function handleManualMoreLinkClick (event: Event): void {
       = clickedDate >= checkinDate && clickedDate <= checkoutDate
 
     const dateMatches = bookingStartsOnDate || bookingSpansDate
-    const ownerMatches = !currentUserId || booking.owner_id === currentUserId
 
-    if (dateMatches && ownerMatches) {
+    if (dateMatches) {
       dayBookings.push(booking)
     }
   }
 
-  // Set state and open bottom sheet
-  selectedDate.value = clickedDate
-  selectedDayBookings.value = dayBookings
-  dayViewVisible.value = true
+  emit('day-view-open', { date: clickedDate, bookings: dayBookings })
 
   console.log(
     '📅 [FullCalendar] Manual more link clicked for date:',
     clickedDate.toDateString(),
     'with',
     dayBookings.length,
-    'owner bookings',
+    'bookings',
   )
 }
 

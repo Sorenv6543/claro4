@@ -66,6 +66,7 @@ src/components/smart/owner/HomeOwner.vue -
           @create-booking="handleCreateBookingFromCalendar"
           @date-change="handleCalendarDateChange"
           @date-select="handleDateSelect"
+          @day-view-open="handleDayViewOpen"
           @event-click="handleEventClick"
           @event-drop="handleEventDrop"
           @event-resize="handleEventResize"
@@ -74,6 +75,18 @@ src/components/smart/owner/HomeOwner.vue -
         />
       </div>
     </div>
+
+    <!-- Day View Bottom Sheet -->
+    <OwnerDayViewBottomSheet
+      v-model:visible="dayViewVisible"
+      :bookings="selectedDayBookings"
+      :date="selectedDate"
+      :properties="myProperties"
+      @add-booking="handleDayViewAddBooking"
+      @complete-booking="handleDayViewCompleteBooking"
+      @edit-booking="handleDayViewEditBooking"
+      @view-booking="handleDayViewViewBooking"
+    />
 
     <!-- Owner-focused Modals -->
     <BookingForm
@@ -118,9 +131,9 @@ src/components/smart/owner/HomeOwner.vue -
   import type { Booking, BookingFormData, Property, PropertyFormData } from '@/types'
   // Real-time sync will auto-initialize when user is authenticated
   import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+  import OwnerDayViewBottomSheet from '@/components/dumb/owner/OwnerDayViewBottomSheet.vue'
   import BookingForm from '@/components/dumb/shared/BookingForm.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   // Owner-specific components
   import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue'
@@ -181,6 +194,11 @@ src/components/smart/owner/HomeOwner.vue -
   // ============================================================================
   const calendarRef = ref<InstanceType<typeof OwnerCalendar> | null>(null)
   const selectedPropertyFilter = ref<string | null>(null)
+
+  // Day view bottom sheet state
+  const dayViewVisible = ref(false)
+  const selectedDate = ref<Date | null>(null)
+  const selectedDayBookings = ref<Booking[]>([])
 
   // ============================================================================
   // OWNER-SPECIFIC DATA ACCESS
@@ -460,6 +478,44 @@ src/components/smart/owner/HomeOwner.vue -
     if (calendarApi) {
       calendarApi.gotoDate(date)
     }
+  }
+
+  function handleDayViewOpen (payload: { date: Date, bookings: Booking[] }): void {
+    selectedDate.value = payload.date
+    selectedDayBookings.value = payload.bookings
+    dayViewVisible.value = true
+  }
+
+  function handleDayViewViewBooking (booking: Booking): void {
+    dayViewVisible.value = false
+    uiStore.openModal('eventModal', 'edit', booking as unknown as Record<string, unknown>)
+  }
+
+  function handleDayViewEditBooking (booking: Booking): void {
+    dayViewVisible.value = false
+    uiStore.openModal('eventModal', 'edit', booking as unknown as Record<string, unknown>)
+  }
+
+  async function handleDayViewCompleteBooking (booking: Booking): Promise<void> {
+    dayViewVisible.value = false
+    await updateMyBooking(booking.id, {
+      checkin_date: booking.checkin_date,
+      checkout_date: booking.checkout_date,
+      owner_id: booking.owner_id,
+    })
+  }
+
+  function handleDayViewAddBooking (date: Date): void {
+    dayViewVisible.value = false
+    const startStr = date.toISOString().split('T')[0]
+    const endDate = new Date(date)
+    endDate.setDate(endDate.getDate() + 1)
+    const endStr = endDate.toISOString().split('T')[0]
+    uiStore.openModal('eventModal', 'create', {
+      checkin_date: startStr,
+      checkout_date: endStr,
+      owner_id: currentOwnerId.value,
+    })
   }
 
   function handleCreateBookingFromCalendar (data: { start: string, end: string, propertyId?: string | undefined }): void {

@@ -9,6 +9,7 @@
       :properties="props.properties"
       @create-booking="handleCreateBooking"
       @date-select="handleDateSelect"
+      @day-view-open="handleDayViewOpen"
       @event-click="handleEventClick"
       @event-drop="handleEventDrop"
       @event-resize="handleEventResize"
@@ -41,6 +42,7 @@
     (e: 'create-booking', data: { start: string, end: string, propertyId?: string }): void
     (e: 'view-change', view: string): void
     (e: 'date-change', date: Date): void
+    (e: 'day-view-open', payload: { date: Date, bookings: Booking[] }): void
   }
 
   const props = withDefaults(defineProps<Props>(), {
@@ -79,6 +81,10 @@
   function handleCreateBooking (data: { start: string, end: string, propertyId?: string }): void {
     console.log('➕ [OwnerCalendar] Create booking:', data)
     emit('create-booking', data)
+  }
+
+  function handleDayViewOpen (payload: { date: Date, bookings: Booking[] }): void {
+    emit('day-view-open', payload)
   }
 
   // ===== PROGRAMMATIC CALENDAR METHODS =====
