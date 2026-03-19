@@ -62,10 +62,11 @@ src/components/smart/owner/HomeOwner.vue -
           :current-date="currentDate"
           :current-view="currentView"
           :loading="loading"
-          :properties="ownerPropertiesMap"
+          :properties="myProperties"
           @create-booking="handleCreateBookingFromCalendar"
           @date-change="handleCalendarDateChange"
           @date-select="handleDateSelect"
+          @day-view-open="handleDayViewOpen"
           @event-click="handleEventClick"
           @event-drop="handleEventDrop"
           @event-resize="handleEventResize"
@@ -74,6 +75,18 @@ src/components/smart/owner/HomeOwner.vue -
         />
       </div>
     </div>
+
+    <!-- Day View Bottom Sheet -->
+    <OwnerDayViewBottomSheet
+      v-model:visible="dayViewVisible"
+      :bookings="selectedDayBookings"
+      :date="selectedDate"
+      :properties="myProperties"
+      @add-booking="handleDayViewAddBooking"
+      @complete-booking="handleDayViewCompleteBooking"
+      @edit-booking="handleDayViewEditBooking"
+      @view-booking="handleDayViewViewBooking"
+    />
 
     <!-- Owner-focused Modals -->
     <BookingForm
@@ -113,13 +126,14 @@ src/components/smart/owner/HomeOwner.vue -
 // import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync';
 
   import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   // Types
   import type { Booking, BookingFormData, Property, PropertyFormData } from '@/types'
   // Real-time sync will auto-initialize when user is authenticated
   import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+  import OwnerDayViewBottomSheet from '@/components/dumb/owner/OwnerDayViewBottomSheet.vue'
   import BookingForm from '@/components/dumb/shared/BookingForm.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   // Owner-specific components
   import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue'
@@ -132,19 +146,15 @@ src/components/smart/owner/HomeOwner.vue -
   // Import event logger for component communication
   import eventLogger from '@/composables/shared/useComponentEventLogger'
   import { useAuthStore } from '@/stores/auth'
-  import { useBookingStore } from '@/stores/booking'
-  // State management
-  import { usePropertyStore } from '@/stores/property'
 
   import { useUIStore } from '@/stores/ui'
+  import { subtractOneDay } from '@/utils/calendarHelpers'
 
   // ============================================================================
   // STORE CONNECTIONS & STATE
   // ============================================================================
 
   // useRealtimeSync(); // Just call it for side effects
-  const propertyStore = usePropertyStore()
-  const bookingStore = useBookingStore()
   const uiStore = useUIStore()
   const authStore = useAuthStore()
 
@@ -152,14 +162,18 @@ src/components/smart/owner/HomeOwner.vue -
   // COMPOSABLES - BUSINESS LOGIC
   // ============================================================================
   const {
+    myBookings,
     loading: bookingsLoading,
+    fetchMyBookings,
     createMyBooking,
     updateMyBooking,
     deleteMyBooking,
   } = useOwnerBookings()
 
   const {
+    myProperties,
     loading: propertiesLoading,
+    fetchMyProperties,
     createMyProperty,
     updateMyProperty,
     deleteMyProperty,
@@ -170,9 +184,6 @@ src/components/smart/owner/HomeOwner.vue -
     currentDate,
     filterBookings,
     setCalendarView,
-    goToDate,
-    next,
-    prev,
   } = useCalendarState()
 
   // ============================================================================
@@ -180,6 +191,11 @@ src/components/smart/owner/HomeOwner.vue -
   // ============================================================================
   const calendarRef = ref<InstanceType<typeof OwnerCalendar> | null>(null)
   const selectedPropertyFilter = ref<string | null>(null)
+
+  // Day view bottom sheet state
+  const dayViewVisible = ref(false)
+  const selectedDate = ref<Date | null>(null)
+  const selectedDayBookings = ref<Booking[]>([])
 
   // ============================================================================
   // OWNER-SPECIFIC DATA ACCESS
@@ -222,85 +238,25 @@ src/components/smart/owner/HomeOwner.vue -
     return currentDate.value.toLocaleDateString('en-US', options)
   })
 
-  // Owner's properties only - stabilized to prevent loops
-  const ownerPropertiesMap = computed(() => {
-    const map = new Map<string, Property>()
-
-    if (!isOwnerAuthenticated.value || !currentOwnerId.value) {
-      return map
-    }
-
-    // Filter properties by owner_id
-    if (propertyStore.properties instanceof Map) {
-      for (const [id, property] of propertyStore.properties.entries()) {
-        if (property.owner_id === currentOwnerId.value) {
-          map.set(id, property)
-        }
-      }
-    } else {
-      for (const property of propertyStore.propertiesArray
-      .filter(property => property.owner_id === currentOwnerId.value)) {
-        if (property && property.id) {
-          map.set(property.id, property)
-        }
-      }
-    }
-
-    return map
-  })
-
-  // Owner's bookings only - stabilized with better error handling
-  const ownerBookingsMap = computed(() => {
-    const map = new Map<string, Booking>()
-
-    if (!isOwnerAuthenticated.value || !currentOwnerId.value) {
-      return map
-    }
-
-    try {
-      // Filter bookings by owner_id
-      const ownerBookings = bookingStore.bookingsArray
-        .filter(booking => booking.owner_id === currentOwnerId.value)
-
-      for (const booking of ownerBookings) {
-        if (booking && booking.id) {
-          map.set(booking.id, booking)
-        }
-      }
-    } catch (error) {
-      console.error('❌ [HomeOwner] Error filtering owner bookings:', error)
-    }
-
-    return map
-  })
-
-  // Owner's filtered bookings - stabilized with better error handling
+  // Owner's filtered bookings using composable data
   const ownerFilteredBookings = computed(() => {
-    const map = new Map<string, Booking>()
-
     try {
-      let bookings = Array.from(ownerBookingsMap.value.values())
+      let bookings = myBookings.value
 
       // Apply property filter if selected (within owner's properties)
       if (selectedPropertyFilter.value) {
         bookings = bookings.filter(booking =>
           booking.property_id === selectedPropertyFilter.value
-          && ownerPropertiesMap.value.has(booking.property_id),
+          && myProperties.value.some(p => p.id === booking.property_id),
         )
       }
 
       // Apply calendar state filters
-      bookings = filterBookings(bookings)
-
-      // Convert to Map for components that expect Map format
-      for (const booking of bookings) {
-        map.set(booking.id, booking)
-      }
+      return filterBookings(bookings)
     } catch (error) {
       console.error('❌ [HomeOwner] Error filtering bookings:', error)
+      return []
     }
-
-    return map
   })
 
   // ============================================================================
@@ -370,8 +326,8 @@ src/components/smart/owner/HomeOwner.vue -
     )
 
     const bookingData: Partial<BookingFormData> = {
-      checkout_date: selectInfo.startStr,
-      checkin_date: selectInfo.endStr,
+      checkin_date: selectInfo.startStr,
+      checkout_date: subtractOneDay(selectInfo.endStr),
       owner_id: currentOwnerId.value,
     }
 
@@ -397,7 +353,7 @@ src/components/smart/owner/HomeOwner.vue -
     }
 
     // Fallback: Only allow editing owner's bookings
-    const booking = ownerBookingsMap.value.get(clickInfo.event.id)
+    const booking = myBookings.value.find(b => b.id === clickInfo.event.id)
     if (booking) {
       uiStore.openModal('eventModal', 'edit', booking as unknown as Record<string, unknown>)
     } else {
@@ -409,7 +365,7 @@ src/components/smart/owner/HomeOwner.vue -
     const booking = dropInfo.event.extendedProps.booking as Booking
 
     // Verify owner can modify this booking
-    if (!ownerBookingsMap.value.has(booking.id)) {
+    if (!myBookings.value.some(b => b.id === booking.id)) {
       console.warn('Cannot modify booking not owned by current user')
       dropInfo.revert()
       return
@@ -427,8 +383,8 @@ src/components/smart/owner/HomeOwner.vue -
       await nextTick()
 
       const result = await updateMyBooking(booking.id, {
-        checkout_date: dropInfo.event.startStr,
-        checkin_date: dropInfo.event.endStr || dropInfo.event.startStr,
+        checkin_date: dropInfo.event.startStr,
+        checkout_date: subtractOneDay(dropInfo.event.endStr || dropInfo.event.startStr),
         owner_id: booking.owner_id,
       })
 
@@ -444,11 +400,11 @@ src/components/smart/owner/HomeOwner.vue -
     }
   }
 
-  async function handleEventResize (resizeInfo: EventDropArg): Promise<void> {
+  async function handleEventResize (resizeInfo: EventResizeDoneArg): Promise<void> {
     const booking = resizeInfo.event.extendedProps.booking as Booking
 
     // Verify owner can modify this booking
-    if (!ownerBookingsMap.value.has(booking.id)) {
+    if (!myBookings.value.some(b => b.id === booking.id)) {
       console.warn('Cannot modify booking not owned by current user')
       resizeInfo.revert()
       return
@@ -466,8 +422,8 @@ src/components/smart/owner/HomeOwner.vue -
       await nextTick()
 
       const result = await updateMyBooking(booking.id, {
-        checkout_date: resizeInfo.event.startStr,
-        checkin_date: resizeInfo.event.endStr,
+        checkin_date: resizeInfo.event.startStr,
+        checkout_date: subtractOneDay(resizeInfo.event.endStr || resizeInfo.event.startStr),
         owner_id: booking.owner_id,
       })
 
@@ -488,19 +444,19 @@ src/components/smart/owner/HomeOwner.vue -
   // ============================================================================
 
   function handlePrevious (): void {
-    prev()
-    const calendarApi = calendarRef.value?.getApi?.()
-    if (calendarApi) {
-      calendarApi.prev()
+    if (!calendarRef.value) {
+      console.warn('[HomeOwner] Calendar not ready — navigation ignored')
+      return
     }
+    calendarRef.value.prev()
   }
 
   function handleNext (): void {
-    next()
-    const calendarApi = calendarRef.value?.getApi?.()
-    if (calendarApi) {
-      calendarApi.next()
+    if (!calendarRef.value) {
+      console.warn('[HomeOwner] Calendar not ready — navigation ignored')
+      return
     }
+    calendarRef.value.next()
   }
 
   function handleCalendarViewChange (view: string): void {
@@ -514,11 +470,53 @@ src/components/smart/owner/HomeOwner.vue -
   }
 
   function handleCalendarDateChange (date: Date): void {
-    goToDate(date)
-    const calendarApi = calendarRef.value?.getApi?.()
-    if (calendarApi) {
-      calendarApi.gotoDate(date)
+    calendarRef.value?.goToDate(date)
+  }
+
+  function handleDayViewOpen (payload: { date: Date, bookings: Booking[] }): void {
+    selectedDate.value = payload.date
+    selectedDayBookings.value = payload.bookings
+    dayViewVisible.value = true
+  }
+
+  function handleDayViewViewBooking (booking: Booking): void {
+    dayViewVisible.value = false
+    uiStore.openModal('eventModal', 'edit', booking as unknown as Record<string, unknown>)
+  }
+
+  function handleDayViewEditBooking (booking: Booking): void {
+    dayViewVisible.value = false
+    uiStore.openModal('eventModal', 'edit', booking as unknown as Record<string, unknown>)
+  }
+
+  async function handleDayViewCompleteBooking (booking: Booking): Promise<void> {
+    try {
+      const result = await updateMyBooking(booking.id, {
+        status: 'completed',
+        checkin_date: booking.checkin_date,
+        checkout_date: booking.checkout_date,
+        owner_id: booking.owner_id,
+      })
+      if (!result) {
+        throw new Error('Failed to complete booking')
+      }
+      dayViewVisible.value = false
+    } catch (error) {
+      console.error('Failed to complete your booking:', error)
     }
+  }
+
+  function handleDayViewAddBooking (date: Date): void {
+    dayViewVisible.value = false
+    const startStr = date.toISOString().split('T')[0]
+    const endDate = new Date(date)
+    endDate.setDate(endDate.getDate() + 1)
+    const endStr = endDate.toISOString().split('T')[0]
+    uiStore.openModal('eventModal', 'create', {
+      checkin_date: startStr,
+      checkout_date: endStr,
+      owner_id: currentOwnerId.value,
+    })
   }
 
   function handleCreateBookingFromCalendar (data: { start: string, end: string, propertyId?: string | undefined }): void {
@@ -529,18 +527,24 @@ src/components/smart/owner/HomeOwner.vue -
     uiStore.openModal('eventModal', 'create', bookingData)
   }
 
-  function handleUpdateBooking (data: { id: string, start: string, end: string }): void {
-    // Verify owner can update this booking
-    if (!ownerBookingsMap.value.has(data.id)) {
+  async function handleUpdateBooking (data: { id: string, start: string, end: string }): Promise<void> {
+    if (!myBookings.value.some(b => b.id === data.id)) {
       console.warn('Cannot update booking not owned by current user')
       return
     }
 
-    updateMyBooking(data.id, {
-      checkout_date: data.start,
-      checkin_date: data.end,
-      owner_id: currentOwnerId.value,
-    })
+    try {
+      const result = await updateMyBooking(data.id, {
+        checkin_date: data.start,
+        checkout_date: data.end,
+        owner_id: currentOwnerId.value,
+      })
+      if (!result) {
+        throw new Error('Update failed')
+      }
+    } catch (error) {
+      console.error('Failed to update your booking:', error)
+    }
   }
 
   // ============================================================================
@@ -566,8 +570,8 @@ src/components/smart/owner/HomeOwner.vue -
         const booking = eventModalData.value
 
         // Verify owner can update this booking
-        if (!booking?.id || !ownerBookingsMap.value.has(booking.id)) {
-          console.error('🚨 [HomeOwner] Booking ownership check failed - booking not found in owner map')
+        if (!booking?.id || !myBookings.value.some(b => b.id === booking.id)) {
+          console.error('🚨 [HomeOwner] Booking ownership check failed - booking not found in owner bookings')
           throw new Error('Cannot update booking not owned by current user')
         }
         await updateMyBooking(booking.id, bookingData as Partial<BookingFormData>)
@@ -580,7 +584,7 @@ src/components/smart/owner/HomeOwner.vue -
 
   async function handleEventModalDelete (bookingId: string): Promise<void> {
     // Verify owner can delete this booking
-    if (!ownerBookingsMap.value.has(bookingId)) {
+    if (!myBookings.value.some(b => b.id === bookingId)) {
       console.warn('Cannot delete booking not owned by current user')
       return
     }
@@ -611,7 +615,7 @@ src/components/smart/owner/HomeOwner.vue -
         await createMyProperty(propertyData as PropertyFormData)
       } else if (propertyModalData.value) {
         // Verify owner can update this property
-        if (!ownerPropertiesMap.value.has(propertyModalData.value.id)) {
+        if (!myProperties.value.some(p => p.id === propertyModalData.value!.id)) {
           throw new Error('Cannot update property not owned by current user')
         }
         await updateMyProperty(propertyModalData.value.id, propertyData as Partial<PropertyFormData>)
@@ -624,7 +628,7 @@ src/components/smart/owner/HomeOwner.vue -
 
   async function handlePropertyModalDelete (propertyId: string): Promise<void> {
     // Verify owner can delete this property
-    if (!ownerPropertiesMap.value.has(propertyId)) {
+    if (!myProperties.value.some(p => p.id === propertyId)) {
       console.warn('Cannot delete property not owned by current user')
       return
     }
@@ -677,60 +681,21 @@ src/components/smart/owner/HomeOwner.vue -
   // LIFECYCLE HOOKS
   // ============================================================================
 
-  console.log('🔄 [HomeOwner] Script setup running...')
-
-  // Watch for template rendering (proper debugging)
-  watch(isOwnerAuthenticated, newValue => {
-    console.log('🎨 [HomeOwner] Template will render, isOwnerAuthenticated:', newValue)
-  }, { immediate: true })
-
   onMounted(async () => {
-    console.log('🚀 [HomeOwner] Component mounted successfully!')
     // Wait for auth to be properly initialized
     if (authStore.loading) {
-      console.log('⏳ [HomeOwner] Auth store still loading, waiting...')
       const maxWait = 5000 // 5 seconds max
       const startTime = Date.now()
       while (authStore.loading && (Date.now() - startTime) < maxWait) {
         await new Promise(resolve => setTimeout(resolve, 100))
       }
     }
-    console.log('🔍 [HomeOwner] Auth state after waiting:', {
-      isAuthenticated: authStore.isAuthenticated,
-      user: authStore.user,
-      loading: authStore.loading,
-      isOwnerAuthenticated: isOwnerAuthenticated.value,
-    })
     if (isOwnerAuthenticated.value) {
-      console.log('✅ [HomeOwner] User is authenticated as owner, loading data...')
       try {
-        // Fetch data using store methods directly for better performance
         await Promise.all([
-          propertyStore.fetchProperties(),
-          bookingStore.fetchBookings(),
+          fetchMyProperties(),
+          fetchMyBookings(),
         ])
-        console.log('✅ [HomeOwner] Owner data loaded successfully')
-
-        // Debug data after loading
-        console.log('🔍 [HomeOwner] Data state after loading:', {
-          allProperties: propertyStore.propertiesArray.length,
-          allBookings: bookingStore.bookingsArray.length,
-          ownerProperties: ownerPropertiesMap.value.size,
-          ownerBookings: ownerBookingsMap.value.size,
-          filteredBookings: ownerFilteredBookings.value.size,
-        })
-
-        // Debug booking data specifically
-        console.log('🔍 [HomeOwner] Bookings data:', {
-          allBookings: bookingStore.bookingsArray.map(b => ({
-            id: b.id,
-            owner_id: b.owner_id,
-            property_id: b.property_id,
-            checkout_date: b.checkout_date,
-            checkin_date: b.checkin_date,
-          })),
-          currentUserId: currentOwnerId.value,
-        })
       } catch (error) {
         console.error('❌ [HomeOwner] Failed to load your data:', error)
       }
@@ -749,26 +714,15 @@ src/components/smart/owner/HomeOwner.vue -
 
   // Watch for authentication changes
   watch(isOwnerAuthenticated, async (newValue, oldValue) => {
-    console.log('🔄 [HomeOwner] isOwnerAuthenticated changed:', {
-      from: oldValue,
-      to: newValue,
-      user: authStore.user,
-    })
     if (newValue && !oldValue) {
-      // User became authenticated - load data
-      console.log('✅ [HomeOwner] User became authenticated, loading data...')
       try {
         await Promise.all([
-          propertyStore.fetchProperties(),
-          bookingStore.fetchBookings(),
+          fetchMyProperties(),
+          fetchMyBookings(),
         ])
-        console.log('✅ [HomeOwner] Data loaded after auth change')
       } catch (error) {
         console.error('❌ [HomeOwner] Failed to load data after auth change:', error)
       }
-    } else if (!newValue && oldValue) {
-      // User became unauthenticated - could clear data if needed
-      console.log('⚠️ [HomeOwner] User became unauthenticated')
     }
   })
 </script>
@@ -996,12 +950,6 @@ src/components/smart/owner/HomeOwner.vue -
 /* Urgent priority styling with owner branding */
 :deep(.fc-event.priority-urgent) {
   animation: pulse-owner-urgent 2s infinite;
-  border-color: #d32f2f !important;
-}
-
-/* High priority styling */
-:deep(.fc-event.priority-high) {
-  border-left: 4px solid #ff9800 !important;
 }
 
 /* ================================================================ */

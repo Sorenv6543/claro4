@@ -143,10 +143,7 @@ export function useOwnerProperties() {
     error.value = null;
     
     try {
-      // In a real app, this would make an API call with owner filter
-      // For now, we simulate the call and rely on computed filtering
-      await new Promise(resolve => setTimeout(resolve, 300));
-      
+      await propertyStore.fetchProperties();
       success.value = `Loaded ${myProperties.value.length} of your properties`;
       loading.value = false;
       return true;

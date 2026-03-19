@@ -8,11 +8,19 @@ function addOneDay(dateString: string): string {
   return date.toISOString().split('T')[0]
 }
 
+/** Subtract one day from a YYYY-MM-DD string (reverses FullCalendar exclusive end offset on write-back). */
+export function subtractOneDay(dateString: string): string {
+  const date = new Date(dateString)
+  date.setDate(date.getDate() - 1)
+  return date.toISOString().split('T')[0]
+}
+
 export interface CalendarBookingEvent {
   id: string
   title: string
   start: string
   end: string
+  classNames: string[]
   extendedProps: {
     booking: Booking
     property: Property | undefined
@@ -41,6 +49,10 @@ export function bookingToCalendarEvent(
     title: `${property?.name || 'Unknown Property'} - ${isTurn ? 'TURN' : 'Standard'}`,
     start: booking.checkin_date,
     end: addOneDay(booking.checkout_date),
+    classNames: [
+      `type-${booking.booking_type}`,
+      `priority-${booking.priority}`,
+    ],
     extendedProps: {
       booking,
       property,

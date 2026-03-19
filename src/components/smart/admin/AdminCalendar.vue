@@ -54,8 +54,8 @@
         >
           <FullCalendar
             ref="calendarRef"
-            :bookings="allBookings"
-            :properties="allProperties"
+            :bookings="calendarBookings"
+            :properties="calendarProperties"
             :loading="loading"
             class="admin-calendar"
             @date-select="handleDateSelect"
@@ -128,23 +128,28 @@ import type { Booking, BookingFormData } from '@/types/booking.ts';
 import type{ User, Cleaner } from '@/types/user.ts';
 
 import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+import type { EventResizeDoneArg } from '@fullcalendar/interaction'
 
 // Use the admin calendar state composable for centralized state management
 const {
   // State
   loading,
-  
+
   currentView,
   currentDate,
-  
-  // Computed properties
+
+  // Computed properties (Maps from store)
   allBookings,
   allProperties,
-  
+
   // Functions
   setCalendarView,
   goToDate
 } = useAdminCalendarState();
+
+// Convert Maps to arrays for FullCalendar props (which expect Booking[]/Property[])
+const calendarBookings = computed(() => Array.from(allBookings.value.values()))
+const calendarProperties = computed(() => Array.from(allProperties.value.values()))
 
 // Additional composables for admin functionality
 const { updateBooking, deleteBooking, createBooking, assignCleanerToBooking } = useAdminBookings();
@@ -260,7 +265,7 @@ const handleEventDrop = async (dropInfo: EventDropArg): Promise<void> => {
   }
 };
 
-const handleEventResize = async (resizeInfo: EventDropArg): Promise<void> => {
+const handleEventResize = async (resizeInfo: EventResizeDoneArg): Promise<void> => {
   console.log('🔄 [AdminCalendar] Event resized:', resizeInfo.event.id);
   const booking = resizeInfo.event.extendedProps.booking as Booking;
   

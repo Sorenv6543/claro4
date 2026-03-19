@@ -9,6 +9,8 @@
       :properties="props.properties"
       @create-booking="handleCreateBooking"
       @date-select="handleDateSelect"
+      @dates-set="handleDatesSet"
+      @day-view-open="handleDayViewOpen"
       @event-click="handleEventClick"
       @event-drop="handleEventDrop"
       @event-resize="handleEventResize"
@@ -17,16 +19,16 @@
 </template>
 
 <script setup lang="ts">
-  import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, Property } from '@/types'
   import { nextTick, onMounted, ref, watch } from 'vue'
   import FullCalendar from '@/components/smart/shared/FullCalendar.vue'
-
-  console.log('🔄 [OwnerCalendar] Script setup running...')
+  import { useCalendarState } from '@/composables/shared/useCalendarState'
 
   interface Props {
-    bookings: Map<string, Booking>
-    properties: Map<string, Property>
+    bookings: Booking[]
+    properties: Property[]
     loading?: boolean
     currentView?: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'
     currentDate?: Date
@@ -35,10 +37,13 @@
   interface Emits {
     (e: 'date-select', selectInfo: DateSelectArg): void
     (e: 'event-click', clickInfo: EventClickArg): void
-    (e: 'event-drop' | 'event-resize', info: EventDropArg): void
+    (e: 'event-drop', dropInfo: EventDropArg): void
+    (e: 'event-resize', resizeInfo: EventResizeDoneArg): void
     (e: 'create-booking', data: { start: string, end: string, propertyId?: string }): void
     (e: 'view-change', view: string): void
     (e: 'date-change', date: Date): void
+    (e: 'day-view-open', payload: { date: Date, bookings: Booking[] }): void
+    (e: 'dates-set', arg: DatesSetArg): void
   }
 
   const props = withDefaults(defineProps<Props>(), {
@@ -49,53 +54,63 @@
 
   const emit = defineEmits<Emits>()
 
+  const { goToDate: calendarStateGoToDate } = useCalendarState()
+
   // ===== REFS AND REACTIVE DATA =====
   const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
 
   // ===== EVENT HANDLERS (SAFE - SIMPLE EMIT PATTERNS) =====
 
   function handleDateSelect (selectInfo: DateSelectArg): void {
-    console.log('🗓️ [OwnerCalendar] Date selected:', selectInfo.startStr, 'to', selectInfo.endStr)
     emit('date-select', selectInfo)
   }
 
   function handleEventClick (clickInfo: EventClickArg): void {
-    console.log('👆 [OwnerCalendar] Event clicked:', clickInfo.event.id)
     emit('event-click', clickInfo)
   }
 
   function handleEventDrop (dropInfo: EventDropArg): void {
-    console.log('🎯 [OwnerCalendar] Event dropped:', dropInfo.event.id)
     emit('event-drop', dropInfo)
   }
 
-  function handleEventResize (resizeInfo: EventDropArg): void {
-    console.log('🔄 [OwnerCalendar] Event resized:', resizeInfo.event.id)
+  function handleEventResize (resizeInfo: EventResizeDoneArg): void {
     emit('event-resize', resizeInfo)
   }
 
   function handleCreateBooking (data: { start: string, end: string, propertyId?: string }): void {
-    console.log('➕ [OwnerCalendar] Create booking:', data)
     emit('create-booking', data)
+  }
+
+  function handleDayViewOpen (payload: { date: Date, bookings: Booking[] }): void {
+    emit('day-view-open', payload)
+  }
+
+  function handleDatesSet (arg: DatesSetArg): void {
+    calendarStateGoToDate(arg.view.currentStart)
+    emit('dates-set', arg)
   }
 
   // ===== PROGRAMMATIC CALENDAR METHODS =====
 
   function goToDate (date: string | Date): void {
-    console.log('🗓️ [OwnerCalendar] goToDate called:', date)
     const targetDate = typeof date === 'string' ? new Date(date) : date
-
     if (calendarRef.value) {
       calendarRef.value.goToDate(targetDate)
     }
+    emit('date-change', targetDate)
+  }
 
-    // Emit date change event
-    emit('dateChange', targetDate)
+  function prev (): void {
+    const api = calendarRef.value?.getApi()
+    if (api) api.prev()
+  }
+
+  function next (): void {
+    const api = calendarRef.value?.getApi()
+    if (api) api.next()
   }
 
   function changeView (view: string): void {
-    console.log('👁️ [OwnerCalendar] changeView called:', view)
-
     if (calendarRef.value) {
       calendarRef.value.changeView(view)
     }
@@ -103,7 +118,6 @@
   }
 
   function refreshEvents (): void {
-    console.log('🔄 [OwnerCalendar] refreshEvents called')
     if (calendarRef.value) {
       calendarRef.value.refreshEvents()
     }
@@ -117,8 +131,6 @@
 
   // Watch for view changes from parent (safe - simple prop watching)
   watch(() => props.currentView, newView => {
-    console.log('🎯 [OwnerCalendar] Current view changed from parent:', newView)
-
     nextTick(() => {
       if (newView && calendarRef.value) {
         changeView(newView)
@@ -128,8 +140,6 @@
 
   // Watch for date changes from parent (safe - simple prop watching)
   watch(() => props.currentDate, newDate => {
-    console.log('📅 [OwnerCalendar] Current date changed from parent:', newDate)
-
     nextTick(() => {
       if (newDate && calendarRef.value) {
         goToDate(newDate)
@@ -140,19 +150,14 @@
   // ===== LIFECYCLE =====
 
   onMounted(async () => {
-    console.log('🎬 [OwnerCalendar] Component mounted')
-
-    // Wait for DOM to be fully ready
     await nextTick()
-
-    console.log('🔗 [OwnerCalendar] Component ready')
   })
-
-  console.log('✅ [OwnerCalendar] Setup complete!')
 
   // ===== EXPOSE METHODS TO PARENT =====
   defineExpose({
     goToDate,
+    prev,
+    next,
     changeView,
     refreshEvents,
     getApi,
@@ -195,12 +200,6 @@
 /* Urgent priority styling with owner branding */
 :deep(.fc-event.priority-urgent) {
   animation: pulse-owner-urgent 2s infinite;
-  border-color: #d32f2f !important;
-}
-
-/* High priority styling */
-:deep(.fc-event.priority-high) {
-  border-left: 4px solid #ff9800 !important;
 }
 
 /* Owner calendar specific adjustments */
@@ -225,10 +224,12 @@
     box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.8);
     transform: scale(1);
   }
+
   70% {
     box-shadow: 0 0 0 6px rgba(244, 67, 54, 0);
     transform: scale(1.01);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
     transform: scale(1);
@@ -241,7 +242,8 @@
 
 @media (max-width: 768px) {
   .owner-calendar-container {
-    height: calc(100vh - 120px); /* Account for mobile navigation */
+    height: calc(100vh - 120px);
+  /* TODO: Adjust based on actual header/footer height */
   }
 
   :deep(.fc-header-toolbar) {

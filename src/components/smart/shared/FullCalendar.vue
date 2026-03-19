@@ -5,44 +5,43 @@
       class="custom-calendar"
       :options="calendarOptions"
     />
-
-    <!-- Owner Day View Bottom Sheet -->
-    <OwnerDayViewBottomSheet
-      v-model:visible="dayViewVisible"
-      :bookings="selectedDayBookings"
-      :date="selectedDate"
-      :properties="properties"
-      @add-booking="handleAddBookingFromDayView"
-      @complete-booking="handleCompleteBooking"
-      @edit-booking="handleEditBooking"
-      @view-booking="handleViewBooking"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
-  import type { CalendarOptions,
-                DateSelectArg,
-                EventClickArg,
-                EventDropArg } from '@fullcalendar/core'
+  import type {
+    CalendarOptions,
+    DateSelectArg,
+    DatesSetArg,
+    EventClickArg,
+    EventDropArg,
+  } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, Property } from '@/types'
   import dayGridPlugin from '@fullcalendar/daygrid'
   import interactionPlugin from '@fullcalendar/interaction'
   import timeGridPlugin from '@fullcalendar/timegrid'
   import FullCalendar from '@fullcalendar/vue3'
-  import { computed, onBeforeUnmount, onMounted, onUnmounted, ref, watch } from 'vue'
-  import { useTheme } from 'vuetify'
-  import OwnerDayViewBottomSheet from '@/components/dumb/owner/OwnerDayViewBottomSheet.vue'
+  import {
+    computed,
+    onBeforeUnmount,
+    onMounted,
+    onUnmounted,
+    reactive,
+    ref,
+    watch,
+  } from 'vue'
   // Import event logger for component communication
   import eventLogger from '@/composables/shared/useComponentEventLogger'
-  import { useAuthStore } from '@/stores/auth'
   import { bookingToCalendarEvent } from '@/utils/calendarHelpers'
-  import { getMobileCalendarOptions, handleViewportResize } from '@/utils/mobileViewport'
+  import {
+    getMobileCalendarOptions,
+    handleViewportResize,
+  } from '@/utils/mobileViewport'
 
   interface Props {
-    bookings: Map<string, Booking>
-    properties: Map<string, Property>
+    bookings: Booking[]
+    properties: Property[]
     loading?: boolean
   }
   // fullcalendar emits are all lowercase with dashes for consistency and to avoid issues with Vue's event system
@@ -51,8 +50,13 @@
     (e: 'event-click', clickInfo: EventClickArg): void
     (e: 'event-drop', dropInfo: EventDropArg): void
     (e: 'event-resize', resizeInfo: EventResizeDoneArg): void
-    (e: 'create-booking', data: { start: string, end: string, propertyId?: string | undefined }): void
+    (
+      e: 'create-booking',
+      data: { start: string, end: string, propertyId?: string | undefined },
+    ): void
     (e: 'update-booking', data: { id: string, start: string, end: string }): void
+    (e: 'day-view-open', payload: { date: Date, bookings: Booking[] }): void
+    (e: 'dates-set', arg: DatesSetArg): void
   }
 
   const props = withDefaults(defineProps<Props>(), {
@@ -61,156 +65,37 @@
 
   const emit = defineEmits<Emits>()
 
-  // Theme integration
-  const theme = useTheme()
   const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
 
-  // Auth store for owner filtering
-  const authStore = useAuthStore()
-
-  // Day view bottom sheet state
-  const dayViewVisible = ref(false)
-  const selectedDate = ref<Date | null>(null)
-  const selectedDayBookings = ref<Booking[]>([])
-
-  // Convert bookings Map to FullCalendar events
+  // Convert bookings array to FullCalendar events
   const calendarEvents = computed(() => {
-    return Array.from(props.bookings.values()).map(booking => {
-      const property = props.properties.get(booking.property_id)
-      const isTurn = booking.booking_type === 'turn'
-      const isUrgent = booking.priority === 'urgent'
-
-      const eventColor = getEventColor(booking)
-      const borderColor = getEventBorderColor(booking)
-      const textColor = getEventTextColor(booking)
-
+    const propertyMap = new Map(props.properties.map(p => [p.id, p]))
+    return props.bookings.map(booking => {
+      const property = propertyMap.get(booking.property_id)
       const base = bookingToCalendarEvent(booking, property)
 
       return {
         ...base,
-        backgroundColor: eventColor,
-        borderColor: borderColor,
-        textColor: textColor,
         editable: true,
         startEditable: true,
         durationEditable: true,
         overlap: true,
-        extendedProps: {
-          ...base.extendedProps,
-          eventColor,
-          borderColor,
-          textColor,
-        },
         classNames: [
+          ...base.classNames,
           `booking-${booking.booking_type}`,
           `status-${booking.status}`,
-          `priority-${booking.priority}`,
-          `type-${booking.booking_type}-${booking.priority}`,
-          isTurn ? 'turn-booking-event' : 'standard-booking-event',
-          isUrgent && isTurn ? 'turn-urgent-event' : '',
-          isUrgent ? 'urgent-event' : '',
-        ].filter(Boolean),
+        ],
       }
     })
   })
-
-  // Enhanced dynamic color system with more variety
-  function getEventColor (booking: Booking): string {
-    const isDark = theme.global.current.value.dark
-
-    if (booking.booking_type === 'turn') {
-      switch (booking.priority) {
-        case 'urgent': {
-          return isDark ? '#64748b' : '#475569'
-        } // Dark slate for urgent turns
-        case 'high': {
-          return isDark ? '#78716c' : '#64748b'
-        } // Slate for high priority turns
-        case 'normal': {
-          return isDark ? '#9ca3af' : '#78716c'
-        } // Stone for normal turns
-        case 'low': {
-          return isDark ? '#d1d5db' : '#9ca3af'
-        } // Cool gray for low priority turns
-        default: {
-          return isDark ? '#6b7280' : '#475569'
-        }
-      }
-    } else {
-      switch (booking.priority) {
-        case 'urgent': {
-          return isDark ? '#7c3aed' : '#6366f1'
-        } // Indigo for urgent standard
-        case 'high': {
-          return isDark ? '#a855f7' : '#8b5cf6'
-        } // Violet for high priority standard
-        case 'normal': {
-          return isDark ? '#0ea5e9' : '#06b6d4'
-        } // Cyan for normal
-        case 'low': {
-          return isDark ? '#22c55e' : '#10b981'
-        } // Emerald for low priority
-        default: {
-          return isDark ? '#3b82f6' : '#2563eb'
-        }
-      }
-    }
-  }
-
-  function getEventBorderColor (booking: Booking): string {
-    if (booking.booking_type === 'turn') {
-      switch (booking.priority) {
-        case 'urgent': {
-          return '#334155'
-        } // Dark slate border for urgent turns
-        case 'high': {
-          return '#475569'
-        } // Slate border for high priority turns
-        case 'normal': {
-          return '#57534e'
-        } // Stone border for normal turns
-        case 'low': {
-          return '#6b7280'
-        } // Cool gray border for low priority turns
-        default: {
-          return '#334155'
-        }
-      }
-    } else {
-      switch (booking.priority) {
-        case 'urgent': {
-          return '#4f46e5'
-        } // Indigo border for urgent standard
-        case 'high': {
-          return '#7c3aed'
-        } // Violet border for high priority standard
-        case 'normal': {
-          return '#0891b2'
-        } // Cyan border for normal
-        case 'low': {
-          return '#059669'
-        } // Emerald border for low priority
-        default: {
-          return '#1d4ed8'
-        }
-      }
-    }
-  }
-
-  function getEventTextColor (booking: Booking): string {
-    // Use white text for better contrast on colored backgrounds
-    if (booking.status === 'completed') {
-      return '#E0E0E0' // Lighter text for completed bookings
-    }
-    return '#FFFFFF'
-  }
 
   // Mobile viewport height management
   const mobileOptions = ref(getMobileCalendarOptions())
   let cleanupViewportListener: (() => void) | null = null
 
-  // Calendar configuration
-  const calendarOptions = computed<CalendarOptions>(() => ({
+  // Calendar configuration — reactive so we can patch individual fields
+  // without rebuilding the entire options object on every booking change
+  const calendarOptions = reactive({
     plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
 
     // View settings
@@ -221,8 +106,8 @@
       right: '',
     },
 
-    // Event settings - mobile optimized
-    events: calendarEvents.value,
+    // Event settings - mobile optimized (patched via watch below)
+    events: [] as CalendarOptions['events'],
     eventDisplay: mobileOptions.value.eventDisplay,
     eventOverlap: true,
     eventResizableFromStart: true,
@@ -243,7 +128,7 @@
 
     // Use mobile-optimized height calculation
     height: mobileOptions.value.height,
-    aspectRatio: undefined, // Remove aspect ratio constraints for full height
+    aspectRatio: undefined as number | undefined, // Remove aspect ratio constraints for full height
     expandRows: true, // Make calendar rows expand to fill available height
 
     // Custom styling based on theme
@@ -254,12 +139,13 @@
     eventClick: handleEventClick,
 
     eventDrop: handleEventDrop as any,
+    eventResize: handleEventResize as any,
 
     // Loading state
     loading: handleLoading,
 
     // Calendar lifecycle
-    datesSet: handleCalendarMount,
+    datesSet: handleDatesSet,
     viewDidMount: handleViewMount,
 
     // Custom rendering
@@ -283,7 +169,19 @@
     allDaySlot: false,
     nowIndicator: true,
     scrollTime: '08:00:00',
-  }))
+  }) as CalendarOptions
+
+  // Patch events slot incrementally — FullCalendar diffs, not full re-render
+  watch(calendarEvents, (events) => {
+    calendarOptions.events = events
+  }, { immediate: true })
+
+  // Patch mobile-responsive fields when viewport changes
+  watch(mobileOptions, (opts) => {
+    calendarOptions.height = opts.height
+    calendarOptions.dayMaxEvents = opts.dayMaxEvents
+    calendarOptions.eventDisplay = opts.eventDisplay
+  })
 
   // Event handlers
   function handleDateSelect (selectInfo: DateSelectArg): void {
@@ -322,59 +220,61 @@
   }
 
   function handleEventDrop (dropInfo: EventDropArg): void {
-    const booking = dropInfo.event.extendedProps.booking as Booking
+    emit('event-drop', dropInfo)
+  }
 
-    // Log emitting event to Home
-    // eventLogger.logEvent(
-    //   'FullCalendar',
-    //   'Home',
-    //   'event-drop',
-    //   {
-    //     id: booking.id,
-    //     start: dropInfo.event.startStr,
-    //     end: dropInfo.event.endStr || dropInfo.event.startStr,
-    //   },
-    //   'emit',
-    // )
-
-    // emit('event-drop', dropInfo)
-  // Removed duplicate updateBooking emit to prevent infinite loops
+  function handleEventResize (resizeInfo: EventResizeDoneArg): void {
+    emit('event-resize', resizeInfo)
   }
 
   // Custom event rendering with enhanced visual variety
-  function renderEventContent (eventInfo: { event: { extendedProps: { booking: Booking, property: Property, eventColor?: string, borderColor?: string, textColor?: string }, backgroundColor?: string, borderColor?: string, textColor?: string } }) {
+  function renderEventContent (eventInfo: {
+    event: {
+      extendedProps: {
+        booking: Booking
+        property: Property
+      }
+    }
+  }) {
     const booking = eventInfo.event.extendedProps.booking as Booking
     const property = eventInfo.event.extendedProps.property as Property
-    const eventColor = eventInfo.event.extendedProps.eventColor || eventInfo.event.backgroundColor
-    const borderColor = eventInfo.event.extendedProps.borderColor || eventInfo.event.borderColor
-    const textColor = eventInfo.event.extendedProps.textColor || eventInfo.event.textColor
 
     // Get priority icon
     const getPriorityIcon = (priority: string, type: string) => {
       if (type === 'turn') {
         switch (priority) {
-          case 'urgent': { return '🚨'
+          case 'urgent': {
+            return '🚨'
           }
-          case 'high': { return '🔥'
+          case 'high': {
+            return '🔥'
           }
-          case 'normal': { return '🏠'
+          case 'normal': {
+            return '🏠'
           }
-          case 'low': { return '🧹'
+          case 'low': {
+            return '🧹'
           }
-          default: { return '🏠'
+          default: {
+            return '🏠'
           }
         }
       } else {
         switch (priority) {
-          case 'urgent': { return '⚡'
+          case 'urgent': {
+            return '⚡'
           }
-          case 'high': { return '⭐'
+          case 'high': {
+            return '⭐'
           }
-          case 'normal': { return '🏠'
+          case 'normal': {
+            return '🏠'
           }
-          case 'low': { return '✨'
+          case 'low': {
+            return '✨'
           }
-          default: { return '🏠'
+          default: {
+            return '🏠'
           }
         }
       }
@@ -383,26 +283,33 @@
     // Get status badge
     const getStatusBadge = (status: string) => {
       switch (status) {
-        case 'completed': { return '✅'
+        case 'completed': {
+          return '✅'
         }
-        case 'pending': { return '⏳'
+        case 'pending': {
+          return '⏳'
         }
-        case 'confirmed': { return '📋'
+        case 'confirmed': {
+          return '📋'
         }
-        case 'in_progress': { return '🔄'
+        case 'in_progress': {
+          return '🔄'
         }
-        default: { return '📋'
+        default: {
+          return '📋'
         }
       }
     }
 
-    const priorityIcon = getPriorityIcon(booking.priority || 'normal', booking.booking_type)
+    const priorityIcon = getPriorityIcon(
+      booking.priority || 'normal',
+      booking.booking_type,
+    )
     const statusBadge = getStatusBadge(booking.status || 'pending')
 
     return {
       html: `
-      <div class="fc-event-content-wrapper booking-${booking.booking_type} priority-${booking.priority}" 
-           style="background-color: ${eventColor}; border-color: ${borderColor}; color: ${textColor};">
+      <div class="fc-event-content-wrapper booking-${booking.booking_type} priority-${booking.priority}">
         <div class="fc-event-title">
           ${priorityIcon} ${property?.name || 'Property'}
         </div>
@@ -416,6 +323,7 @@
   }
 
   // Programmatic calendar methods with enhanced safety checks
+
   function goToDate (date: string | Date): void {
     if (!calendarRef.value) return
 
@@ -456,116 +364,34 @@
   }
 
   // Watch for theme changes and update calendar
-  watch(() => theme.global.current.value.dark, () => {
-    refreshEvents()
-  })
+  // watch(() => theme.global.current.value.dark, () => {
+  //   refreshEvents()
+  // })
 
   // Watch for changes in props from Home
-  watch(() => props.bookings, (newBookings, oldBookings) => {
-    console.log('🔍 [FullCalendar] Bookings prop changed:', {
-      newSize: newBookings.size,
-      oldSize: oldBookings?.size || 0,
-      newBookingIds: Array.from(newBookings.keys()),
-      newBookings: Array.from(newBookings.values()).map(b => ({
-        id: b.id,
-        property_id: b.property_id,
-        owner_id: b.owner_id,
-        checkout_date: b.checkout_date,
-        checkin_date: b.checkin_date,
-      })),
-    })
+  watch(
+    () => props.bookings,
+    (newBookings) => {
+      // Log receiving updated bookings from Home
+      eventLogger.logEvent(
+        'Home',
+        'FullCalendar',
+        'bookingsUpdate',
+        { count: newBookings.length },
+        'receive',
+      )
 
-    // Log receiving updated bookings from Home
-    eventLogger.logEvent(
-      'Home',
-      'FullCalendar',
-      'bookingsUpdate',
-      { count: newBookings.size },
-      'receive',
-    )
-
-    // FullCalendar will automatically update with the new events
-    // Reattach more link listeners after events update
-    setTimeout(() => {
-      attachMoreLinkListeners()
-    }, 200)
-  }, { immediate: true }) // Removed deep: true to prevent excessive re-runs
-
-  // Day view bottom sheet event handlers
-  function handleViewBooking (booking: Booking): void {
-    // Close the bottom sheet first
-    dayViewVisible.value = false
-
-    // Find the FullCalendar event and trigger click
-    const calendarApi = calendarRef.value?.getApi()
-    if (calendarApi) {
-      const event = calendarApi.getEventById(booking.id)
-      if (event) {
-        // Simulate event click
-        const clickInfo = {
-          event: event,
-          jsEvent: new MouseEvent('click'),
-          view: calendarApi.view,
-          el: document.createElement('div'), // Provide a dummy element
-        }
-        handleEventClick(clickInfo as EventClickArg)
-      }
-    }
-
-    console.log('👁️ [FullCalendar] View booking from day view:', booking.id)
-  }
-
-  function handleEditBooking (booking: Booking): void {
-    // Close the bottom sheet and emit edit event
-    dayViewVisible.value = false
-
-    // Emit edit event (can be handled by parent)
-    emit('event-click', {
-      event: {
-        id: booking.id,
-        extendedProps: { booking, isEdit: true },
-      },
-    } as unknown as EventClickArg)
-
-    console.log('✏️ [FullCalendar] Edit booking from day view:', booking.id)
-  }
-
-  function handleCompleteBooking (booking: Booking): void {
-    // Update booking status and emit event
-
-    emit('update-booking', {
-      id: booking.id,
-      start: booking.checkin_date,
-      end: booking.checkout_date,
-    })
-
-    console.log('✅ [FullCalendar] Complete booking from day view:', booking.id)
-  }
-
-  function handleAddBookingFromDayView (date: Date): void {
-    // Close the bottom sheet
-    dayViewVisible.value = false
-
-    // Create date strings for the selected date
-    const startStr = date.toISOString().split('T')[0]
-    const endDate = new Date(date)
-    endDate.setDate(endDate.getDate() + 1)
-    const endStr = endDate.toISOString().split('T')[0]
-
-    // Emit create booking event
-    emit('create-booking', {
-      start: startStr,
-      end: endStr,
-    })
-
-    console.log('➕ [FullCalendar] Add booking from day view for date:', startStr)
-  }
+      // FullCalendar will automatically update with the new events
+      // Reattach more link listeners after events update
+      setTimeout(() => {
+        attachMoreLinkListeners()
+      }, 200)
+    },
+    { immediate: true },
+  ) // Removed deep: true to prevent excessive re-runs
 
   // Add new handler function after the other event handlers
   function handleLoading (isLoading: boolean): void {
-    // You can emit an event or handle loading state changes here
-    console.log('Calendar loading state:', isLoading)
-
     // Log loading state
     eventLogger.logEvent(
       'FullCalendar',
@@ -576,8 +402,9 @@
     )
   }
 
-  // Calendar mount handlers to manually attach more link listeners
-  function handleCalendarMount (): void {
+  // Calendar datesSet handler — fires whenever the visible date range changes
+  function handleDatesSet (arg: DatesSetArg): void {
+    emit('dates-set', arg)
     attachMoreLinkListeners()
   }
 
@@ -611,10 +438,12 @@
         // Add our custom click handlers with high priority (capture phase)
         link.addEventListener('click', handleManualMoreLinkClick, true)
         link.addEventListener('mousedown', handleManualMoreLinkClick, true)
-        link.addEventListener('touchstart', handleManualMoreLinkClick, { passive: false, capture: true })
+        link.addEventListener('touchstart', handleManualMoreLinkClick, {
+          passive: false,
+          capture: true,
+        })
       }
 
-      console.log('📎 [FullCalendar] Attached listeners to', moreLinks.length, 'more links')
     } catch (error) {
       console.warn('Error attaching more link listeners:', error)
     }
@@ -630,7 +459,9 @@
     const linkElement = event.currentTarget as HTMLElement
 
     // Hide any existing popovers immediately
-    const existingPopovers = document.querySelectorAll('.fc-popover, .fc-more-popover')
+    const existingPopovers = document.querySelectorAll(
+      '.fc-popover, .fc-more-popover',
+    )
     for (const popover of existingPopovers) {
       (popover as HTMLElement).style.display = 'none'
       popover.remove()
@@ -648,7 +479,7 @@
 
     // Fallback: try to get from aria-label or other attributes
     if (!dateAttr) {
-      dateAttr =  dayCell.getAttribute('aria-label')
+      dateAttr = dayCell.getAttribute('aria-label') as string
     }
 
     // Another fallback: try to get from the day number element
@@ -682,43 +513,28 @@
     // Fix timezone issue by parsing date components manually
     const [year, month, day] = dateAttr.split('-').map(Number)
     const clickedDate = new Date(year, month - 1, day) // month is 0-indexed in JS Date
-    const currentUserId = authStore.user?.id
-
-    // Debug logging
-    console.log('📅 [FullCalendar] Debug info:', {
-      linkElement,
-      dayCell,
-      dateAttr,
-      clickedDate: clickedDate.toDateString(),
-      iso: clickedDate.toISOString(),
-    })
 
     // Filter bookings for this date (same logic as before)
     const clickedDateStr = clickedDate.toDateString()
     const dayBookings: Booking[] = []
 
-    for (const booking of Array.from(props.bookings.values())) {
+    for (const booking of props.bookings) {
       const checkoutDate = new Date(booking.checkout_date)
       const checkinDate = new Date(booking.checkin_date)
 
       // Check if the clicked date falls within the booking period
       const bookingStartsOnDate = checkinDate.toDateString() === clickedDateStr
-      const bookingSpansDate = clickedDate >= checkinDate && clickedDate <= checkoutDate
+      const bookingSpansDate
+        = clickedDate >= checkinDate && clickedDate <= checkoutDate
 
       const dateMatches = bookingStartsOnDate || bookingSpansDate
-      const ownerMatches = !currentUserId || booking.owner_id === currentUserId
 
-      if (dateMatches && ownerMatches) {
+      if (dateMatches) {
         dayBookings.push(booking)
       }
     }
 
-    // Set state and open bottom sheet
-    selectedDate.value = clickedDate
-    selectedDayBookings.value = dayBookings
-    dayViewVisible.value = true
-
-    console.log('📅 [FullCalendar] Manual more link clicked for date:', clickedDate.toDateString(), 'with', dayBookings.length, 'owner bookings')
+    emit('day-view-open', { date: clickedDate, bookings: dayBookings })
   }
 
   // Lifecycle hooks for mobile viewport management
@@ -819,7 +635,7 @@
 }
 
 .fc-event.booking-turn::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -836,7 +652,7 @@
 }
 
 .fc-event.booking-standard::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
@@ -848,98 +664,17 @@
 
 /* Add elevation to all booking events */
 :deep(.fc-event) {
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06) !important;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 1px 2px rgba(0, 0, 0, 0.06) !important;
   transition: all 0.2s ease !important;
   border-radius: 4px !important;
 }
 
-/* Remove any color overrides and use higher specificity */
-:deep(.fc-daygrid-event.fc-event) {
-  background-color: inherit !important;
-  border-color: inherit !important;
-  color: #ffffff !important;
-}
-
-/* Force specific type and priority combinations with higher specificity */
-:deep(.fc-daygrid-event.fc-event.type-turn-urgent),
-:deep(.fc-timegrid-event.fc-event.type-turn-urgent) {
-  background-color: #475569 !important;
-  border-color: #334155 !important;
-  color: #ffffff !important;
-}
-
-:deep(.fc-daygrid-event.fc-event.type-turn-high),
-:deep(.fc-timegrid-event.fc-event.type-turn-high) {
-  background-color: #64748b !important;
-  border-color: #475569 !important;
-  color: #ffffff !important;
-}
-
-:deep(.fc-daygrid-event.fc-event.type-turn-normal),
-:deep(.fc-timegrid-event.fc-event.type-turn-normal) {
-  background-color: #78716c !important;
-  border-color: #57534e !important;
-  color: #ffffff !important;
-}
-
-:deep(.fc-daygrid-event.fc-event.type-turn-low),
-:deep(.fc-timegrid-event.fc-event.type-turn-low) {
-  background-color: #9ca3af !important;
-  border-color: #6b7280 !important;
-  color: #ffffff !important;
-}
-
-:deep(.fc-daygrid-event.fc-event.type-standard-urgent),
-:deep(.fc-timegrid-event.fc-event.type-standard-urgent) {
-  background-color: #6366f1 !important;
-  border-color: #4f46e5 !important;
-  color: #ffffff !important;
-}
-
-:deep(.fc-daygrid-event.fc-event.type-standard-high),
-:deep(.fc-timegrid-event.fc-event.type-standard-high) {
-  background-color: #8b5cf6 !important;
-  border-color: #7c3aed !important;
-  color: #ffffff !important;
-}
-
-:deep(.fc-daygrid-event.fc-event.type-standard-normal),
-:deep(.fc-timegrid-event.fc-event.type-standard-normal) {
-  background-color: #06b6d4 !important;
-  border-color: #0891b2 !important;
-  color: #ffffff !important;
-}
-
-:deep(.fc-daygrid-event.fc-event.type-standard-low),
-:deep(.fc-timegrid-event.fc-event.type-standard-low) {
-  background-color: #10b981 !important;
-  border-color: #059669 !important;
-  color: #ffffff !important;
-}
-
-/* Additional fallback based on priority class */
-:deep(.fc-event.priority-urgent) {
-  background-color: #475569 !important;
-  border-color: #334155 !important;
-}
-
-:deep(.fc-event.priority-high) {
-  background-color: #64748b !important;
-  border-color: #475569 !important;
-}
-
-:deep(.fc-event.priority-normal) {
-  background-color: #78716c !important;
-  border-color: #57534e !important;
-}
-
-:deep(.fc-event.priority-low) {
-  background-color: #9ca3af !important;
-  border-color: #6b7280 !important;
-}
-
 :deep(.fc-event:hover) {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.15),
+    0 2px 4px rgba(0, 0, 0, 0.1) !important;
   transform: translateY(-1px) !important;
   cursor: grab !important;
 }
@@ -961,9 +696,17 @@
 }
 
 @keyframes pulse {
-  0% { box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0.7); }
-  70% { box-shadow: 0 0 0 10px rgba(var(--v-theme-error), 0); }
-  100% { box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0); }
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0.7);
+  }
+
+  70% {
+    box-shadow: 0 0 0 10px rgba(var(--v-theme-error), 0);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0);
+  }
 }
 
 /* Status-based styling */
@@ -1004,9 +747,14 @@
   .calendar-container {
     position: relative;
     /* Use calculated height instead of 100% */
-    height: calc(100vh - 56px - 60px - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 20px) !important;
-    min-height: 400px; /* Minimum height for very small screens */
-    max-height: calc(100vh - 100px); /* Maximum height to prevent overflow */
+    height: calc(
+      100vh - 56px - 60px - env(safe-area-inset-top) -
+        env(safe-area-inset-bottom) - 20px
+    ) !important;
+    min-height: 400px;
+    /* Minimum height for very small screens */
+    max-height: calc(100vh - 100px);
+    /* Maximum height to prevent overflow */
   }
 
   .custom-calendar {
@@ -1035,7 +783,8 @@
 
   /* Fix for mobile browser address bar height changes */
   :deep(.fc-daygrid-body) {
-    min-height: 300px; /* Ensure minimum content height */
+    min-height: 300px;
+    /* Ensure minimum content height */
   }
 
   /* Prevent horizontal scrolling on mobile */

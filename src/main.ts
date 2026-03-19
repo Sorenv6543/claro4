@@ -5,6 +5,7 @@ import vuetify from '@/plugins/vuetify'
 import router from '@/router'
 
 import './styles/main.scss'
+import '@/styles/calendar-tokens.css'
 
 const app = createApp(App)
 app.use(vuetify)

@@ -138,10 +138,6 @@ export function useCalendarState() {
     end.setHours(23, 59, 59, 999);
     
     dateRange.value = { start, end };
-    
-    // Update UI store
-    uiStore.setFilter('dateRangeStart', start.toISOString());
-    uiStore.setFilter('dateRangeEnd', end.toISOString());
   }
   
   /**
@@ -241,19 +237,7 @@ export function useCalendarState() {
         return false;
       }
 
-      // Check if booking is within current date range (checkin = start, checkout = end)
-      const bookingStart = new Date(booking.checkin_date);
-      const bookingEnd = new Date(booking.checkout_date);
-
-      if (isNaN(bookingStart.getTime()) || isNaN(bookingEnd.getTime())) {
-        return false;
-      }
-
-      return (
-        (bookingStart >= dateRange.value.start && bookingStart <= dateRange.value.end) ||
-        (bookingEnd >= dateRange.value.start && bookingEnd <= dateRange.value.end) ||
-        (bookingStart <= dateRange.value.start && bookingEnd >= dateRange.value.end)
-      );
+      return true;
     });
 
     if (__DEV__) console.log(`[useCalendarState] Filtered ${bookings.length} bookings down to ${filtered.length}`);
@@ -303,42 +287,6 @@ export function useCalendarState() {
     }
   }
   
-  /**
-   * Convert bookings to FullCalendar event format
-   */
-  function bookingsToEvents(bookings: Booking[]) {
-    return filterBookings(bookings).map(booking => {
-      // Get booking status for color coding
-      const statusColors = {
-        pending: '#FFA726',     // Orange
-        scheduled: '#42A5F5',   // Blue
-        in_progress: '#AB47BC', // Purple
-        completed: '#66BB6A',   // Green
-        cancelled: '#E53935'    // Red
-      };
-      
-      // Get booking type for display
-      const isPriority = booking.booking_type === 'turn';
-      
-      return {
-        id: booking.id,
-        title: isPriority ? '🔥 TURN BOOKING' : 'Standard Cleaning',
-        start: booking.checkout_date,
-        end: booking.checkin_date,
-        backgroundColor: statusColors[booking.status],
-        borderColor: statusColors[booking.status],
-        textColor: '#FFFFFF',
-        extendedProps: {
-          booking_type: booking.booking_type,
-          status: booking.status,
-          property_id: booking.property_id,
-          notes: booking.notes || '',
-          priority: isPriority ? 'high' : 'normal'
-        }
-      };
-    });
-  }
-  
   // Initialize date range on creation
   updateDateRange();
   
@@ -346,7 +294,6 @@ export function useCalendarState() {
     // State
     currentView,
     currentDate,
-    dateRange,
     showPendingBookings,
     showScheduledBookings,
     showInProgressBookings,
@@ -355,29 +302,26 @@ export function useCalendarState() {
     showTurnBookings,
     showStandardBookings,
     selectedPropertyIds,
-    
+
     // Calendar navigation
     setCalendarView,
     goToDate,
     goToToday,
     next,
     prev,
-    updateDateRange,
-    
+
     // Filtering
     toggleStatusFilter,
     toggleTypeFilter,
     togglePropertyFilter,
     clearPropertyFilters,
     filterBookings,
-    
+
     // Formatting and conversion
     getFormattedDateRange,
-    bookingsToEvents,
-    
+
     // Computed properties
     formattedDateRange: computed(() => getFormattedDateRange()),
     filteredBookings: computed(() => filterBookings(bookingStore.bookingsArray)),
-    calendarEvents: computed(() => bookingsToEvents(bookingStore.bookingsArray))
   };
 }
