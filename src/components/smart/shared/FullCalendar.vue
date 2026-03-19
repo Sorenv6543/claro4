@@ -191,10 +191,12 @@
   function handleEventDidMount (info: { event: { extendedProps: Record<string, unknown> }, el: HTMLElement }) {
     const booking = info.event.extendedProps?.booking as Booking | undefined
     if (!booking?.turn_date || booking.booking_type !== 'turn') return
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(booking.turn_date)) return
 
     // Wait for layout to finalize
     requestAnimationFrame(() => {
       const eventEl = info.el
+      if (!eventEl.isConnected) return
       const turnCell = document.querySelector(`td.fc-day[data-date="${booking.turn_date}"]`)
       if (!turnCell) return
 

@@ -291,7 +291,8 @@ const submitButtonText = computed((): string => {
 
 // DROPDOWN OPTIONS
 const pricingTierItems = [
-  { title: 'Basic', value: 'basic', subtitle: 'Standard cleaning service' },
+  { title: 'Basic', value: 'basic', subtitle: 'Essential cleaning service' },
+  { title: 'Standard', value: 'standard', subtitle: 'Standard cleaning service' },
   { title: 'Premium', value: 'premium', subtitle: 'Enhanced cleaning with additional services' },
   { title: 'Luxury', value: 'luxury', subtitle: 'Comprehensive premium cleaning package' }
 ];
@@ -325,7 +326,7 @@ const durationRules = [
 
 const pricingTierRules = [
   (v: string) => !!v || 'Pricing tier is required',
-  (v: string) => ['basic', 'premium', 'luxury'].includes(v) || 'Invalid pricing tier'
+  (v: string) => ['basic', 'standard', 'premium', 'luxury'].includes(v) || 'Invalid pricing tier'
 ];
 
 // METHODS
@@ -399,7 +400,7 @@ async function validate(): Promise<boolean> {
     return false;
   }
   
-  if (!form.pricing_tier || !['basic', 'premium', 'luxury'].includes(String(form.pricing_tier))) {
+  if (!form.pricing_tier || !['basic', 'standard', 'premium', 'luxury'].includes(String(form.pricing_tier))) {
     errors.value.set('pricing_tier', 'Invalid pricing tier');
     return false;
   }
