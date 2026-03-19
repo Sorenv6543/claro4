@@ -327,7 +327,7 @@ src/components/smart/owner/HomeOwner.vue -
 
     const bookingData: Partial<BookingFormData> = {
       checkin_date: selectInfo.startStr,
-      checkout_date: selectInfo.endStr,
+      checkout_date: subtractOneDay(selectInfo.endStr),
       owner_id: currentOwnerId.value,
     }
 
@@ -444,11 +444,19 @@ src/components/smart/owner/HomeOwner.vue -
   // ============================================================================
 
   function handlePrevious (): void {
-    calendarRef.value?.prev()
+    if (!calendarRef.value) {
+      console.warn('[HomeOwner] Calendar not ready — navigation ignored')
+      return
+    }
+    calendarRef.value.prev()
   }
 
   function handleNext (): void {
-    calendarRef.value?.next()
+    if (!calendarRef.value) {
+      console.warn('[HomeOwner] Calendar not ready — navigation ignored')
+      return
+    }
+    calendarRef.value.next()
   }
 
   function handleCalendarViewChange (view: string): void {
@@ -482,12 +490,20 @@ src/components/smart/owner/HomeOwner.vue -
   }
 
   async function handleDayViewCompleteBooking (booking: Booking): Promise<void> {
-    dayViewVisible.value = false
-    await updateMyBooking(booking.id, {
-      checkin_date: booking.checkin_date,
-      checkout_date: booking.checkout_date,
-      owner_id: booking.owner_id,
-    })
+    try {
+      const result = await updateMyBooking(booking.id, {
+        status: 'completed',
+        checkin_date: booking.checkin_date,
+        checkout_date: booking.checkout_date,
+        owner_id: booking.owner_id,
+      })
+      if (!result) {
+        throw new Error('Update failed')
+      }
+      dayViewVisible.value = false
+    } catch (error) {
+      console.error('Failed to complete your booking:', error)
+    }
   }
 
   function handleDayViewAddBooking (date: Date): void {
@@ -511,18 +527,24 @@ src/components/smart/owner/HomeOwner.vue -
     uiStore.openModal('eventModal', 'create', bookingData)
   }
 
-  function handleUpdateBooking (data: { id: string, start: string, end: string }): void {
-    // Verify owner can update this booking
+  async function handleUpdateBooking (data: { id: string, start: string, end: string }): Promise<void> {
     if (!myBookings.value.some(b => b.id === data.id)) {
       console.warn('Cannot update booking not owned by current user')
       return
     }
 
-    updateMyBooking(data.id, {
-      checkin_date: data.start,
-      checkout_date: data.end,
-      owner_id: currentOwnerId.value,
-    })
+    try {
+      const result = await updateMyBooking(data.id, {
+        checkin_date: data.start,
+        checkout_date: subtractOneDay(data.end),
+        owner_id: currentOwnerId.value,
+      })
+      if (!result) {
+        throw new Error('Update failed')
+      }
+    } catch (error) {
+      console.error('Failed to update your booking:', error)
+    }
   }
 
   // ============================================================================

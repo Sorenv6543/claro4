@@ -287,45 +287,6 @@ export function useCalendarState() {
     }
   }
   
-  /**
-   * @deprecated — event mapping moved to FullCalendar component props. Do not add new callers.
-   * Convert bookings to FullCalendar event format
-   */
-  // @ts-ignore TS6133 – retained intentionally; body will be deleted once all callers confirmed removed
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  function bookingsToEvents(bookings: Booking[]) {
-    return filterBookings(bookings).map(booking => {
-      // Get booking status for color coding
-      const statusColors = {
-        pending: '#FFA726',     // Orange
-        scheduled: '#42A5F5',   // Blue
-        in_progress: '#AB47BC', // Purple
-        completed: '#66BB6A',   // Green
-        cancelled: '#E53935'    // Red
-      };
-      
-      // Get booking type for display
-      const isPriority = booking.booking_type === 'turn';
-      
-      return {
-        id: booking.id,
-        title: isPriority ? '🔥 TURN BOOKING' : 'Standard Cleaning',
-        start: booking.checkout_date,
-        end: booking.checkin_date,
-        backgroundColor: statusColors[booking.status],
-        borderColor: statusColors[booking.status],
-        textColor: '#FFFFFF',
-        extendedProps: {
-          booking_type: booking.booking_type,
-          status: booking.status,
-          property_id: booking.property_id,
-          notes: booking.notes || '',
-          priority: isPriority ? 'high' : 'normal'
-        }
-      };
-    });
-  }
-  
   // Initialize date range on creation
   updateDateRange();
   

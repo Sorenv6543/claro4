@@ -173,13 +173,16 @@ function useOwnerBookingsPinia () {
     loading.value = true
     error.value = null
 
-    //  make an API call with owner filter
-    // For now, we the call and rely on computed filtering
-    await new Promise(resolve => setTimeout(resolve, 300))
-
-    success.value = `Loaded ${myBookings.value.length} of your bookings`
-    loading.value = false
-    return true
+    try {
+      await bookingStore.fetchBookings()
+      success.value = `Loaded ${myBookings.value.length} of your bookings`
+      loading.value = false
+      return true
+    } catch (error_) {
+      error.value = 'Unable to load your bookings. Please try again.'
+      loading.value = false
+      throw error_
+    }
   }
 
   /**

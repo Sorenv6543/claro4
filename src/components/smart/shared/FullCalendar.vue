@@ -69,8 +69,9 @@
 
   // Convert bookings array to FullCalendar events
   const calendarEvents = computed(() => {
+    const propertyMap = new Map(props.properties.map(p => [p.id, p]))
     return props.bookings.map(booking => {
-      const property = props.properties.find(p => p.id === booking.property_id)
+      const property = propertyMap.get(booking.property_id)
       const base = bookingToCalendarEvent(booking, property)
 
       return {
@@ -138,6 +139,7 @@
     eventClick: handleEventClick,
 
     eventDrop: handleEventDrop as any,
+    eventResize: handleEventResize as any,
 
     // Loading state
     loading: handleLoading,
@@ -221,7 +223,11 @@
     emit('event-drop', dropInfo)
   }
 
-  // Custom event rendering with enhanced visual variety
+  function handleEventResize (resizeInfo: EventResizeDoneArg): void {
+    emit('event-resize', resizeInfo)
+  }
+
+  // Custom event rendering
   function renderEventContent (eventInfo: {
     event: {
       extendedProps: {
