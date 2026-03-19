@@ -79,7 +79,7 @@ For EACH route in the current group, perform these steps:
 
 ### Error Manifest
 
-Accumulate ALL findings into a structured manifest. For each unique error, record:
+Accumulate ALL findings into a structured manifest. Track the overall scan metadata (`scanDate`, `routesScanned`) and for each unique error, record:
 
 | Field | Description |
 |-------|------------|
@@ -109,6 +109,7 @@ After the passive scan on each route, interact with the page to surface action-t
 1. `take_snapshot` to get the accessibility tree with element UIDs
 2. Identify interactive elements from the snapshot:
    - Buttons (`v-btn`): click each non-destructive one, re-collect console messages after each
+   - Navigation items (`v-list-item`): click items within the current route's nav scope only — do not navigate away from the current route group
    - Menus (`v-menu`): open then close
    - Dialogs: click trigger buttons to open, then `press_key` Escape to close
    - Data tables: click sort headers if visible, click pagination if present
