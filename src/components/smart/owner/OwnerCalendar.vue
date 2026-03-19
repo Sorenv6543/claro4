@@ -71,8 +71,6 @@
     emit('event-drop', dropInfo)
   }
 
-  // Import EventResizeArg if missing
-  // ...existing code...
   function handleEventResize (resizeInfo: EventResizeDoneArg): void {
     console.log('🔄 [OwnerCalendar] Event resized:', resizeInfo.event.id)
     emit('event-resize', resizeInfo)
