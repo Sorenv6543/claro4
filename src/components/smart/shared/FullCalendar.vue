@@ -227,7 +227,7 @@
     emit('event-resize', resizeInfo)
   }
 
-  // Custom event rendering
+  // Custom event rendering with enhanced visual variety
   function renderEventContent (eventInfo: {
     event: {
       extendedProps: {

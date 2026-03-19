@@ -498,7 +498,7 @@ src/components/smart/owner/HomeOwner.vue -
         owner_id: booking.owner_id,
       })
       if (!result) {
-        throw new Error('Update failed')
+        throw new Error('Failed to complete booking')
       }
       dayViewVisible.value = false
     } catch (error) {
@@ -536,7 +536,7 @@ src/components/smart/owner/HomeOwner.vue -
     try {
       const result = await updateMyBooking(data.id, {
         checkin_date: data.start,
-        checkout_date: subtractOneDay(data.end),
+        checkout_date: data.end,
         owner_id: currentOwnerId.value,
       })
       if (!result) {
