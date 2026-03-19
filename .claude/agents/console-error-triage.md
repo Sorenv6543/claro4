@@ -33,7 +33,7 @@ Routes:
 
 ### Group 2: Owner Routes
 
-Ask the user: "Please log in as an **owner** account, then tell me when ready."
+Ask the user: "Please log in as an **owner** account, then tell me when ready." If the user cannot provide an owner session, skip this group entirely and note it in the Skipped Routes section.
 
 Routes:
 - `/owner/dashboard`
@@ -44,7 +44,7 @@ Routes:
 
 ### Group 3: Admin Routes
 
-Ask the user: "Please switch to an **admin** account, then tell me when ready."
+Ask the user: "Please switch to an **admin** account, then tell me when ready." If the user cannot provide an admin session, skip this group entirely and note it in the Skipped Routes section.
 
 Routes:
 - `/admin`
@@ -63,7 +63,7 @@ For EACH route in the current group, perform these steps:
 ### 1a. Navigate and Verify
 
 1. `navigate_page` to `http://localhost:3000{route}`
-2. Wait for page stability — use `wait_for` with expected content (a heading, button, or `v-main`). Fall back to 3-second wait if no known element.
+2. Wait for page stability — use `wait_for` targeting `v-main` content or a visible heading. Timeout after 5 seconds and proceed.
 3. **Verify landing**: `evaluate_script` with `window.location.pathname`
    - If the pathname does NOT match the intended route, record: `"REDIRECT: intended {route}, landed on {actual}"` and skip to the next route.
 
@@ -83,7 +83,7 @@ Accumulate ALL findings into a structured manifest. Track the overall scan metad
 
 | Field | Description |
 |-------|------------|
-| `severity` | `critical`, `high`, `medium`, or `low` (classify using Phase 2 rules) |
+| `severity` | Leave blank during Phase 1 — assigned in Phase 2 classification |
 | `message` | The error message text |
 | `source` | Source file name (normalize Vite hashes: `OwnerDashboard-CxK3f2.js` → `OwnerDashboard.vue`) |
 | `line` | Line number from stack trace (if available) |
@@ -99,7 +99,7 @@ Deduplicate by `message + source`. If the same error appears on multiple routes,
 After the passive scan on each route, interact with the page to surface action-triggered errors.
 
 **Safety rules — ALWAYS follow these:**
-- **NEVER** click buttons with destructive labels or icons: `delete`, `remove`, `mdi-delete`, `mdi-trash-can`, `mdi-close-circle`
+- **NEVER** click buttons with destructive or session-altering labels/icons: `delete`, `remove`, `logout`, `log out`, `sign out`, `archive`, `reset`, `clear`, `mdi-delete`, `mdi-trash-can`, `mdi-close-circle`, `mdi-logout`
 - **NEVER** fill forms with data or submit completed forms — only trigger validation by clicking submit on empty forms
 - **NEVER** complete dialog workflows — open and close only
 - Only use `press_key` with `Escape` to dismiss dialogs/menus
@@ -154,7 +154,7 @@ For each Critical/High error:
 - Follow existing code patterns in the file (null guards, optional chaining, error handling style)
 - **Only fix what you can confidently trace** — if uncertain about root cause, report with analysis but do NOT modify code
 - After ALL fixes are applied, run: `pnpm build`
-- If build fails, revert the breaking fix and report it as unfixed
+- If `pnpm build` fails, use `git diff` to identify which file(s) caused the failure. Revert files one at a time with `git checkout -- <file>` until the build passes. Report reverted fixes as "Fix attempted but caused build failure: {error}"
 - If the dev server has HMR, optionally re-navigate to affected routes to verify fixed errors no longer appear
 
 ## Final Report
@@ -163,7 +163,7 @@ After Phase 2, print this summary to the terminal:
 
 ---
 
-**Console Error Triage — {today's date}**
+**Console Error Triage — {YYYY-MM-DD}**
 
 **Scanned:** {N} routes | **Errors found:** {N} | **Fixed:** {N} | **Reported:** {N}
 
@@ -194,4 +194,4 @@ State whether post-fix re-verification was performed via HMR re-navigation, and 
 
 ---
 
-If any fixes were applied, remind the user: "Fixes applied. Please run `pnpm test:run` to verify no regressions."
+If any fixes were applied, remind the user: "Fixes applied. Please run `pnpm test:run` and `pnpm test:performance` to verify no regressions."
