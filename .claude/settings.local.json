@@ -38,8 +38,8 @@
       "mcp__plugin_context7_context7__resolve-library-id",
       "mcp__plugin_context7_context7__get-library-docs",
       "mcp__plugin_serena_serena__get_current_config",
-            "mcp__plugin_serena_serena__find_symbol",
-             "mcp__plugin_serena_serena__search_for_pattern",
+      "mcp__plugin_serena_serena__find_symbol",
+      "mcp__plugin_serena_serena__search_for_pattern",
       "mcp__plugin_serena_serena__replace_content",
       "mcp__plugin_serena_serena__list_dir",
       "mcp__vuetify-mcp__get_component_api_by_version",
@@ -47,16 +47,14 @@
       "mcp__plugin_playwright_playwright__browser_snapshot",
       "mcp__plugin_playwright_playwright__browser_evaluate"
     ],
-    "deny": [      "mcp__plugin_serena_serena__activate_project",
+    "deny": [
+      "mcp__plugin_serena_serena__activate_project",
       "mcp__plugin_serena_serena__deactivate_project",
       "mcp__plugin_serena_serena__restart_project"
     ]
   },
-
   "enableAllProjectMcpServers": false,
   "enabledMcpjsonServers": [],
   "disabledMcpjsonServers": [],
-  "enabledPlugins": {
-    
-  }
+  "enabledPlugins": {}
 }

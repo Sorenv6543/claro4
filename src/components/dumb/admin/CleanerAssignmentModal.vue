@@ -54,10 +54,10 @@
                         Property
                       </div>
                       <div class="text-body-1 font-weight-medium">
-                        {{ selectedProperty?.name }}
+                        {{ selectedProperty ? formatPropertyAddress(selectedProperty, 'short') : '' }}
                       </div>
                       <div class="text-body-2 text-medium-emphasis">
-                        {{ selectedProperty?.address }}
+                        {{ selectedProperty ? formatPropertyAddress(selectedProperty) : '' }}
                       </div>
                     </v-col>
                     <v-col
@@ -441,6 +441,7 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import type { Property } from '@/types/property'
+import { formatPropertyAddress } from '@/types/property'
 import type { BookingFormData } from '@/types/booking'
 import type { Cleaner } from '@/types/user'
 

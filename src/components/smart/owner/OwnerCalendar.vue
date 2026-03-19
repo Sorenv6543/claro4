@@ -30,7 +30,7 @@
     bookings: Booking[]
     properties: Property[]
     loading?: boolean
-    currentView?: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'
+    currentView?: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'
     currentDate?: Date
   }
 

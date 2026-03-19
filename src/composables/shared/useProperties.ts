@@ -26,8 +26,8 @@ export function useProperties() {
     
     try {
       // Validate required fields
-      if (!formData.name || !formData.address) {
-        throw new Error('Name and address are required');
+      if (!formData.address_street || !formData.address_city || !formData.address_state || !formData.address_zip) {
+        throw new Error('Street, city, state, and ZIP are required');
       }
       
       // Validate cleaning duration
@@ -36,7 +36,7 @@ export function useProperties() {
       }
       
       // Validate pricing tier
-      if (!['basic', 'premium', 'luxury'].includes(formData.pricing_tier as string)) {
+      if (!['basic', 'standard', 'premium', 'luxury'].includes(formData.pricing_tier as string)) {
         throw new Error('Invalid pricing tier');
       }
       
@@ -86,7 +86,7 @@ export function useProperties() {
       }
       
       // Validate pricing tier if changed
-      if (updates.pricing_tier && !['basic', 'premium', 'luxury'].includes(updates.pricing_tier as string)) {
+      if (updates.pricing_tier && !['basic', 'standard', 'premium', 'luxury'].includes(updates.pricing_tier as string)) {
         throw new Error('Invalid pricing tier');
       }
       

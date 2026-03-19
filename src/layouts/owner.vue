@@ -157,5 +157,11 @@ async function handleSignOut() {
 </script>
 
 <style scoped>
-/* No brand-mark styles needed — text-only brand */
+/* v-main fills the viewport; Vuetify's layout padding offsets for app-bar/drawer */
+:deep(.v-main) {
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  box-sizing: border-box;
+}
 </style>

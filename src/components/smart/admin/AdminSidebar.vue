@@ -484,6 +484,7 @@ import { useDisplay } from 'vuetify';
 import { useAuthStore } from '@/stores/auth.ts';
 import type { Booking} from '@/types/booking.ts';
 import type { Property } from '@/types/property.ts';
+import { formatPropertyAddress } from '@/types/property';
 
 // Constants for consistent sizing
 const SIDEBAR_WIDTH = 280;
@@ -568,7 +569,7 @@ const navigateTo = (path: string) => {
 const handleSignOut = async () => {
   const success = await authStore.logout();
   if (success) {
-    router.push('/auth/login');
+    router.push('/');
   }
 };
 
@@ -580,7 +581,7 @@ const viewBooking = (booking: Booking) => {
 // Get property name helper
 const getPropertyName = (propertyId: string): string => {
   const property = props.properties.find(p => p.id === propertyId);
-  return property?.name || 'Unknown Property';
+  return property ? formatPropertyAddress(property, 'short') : 'Unknown Property';
 };
 
 // Refresh metrics

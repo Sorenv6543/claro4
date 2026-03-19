@@ -14,7 +14,7 @@ export function useCalendarState() {
   const bookingStore = useBookingStore();
   
   // Calendar view state
-  const currentView = ref<'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'>('dayGridMonth');
+  const currentView = ref<'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'>('dayGridMonth');
   const currentDate = ref<Date>(new Date());
   const dateRange = ref<{ start: Date; end: Date }>({
     start: new Date(),
@@ -36,7 +36,7 @@ export function useCalendarState() {
   /**
    * Change calendar view
    */
-  function setCalendarView(view: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay') {
+  function setCalendarView(view: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek') {
     currentView.value = view;
     
     // Update UI store

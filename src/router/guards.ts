@@ -1,12 +1,11 @@
-import type { RouteLocationNormalized, NavigationGuardNext } from 'vue-router';
+import type { RouteLocationNormalized } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import { getDefaultRouteForRole } from '@/utils/authHelpers';
 import type { UserRole } from '@/types';
 
 export async function authGuard(
   to: RouteLocationNormalized,
-  _from: RouteLocationNormalized,
-  next: NavigationGuardNext
+  _from: RouteLocationNormalized
 ) {
   const authStore = useAuthStore();
 
@@ -19,47 +18,36 @@ export async function authGuard(
 
   // Check if route requires authentication
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/auth/login');
-    return;
+    return '/';
   }
 
   // Check role-based access
   const requiredRole = to.meta.role as UserRole;
   if (requiredRole && authStore.user?.role !== requiredRole) {
-    const defaultRoute = getDefaultRouteForRole(authStore.user?.role);
-    next(defaultRoute);
-    return;
+    return getDefaultRouteForRole(authStore.user?.role);
   }
 
   // Block admin routes for non-admins
   if (to.path.startsWith('/admin') && !authStore.isAdmin) {
-    next(getDefaultRouteForRole(authStore.user?.role));
-    return;
+    return getDefaultRouteForRole(authStore.user?.role);
   }
 
   // Block owner routes for non-owners
   if (to.path.startsWith('/owner') && !authStore.isOwner) {
-    next(getDefaultRouteForRole(authStore.user?.role));
-    return;
+    return getDefaultRouteForRole(authStore.user?.role);
   }
 
   // Redirect authenticated users away from auth/login pages
   if ((to.path === '/' || to.path.startsWith('/auth')) && authStore.isAuthenticated) {
-    next(getDefaultRouteForRole(authStore.user?.role));
-    return;
+    return getDefaultRouteForRole(authStore.user?.role);
   }
-
-  next();
 }
 
 export function loadingGuard(
   _to: RouteLocationNormalized,
-  _from: RouteLocationNormalized,
-  next: NavigationGuardNext
+  _from: RouteLocationNormalized
 ) {
   // TODO: set loading state here (e.g. uiStore.setLoading(true))
-  
-  next();
 }
 
 export function afterNavigationGuard(
@@ -70,14 +58,10 @@ export function afterNavigationGuard(
 
 export function developmentGuard(
   to: RouteLocationNormalized,
-  _from: RouteLocationNormalized,
-  next: NavigationGuardNext
+  _from: RouteLocationNormalized
 ) {
   // Block development/demo routes in production
   if (import.meta.env.PROD && (to.path.startsWith('/dev') || to.meta.demo)) {
-    next('/404');
-    return;
+    return '/404';
   }
-  
-  next();
 }

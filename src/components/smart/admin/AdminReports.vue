@@ -263,6 +263,7 @@
 import { computed } from 'vue'
 import { useAdminBookings } from '@/composables/admin/useAdminBookings'
 import { useAdminProperties } from '@/composables/admin/useAdminProperties'
+import { formatPropertyAddress } from '@/types/property'
 import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
 
 // Composables
@@ -288,7 +289,7 @@ const topProperties = computed(() => {
     const completedBookings = propertyBookings.filter(b => b.status === 'completed')
 
     return {
-      name: property.name,
+      name: formatPropertyAddress(property, 'short'),
       revenue: completedBookings.length * 150,
       bookings: completedBookings.length
     }

@@ -218,6 +218,7 @@
 import { computed, ref, watch, nextTick } from 'vue';
 import { useDisplay } from 'vuetify';
 import type { Booking, Property } from '@/types';
+import { formatPropertyAddress } from '@/types/property';
 
 interface Props {
   visible: boolean;
@@ -265,7 +266,7 @@ const formattedDate = computed(() => {
 const getPropertyName = (propertyId: string): string => {
   if (!propertyId) return 'Unknown Property';
   const property = props.properties.find(p => p.id === propertyId);
-  return property?.name || 'Unknown Property';
+  return property ? formatPropertyAddress(property, 'short') : 'Unknown Property';
 };
 
 const formatBookingTime = (dateString: string): string => {

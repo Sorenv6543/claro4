@@ -164,9 +164,9 @@
                 
                 <!-- Property Name -->
                 <h3 class="text-h6 font-weight-medium mb-2">
-                  {{ property.name }}
+                  {{ formatPropertyAddress(property, 'short') }}
                 </h3>
-                
+
                 <!-- Address -->
                 <div class="text-body-2 text-medium-emphasis mb-2">
                   <v-icon
@@ -175,7 +175,7 @@
                   >
                     mdi-map-marker
                   </v-icon>
-                  {{ property.address }}
+                  {{ formatPropertyAddress(property) }}
                 </div>
                 
                 <!-- Property Details -->
@@ -329,6 +329,7 @@ import { ref, computed } from 'vue'
 import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts'
 import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
 import type { Property, PricingTier } from '@/types/property.ts'
+import { formatPropertyAddress } from '@/types/property'
 import type { Booking } from '@/types/booking.ts'
 
 // Composables
@@ -379,8 +380,8 @@ const filteredProperties = computed((): Property[] => {
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
     properties = properties.filter(property => 
-      property.name.toLowerCase().includes(query) ||
-      property.address.toLowerCase().includes(query) ||
+      formatPropertyAddress(property, 'short').toLowerCase().includes(query) ||
+      formatPropertyAddress(property).toLowerCase().includes(query) ||
       getOwnerName(property.owner_id).toLowerCase().includes(query)
     )
   }
@@ -412,7 +413,7 @@ const filteredProperties = computed((): Property[] => {
   }
 
   // Sort by name
-  return properties.sort((a, b) => a.name.localeCompare(b.name))
+  return properties.sort((a, b) => formatPropertyAddress(a, 'short').localeCompare(formatPropertyAddress(b, 'short')))
 })
 
 // Helper methods
@@ -489,7 +490,7 @@ const duplicateProperty = (property: Property) => {
 }
 
 const deleteProperty = async (property: Property) => {
-  if (confirm(`Are you sure you want to delete "${property.name}"?`)) {
+  if (confirm(`Are you sure you want to delete "${formatPropertyAddress(property, 'short')}"?`)) {
     console.log('Deleting property:', property.id)
     // Implement property deletion logic
   }

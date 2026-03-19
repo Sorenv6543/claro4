@@ -34,7 +34,7 @@
                   v-model="form.property_id"
                   :disabled="loading"
                   :error-messages="errors.get('property_id')"
-                  item-title="name"
+                  item-title="displayAddress"
                   item-value="id"
                   :items="propertiesArray"
                   label="Select Property"
@@ -213,6 +213,7 @@
 <script setup lang="ts">
   import type { Booking, BookingFormData } from '@/types/booking'
   import type { Property } from '@/types/property'
+  import { formatPropertyAddress } from '@/types/property'
   import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
   import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
   import { computed, nextTick, ref, watch } from 'vue'
@@ -283,8 +284,7 @@
   const propertiesArray = computed(() => {
     return Array.from(props.properties).map(property => ({
       id: property.id,
-      name: property.name,
-      address: property.address,
+      displayAddress: formatPropertyAddress(property, 'short'),
     }))
   })
 

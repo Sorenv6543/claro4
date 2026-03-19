@@ -439,7 +439,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useOwnerBookings } from '@/composables/owner/useOwnerBookings-supabase';
+import { useOwnerBookings } from '@/composables/owner/useOwnerBookings';
 import { useAuthStore } from '@/stores/auth';
 import { usePropertyStore } from '@/stores/property';
 import type { Booking, BookingFormData } from '@/types';

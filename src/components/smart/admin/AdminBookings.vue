@@ -535,6 +535,7 @@ import { useAdminBookings } from '@/composables/admin/useAdminBookings'
 import { useAdminProperties } from '@/composables/admin/useAdminProperties'
 import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
 import type { Booking } from '@/types/booking'
+import { formatPropertyAddress } from '@/types/property'
 
 // Composables
 const { allBookings, updateBooking } = useAdminBookings()
@@ -591,7 +592,7 @@ const tableHeaders = [
 // Computed properties
 const propertyOptions = computed(() => {
   return allProperties.value.map(property => ({
-    title: property.name,
+    title: formatPropertyAddress(property, 'short'),
     value: property.id
   }))
 })
@@ -658,7 +659,7 @@ const filteredBookings = computed(() => {
 // Helper methods
 const getPropertyName = (propertyId: string): string => {
   const property = allProperties.value.find(p => p.id === propertyId)
-  return property?.name || 'Unknown Property'
+  return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
 }
 
 const getCleanerName = (cleanerId: string): string => {
@@ -668,7 +669,7 @@ const getCleanerName = (cleanerId: string): string => {
 
 const getPropertyAddress = (propertyId: string): string => {
   const property = allProperties.value.find(p => p.id === propertyId)
-  return property?.address || 'Unknown Address'
+  return property ? formatPropertyAddress(property) : 'Unknown Address'
 }
 
 const getStatusColor = (status: string): string => {

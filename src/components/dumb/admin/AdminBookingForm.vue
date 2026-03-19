@@ -57,7 +57,7 @@
                 <v-select
                   v-model="form.property_id"
                   :items="propertiesArray"
-                  item-title="name"
+                  item-title="displayAddress"
                   item-value="id"
                   label="Property"
                   :rules="propertyRules"
@@ -78,7 +78,7 @@
                         </v-avatar>
                       </template>
                       <template #subtitle>
-                        {{ getPropertyOwnerName(item.owner_id) }} • {{ item.address }}
+                        {{ getPropertyOwnerName(item.owner_id) }} • {{ item.fullAddress }}
                       </template>
                     </v-list-item>
                   </template>
@@ -454,6 +454,7 @@ import { ref, computed, watch, nextTick } from 'vue'
 import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
 import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
 import type { Property } from '@/types/property'
+import { formatPropertyAddress } from '@/types/property'
 import type { Booking, BookingFormData } from '@/types/booking'
 import type { Cleaner } from '@/types/user'
 
@@ -521,7 +522,7 @@ const isOpen = computed({
 const propertyName = computed(() => {
   if (!props.booking?.property_id) return 'Unknown Property'
   const property = props.properties.find(p => p.id === props.booking?.property_id)
-  return property?.name || 'Unknown Property'
+  return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
 })
 
 const formTitle = computed(() => {
@@ -538,7 +539,8 @@ const submitButtonText = computed(() => {
 const propertiesArray = computed(() => {
   return Array.from(props.properties).map(property => ({
     ...property,
-    title: `${property.name} - ${property.address}`
+    displayAddress: formatPropertyAddress(property, 'short'),
+    fullAddress: formatPropertyAddress(property),
   }))
 })
 

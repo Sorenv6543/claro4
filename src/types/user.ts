@@ -43,6 +43,24 @@ export interface User {
 }
 
 /**
+ * Data emitted by UserFormDialog on submit
+ */
+export interface UserFormData {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
+  company_name: string;
+  access_level: string;
+  skills: string[];
+  max_daily_bookings: number;
+  location: string;
+  timezone: string;
+  language: string;
+  notifications_enabled: boolean;
+}
+
+/**
  * Property Owner user
  * Has properties that need cleaning
  */

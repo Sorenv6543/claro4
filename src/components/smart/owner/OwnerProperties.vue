@@ -153,10 +153,10 @@
               </div>
 
               <div class="property-name mb-1">
-                {{ property.name }}
+                {{ formatPropertyAddress(property, 'short') }}
               </div>
               <div class="property-address mb-2">
-                {{ property.address }}
+                {{ formatPropertyAddress(property) }}
               </div>
 
               <div class="property-details">
@@ -244,6 +244,7 @@
 
 <script setup lang="ts">
   import type { Property, PropertyFormData, PropertyRecord } from '@/types'
+  import { formatPropertyAddress } from '@/types/property'
   import { computed, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
@@ -374,7 +375,7 @@
 
     uiStore.openConfirmDialog('confirmDialog', {
       title: 'Delete Property',
-      message: `Are you sure you want to delete "${property.name}"? This will also delete all associated bookings. This action cannot be undone.`,
+      message: `Are you sure you want to delete "${formatPropertyAddress(property, 'short')}"? This will also delete all associated bookings. This action cannot be undone.`,
       confirmText: 'Delete',
       cancelText: 'Cancel',
       dangerous: true,
@@ -430,7 +431,7 @@
 
     uiStore.openConfirmDialog('confirmDialog', {
       title: 'Delete Property',
-      message: `Are you sure you want to delete "${property.name}"? This will also delete all associated bookings. This action cannot be undone.`,
+      message: `Are you sure you want to delete "${formatPropertyAddress(property, 'short')}"? This will also delete all associated bookings. This action cannot be undone.`,
       confirmText: 'Delete',
       cancelText: 'Cancel',
       dangerous: true,

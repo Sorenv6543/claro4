@@ -10,8 +10,10 @@ import type { Property } from '@/types/property'
 const mockProperty: Property = {
   id: 'prop1',
   owner_id: 'owner1',
-  name: 'Test Property',
-  address: '123 Test St',
+  address_street: '123 Test St',
+  address_city: 'Test City',
+  address_state: 'TX',
+  address_zip: '78701',
   property_type: 'apartment',
   pricing_tier: 'standard',
   cleaning_duration: 120,

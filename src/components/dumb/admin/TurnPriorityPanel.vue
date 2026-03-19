@@ -395,6 +395,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import type { Booking } from '@/types/booking'
 import type { Property } from '@/types/property'
+import { formatPropertyAddress } from '@/types/property'
 import type { Cleaner } from '@/types/user'
 
 // Props
@@ -600,12 +601,12 @@ const formatDateTime = (dateTime: string) => {
 
 const getPropertyName = (propertyId: string) => {
   const property = props.properties.find(p => p.id === propertyId)
-  return property?.name || 'Unknown Property'
+  return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
 }
 
 const getPropertyAddress = (propertyId: string) => {
   const property = props.properties.find(p => p.id === propertyId)
-  return property?.address || 'Unknown Address'
+  return property ? formatPropertyAddress(property) : 'Unknown Address'
 }
 
 const getPropertyOwnerName = (ownerId: string) => {

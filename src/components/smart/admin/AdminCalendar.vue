@@ -2,37 +2,37 @@
 <template>
   <div class="admin-calendar-container">
     <!-- Page Header -->
-    <div class="page-header" /> 
+    <div class="page-header" />
 
     <!-- Calendar Navigation -->
     <div class="calendar-navigation">
       <v-container
-        fluid
         class="pa-0"
+        fluid
       >
         <div class="d-flex align-center justify-center">
           <!-- Previous Month Button -->
           <v-btn
-            icon="mdi-chevron-left"
             color="primary"
-            variant="elevated"
+            icon="mdi-chevron-left"
             size="x-small"
+            variant="elevated"
             @click="navigateToPreviousMonth"
           />
-          
+
           <!-- Month and Year Display -->
           <div class="calendar-month-year mx-5">
             <h2 class="text-h5 font-weight-bold text-primary">
               {{ getCurrentMonthYear() }}
             </h2>
           </div>
-          
+
           <!-- Next Month Button -->
           <v-btn
-            icon="mdi-chevron-right"
             color="primary"
-            variant="elevated"
+            icon="mdi-chevron-right"
             size="x-small"
+            variant="elevated"
             @click="navigateToNextMonth"
           />
         </div>
@@ -43,21 +43,21 @@
     <!-- Main Content -->
     <div class="page-content">
       <v-row
-        no-gutters
         class="fill-height"
+        no-gutters
       >
         <!-- Calendar (Full Width) -->
         <v-col
+          class="calendar-col"
           cols="12"
           md="12"
-          class="calendar-col"
         >
           <FullCalendar
             ref="calendarRef"
             :bookings="calendarBookings"
-            :properties="calendarProperties"
-            :loading="loading"
             class="admin-calendar"
+            :loading="loading"
+            :properties="calendarProperties"
             @date-select="handleDateSelect"
             @event-click="handleEventClick"
             @event-drop="handleEventDrop"
@@ -70,10 +70,10 @@
     <!-- Context Menu -->
     <v-menu
       v-model="contextMenu.show"
-      :position-x="contextMenu.x"
-      :position-y="contextMenu.y"
       absolute
       offset-y
+      :position-x="contextMenu.x"
+      :position-y="contextMenu.y"
     >
       <v-list density="compact">
         <v-list-item
@@ -91,8 +91,8 @@
       v-model="cleanerAssignmentModal.show"
       :booking="cleanerAssignmentModal.booking"
       :cleaners="cleanerAssignmentModal.cleaners"
-      :properties="Array.from(allProperties.values())"
       :loading="cleanerAssignmentModal.loading"
+      :properties="Array.from(allProperties.values())"
       @assign="handleCleanerAssignment"
       @close="closeCleanerAssignmentModal"
     />
@@ -100,404 +100,409 @@
     <!-- Admin Booking Form Modal -->
     <AdminBookingForm
       v-model="adminBookingFormModal.show"
-      :mode="adminBookingFormModal.mode"
       :booking="adminBookingFormModal.booking"
-      :properties="Array.from(allProperties.values())"
       :cleaners="(allUsers.filter(user => user.role === 'cleaner' || user.role === 'admin') as Cleaner[])"
-      :loading="adminBookingFormModal.loading"
       :errors="adminBookingFormModal.errors"
-      @submit="handleAdminBookingFormSubmit"
+      :loading="adminBookingFormModal.loading"
+      :mode="adminBookingFormModal.mode"
+      :properties="Array.from(allProperties.values())"
+      @assign-cleaner="handleAdminBookingFormAssignCleaner"
       @delete="handleAdminBookingFormDelete"
       @mark-complete="handleAdminBookingFormMarkComplete"
-      @assign-cleaner="handleAdminBookingFormAssignCleaner"
       @open-cleaner-modal="handleAdminBookingFormOpenCleanerModal"
+      @submit="handleAdminBookingFormSubmit"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue';
-import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
-import FullCalendar from '@/components/smart/shared/FullCalendar.vue';
-import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue';
+  import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
+  import type { Booking, BookingFormData } from '@/types/booking.ts'
+  import type { Cleaner, User } from '@/types/user.ts'
 
-import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts';
-import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts';
-import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts';
-import type { Booking, BookingFormData } from '@/types/booking.ts';
-import type{ User, Cleaner } from '@/types/user.ts';
+  import { computed, nextTick, onMounted, ref, watch } from 'vue'
+  import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
+  import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
+  import FullCalendar from '@/components/smart/shared/FullCalendar.vue'
+  import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
 
-import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
-import type { EventResizeDoneArg } from '@fullcalendar/interaction'
+  import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts'
+  import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
 
-// Use the admin calendar state composable for centralized state management
-const {
-  // State
-  loading,
+  // Use the admin calendar state composable for centralized state management
+  const {
+    // State
+    loading,
 
-  currentView,
-  currentDate,
+    currentView,
+    currentDate,
 
-  // Computed properties (Maps from store)
-  allBookings,
-  allProperties,
+    // Computed properties (Maps from store)
+    allBookings,
+    allProperties,
 
-  // Functions
-  setCalendarView,
-  goToDate
-} = useAdminCalendarState();
+    // Functions
+    setCalendarView,
+    goToDate,
+  } = useAdminCalendarState()
 
-// Convert Maps to arrays for FullCalendar props (which expect Booking[]/Property[])
-const calendarBookings = computed(() => Array.from(allBookings.value.values()))
-const calendarProperties = computed(() => Array.from(allProperties.value.values()))
+  // Convert Maps to arrays for FullCalendar props (which expect Booking[]/Property[])
+  const calendarBookings = computed(() => Array.from(allBookings.value.values()))
+  const calendarProperties = computed(() => Array.from(allProperties.value.values()))
 
-// Additional composables for admin functionality
-const { updateBooking, deleteBooking, createBooking, assignCleanerToBooking } = useAdminBookings();
-const { users: allUsers } = useAdminUserManagement();
+  // Additional composables for admin functionality
+  const { updateBooking, deleteBooking, createBooking, assignCleanerToBooking } = useAdminBookings()
+  const { users: allUsers } = useAdminUserManagement()
 
-// Calendar reference
-const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null);
+  // Calendar reference
+  const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
 
-// Component state
-const currentViewingDate = ref(new Date());
+  // Component state
+  const currentViewingDate = ref(new Date())
 
-// Context menu state
-const contextMenu = ref({
-  show: false,
-  x: 0,
-  y: 0,
-  booking: null as Booking | null
-});
+  // Context menu state
+  const contextMenu = ref({
+    show: false,
+    x: 0,
+    y: 0,
+    booking: null as Booking | null,
+  })
 
-// Cleaner assignment modal state
-const cleanerAssignmentModal = ref({
-  show: false,
-  booking: null as Booking | null,
-  cleaners: [] as Cleaner[],
-  loading: false
-});
-
-// Admin booking form modal state
-const adminBookingFormModal = ref({
-  show: false,
-  mode: 'edit' as 'create' | 'edit',
-  booking: null as Booking | null,
-  loading: false,
-  errors: new Map<string, string[]>()
-});
-
-// Context menu actions
-const contextMenuActions = computed(() => {
-  if (!contextMenu.value.booking) return [];
-  
-  const booking = contextMenu.value.booking;
-  const actions = [
-    {
-      key: 'view',
-      title: 'View Details',
-      icon: 'mdi-eye'
-    },
-    {
-      key: 'edit',
-      title: 'Edit Booking',
-      icon: 'mdi-pencil'
-    }
-  ];
-
-  // Add cleaner assignment action if no cleaner assigned
-  if (!booking.assigned_cleaner_id) {
-    actions.push({
-      key: 'assign',
-      title: 'Assign Cleaner',
-      icon: 'mdi-account-plus'
-    });
-  }
-
-  // Add status change actions
-  if (booking.status !== 'completed') {
-    actions.push({
-      key: 'complete',
-      title: 'Mark Complete',
-      icon: 'mdi-check-circle'
-    });
-  }
-
-  if (booking.status !== 'cancelled') {
-    actions.push({
-      key: 'cancel',
-      title: 'Cancel Booking',
-      icon: 'mdi-close-circle'
-    });
-  }
-
-  return actions;
-});
-
-// Event handlers - simplified using composable
-const handleDateSelect = (selectInfo: DateSelectArg): void => {
-  console.log('🗓️ [AdminCalendar] Date selected:', selectInfo.startStr, 'to', selectInfo.endStr);
-  // Handle date selection - could open booking creation modal
-};
-
-const handleEventClick = (clickInfo: EventClickArg): void => {
-  console.log('👆 [AdminCalendar] Event clicked:', clickInfo.event.id);
-  
-  // Extract booking data from the event
-  const booking = clickInfo.event.extendedProps.booking as Booking;
-  if (booking) {
-    // Open the AdminBookingForm modal in edit mode
-    openAdminBookingFormModal(booking, 'edit');
-  }
-};
-
-const handleEventDrop = async (dropInfo: EventDropArg): Promise<void> => {
-  console.log('🎯 [AdminCalendar] Event dropped:', dropInfo.event.id);
-  const booking = dropInfo.event.extendedProps.booking as Booking;
-  
-  try {
-    await updateBooking(booking.id, {
-      checkout_date: dropInfo.event.startStr,
-      checkin_date: dropInfo.event.endStr || dropInfo.event.startStr
-    });
-  } catch (error) {
-    console.error('Failed to update booking:', error);
-    dropInfo.revert();
-  }
-};
-
-const handleEventResize = async (resizeInfo: EventResizeDoneArg): Promise<void> => {
-  console.log('🔄 [AdminCalendar] Event resized:', resizeInfo.event.id);
-  const booking = resizeInfo.event.extendedProps.booking as Booking;
-  
-  try {
-    await updateBooking(booking.id, {
-      checkout_date: resizeInfo.event.startStr,
-      checkin_date: resizeInfo.event.endStr
-    });
-  } catch (error) {
-    console.error('Failed to update booking:', error);
-    resizeInfo.revert();
-  }
-};
-
-// Programmatic calendar methods
-const goToDateInCalendar = (date: string | Date): void => {
-  console.log('🗓️ [AdminCalendar] goToDate called:', date);
-  const targetDate = typeof date === 'string' ? new Date(date) : date;
-  
-  if (calendarRef.value) {
-    calendarRef.value.goToDate(targetDate);
-  }
-};
-
-const changeView = (view: string): void => {
-  console.log('👁️ [AdminCalendar] changeView called:', view);
-  
-  if (calendarRef.value) {
-    calendarRef.value.changeView(view);
-  }
-  setCalendarView(view as 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay');
-};
-
-const refreshEvents = (): void => {
-  console.log('🔄 [AdminCalendar] refreshEvents called');
-  if (calendarRef.value) {
-    calendarRef.value.refreshEvents();
-  }
-};
-
-const getApi = () => {
-  return calendarRef.value?.getApi() || null;
-};
-
-// Calendar navigation functions
-const getCurrentMonthYear = () => {
-  return currentViewingDate.value.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
-};
-
-const navigateToPreviousMonth = () => {
-  const newDate = new Date(currentViewingDate.value);
-  newDate.setMonth(newDate.getMonth() - 1);
-  currentViewingDate.value = newDate;
-  goToDateInCalendar(newDate);
-};
-
-const navigateToNextMonth = () => {
-  const newDate = new Date(currentViewingDate.value);
-  newDate.setMonth(newDate.getMonth() + 1);
-  currentViewingDate.value = newDate;
-  goToDateInCalendar(newDate);
-};
-
-// Context menu handlers
-const handleContextAction = (action: string): void => {
-  const booking = contextMenu.value.booking;
-  if (!booking) return;
-
-  switch (action) {
-    case 'view':
-      openAdminBookingFormModal(booking, 'edit');
-      break;
-    case 'edit':
-      openAdminBookingFormModal(booking, 'edit');
-      break;
-    case 'assign':
-      openCleanerAssignmentModal(booking);
-      break;
-    case 'complete':
-      updateBooking(booking.id, { status: 'completed' });
-      break;
-    case 'cancel':
-      updateBooking(booking.id, { status: 'cancelled' });
-      break;
-  }
-  
-  contextMenu.value.show = false;
-};
-
-// Admin booking form modal handlers
-const openAdminBookingFormModal = (booking: Booking, mode: 'create' | 'edit' = 'edit'): void => {
-  adminBookingFormModal.value = {
-    show: true,
-    mode,
-    booking: mode === 'edit' ? booking : null,
+  // Cleaner assignment modal state
+  const cleanerAssignmentModal = ref({
+    show: false,
+    booking: null as Booking | null,
+    cleaners: [] as Cleaner[],
     loading: false,
-    errors: new Map<string, string[]>()
-  };
-};
+  })
 
-const closeAdminBookingFormModal = (): void => {
-  adminBookingFormModal.value.show = false;
-  adminBookingFormModal.value.booking = null;
-  adminBookingFormModal.value.loading = false;
-  adminBookingFormModal.value.errors = new Map<string, string[]>();
-};
+  // Admin booking form modal state
+  const adminBookingFormModal = ref({
+    show: false,
+    mode: 'edit' as 'create' | 'edit',
+    booking: null as Booking | null,
+    loading: false,
+    errors: new Map<string, string[]>(),
+  })
 
-const openCleanerAssignmentModal = (booking: Booking): void => {
-  // Get available cleaners (users with cleaner role)
-  const cleaners = allUsers.value.filter((user: User) => 
-    user.role === 'cleaner' || user.role === 'admin'
-  ) as Cleaner[];
-  
-  cleanerAssignmentModal.value = {
-    show: true,
-    booking,
-    cleaners,
-    loading: false
-  };
-};
+  // Context menu actions
+  const contextMenuActions = computed(() => {
+    if (!contextMenu.value.booking) return []
 
-const closeCleanerAssignmentModal = (): void => {
-  cleanerAssignmentModal.value.show = false;
-  cleanerAssignmentModal.value.booking = null;
-  cleanerAssignmentModal.value.cleaners = [];
-  cleanerAssignmentModal.value.loading = false;
-};
+    const booking = contextMenu.value.booking
+    const actions = [
+      {
+        key: 'view',
+        title: 'View Details',
+        icon: 'mdi-eye',
+      },
+      {
+        key: 'edit',
+        title: 'Edit Booking',
+        icon: 'mdi-pencil',
+      },
+    ]
 
-const handleCleanerAssignment = async (cleanerId: string): Promise<void> => {
-  cleanerAssignmentModal.value.loading = true;
-  
-  try {
-    const booking = cleanerAssignmentModal.value.booking;
+    // Add cleaner assignment action if no cleaner assigned
+    if (!booking.assigned_cleaner_id) {
+      actions.push({
+        key: 'assign',
+        title: 'Assign Cleaner',
+        icon: 'mdi-account-plus',
+      })
+    }
+
+    // Add status change actions
+    if (booking.status !== 'completed') {
+      actions.push({
+        key: 'complete',
+        title: 'Mark Complete',
+        icon: 'mdi-check-circle',
+      })
+    }
+
+    if (booking.status !== 'cancelled') {
+      actions.push({
+        key: 'cancel',
+        title: 'Cancel Booking',
+        icon: 'mdi-close-circle',
+      })
+    }
+
+    return actions
+  })
+
+  // Event handlers - simplified using composable
+  function handleDateSelect (selectInfo: DateSelectArg): void {
+    console.log('🗓️ [AdminCalendar] Date selected:', selectInfo.startStr, 'to', selectInfo.endStr)
+  // Handle date selection - could open booking creation modal
+  }
+
+  function handleEventClick (clickInfo: EventClickArg): void {
+    console.log('👆 [AdminCalendar] Event clicked:', clickInfo.event.id)
+
+    // Extract booking data from the event
+    const booking = clickInfo.event.extendedProps.booking as Booking
     if (booking) {
-      await assignCleanerToBooking(cleanerId, booking.id);
+      // Open the AdminBookingForm modal in edit mode
+      openAdminBookingFormModal(booking, 'edit')
     }
-    closeCleanerAssignmentModal();
-  } catch (error) {
-    console.error('Failed to assign cleaner:', error);
-  } finally {
-    cleanerAssignmentModal.value.loading = false;
   }
-};
 
-// Admin booking form event handlers
-const handleAdminBookingFormSubmit = async (data: BookingFormData): Promise<void> => {
-  adminBookingFormModal.value.loading = true;
-  try {
-    if (adminBookingFormModal.value.mode === 'create') {
-      await createBooking(data);
-    } else if (adminBookingFormModal.value.booking) {
-      await updateBooking(adminBookingFormModal.value.booking.id, data);
+  async function handleEventDrop (dropInfo: EventDropArg): Promise<void> {
+    console.log('🎯 [AdminCalendar] Event dropped:', dropInfo.event.id)
+    const booking = dropInfo.event.extendedProps.booking as Booking
+
+    try {
+      await updateBooking(booking.id, {
+        checkout_date: dropInfo.event.startStr,
+        checkin_date: dropInfo.event.endStr || dropInfo.event.startStr,
+      })
+    } catch (error) {
+      console.error('Failed to update booking:', error)
+      dropInfo.revert()
     }
-    closeAdminBookingFormModal();
-  } catch (error) {
-    console.error('Failed to save booking:', error);
-  } finally {
-    adminBookingFormModal.value.loading = false;
   }
-};
 
-const handleAdminBookingFormDelete = async (bookingId: string): Promise<void> => {
-  adminBookingFormModal.value.loading = true;
-  try {
-    await deleteBooking(bookingId);
-    closeAdminBookingFormModal();
-  } catch (error) {
-    console.error('Failed to delete booking:', error);
-  } finally {
-    adminBookingFormModal.value.loading = false;
+  async function handleEventResize (resizeInfo: EventResizeDoneArg): Promise<void> {
+    console.log('🔄 [AdminCalendar] Event resized:', resizeInfo.event.id)
+    const booking = resizeInfo.event.extendedProps.booking as Booking
+
+    try {
+      await updateBooking(booking.id, {
+        checkout_date: resizeInfo.event.startStr,
+        checkin_date: resizeInfo.event.endStr,
+      })
+    } catch (error) {
+      console.error('Failed to update booking:', error)
+      resizeInfo.revert()
+    }
   }
-};
 
-const handleAdminBookingFormMarkComplete = async (bookingId: string): Promise<void> => {
-  adminBookingFormModal.value.loading = true;
-  try {
-    await updateBooking(bookingId, { status: 'completed' });
-    closeAdminBookingFormModal();
-  } catch (error) {
-    console.error('Failed to mark booking complete:', error);
-  } finally {
-    adminBookingFormModal.value.loading = false;
+  // Programmatic calendar methods
+  function goToDateInCalendar (date: string | Date): void {
+    console.log('🗓️ [AdminCalendar] goToDate called:', date)
+    const targetDate = typeof date === 'string' ? new Date(date) : date
+
+    if (calendarRef.value) {
+      calendarRef.value.goToDate(targetDate)
+    }
   }
-};
 
-const handleAdminBookingFormAssignCleaner = async (bookingId: string, cleanerId: string): Promise<void> => {
-  try {
-    await updateBooking(bookingId, { assigned_cleaner_id: cleanerId });
-  } catch (error) {
-    console.error('Failed to assign cleaner:', error);
+  function changeView (view: string): void {
+    console.log('👁️ [AdminCalendar] changeView called:', view)
+
+    if (calendarRef.value) {
+      calendarRef.value.changeView(view)
+    }
+    setCalendarView(view as 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay')
   }
-};
 
-const handleAdminBookingFormOpenCleanerModal = (booking: Partial<Record<string, unknown>>): void => {
-  console.log('Open cleaner modal for booking:', booking);
+  function refreshEvents (): void {
+    console.log('🔄 [AdminCalendar] refreshEvents called')
+    if (calendarRef.value) {
+      calendarRef.value.refreshEvents()
+    }
+  }
+
+  function getApi () {
+    return calendarRef.value?.getApi() || null
+  }
+
+  // Calendar navigation functions
+  function getCurrentMonthYear () {
+    return currentViewingDate.value.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  }
+
+  function navigateToPreviousMonth () {
+    const newDate = new Date(currentViewingDate.value)
+    newDate.setMonth(newDate.getMonth() - 1)
+    currentViewingDate.value = newDate
+    goToDateInCalendar(newDate)
+  }
+
+  function navigateToNextMonth () {
+    const newDate = new Date(currentViewingDate.value)
+    newDate.setMonth(newDate.getMonth() + 1)
+    currentViewingDate.value = newDate
+    goToDateInCalendar(newDate)
+  }
+
+  // Context menu handlers
+  function handleContextAction (action: string): void {
+    const booking = contextMenu.value.booking
+    if (!booking) return
+
+    switch (action) {
+      case 'view': {
+        openAdminBookingFormModal(booking, 'edit')
+        break
+      }
+      case 'edit': {
+        openAdminBookingFormModal(booking, 'edit')
+        break
+      }
+      case 'assign': {
+        openCleanerAssignmentModal(booking)
+        break
+      }
+      case 'complete': {
+        updateBooking(booking.id, { status: 'completed' })
+        break
+      }
+      case 'cancel': {
+        updateBooking(booking.id, { status: 'cancelled' })
+        break
+      }
+    }
+
+    contextMenu.value.show = false
+  }
+
+  // Admin booking form modal handlers
+  function openAdminBookingFormModal (booking: Booking, mode: 'create' | 'edit' = 'edit'): void {
+    adminBookingFormModal.value = {
+      show: true,
+      mode,
+      booking: mode === 'edit' ? booking : null,
+      loading: false,
+      errors: new Map<string, string[]>(),
+    }
+  }
+
+  function closeAdminBookingFormModal (): void {
+    adminBookingFormModal.value.show = false
+    adminBookingFormModal.value.booking = null
+    adminBookingFormModal.value.loading = false
+    adminBookingFormModal.value.errors = new Map<string, string[]>()
+  }
+
+  function openCleanerAssignmentModal (booking: Booking): void {
+    // Get available cleaners (users with cleaner role)
+    const cleaners = allUsers.value.filter((user: User) =>
+      user.role === 'cleaner' || user.role === 'admin',
+    ) as Cleaner[]
+
+    cleanerAssignmentModal.value = {
+      show: true,
+      booking,
+      cleaners,
+      loading: false,
+    }
+  }
+
+  function closeCleanerAssignmentModal (): void {
+    cleanerAssignmentModal.value.show = false
+    cleanerAssignmentModal.value.booking = null
+    cleanerAssignmentModal.value.cleaners = []
+    cleanerAssignmentModal.value.loading = false
+  }
+
+  async function handleCleanerAssignment (cleanerId: string): Promise<void> {
+    cleanerAssignmentModal.value.loading = true
+
+    try {
+      const booking = cleanerAssignmentModal.value.booking
+      if (booking) {
+        await assignCleanerToBooking(cleanerId, booking.id)
+      }
+      closeCleanerAssignmentModal()
+    } catch (error) {
+      console.error('Failed to assign cleaner:', error)
+    } finally {
+      cleanerAssignmentModal.value.loading = false
+    }
+  }
+
+  // Admin booking form event handlers
+  async function handleAdminBookingFormSubmit (data: BookingFormData): Promise<void> {
+    adminBookingFormModal.value.loading = true
+    try {
+      if (adminBookingFormModal.value.mode === 'create') {
+        await createBooking(data)
+      } else if (adminBookingFormModal.value.booking) {
+        await updateBooking(adminBookingFormModal.value.booking.id, data)
+      }
+      closeAdminBookingFormModal()
+    } catch (error) {
+      console.error('Failed to save booking:', error)
+    } finally {
+      adminBookingFormModal.value.loading = false
+    }
+  }
+
+  async function handleAdminBookingFormDelete (bookingId: string): Promise<void> {
+    adminBookingFormModal.value.loading = true
+    try {
+      await deleteBooking(bookingId)
+      closeAdminBookingFormModal()
+    } catch (error) {
+      console.error('Failed to delete booking:', error)
+    } finally {
+      adminBookingFormModal.value.loading = false
+    }
+  }
+
+  async function handleAdminBookingFormMarkComplete (bookingId: string): Promise<void> {
+    adminBookingFormModal.value.loading = true
+    try {
+      await updateBooking(bookingId, { status: 'completed' })
+      closeAdminBookingFormModal()
+    } catch (error) {
+      console.error('Failed to mark booking complete:', error)
+    } finally {
+      adminBookingFormModal.value.loading = false
+    }
+  }
+
+  async function handleAdminBookingFormAssignCleaner (bookingId: string, cleanerId: string): Promise<void> {
+    try {
+      await updateBooking(bookingId, { assigned_cleaner_id: cleanerId })
+    } catch (error) {
+      console.error('Failed to assign cleaner:', error)
+    }
+  }
+
+  function handleAdminBookingFormOpenCleanerModal (booking: Partial<Record<string, unknown>>): void {
+    console.log('Open cleaner modal for booking:', booking)
   // Could implement cleaner modal logic here
-};
+  }
 
-// Watchers
-watch(() => currentView.value, (newView) => {
-  console.log('🎯 [AdminCalendar] Current view changed from parent:', newView);
-  
-  nextTick(() => {
-    if (newView && calendarRef.value) {
-      changeView(newView);
-    }
-  });
-});
+  // Watchers
+  watch(() => currentView.value, newView => {
+    console.log('🎯 [AdminCalendar] Current view changed from parent:', newView)
 
-watch(() => currentDate.value, (newDate) => {
-  console.log('📅 [AdminCalendar] Current date changed from parent:', newDate);
-  
-  nextTick(() => {
-    if (newDate && calendarRef.value) {
-      goToDate(newDate);
-    }
-  });
-});
+    nextTick(() => {
+      if (newView && calendarRef.value) {
+        changeView(newView)
+      }
+    })
+  })
 
-onMounted(async () => {
-  console.log('🎬 [AdminCalendar] Component mounted');
-  await nextTick();
-  console.log('🔗 [AdminCalendar] Component ready');
-});
+  watch(() => currentDate.value, newDate => {
+    console.log('📅 [AdminCalendar] Current date changed from parent:', newDate)
 
-// Expose methods to parent
-defineExpose({
-  goToDate,
-  changeView,
-  refreshEvents,
-  getApi
-});
+    nextTick(() => {
+      if (newDate && calendarRef.value) {
+        goToDate(newDate)
+      }
+    })
+  })
+
+  onMounted(async () => {
+    console.log('🎬 [AdminCalendar] Component mounted')
+    await nextTick()
+    console.log('🔗 [AdminCalendar] Component ready')
+  })
+
+  // Expose methods to parent
+  defineExpose({
+    goToDate,
+    changeView,
+    refreshEvents,
+    getApi,
+  })
 </script>
 
 <style scoped>
@@ -549,15 +554,15 @@ defineExpose({
     border-right: none;
     border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
   }
-  
+
   .calendar-navigation {
     padding: 0px 0;
   }
-  
+
   .calendar-month-year {
     min-width: 200px;
   }
-  
+
   .calendar-month-year h2 {
     font-size: 1.3rem;
   }
@@ -574,4 +579,4 @@ defineExpose({
     min-height: 100vh;
   }
 }
-</style> 
+</style>

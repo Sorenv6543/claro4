@@ -732,6 +732,7 @@ import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts';
 import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts';
 import type { Booking } from '@/types/booking.ts';
 import type { Property } from '@/types/property.ts';
+import { formatPropertyAddress } from '@/types/property';
 
 // Composables
 const router = useRouter();
@@ -898,12 +899,12 @@ function getDateFilter(filter: string) {
 
 function getPropertyName(propertyId: string): string {
   const property = allPropertiesArray.value.find(p => p.id === propertyId);
-  return property?.name || 'Unknown Property';
+  return property ? formatPropertyAddress(property, 'short') : 'Unknown Property';
 }
 
 function getPropertyAddress(propertyId: string): string {
   const property = allPropertiesArray.value.find(p => p.id === propertyId);
-  return property?.address || 'Address not available';
+  return property ? formatPropertyAddress(property) : 'Address not available';
 }
 
 function formatTime(dateString: string): string {

@@ -18,8 +18,10 @@
   } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, Property } from '@/types'
+  import { formatPropertyAddress } from '@/types/property'
   import dayGridPlugin from '@fullcalendar/daygrid'
   import interactionPlugin from '@fullcalendar/interaction'
+  import listPlugin from '@fullcalendar/list'
   import timeGridPlugin from '@fullcalendar/timegrid'
   import FullCalendar from '@fullcalendar/vue3'
   import {
@@ -89,6 +91,7 @@
     })
   })
 
+
   // Mobile viewport height management
   const mobileOptions = ref(getMobileCalendarOptions())
   let cleanupViewportListener: (() => void) | null = null
@@ -96,7 +99,7 @@
   // Calendar configuration — reactive so we can patch individual fields
   // without rebuilding the entire options object on every booking change
   const calendarOptions = reactive({
-    plugins: [dayGridPlugin, timeGridPlugin, interactionPlugin],
+    plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
 
     // View settings
     initialView: 'dayGridMonth',
@@ -150,6 +153,7 @@
 
     // Custom rendering
     eventContent: renderEventContent,
+    eventDidMount: handleEventDidMount,
 
     // Business hours (optional)
     businessHours: {
@@ -182,6 +186,43 @@
     calendarOptions.dayMaxEvents = opts.dayMaxEvents
     calendarOptions.eventDisplay = opts.eventDisplay
   })
+
+  // After an event mounts, position a TURN label on the event bar at the turn day column
+  function handleEventDidMount (info: { event: { extendedProps: Record<string, unknown> }, el: HTMLElement }) {
+    const booking = info.event.extendedProps?.booking as Booking | undefined
+    if (!booking?.turn_date || booking.booking_type !== 'turn') return
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(booking.turn_date)) return
+
+    // Wait for layout to finalize
+    requestAnimationFrame(() => {
+      const eventEl = info.el
+      if (!eventEl.isConnected) return
+      const turnCell = document.querySelector(`td.fc-day[data-date="${booking.turn_date}"]`)
+      if (!turnCell) return
+
+      const eventRect = eventEl.getBoundingClientRect()
+      const cellRect = turnCell.getBoundingClientRect()
+
+      // Only add badge if this event segment overlaps the turn day column
+      if (cellRect.left + cellRect.width <= eventRect.left || cellRect.left >= eventRect.right) return
+
+      const offset = cellRect.left - eventRect.left
+      const badge = document.createElement('div')
+      badge.className = 'turn-event-badge'
+      badge.textContent = 'TURN'
+      badge.style.left = `${offset}px`
+      badge.style.width = `${cellRect.width}px`
+
+      // The FullCalendar event harness needs position:relative for absolute children
+      const harness = eventEl.closest('.fc-daygrid-event-harness') as HTMLElement
+      if (harness) {
+        harness.style.overflow = 'visible'
+      }
+      eventEl.style.position = 'relative'
+      eventEl.style.overflow = 'visible'
+      eventEl.appendChild(badge)
+    })
+  }
 
   // Event handlers
   function handleDateSelect (selectInfo: DateSelectArg): void {
@@ -307,11 +348,15 @@
     )
     const statusBadge = getStatusBadge(booking.status || 'pending')
 
+    const turnBadge = booking.booking_type === 'turn'
+      ? '<span class="turn-badge">TURN</span>'
+      : ''
+
     return {
       html: `
       <div class="fc-event-content-wrapper booking-${booking.booking_type} priority-${booking.priority}">
         <div class="fc-event-title">
-          ${priorityIcon} ${property?.name || 'Property'}
+          ${priorityIcon} ${property ? formatPropertyAddress(property, 'short') : 'Property'} ${turnBadge}
         </div>
         <div class="fc-event-subtitle">
           ${statusBadge} ${booking.status.toUpperCase()}
@@ -618,7 +663,7 @@
 }
 
 .custom-calendar {
-  --fc-border-color: rgb(var(--v-theme-on-surface), 0.12);
+  --fc-border-color: rgba(100, 140, 180, 0.2);
   --fc-button-bg-color: rgb(var(--v-theme-primary));
   --fc-button-border-color: rgb(var(--v-theme-primary));
   --fc-button-hover-bg-color: rgb(var(--v-theme-primary));
@@ -627,22 +672,45 @@
 }
 
 /* Turn booking highlighting */
-.fc-event.booking-turn {
+:deep(.fc-event.booking-turn) {
   font-weight: bold;
-  border-width: 3px !important;
-  animation: pulse 2s infinite;
+  border-width: 2px !important;
   position: relative;
 }
 
-.fc-event.booking-turn::before {
-  content: "";
+/* TURN badge inside the event bar */
+:deep(.turn-badge) {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.9);
+  color: #e65100;
+  font-size: 0.65em;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 0 4px;
+  border-radius: 3px;
+  vertical-align: middle;
+  margin-left: 4px;
+  line-height: 1.4;
+}
+
+/* TURN label overlaid on the event bar at the turn day column */
+:deep(.turn-event-badge) {
   position: absolute;
   top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: linear-gradient(45deg, #ff0000, #ff6600, #ff0000);
-  border-radius: 2px 2px 0 0;
+  bottom: 0;
+  background: rgba(230, 81, 0, 0.85);
+  color: #fff;
+  font-size: 0.6em;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 5;
+  border-left: 2px solid rgba(255, 255, 255, 0.6);
+  border-right: 2px solid rgba(255, 255, 255, 0.6);
 }
 
 /* Standard booking styling */
