@@ -113,6 +113,7 @@ src/components/smart/owner/HomeOwner.vue -
 // import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync';
 
   import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   // Types
   import type { Booking, BookingFormData, Property, PropertyFormData } from '@/types'
   // Real-time sync will auto-initialize when user is authenticated
@@ -137,6 +138,7 @@ src/components/smart/owner/HomeOwner.vue -
   import { usePropertyStore } from '@/stores/property'
 
   import { useUIStore } from '@/stores/ui'
+  import { subtractOneDay } from '@/utils/calendarHelpers'
 
   // ============================================================================
   // STORE CONNECTIONS & STATE
@@ -370,8 +372,8 @@ src/components/smart/owner/HomeOwner.vue -
     )
 
     const bookingData: Partial<BookingFormData> = {
-      checkout_date: selectInfo.startStr,
-      checkin_date: selectInfo.endStr,
+      checkin_date: selectInfo.startStr,
+      checkout_date: selectInfo.endStr,
       owner_id: currentOwnerId.value,
     }
 
@@ -427,8 +429,8 @@ src/components/smart/owner/HomeOwner.vue -
       await nextTick()
 
       const result = await updateMyBooking(booking.id, {
-        checkout_date: dropInfo.event.startStr,
-        checkin_date: dropInfo.event.endStr || dropInfo.event.startStr,
+        checkin_date: dropInfo.event.startStr,
+        checkout_date: subtractOneDay(dropInfo.event.endStr || dropInfo.event.startStr),
         owner_id: booking.owner_id,
       })
 
@@ -444,7 +446,7 @@ src/components/smart/owner/HomeOwner.vue -
     }
   }
 
-  async function handleEventResize (resizeInfo: EventDropArg): Promise<void> {
+  async function handleEventResize (resizeInfo: EventResizeDoneArg): Promise<void> {
     const booking = resizeInfo.event.extendedProps.booking as Booking
 
     // Verify owner can modify this booking
@@ -466,8 +468,8 @@ src/components/smart/owner/HomeOwner.vue -
       await nextTick()
 
       const result = await updateMyBooking(booking.id, {
-        checkout_date: resizeInfo.event.startStr,
-        checkin_date: resizeInfo.event.endStr,
+        checkin_date: resizeInfo.event.startStr,
+        checkout_date: subtractOneDay(resizeInfo.event.endStr || resizeInfo.event.startStr),
         owner_id: booking.owner_id,
       })
 
@@ -537,8 +539,8 @@ src/components/smart/owner/HomeOwner.vue -
     }
 
     updateMyBooking(data.id, {
-      checkout_date: data.start,
-      checkin_date: data.end,
+      checkin_date: data.start,
+      checkout_date: data.end,
       owner_id: currentOwnerId.value,
     })
   }

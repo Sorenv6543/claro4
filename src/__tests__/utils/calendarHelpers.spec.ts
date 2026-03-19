@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { bookingToCalendarEvent } from '@/utils/calendarHelpers'
+import { bookingToCalendarEvent, subtractOneDay } from '@/utils/calendarHelpers'
 import type { Booking } from '@/types'
 import type { Property } from '@/types/property'
 
@@ -58,5 +58,19 @@ describe('bookingToCalendarEvent', () => {
   it('marks turn bookings in the title', () => {
     const event = bookingToCalendarEvent(makeBooking({ booking_type: 'turn' }), mockProperty)
     expect(event.title).toContain('TURN')
+  })
+})
+
+describe('subtractOneDay', () => {
+  it('subtracts one day from a YYYY-MM-DD string', () => {
+    expect(subtractOneDay('2026-03-29')).toBe('2026-03-28')
+  })
+
+  it('handles month boundaries', () => {
+    expect(subtractOneDay('2026-03-01')).toBe('2026-02-28')
+  })
+
+  it('handles year boundaries', () => {
+    expect(subtractOneDay('2026-01-01')).toBe('2025-12-31')
   })
 })

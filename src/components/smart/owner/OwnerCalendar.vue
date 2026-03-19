@@ -18,6 +18,7 @@
 
 <script setup lang="ts">
   import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, Property } from '@/types'
   import { nextTick, onMounted, ref, watch } from 'vue'
   import FullCalendar from '@/components/smart/shared/FullCalendar.vue'
@@ -35,7 +36,8 @@
   interface Emits {
     (e: 'date-select', selectInfo: DateSelectArg): void
     (e: 'event-click', clickInfo: EventClickArg): void
-    (e: 'event-drop' | 'event-resize', info: EventDropArg): void
+    (e: 'event-drop', dropInfo: EventDropArg): void
+    (e: 'event-resize', resizeInfo: EventResizeDoneArg): void
     (e: 'create-booking', data: { start: string, end: string, propertyId?: string }): void
     (e: 'view-change', view: string): void
     (e: 'date-change', date: Date): void
@@ -69,7 +71,9 @@
     emit('event-drop', dropInfo)
   }
 
-  function handleEventResize (resizeInfo: EventDropArg): void {
+  // Import EventResizeArg if missing
+  // ...existing code...
+  function handleEventResize (resizeInfo: EventResizeDoneArg): void {
     console.log('🔄 [OwnerCalendar] Event resized:', resizeInfo.event.id)
     emit('event-resize', resizeInfo)
   }
@@ -90,7 +94,7 @@
     }
 
     // Emit date change event
-    emit('dateChange', targetDate)
+    emit('date-change', targetDate)
   }
 
   function changeView (view: string): void {
@@ -225,10 +229,12 @@
     box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.8);
     transform: scale(1);
   }
+
   70% {
     box-shadow: 0 0 0 6px rgba(244, 67, 54, 0);
     transform: scale(1.01);
   }
+
   100% {
     box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
     transform: scale(1);
@@ -241,7 +247,8 @@
 
 @media (max-width: 768px) {
   .owner-calendar-container {
-    height: calc(100vh - 120px); /* Account for mobile navigation */
+    height: calc(100vh - 120px);
+  /* TODO: Adjust based on actual header/footer height */
   }
 
   :deep(.fc-header-toolbar) {
