@@ -188,9 +188,9 @@
   })
 
   // After an event mounts, position a TURN label on the event bar at the turn day column.
-  // Each multi-week event is split into segments (one per row). We scope the turn-cell
-  // lookup to the same <tr> so the badge only appears on the segment whose week row
-  // actually contains the turn date — not on other rows that share the same column X.
+  // Events spanning more than one week row are split into segments (one per row). We scope
+  // the turn-cell lookup to the same <tr> so the badge only appears on the segment whose
+  // row actually contains the turn date — not on other rows that share the same column X.
   function handleEventDidMount (info: { event: { extendedProps: Record<string, unknown> }, el: HTMLElement }) {
     const booking = info.event.extendedProps?.booking as Booking | undefined
     if (!booking?.turn_date || booking.booking_type !== 'turn') return
@@ -201,9 +201,6 @@
       const eventEl = info.el
       if (!eventEl.isConnected) return
 
-      // Scope the turn-cell lookup to the same table row as this event segment.
-      // This prevents false positives from columns on other week rows that share
-      // the same horizontal position.
       const eventRow = eventEl.closest('tr')
       if (!eventRow) return
       const turnCell = eventRow.querySelector(`td.fc-day[data-date="${booking.turn_date}"]`)
@@ -223,7 +220,8 @@
       badge.style.left = `${leftPct}%`
       badge.style.width = `${widthPct}%`
 
-      // The FullCalendar event harness needs position:relative for absolute children
+      // The harness clips overflow by default; make it visible so the badge
+      // can extend beyond the event bar. eventEl is the positioning context.
       const harness = eventEl.closest('.fc-daygrid-event-harness') as HTMLElement
       if (harness) {
         harness.style.overflow = 'visible'
@@ -682,21 +680,6 @@
   font-weight: bold;
   border-width: 2px !important;
   position: relative;
-}
-
-/* TURN badge inside the event bar */
-:deep(.turn-badge) {
-  display: inline-block;
-  background: rgba(255, 255, 255, 0.9);
-  color: #e65100;
-  font-size: 0.65em;
-  font-weight: 800;
-  letter-spacing: 0.5px;
-  padding: 0 4px;
-  border-radius: 3px;
-  vertical-align: middle;
-  margin-left: 4px;
-  line-height: 1.4;
 }
 
 /* TURN label overlaid on the event bar at the turn day column */

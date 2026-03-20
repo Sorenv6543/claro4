@@ -1,6 +1,6 @@
 <!-- src/layouts/owner.vue -->
 <template>
-   <v-app>
+  <v-app class="owner-layout">
     <v-app-bar
       height="64"
       flat
@@ -150,7 +150,6 @@
           </v-avatar>
         </template>
         <v-list density="comfortable" min-width="160">
-
           <v-list-item
             prepend-icon="mdi-account-outline"
             title="Profile"
