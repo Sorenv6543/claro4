@@ -7,9 +7,12 @@ import { ref, computed, type Ref, type ComputedRef } from 'vue'
  * the same cacheTimestamp / isCacheValid / invalidateCache plumbing.
  * This utility extracts that into a single reusable primitive.
  *
+ * Each cached computed tracks its own last-updated timestamp so that
+ * one computed recomputing does not mask staleness in another.
+ *
  * Usage:
  *   const cache = createMapCache(10_000)                  // 10s TTL
- *   const byStatus = cache.cachedMap(                     // returns ComputedRef<Map>
+ *   const byStatus = cache.cachedGroupBy(                 // returns ComputedRef<Map>
  *     () => bookings.value,                               // source Map
  *     (booking) => booking.status                          // key extractor
  *   )
@@ -19,7 +22,7 @@ import { ref, computed, type Ref, type ComputedRef } from 'vue'
 export interface MapCache {
   /** Invalidate all cached maps managed by this cache instance. */
   invalidate: () => void
-  /** Whether the cache is currently within its TTL window. */
+  /** Whether any cache has been updated within the TTL window. */
   isCacheValid: ComputedRef<boolean>
   /**
    * Create a computed that groups a source Map by a key extractor,
@@ -51,22 +54,26 @@ export interface MapCache {
 }
 
 export function createMapCache(ttl: number = 10_000): MapCache {
-  const cacheTimestamp = ref(0)
   // Track all cached refs so invalidate() can clear them
-  const trackedCaches: Ref<unknown>[] = []
-  const trackedParamCaches: Ref<Map<string, unknown>>[] = []
+  const trackedCaches: { cache: Ref<unknown>, timestamp: Ref<number> }[] = []
+  const trackedParamCaches: { cache: Ref<Map<string, unknown>>, timestamp: Ref<number> }[] = []
+
+  // Global timestamp for isCacheValid — updated whenever any computed recomputes
+  const globalTimestamp = ref(0)
 
   const isCacheValid = computed(() => {
-    return (Date.now() - cacheTimestamp.value) < ttl
+    return (Date.now() - globalTimestamp.value) < ttl
   })
 
   const invalidate = () => {
-    cacheTimestamp.value = 0
-    for (const cache of trackedCaches) {
-      cache.value = null
+    globalTimestamp.value = 0
+    for (const entry of trackedCaches) {
+      entry.cache.value = null
+      entry.timestamp.value = 0
     }
-    for (const cache of trackedParamCaches) {
-      (cache.value as Map<string, unknown>).clear()
+    for (const entry of trackedParamCaches) {
+      (entry.cache.value as Map<string, unknown>).clear()
+      entry.timestamp.value = 0
     }
   }
 
@@ -75,10 +82,11 @@ export function createMapCache(ttl: number = 10_000): MapCache {
     keyFn: (item: V) => K
   ): ComputedRef<Map<K, Map<string, V>>> => {
     const cached = ref<Map<K, Map<string, V>> | null>(null) as Ref<Map<K, Map<string, V>> | null>
-    trackedCaches.push(cached as Ref<unknown>)
+    const ownTimestamp = ref(0)
+    trackedCaches.push({ cache: cached as Ref<unknown>, timestamp: ownTimestamp })
 
     return computed(() => {
-      if (isCacheValid.value && cached.value) {
+      if ((Date.now() - ownTimestamp.value) < ttl && cached.value) {
         return cached.value
       }
 
@@ -92,7 +100,9 @@ export function createMapCache(ttl: number = 10_000): MapCache {
       })
 
       cached.value = grouped
-      cacheTimestamp.value = Date.now()
+      const now = Date.now()
+      ownTimestamp.value = now
+      globalTimestamp.value = now
       return grouped
     })
   }
@@ -102,10 +112,11 @@ export function createMapCache(ttl: number = 10_000): MapCache {
     predicate: (item: V) => boolean
   ): ComputedRef<Map<string, V>> => {
     const cached = ref<Map<string, V> | null>(null) as Ref<Map<string, V> | null>
-    trackedCaches.push(cached as Ref<unknown>)
+    const ownTimestamp = ref(0)
+    trackedCaches.push({ cache: cached as Ref<unknown>, timestamp: ownTimestamp })
 
     return computed(() => {
-      if (isCacheValid.value && cached.value) {
+      if ((Date.now() - ownTimestamp.value) < ttl && cached.value) {
         return cached.value
       }
 
@@ -117,7 +128,9 @@ export function createMapCache(ttl: number = 10_000): MapCache {
       })
 
       cached.value = filtered
-      cacheTimestamp.value = Date.now()
+      const now = Date.now()
+      ownTimestamp.value = now
+      globalTimestamp.value = now
       return filtered
     })
   }
@@ -127,10 +140,11 @@ export function createMapCache(ttl: number = 10_000): MapCache {
     matchFn: (item: V, key: string) => boolean
   ): ComputedRef<(key: string) => Map<string, V>> => {
     const cached = ref(new Map<string, Map<string, V>>()) as Ref<Map<string, Map<string, V>>>
-    trackedParamCaches.push(cached as Ref<Map<string, unknown>>)
+    const ownTimestamp = ref(0)
+    trackedParamCaches.push({ cache: cached as Ref<Map<string, unknown>>, timestamp: ownTimestamp })
 
     return computed(() => (key: string): Map<string, V> => {
-      if (isCacheValid.value && cached.value.has(key)) {
+      if ((Date.now() - ownTimestamp.value) < ttl && cached.value.has(key)) {
         return cached.value.get(key)!
       }
 
@@ -142,6 +156,9 @@ export function createMapCache(ttl: number = 10_000): MapCache {
       })
 
       cached.value.set(key, filtered)
+      const now = Date.now()
+      ownTimestamp.value = now
+      globalTimestamp.value = now
       return filtered
     })
   }

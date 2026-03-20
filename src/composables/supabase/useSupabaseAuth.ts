@@ -106,8 +106,14 @@ export function useSupabaseAuth() {
     profileLoadInFlight = true;
 
     loadUserProfile(userId)
+      .catch(firstErr => {
+        // Single retry after 1s for transient network errors
+        console.warn('Profile load failed, retrying once:', firstErr.message);
+        return new Promise<void>(resolve => setTimeout(resolve, 1000))
+          .then(() => loadUserProfile(userId));
+      })
       .catch(err => {
-        console.warn('Profile load failed, using fallback from session metadata:', err.message);
+        console.warn('Profile load retry failed, using fallback from session metadata:', err.message);
         user.value = buildFallbackProfile(userId);
       })
       .finally(() => {

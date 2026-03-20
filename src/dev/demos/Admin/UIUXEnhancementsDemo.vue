@@ -40,7 +40,6 @@
             @view="handlePropertyView"
             @edit="handlePropertyEdit"
             @quick-booking="handleQuickBooking"
-            @duplicate="handlePropertyDuplicate"
             @delete="handlePropertyDelete"
           />
         </v-col>
@@ -585,10 +584,6 @@ const handlePropertyEdit = (id: string) => {
 const handleQuickBooking = (id: string) => {
   console.log('Quick booking for property:', id);
   showToast(toastTypes[0]); // Show success toast
-};
-
-const handlePropertyDuplicate = (id: string) => {
-  console.log('Duplicate property:', id);
 };
 
 const handlePropertyDelete = (id: string) => {

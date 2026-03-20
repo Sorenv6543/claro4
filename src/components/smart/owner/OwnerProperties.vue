@@ -129,7 +129,15 @@
                   {{ getPropertyIcon(property.property_type) }}
                 </v-icon>
                 <v-menu>
-           
+                  <template #activator="{ props: menuProps }">
+                    <v-btn
+                      v-bind="menuProps"
+                      icon="mdi-dots-vertical"
+                      size="x-small"
+                      variant="text"
+                      @click.stop
+                    />
+                  </template>
                   <v-list density="compact">
                     <v-list-item @click="editProperty(property)">
                       <v-list-item-title>Edit</v-list-item-title>
@@ -475,7 +483,7 @@
 <style scoped>
 .owner-properties-container {
   padding: 1rem;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - var(--app-bar-height, 64px));
 }
 
 .v-card {

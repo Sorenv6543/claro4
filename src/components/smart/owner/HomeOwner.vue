@@ -664,10 +664,11 @@ src/components/smart/owner/HomeOwner.vue -
 /* ================================================================ */
 
 .home-owner-page {
-  /* Use viewport-based height: 100vh minus the 64px app bar.
+  /* Use viewport-based height: 100vh minus the app bar.
+     --app-bar-height is defined in responsive.scss (64px desktop, 56px mobile).
      This gives the calendar a definite height regardless of the
      flex chain through v-main (which varies by Vuetify version). */
-  height: calc(100vh - 64px);
+  height: calc(100vh - var(--app-bar-height, 64px));
   width: 100%;
   display: flex;
   flex-direction: column;

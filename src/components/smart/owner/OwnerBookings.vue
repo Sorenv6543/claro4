@@ -424,7 +424,7 @@
 <style scoped>
 .owner-bookings-page {
   padding: 1rem;
-  min-height: calc(100vh - 64px);
+  min-height: calc(100vh - var(--app-bar-height, 64px));
 }
 
 .gap-1 {

@@ -46,7 +46,6 @@
     (e: 'event-resize', resizeInfo: EventResizeDoneArg): void
     (e: 'create-booking', data: { start: string, end: string, propertyId?: string }): void
     (e: 'view-change', view: string): void
-    (e: 'date-change', date: Date): void
     (e: 'day-view-open', payload: { date: Date, bookings: Booking[] }): void
     (e: 'dates-set', arg: DatesSetArg): void
   }
@@ -102,7 +101,6 @@
     if (calendarRef.value) {
       calendarRef.value.goToDate(targetDate)
     }
-    emit('date-change', targetDate)
   }
 
   function prev (): void {

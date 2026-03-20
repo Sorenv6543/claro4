@@ -1,4 +1,5 @@
 import { ref, computed } from 'vue';
+import { getActivePinia } from 'pinia';
 import { useUIStore } from '@/stores/ui';
 import { useBookingStore } from '@/stores/booking';
 import type { Booking } from '@/types';
@@ -36,6 +37,10 @@ const selectedPropertyIds = ref<Set<string>>(new Set());
  * the same currentDate / currentView.
  */
 export function useCalendarState() {
+  if (!getActivePinia()) {
+    throw new Error('[useCalendarState] Pinia is not installed. This composable must be called within a Vue setup() context with Pinia active.');
+  }
+
   const uiStore = useUIStore();
   const bookingStore = useBookingStore();
 

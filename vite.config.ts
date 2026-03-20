@@ -8,8 +8,13 @@ import { VitePWA } from 'vite-plugin-pwa'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import vuetify from 'vite-plugin-vuetify'
 
+// Role-based chunk names used in manualChunks and PWA urlPattern.
+// When adding/removing chunks in manualChunks below, update this list
+// AND the inline array in workbox.runtimeCaching urlPattern (search "SYNC").
 const chunkNames = [
   'admin-app',
+  'owner-app',
+  'app-core',
   'admin-components',
   'owner-components',
   'shared-ui',
@@ -118,7 +123,10 @@ export default defineConfig(({ mode }) => {
               // Note: urlPattern callbacks are serialized into sw.js, so they
               // cannot reference variables from vite.config scope. Inline the
               // chunk names directly.
-              urlPattern: ({ url }) => ['admin-app', 'admin-components', 'owner-components', 'shared-ui', 'admin-logic', 'owner-logic', 'shared-logic'].some(chunk => url.pathname.includes(chunk)),
+              // SYNC: This list must match the chunkNames array at the top of this file.
+              // urlPattern callbacks are serialized into sw.js so they cannot reference
+              // outer-scope variables — the names must be inlined.
+              urlPattern: ({ url }) => ['admin-app', 'admin-components', 'owner-components', 'shared-ui', 'admin-logic', 'owner-logic', 'shared-logic', 'owner-app', 'app-core'].some(chunk => url.pathname.includes(chunk)),
               handler: 'StaleWhileRevalidate',
               options: {
                 cacheName: 'role-based-chunks',
