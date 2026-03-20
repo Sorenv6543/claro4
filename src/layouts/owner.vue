@@ -1,11 +1,12 @@
 <!-- src/layouts/owner.vue -->
 <template>
-  <v-app>
+  <v-app class="owner-layout">
     <v-app-bar
       height="64"
       flat
       color="surface"
       border="b"
+      order="-1"
     >
       <!-- Hamburger -->
       <v-app-bar-nav-icon
@@ -148,7 +149,7 @@
             <span class="text-caption font-weight-bold">{{ userInitials }}</span>
           </v-avatar>
         </template>
-        <v-list density="compact" min-width="160">
+        <v-list density="comfortable" min-width="160">
           <v-list-item
             prepend-icon="mdi-account-outline"
             title="Profile"

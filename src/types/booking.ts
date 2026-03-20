@@ -30,8 +30,8 @@ export interface Booking {
   checkout_time: string; // Time when guests depart (HH:MM:SS format)
   booking_type: BookingType;
   status: BookingStatus;
-  guest_count?: number;
-  notes?: string;
+  guest_count?: number | null;
+  notes?: string | null;
   priority: 'low' | 'normal' | 'high' | 'urgent';
   assigned_cleaner_id?: string | null;
   turn_date?: string | null;          // Date of same-day turnover within stay

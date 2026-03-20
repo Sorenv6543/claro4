@@ -45,6 +45,14 @@
   },
   "enabledPlugins": {
     "chrome-devtools-mcp@claude-plugins-official": true,
-    "github@claude-plugins-official": false
+    "github@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "greptile@claude-plugins-official": true,
+    "feature-dev@claude-code-plugins": true,
+    "hookify@claude-code-plugins": true,
+    "pr-review-toolkit@claude-code-plugins": true,
+    "chrome-devtools-mcp@chrome-devtools-plugins": true
   }
 }

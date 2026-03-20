@@ -28,8 +28,8 @@ export interface CalendarBookingEvent {
     bookingType: string
     status: string
     priority: string
-    guestCount: number | undefined
-    notes: string | undefined
+    guestCount: number | null | undefined
+    notes: string | null | undefined
   }
 }
 
