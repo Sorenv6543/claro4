@@ -1,13 +1,12 @@
 {
   "permissions": {
     "allow": [
-     
       "Bash(supabase start:*)",
       "Bash(test:*)",
-
       "Bash(powershell -Command \"$vars = [System.Environment]::GetEnvironmentVariables\\(''User''\\); foreach\\($k in \\($vars.Keys | Sort-Object\\)\\) { Write-Output \\($k + ''='' + $vars[$k]\\) }\")"
     ]
   },
+  "enabledMcpjsonServers": [],
   "hooks": {
     "PreToolUse": [
       {
@@ -44,6 +43,7 @@
       }
     ]
   },
-  "enabledPlugins": {},
-  "enabledMcpjsonServers": []
+  "enabledPlugins": {
+    "chrome-devtools-mcp@claude-plugins-official": true
+  }
 }

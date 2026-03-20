@@ -52,7 +52,7 @@
 
         <!-- Replica of HomeAdmin layout structure -->
         <v-row
-          no-gutters
+          density="compact"
           class="fill-height test-layout"
         >
           <!-- Sidebar Column - Same structure as HomeAdmin -->

@@ -13,75 +13,8 @@ src/components/smart/owner/HomeOwner.vue -
   <div class="home-owner-page">
     <!-- Calendar -->
     <div class="calendar-layout">
-      <!-- Calendar Header - Fixed height -->
-      <v-card
-        class="calendar-header-card shrink-0 prominent-header"
-        density="compact"
-        elevation="3"
-        flat
-      >
-        <v-card-text class="pa-4">
-          <div class="d-flex align-center justify-space-between">
-            <!-- Left Navigation Arrow -->
-            <v-btn
-              class="nav-arrow-prominent"
-              color="primary"
-              density="comfortable"
-              icon="mdi-chevron-left"
-              size="default"
-              variant="elevated"
-              @click="handlePrevious"
-            />
-
-            <!-- Centered Month Display -->
-            <div class="month-display-prominent">
-              <div class="month-title">
-                {{ formattedMonthYear }}
-              </div>
-            </div>
-
-            <!-- View Dropdown -->
-            <v-menu location="bottom end">
-              <template #activator="{ props: menuProps }">
-                <v-btn
-                  v-bind="menuProps"
-                  class="view-dropdown-btn ml-2"
-                  variant="elevated"
-                  size="small"
-                  append-icon="mdi-chevron-down"
-                >
-                  {{ viewLabels[activeViewKey] }}
-                </v-btn>
-              </template>
-              <v-list density="compact" min-width="140">
-                <v-list-item
-                  v-for="opt in viewOptions"
-                  :key="opt.value"
-                  :prepend-icon="opt.icon"
-                  :title="opt.label"
-                  :active="activeViewKey === opt.value"
-                  color="primary"
-                  @click="switchView(opt.value)"
-                />
-              </v-list>
-            </v-menu>
-
-            <!-- Right Navigation Arrow -->
-            <v-btn
-              class="nav-arrow-prominent"
-              color="primary"
-              density="comfortable"
-              icon="mdi-chevron-right"
-              size="default"
-              variant="elevated"
-              @click="handleNext"
-            />
-          </div>
-        </v-card-text>
-      </v-card>
-
-      <!-- Calendar Content - Flexible height -->
-      <div class="calendar-content grow">
+      <!-- Calendar Content -->
+      <div class="calendar-content">
         <OwnerCalendar
           ref="calendarRef"
           :bookings="ownerFilteredBookings"
@@ -213,35 +146,6 @@ src/components/smart/owner/HomeOwner.vue -
   } = useCalendarState()
 
   // ============================================================================
-  // CALENDAR VIEW OPTIONS
-  // ============================================================================
-  const viewOptions = [
-    { value: 'month', label: 'Month', icon: 'mdi-calendar-month-outline' },
-    { value: 'week', label: 'Week', icon: 'mdi-calendar-week-outline' },
-    { value: 'day', label: 'Day', icon: 'mdi-calendar-today-outline' },
-    { value: 'list', label: 'List', icon: 'mdi-format-list-bulleted' },
-  ] as const
-
-  const viewLabels: Record<string, string> = {
-    month: 'Month',
-    week: 'Week',
-    day: 'Day',
-    list: 'List',
-  }
-
-  const activeViewKey = computed(() => {
-    const v = currentView.value
-    if (v === 'timeGridWeek') return 'week'
-    if (v === 'timeGridDay') return 'day'
-    if (v === 'listWeek') return 'list'
-    return 'month'
-  })
-
-  function switchView (key: string) {
-    handleCalendarViewChange(key)
-  }
-
-  // ============================================================================
   // LOCAL STATE
   // ============================================================================
   const calendarRef = ref<InstanceType<typeof OwnerCalendar> | null>(null)
@@ -283,14 +187,6 @@ src/components/smart/owner/HomeOwner.vue -
       || propertiesLoading.value
       || uiStore.isLoading('bookings')
       || uiStore.isLoading('properties')
-  })
-
-  const formattedMonthYear = computed(() => {
-    const options: Intl.DateTimeFormatOptions = {
-      month: 'long',
-      year: 'numeric',
-    }
-    return currentDate.value.toLocaleDateString('en-US', options)
   })
 
   // Owner's filtered bookings using composable data
@@ -497,22 +393,6 @@ src/components/smart/owner/HomeOwner.vue -
   // ============================================================================
   // CALENDAR CONTROL HANDLERS
   // ============================================================================
-
-  function handlePrevious (): void {
-    if (!calendarRef.value) {
-      console.warn('[HomeOwner] Calendar not ready — navigation ignored')
-      return
-    }
-    calendarRef.value.prev()
-  }
-
-  function handleNext (): void {
-    if (!calendarRef.value) {
-      console.warn('[HomeOwner] Calendar not ready — navigation ignored')
-      return
-    }
-    calendarRef.value.next()
-  }
 
   function handleCalendarViewChange (view: string): void {
     // Map CalendarView to FullCalendar view type
@@ -789,8 +669,10 @@ src/components/smart/owner/HomeOwner.vue -
 /* ================================================================ */
 
 .home-owner-page {
-  /* Fill v-main's content area (v-main has padding-top for app bar) */
-  height: 100%;
+  /* Use viewport-based height: 100vh minus the 64px app bar.
+     This gives the calendar a definite height regardless of the
+     flex chain through v-main (which varies by Vuetify version). */
+  height: calc(100vh - 64px);
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -798,28 +680,10 @@ src/components/smart/owner/HomeOwner.vue -
 }
 
 .calendar-layout {
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-}
-
-.calendar-header-card {
-  flex-shrink: 0;
-  border-bottom: 1px solid rgb(var(--v-theme-on-surface), 0.12);
-  background: rgb(var(--v-theme-surface));
-  /* Fixed height for consistent layout calculations */
-  height: 48px;
-  min-height: 48px;
-  max-height: 48px;
-}
-
-.prominent-header {
-  background: linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgba(var(--v-theme-primary), 0.9) 100%) !important;
-  border-bottom: 3px solid rgba(var(--v-theme-secondary), 0.8) !important;
-  height: 70px !important;
-  min-height: 70px !important;
-  max-height: 70px !important;
-  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.25) !important;
 }
 
 .calendar-content {
@@ -827,181 +691,6 @@ src/components/smart/owner/HomeOwner.vue -
   min-height: 0;
   overflow: hidden;
   position: relative;
-  /* Height is managed by flexbox within .calendar-layout */
-}
-
-/* Clean Calendar Header Layout */
-
-/* Simple Navigation Arrows */
-.nav-arrow-simple {
-  border-radius: 8px !important;
-  color: #666 !important;
-  border: 1px solid #e0e0e0 !important;
-  background: #ffffff !important;
-}
-
-.nav-arrow-simple:hover {
-  background: #f5f5f5 !important;
-  color: #333 !important;
-  border-color: #ccc !important;
-}
-
-/* Prominent Navigation Arrows */
-.nav-arrow-prominent {
-  border-radius: 12px !important;
-  background: rgba(255, 255, 255, 0.95) !important;
-  color: rgb(var(--v-theme-primary)) !important;
-  border: 2px solid rgba(255, 255, 255, 0.8) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-  transition: all 0.3s ease !important;
-}
-
-.nav-arrow-prominent:hover {
-  background: rgba(255, 255, 255, 1) !important;
-  transform: scale(1.05) !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
-}
-
-/* Centered Month Pill Display */
-.month-pill-display {
-  background: #e3f2fd;
-  color: #1976d2;
-  font-weight: 600;
-  font-size: 1rem;
-  padding: 12px 24px;
-  border-radius: 20px;
-  text-align: center;
-  min-width: 140px;
-  border: 1px solid #bbdefb;
-}
-
-/* Prominent Month Display */
-.month-display-prominent {
-  background: rgba(255, 255, 255, 0.95);
-  color: rgb(var(--v-theme-primary));
-  padding: 8px 24px;
-  border-radius: 16px;
-  text-align: center;
-  min-width: 200px;
-  border: 2px solid rgba(255, 255, 255, 0.8);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
-}
-
-/* View dropdown button */
-.view-dropdown-btn {
-  background: rgba(255, 255, 255, 0.95) !important;
-  color: rgb(var(--v-theme-primary)) !important;
-  border: 2px solid rgba(255, 255, 255, 0.8) !important;
-  font-weight: 600 !important;
-  text-transform: none !important;
-  letter-spacing: 0 !important;
-  border-radius: 12px !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
-}
-
-.month-title {
-  font-weight: 700;
-  font-size: 1.1rem;
-  line-height: 1.2;
-  color: rgb(var(--v-theme-primary));
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-}
-
-.month-subtitle {
-  font-size: 0.75rem;
-  font-weight: 500;
-  color: rgba(var(--v-theme-primary), 0.8);
-  line-height: 1;
-  margin-top: 2px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-/* ================================================================ */
-/* RESPONSIVE MOBILE-FIRST ENHANCEMENTS */
-/* ================================================================ */
-
-/* Mobile viewport stretching with safe area support */
-@media (max-width: 959px) {
-  .home-owner-page {
-    height: 100% !important;
-  }
-
-  .calendar-header-card .v-card-text {
-    padding: 4px 8px !important;
-  }
-
-  .prominent-header {
-    height: 60px !important;
-    min-height: 60px !important;
-    max-height: 60px !important;
-  }
-
-  .calendar-content {
-    height: calc(100% - 60px) !important;
-  }
-
-  /* Compact navigation on mobile */
-  .month-pill-display {
-    font-size: 0.9rem !important;
-    padding: 6px 14px;
-    min-width: 120px;
-  }
-
-  .month-display-prominent {
-    min-width: 160px !important;
-    padding: 6px 16px !important;
-  }
-
-  .month-title {
-    font-size: 1rem !important;
-  }
-
-  .month-subtitle {
-    font-size: 0.7rem !important;
-  }
-
-  .nav-arrow-simple {
-    min-width: 32px !important;
-    width: 32px !important;
-    height: 32px !important;
-  }
-
-  .nav-arrow-prominent {
-    min-width: 40px !important;
-    width: 40px !important;
-    height: 40px !important;
-  }
-
-  /* More compact buttons on mobile */
-  .calendar-header-card .v-btn {
-    min-width: auto !important;
-  }
-}
-
-/* Tablet optimizations */
-@media (min-width: 600px) and (max-width: 959px) {
-  .calendar-header-card .v-card-text {
-    padding: 12px 16px !important;
-  }
-
-  /* Medium navigation on tablet */
-  .month-pill-display {
-    font-size: 1rem !important;
-    padding: 10px 20px;
-    min-width: 130px;
-  }
-}
-
-/* Desktop optimizations */
-@media (min-width: 960px) {
-  /* Full size navigation on desktop */
-  .month-pill-display {
-    font-size: 1.1rem !important;
-    padding: 12px 24px;
-    min-width: 140px;
-  }
 }
 
 /* ================================================================ */

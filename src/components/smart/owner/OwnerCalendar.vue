@@ -129,20 +129,21 @@
 
   // ===== WATCHERS (SAFE - SIMPLE, NON-CIRCULAR) =====
 
-  // Watch for view changes from parent (safe - simple prop watching)
+  // Watch for view changes from parent — sync to FullCalendar without emitting
+  // (avoids circular: singleton update → prop change → emit → handler → loop)
   watch(() => props.currentView, newView => {
     nextTick(() => {
       if (newView && calendarRef.value) {
-        changeView(newView)
+        calendarRef.value.changeView(newView)
       }
     })
   })
 
-  // Watch for date changes from parent (safe - simple prop watching)
+  // Watch for date changes from parent — sync to FullCalendar without emitting
   watch(() => props.currentDate, newDate => {
     nextTick(() => {
       if (newDate && calendarRef.value) {
-        goToDate(newDate)
+        calendarRef.value.goToDate(newDate)
       }
     })
   })

@@ -255,17 +255,37 @@ export function useRealtimeSync() {
   }
 
   // Network status monitoring
+  let onlineHandler: (() => void) | null = null;
+  let offlineHandler: (() => void) | null = null;
+
   function initializeNetworkMonitoring() {
-    window.addEventListener('online', () => {
+    // Remove any previously attached handlers to prevent duplicates
+    cleanupNetworkMonitoring();
+
+    onlineHandler = () => {
       isOnline.value = true;
       debugLog('Network connection restored');
       syncPendingOperations();
-    });
-    
-    window.addEventListener('offline', () => {
+    };
+
+    offlineHandler = () => {
       isOnline.value = false;
       debugLog('Network connection lost');
-    });
+    };
+
+    window.addEventListener('online', onlineHandler);
+    window.addEventListener('offline', offlineHandler);
+  }
+
+  function cleanupNetworkMonitoring() {
+    if (onlineHandler) {
+      window.removeEventListener('online', onlineHandler);
+      onlineHandler = null;
+    }
+    if (offlineHandler) {
+      window.removeEventListener('offline', offlineHandler);
+      offlineHandler = null;
+    }
   }
 
   // Offline/online sync
@@ -302,15 +322,16 @@ export function useRealtimeSync() {
   // Cleanup function
   function cleanup() {
     debugLog('Cleaning up real-time subscriptions');
-    
+
     subscriptions.value.forEach(subscription => {
       if (subscription) {
         supabase.removeChannel(subscription);
       }
     });
-    
+
     subscriptions.value = [];
     connectionStatus.value = 'disconnected';
+    cleanupNetworkMonitoring();
   }
 
   // Auto-initialize when user is authenticated

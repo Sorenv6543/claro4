@@ -513,7 +513,6 @@
 
 <style scoped>
 .property-view-page {
-  min-height: 100vh;
   background: rgb(var(--v-theme-background));
 }
 

@@ -1,4 +1,4 @@
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import type { Booking, BookingFormData } from '@/types/booking'
 import type { Property, PropertyFormData } from '@/types/property'
 
@@ -290,14 +290,36 @@ export const useBackgroundSync = () => {
   // Initialize
   loadQueue()
 
+  // Track listeners and intervals for cleanup
+  let autoSyncInterval: ReturnType<typeof setInterval> | null = null
+  let updateOnlineStatus: (() => void) | null = null
+  let autoSyncOnlineHandler: (() => void) | null = null
+
   // Setup online status listeners
   onMounted(() => {
-    const updateOnlineStatus = () => {
+    updateOnlineStatus = () => {
       isOnline.value = navigator.onLine
     }
-    
+
     window.addEventListener('online', updateOnlineStatus)
     window.addEventListener('offline', updateOnlineStatus)
+  })
+
+  onUnmounted(() => {
+    // Clean up online/offline listeners
+    if (updateOnlineStatus) {
+      window.removeEventListener('online', updateOnlineStatus)
+      window.removeEventListener('offline', updateOnlineStatus)
+    }
+    // Clean up auto-sync interval and listener
+    if (autoSyncInterval) {
+      clearInterval(autoSyncInterval)
+      autoSyncInterval = null
+    }
+    if (autoSyncOnlineHandler) {
+      window.removeEventListener('online', autoSyncOnlineHandler)
+      autoSyncOnlineHandler = null
+    }
   })
 
   // Auto-process when coming online
@@ -309,9 +331,14 @@ export const useBackgroundSync = () => {
     }
 
     // Check every 30 seconds when online
-    setInterval(checkAndProcess, 30000)
-    
+    if (autoSyncInterval) clearInterval(autoSyncInterval)
+    autoSyncInterval = setInterval(checkAndProcess, 30000)
+
     // Process immediately when coming online
+    if (autoSyncOnlineHandler) {
+      window.removeEventListener('online', autoSyncOnlineHandler)
+    }
+    autoSyncOnlineHandler = checkAndProcess
     window.addEventListener('online', checkAndProcess)
   }
 

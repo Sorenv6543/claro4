@@ -1,4 +1,4 @@
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { usePushNotifications } from './usePushNotifications'
 import { useBackgroundSync } from './useBackgroundSync'
 
@@ -33,16 +33,26 @@ export const usePWA = () => {
   }
 
   // Setup event listeners
+  let pwaOnlineHandler: (() => void) | null = null
+
   onMounted(() => {
     console.log('PWA event listeners disabled in development mode')
-    
+
     // Only set up network status listeners
-    const updateOnlineStatus = () => {
+    pwaOnlineHandler = () => {
       isOnline.value = navigator.onLine
     }
-    
-    window.addEventListener('online', updateOnlineStatus)
-    window.addEventListener('offline', updateOnlineStatus)
+
+    window.addEventListener('online', pwaOnlineHandler)
+    window.addEventListener('offline', pwaOnlineHandler)
+  })
+
+  onUnmounted(() => {
+    if (pwaOnlineHandler) {
+      window.removeEventListener('online', pwaOnlineHandler)
+      window.removeEventListener('offline', pwaOnlineHandler)
+      pwaOnlineHandler = null
+    }
   })
 
   // Initialize push notifications and background sync

@@ -172,40 +172,6 @@
         Edit
       </v-btn>
 
-      <!-- More Actions Menu -->
-      <v-menu location="bottom end">
-        <template #activator="{ props: menuProps }">
-          <v-btn
-            v-bind="menuProps"
-            variant="text"
-            color="on-surface"
-            size="small"
-            icon="mdi-dots-vertical"
-            class="action-btn"
-            @click.stop
-          />
-        </template>
-        
-        <v-list density="compact">
-          <v-list-item
-            prepend-icon="mdi-eye"
-            title="View Details"
-            @click="emit('view', property.id)"
-          />
-          <v-list-item
-            prepend-icon="mdi-content-duplicate"
-            title="Duplicate"
-            @click="handleDuplicate"
-          />
-          <v-divider />
-          <v-list-item
-            prepend-icon="mdi-delete"
-            title="Delete"
-            class="text-error"
-            @click="emit('delete', property.id)"
-          />
-        </v-list>
-      </v-menu>
     </v-card-actions>
 
     <!-- Hover Overlay for Enhanced Interactivity -->
@@ -244,7 +210,6 @@ interface Emits {
   (e: 'delete', id: string): void;
   (e: 'view', id: string): void;
   (e: 'quick-booking', id: string): void;
-  (e: 'duplicate', id: string): void;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -314,9 +279,6 @@ const handleQuickBooking = () => {
   emit('quick-booking', props.property.id);
 };
 
-const handleDuplicate = () => {
-  emit('duplicate', props.property.id);
-};
 </script>
 
 <style scoped>

@@ -15,6 +15,9 @@ export function useSupabaseAuth() {
 
   const currentUserId = computed(() => session.value?.user?.id || null);
 
+  // Guard against concurrent profile loads
+  let profileLoadInFlight = false;
+
   let initializationTimeout: ReturnType<typeof setTimeout>;
 
   initializeAuthListener();
@@ -24,38 +27,31 @@ export function useSupabaseAuth() {
       initializing.value = false;
       clearTimeout(initializationTimeout);
 
-      supabase.auth.onAuthStateChange(async (event, newSession) => {
-        try {
-          if (event === 'INITIAL_SESSION') {
-            session.value = newSession;
-            if (newSession) {
-              await loadUserProfile(newSession.user.id);
-            }
-          } else if (event === 'SIGNED_IN' && newSession) {
-            // Profile is loaded directly in signIn() to avoid the race condition.
-            // This handler updates the session ref for token refreshes and handles
-            // flows where signIn() is not the entry point (e.g. OAuth, magic link).
-            // The !user.value guard means this only fires when no profile is loaded yet.
-            session.value = newSession;
-            if (!user.value) {
-              await loadUserProfile(newSession.user.id).catch(err => {
-                console.error('Profile loading failed during SIGNED_IN:', err);
-                error.value = err instanceof Error ? err.message : 'Failed to load profile';
-              });
-            }
-          } else if (event === 'SIGNED_OUT') {
-            user.value = null;
-            session.value = null;
-            error.value = null;
+      supabase.auth.onAuthStateChange((event, newSession) => {
+        // IMPORTANT: Do NOT await async work here — it holds Supabase's
+        // internal auth lock and causes "Lock was not released within 5000ms".
+        // Instead, fire profile loading asynchronously.
+
+        if (event === 'INITIAL_SESSION') {
+          session.value = newSession;
+          if (newSession) {
+            loadUserProfileSafe(newSession.user.id);
           }
-        } catch (err) {
-          console.error('Auth state change error:', err);
-          error.value = err instanceof Error ? err.message : 'Authentication error';
+        } else if (event === 'SIGNED_IN' && newSession) {
+          session.value = newSession;
+          if (!user.value) {
+            loadUserProfileSafe(newSession.user.id);
+          }
+        } else if (event === 'SIGNED_OUT') {
+          user.value = null;
+          session.value = null;
+          error.value = null;
+        } else if (event === 'TOKEN_REFRESHED' && newSession) {
+          session.value = newSession;
         }
       });
 
-      // Check current session as fallback in case onAuthStateChange is delayed.
-      // Only load profile if INITIAL_SESSION hasn't already loaded it (!user.value guard).
+      // Fallback: check current session in case onAuthStateChange is delayed
       supabase.auth.getSession().then(({ data: { session: currentSession }, error: sessionError }) => {
         if (sessionError) {
           console.error('Session check failed:', sessionError);
@@ -63,9 +59,7 @@ export function useSupabaseAuth() {
         if (currentSession) {
           session.value = currentSession;
           if (!user.value) {
-            loadUserProfile(currentSession.user.id).catch(err => {
-              console.error('Existing session profile loading failed:', err);
-            });
+            loadUserProfileSafe(currentSession.user.id);
           }
         }
         if (initializing.value) {
@@ -103,61 +97,68 @@ export function useSupabaseAuth() {
     };
   }
 
-  async function loadUserProfile(userId: string): Promise<void> {
-    const maxRetries = 3;
+  /**
+   * Fire-and-forget wrapper for loadUserProfile.
+   * Prevents concurrent loads and uses fallback on failure.
+   */
+  function loadUserProfileSafe(userId: string) {
+    if (profileLoadInFlight) return;
+    profileLoadInFlight = true;
 
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        const queryPromise = supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle();
-
-        const timeoutPromise = new Promise<never>((_, reject) => {
-          setTimeout(() => reject(new Error('Profile query timeout after 3 seconds')), 3000);
-        });
-
-        const result = await Promise.race([queryPromise, timeoutPromise]);
-        const { data, error: profileError } = result;
-
-        // Non-404 errors are real failures — throw so callers can handle
-        if (profileError) {
-          const isNotFound = profileError.code === 'PGRST116' || profileError.message?.includes('No rows found');
-          if (!isNotFound) {
-            throw new Error(`Profile query failed: ${profileError.message}`);
-          }
-        }
-
-        if (data) {
-          user.value = {
-            id: data.id,
-            email: session.value?.user?.email || data.email || '',
-            name: data.name,
-            role: data.role as UserRole,
-            company_name: data.company_name,
-            notifications_enabled: data.notifications_enabled ?? true,
-            timezone: data.timezone || 'America/Los_Angeles',
-            theme: data.theme || 'light',
-            language: data.language || 'en',
-            created_at: data.created_at,
-            updated_at: data.updated_at
-          };
-          return;
-        }
-
-        // Profile not found (null data or 404 error) — use fallback from session metadata
+    loadUserProfile(userId)
+      .catch(err => {
+        console.warn('Profile load failed, using fallback from session metadata:', err.message);
         user.value = buildFallbackProfile(userId);
-        return;
-      } catch (err) {
-        if (attempt === maxRetries) {
-          throw err instanceof Error ? err : new Error('Failed to load user profile');
+      })
+      .finally(() => {
+        profileLoadInFlight = false;
+        if (initializing.value) {
+          initializing.value = false;
+          clearTimeout(initializationTimeout);
         }
+      });
+  }
 
-        const retryDelay = Math.min(1000 * Math.pow(2, attempt - 1), 5000);
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
+  async function loadUserProfile(userId: string): Promise<void> {
+    const queryPromise = supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('id', userId)
+      .maybeSingle();
+
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Profile query timeout after 5 seconds')), 5000);
+    });
+
+    const result = await Promise.race([queryPromise, timeoutPromise]);
+    const { data, error: profileError } = result;
+
+    if (profileError) {
+      const isNotFound = profileError.code === 'PGRST116' || profileError.message?.includes('No rows found');
+      if (!isNotFound) {
+        throw new Error(`Profile query failed: ${profileError.message}`);
       }
     }
+
+    if (data) {
+      user.value = {
+        id: data.id,
+        email: session.value?.user?.email || data.email || '',
+        name: data.name,
+        role: data.role as UserRole,
+        company_name: data.company_name,
+        notifications_enabled: data.notifications_enabled ?? true,
+        timezone: data.timezone || 'America/Los_Angeles',
+        theme: data.theme || 'light',
+        language: data.language || 'en',
+        created_at: data.created_at,
+        updated_at: data.updated_at
+      };
+      return;
+    }
+
+    // Profile not found — use fallback from session metadata
+    user.value = buildFallbackProfile(userId);
   }
 
   async function signIn(email: string, password: string): Promise<boolean> {
@@ -182,7 +183,6 @@ export function useSupabaseAuth() {
       return false;
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Sign in failed';
-      // Distinguish credential errors from infrastructure errors
       const isCredentialError = message.includes('Invalid login') || message.includes('invalid_grant');
       error.value = isCredentialError ? 'Invalid email or password' : message;
       return false;
@@ -221,9 +221,6 @@ export function useSupabaseAuth() {
       }
 
       if (data.user) {
-        // If the email is immediately confirmed, the SIGNED_IN handler will load
-        // the profile (subject to the !user.value guard). If not confirmed, the
-        // user must verify their email first.
         return true;
       }
 
@@ -247,7 +244,6 @@ export function useSupabaseAuth() {
         throw signOutError;
       }
 
-      // Auth state change handler will clear user state
       return true;
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Sign out failed';
@@ -386,7 +382,6 @@ export function useSupabaseAuth() {
       const { error: authError } = await supabase.auth.admin.deleteUser(userId);
 
       if (authError) {
-        // Profile deleted but auth record remains — report partial failure
         error.value = 'Profile deleted but auth record cleanup failed. Contact support.';
         return false;
       }
@@ -430,7 +425,6 @@ export function useSupabaseAuth() {
         });
 
       if (profileError) {
-        // Clean up auth user if profile creation fails
         await supabase.auth.admin.deleteUser(authData.user.id).catch(cleanupErr => {
           console.error('Failed to clean up auth user after profile creation failure:', cleanupErr);
         });
@@ -451,9 +445,7 @@ export function useSupabaseAuth() {
 
       supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
         if (currentSession && !user.value) {
-          loadUserProfile(currentSession.user.id).catch(() => {
-            // Timeout fallback — profile load failure is non-critical here
-          });
+          loadUserProfileSafe(currentSession.user.id);
         }
       }).catch(() => {
         // Timeout fallback — session check failure is non-critical here

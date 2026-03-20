@@ -1,4 +1,4 @@
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useDisplay } from 'vuetify'
 
 export const useResponsiveLayout = () => {
@@ -111,11 +111,20 @@ export const useResponsiveLayout = () => {
     }
   }
 
-  // Setup responsive event listeners
-  if (typeof window !== 'undefined') {
-    window.addEventListener('resize', handleResize)
-    window.visualViewport?.addEventListener('resize', handleResize)
-  }
+  // Setup responsive event listeners with proper lifecycle management
+  onMounted(() => {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', handleResize)
+      window.visualViewport?.addEventListener('resize', handleResize)
+    }
+  })
+
+  onUnmounted(() => {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('resize', handleResize)
+      window.visualViewport?.removeEventListener('resize', handleResize)
+    }
+  })
 
   // Responsive classes for components
   const layoutClasses = computed(() => ({

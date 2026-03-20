@@ -45,10 +45,10 @@
       "mcp__vuetify-mcp__get_component_api_by_version",
       "mcp__vuetify-mcp__get_feature_guide",
       "mcp__plugin_playwright_playwright__browser_snapshot",
-      "mcp__plugin_playwright_playwright__browser_evaluate"
+      "mcp__plugin_playwright_playwright__browser_evaluate",
+      "Bash(npx pnpm:*)"
     ],
     "deny": [
-      "mcp__plugin_serena_serena__activate_project",
       "mcp__plugin_serena_serena__deactivate_project",
       "mcp__plugin_serena_serena__restart_project"
     ]

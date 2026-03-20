@@ -44,7 +44,7 @@
     <div class="page-content">
       <v-row
         class="fill-height"
-        no-gutters
+        density="compact"
       >
         <!-- Calendar (Full Width) -->
         <v-col

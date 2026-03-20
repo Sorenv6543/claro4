@@ -80,6 +80,7 @@
     "lint-staged": "^16.3.3",
     "markdown-it-plantuml": "^1.4.1",
     "ngrx-uml": "^1.0.2",
+    "playwright": "^1.58.2",
     "prettier": "^3.8.1",
     "sass-embedded": "^1.98.0",
     "supabase": "^2.78.1",

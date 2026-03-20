@@ -129,15 +129,7 @@
                   {{ getPropertyIcon(property.property_type) }}
                 </v-icon>
                 <v-menu>
-                  <template #activator="{ props }">
-                    <v-btn
-                      v-bind="props"
-                      icon="mdi-dots-vertical"
-                      size="small"
-                      variant="text"
-                      @click.stop
-                    />
-                  </template>
+           
                   <v-list density="compact">
                     <v-list-item @click="editProperty(property)">
                       <v-list-item-title>Edit</v-list-item-title>

@@ -3,7 +3,6 @@
   <v-app>
     <!-- Simple app bar for auth pages -->
     <v-app-bar
-      app
       color="primary"
       theme="dark"
       elevation="1"
@@ -33,14 +32,12 @@
     <v-main class="auth-main">
       <v-container
         fluid
-        fill-height
-        class="pa-0"
+        class="pa-0 d-flex align-center justify-center"
+        style="min-height: 100%"
       >
         <v-row
           align="center"
           justify="center"
-          no-gutters
-          class="fill-height"
         >
           <v-col
             cols="12"
@@ -59,7 +56,6 @@
 
     <!-- Footer with basic info -->
     <v-footer
-      app
       color="transparent"
       class="justify-center"
       height="auto"

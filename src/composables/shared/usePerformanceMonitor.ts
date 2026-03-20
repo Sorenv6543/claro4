@@ -100,6 +100,11 @@ export function usePerformanceMonitor() {
   function disableMonitoring(): void {
     isEnabled.value = false
     stopPerformanceTracking()
+    // Clean up bundle load handler if still attached
+    if (bundleLoadHandler) {
+      window.removeEventListener('load', bundleLoadHandler)
+      bundleLoadHandler = null
+    }
   }
 
   // Core performance measurement functions
@@ -237,14 +242,24 @@ export function usePerformanceMonitor() {
   }
 
   // Bundle performance tracking
+  let bundleLoadHandler: (() => void) | null = null
+
   function trackBundleLoadTime(): void {
     if (!isEnabled.value) return
-    
-    // Track initial bundle load time
-    window.addEventListener('load', () => {
+
+    // Only attach once and track the reference for cleanup
+    if (bundleLoadHandler) return
+
+    bundleLoadHandler = () => {
       const loadTime = performance.timing.loadEventEnd - performance.timing.navigationStart
       updateMetric('bundleLoadTime', loadTime, PERFORMANCE_THRESHOLDS.maxBundleLoadTime)
-    })
+      // Self-cleanup since load fires at most once
+      if (bundleLoadHandler) {
+        window.removeEventListener('load', bundleLoadHandler)
+      }
+    }
+
+    window.addEventListener('load', bundleLoadHandler)
   }
 
   // Cache performance tracking

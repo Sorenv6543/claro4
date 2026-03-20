@@ -5,44 +5,48 @@ import type { Booking } from '@/types';
 
 const __DEV__ = import.meta.env.DEV;
 
+// ============================================================================
+// SINGLETON STATE — shared across all consumers (layout, pages, components)
+// ============================================================================
+
+const currentView = ref<'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'>('dayGridMonth');
+const currentDate = ref<Date>(new Date());
+const dateRange = ref<{ start: Date; end: Date }>({
+  start: new Date(),
+  end: new Date(new Date().setDate(new Date().getDate() + 7))
+});
+
+const showPendingBookings = ref<boolean>(true);
+const showScheduledBookings = ref<boolean>(true);
+const showInProgressBookings = ref<boolean>(true);
+const showCompletedBookings = ref<boolean>(false);
+const showCancelledBookings = ref<boolean>(false);
+const showTurnBookings = ref<boolean>(true);
+const showStandardBookings = ref<boolean>(true);
+
+const selectedPropertyIds = ref<Set<string>>(new Set());
+
+// ============================================================================
+
 /**
  * Composable for calendar view state management
  * Controls calendar display options, date ranges, and filtering
+ *
+ * State is module-scoped (singleton) so layout + page + components share
+ * the same currentDate / currentView.
  */
 export function useCalendarState() {
   const uiStore = useUIStore();
   const bookingStore = useBookingStore();
-  
-  // Calendar view state
-  const currentView = ref<'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'>('dayGridMonth');
-  const currentDate = ref<Date>(new Date());
-  const dateRange = ref<{ start: Date; end: Date }>({
-    start: new Date(),
-    end: new Date(new Date().setDate(new Date().getDate() + 7))
-  });
-  
-  // Booking display filters
-  const showPendingBookings = ref<boolean>(true);
-  const showScheduledBookings = ref<boolean>(true);
-  const showInProgressBookings = ref<boolean>(true);
-  const showCompletedBookings = ref<boolean>(false);
-  const showCancelledBookings = ref<boolean>(false);
-  const showTurnBookings = ref<boolean>(true);
-  const showStandardBookings = ref<boolean>(true);
-  
-  // Selected property filter (empty means show all)
-  const selectedPropertyIds = ref<Set<string>>(new Set());
-  
+
   /**
    * Change calendar view
    */
   function setCalendarView(view: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek') {
     currentView.value = view;
-    
-    // Update UI store
     uiStore.setFilter('calendarView', view);
   }
-  
+
   /**
    * Navigate to specific date
    */
@@ -50,7 +54,7 @@ export function useCalendarState() {
     currentDate.value = date;
     updateDateRange();
   }
-  
+
   /**
    * Navigate to today
    */
@@ -58,13 +62,13 @@ export function useCalendarState() {
     currentDate.value = new Date();
     updateDateRange();
   }
-  
+
   /**
    * Navigate to next period (day/week/month)
    */
   function next() {
     const date = new Date(currentDate.value);
-    
+
     if (currentView.value === 'dayGridMonth') {
       date.setMonth(date.getMonth() + 1);
     } else if (currentView.value === 'timeGridWeek') {
@@ -72,17 +76,17 @@ export function useCalendarState() {
     } else {
       date.setDate(date.getDate() + 1);
     }
-    
+
     currentDate.value = date;
     updateDateRange();
   }
-  
+
   /**
    * Navigate to previous period (day/week/month)
    */
   function prev() {
     const date = new Date(currentDate.value);
-    
+
     if (currentView.value === 'dayGridMonth') {
       date.setMonth(date.getMonth() - 1);
     } else if (currentView.value === 'timeGridWeek') {
@@ -90,16 +94,15 @@ export function useCalendarState() {
     } else {
       date.setDate(date.getDate() - 1);
     }
-    
+
     currentDate.value = date;
     updateDateRange();
   }
-  
+
   /**
    * Update date range based on current view and date
    */
   function updateDateRange() {
-    // Ensure currentDate.value is a valid Date object
     let date: Date;
     if (currentDate.value instanceof Date && !isNaN(currentDate.value.getTime())) {
       date = new Date(currentDate.value);
@@ -111,38 +114,27 @@ export function useCalendarState() {
 
     let start: Date;
     let end: Date;
-    
+
     if (currentView.value === 'dayGridMonth') {
-      // Start from first day of month
       start = new Date(date.getFullYear(), date.getMonth(), 1);
-      
-      // End on last day of month
       end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
     } else if (currentView.value === 'timeGridWeek') {
-      // Start from beginning of week (Sunday)
       const day = date.getDay();
       start = new Date(date);
       start.setDate(date.getDate() - day);
-      
-      // End at end of week (Saturday)
       end = new Date(start);
       end.setDate(start.getDate() + 6);
     } else {
-      // Day view - just use the current date
       start = new Date(date);
       end = new Date(date);
     }
-    
-    // Set time to beginning/end of day
+
     start.setHours(0, 0, 0, 0);
     end.setHours(23, 59, 59, 999);
-    
+
     dateRange.value = { start, end };
   }
-  
-  /**
-   * Toggle booking status filter
-   */
+
   function toggleStatusFilter(status: 'pending' | 'scheduled' | 'in_progress' | 'completed' | 'cancelled') {
     switch (status) {
       case 'pending':
@@ -161,9 +153,8 @@ export function useCalendarState() {
         showCancelledBookings.value = !showCancelledBookings.value;
         break;
     }
-    
-    // Update UI store
-    uiStore.setFilter(`show${status.charAt(0).toUpperCase() + status.slice(1)}`, 
+
+    uiStore.setFilter(`show${status.charAt(0).toUpperCase() + status.slice(1)}`,
       status === 'pending' ? showPendingBookings.value :
       status === 'scheduled' ? showScheduledBookings.value :
       status === 'in_progress' ? showInProgressBookings.value :
@@ -171,10 +162,7 @@ export function useCalendarState() {
       showCancelledBookings.value
     );
   }
-  
-  /**
-   * Toggle booking type filter
-   */
+
   function toggleTypeFilter(type: 'turn' | 'standard') {
     if (type === 'turn') {
       showTurnBookings.value = !showTurnBookings.value;
@@ -184,36 +172,24 @@ export function useCalendarState() {
       uiStore.setFilter('showStandardBookings', showStandardBookings.value);
     }
   }
-  
-  /**
-   * Toggle property filter
-   */
+
   function togglePropertyFilter(propertyId: string) {
     if (selectedPropertyIds.value.has(propertyId)) {
       selectedPropertyIds.value.delete(propertyId);
     } else {
       selectedPropertyIds.value.add(propertyId);
     }
-    
-    // Update UI store
     uiStore.setFilter('selectedProperties', Array.from(selectedPropertyIds.value));
   }
-  
-  /**
-   * Clear all property filters
-   */
+
   function clearPropertyFilters() {
     selectedPropertyIds.value.clear();
     uiStore.setFilter('selectedProperties', []);
   }
-  
-  /**
-   * Filter bookings based on current filters
-   */
+
   function filterBookings(bookings: Booking[]): Booking[] {
     try {
     const filtered = bookings.filter(booking => {
-      // Filter by status
       if (
         (booking.status === 'pending' && !showPendingBookings.value) ||
         (booking.status === 'scheduled' && !showScheduledBookings.value) ||
@@ -224,7 +200,6 @@ export function useCalendarState() {
         return false;
       }
 
-      // Filter by type
       if (
         (booking.booking_type === 'turn' && !showTurnBookings.value) ||
         (booking.booking_type === 'standard' && !showStandardBookings.value)
@@ -232,7 +207,6 @@ export function useCalendarState() {
         return false;
       }
 
-      // Filter by property
       if (selectedPropertyIds.value.size > 0 && !selectedPropertyIds.value.has(booking.property_id)) {
         return false;
       }
@@ -248,48 +222,41 @@ export function useCalendarState() {
       return [];
     }
   }
-  
-  /**
-   * Get formatted date range for display
-   */
+
   function getFormattedDateRange(): string {
     const start = dateRange.value.start;
     const end = dateRange.value.end;
-    const options: Intl.DateTimeFormatOptions = { 
-      month: 'short', 
+    const options: Intl.DateTimeFormatOptions = {
+      month: 'short',
       day: 'numeric',
       year: start.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
     };
-    
+
     if (
-      start.getDate() === end.getDate() && 
-      start.getMonth() === end.getMonth() && 
+      start.getDate() === end.getDate() &&
+      start.getMonth() === end.getMonth() &&
       start.getFullYear() === end.getFullYear()
     ) {
-      // Same day
       return start.toLocaleDateString('en-US', options);
     } else if (
-      start.getMonth() === end.getMonth() && 
+      start.getMonth() === end.getMonth() &&
       start.getFullYear() === end.getFullYear()
     ) {
-      // Same month and year
       return `${start.getDate()} - ${end.toLocaleDateString('en-US', options)}`;
     } else if (start.getFullYear() === end.getFullYear()) {
-      // Same year
       return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}`;
     } else {
-      // Different years
-      return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', { 
-        month: 'short', 
+      return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', {
+        month: 'short',
         day: 'numeric',
-        year: 'numeric' 
+        year: 'numeric'
       })}`;
     }
   }
-  
+
   // Initialize date range on creation
   updateDateRange();
-  
+
   return {
     // State
     currentView,

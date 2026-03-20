@@ -78,7 +78,7 @@
 
   </script>
 
-  <style>
+  <style scoped>
   /* Theme-aware utility classes */
   .border-b {
     border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.12) !important;
@@ -104,10 +104,7 @@
     padding: 0 !important;
   }
 
-  /* Override Vuetify's default v-main__wrap padding */
-  .v-main__wrap {
-    padding: 0 !important;
-  }
+  /* Vuetify 4 removed .v-main__wrap — content is placed directly inside .v-main */
 
   /* Mobile viewport support for calendar */
   .main-content-area {
