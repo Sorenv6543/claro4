@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { Property, PropertyMap, PricingTier } from '@/types';
+import { createMapCache } from '@/utils/cachedMapFilter';
 import supabase from '@/plugins/supabase';
 
 /**
@@ -12,102 +13,47 @@ export const usePropertyStore = defineStore('property', () => {
   const properties = ref<PropertyMap>(new Map());
   const loading = ref<boolean>(false);
   const error = ref<string | null>(null);
-  
-  // Cached filtered Maps for O(1) performance
-  const cachedTierMaps = ref<Map<PricingTier, Map<string, Property>> | null>(null);
-  const cachedOwnerMaps = ref(new Map<string, Map<string, Property>>());
-  const cachedActiveMap = ref<Map<string, Property> | null>(null);
-  const cacheTimestamp = ref(0);
-  const CACHE_TTL = 10000; // 10 seconds
-  
-  // Cache management
-  const isCacheValid = computed(() => {
-    return (Date.now() - cacheTimestamp.value) < CACHE_TTL;
-  });
-  
-  const invalidateCache = () => {
-    cachedTierMaps.value = null;
-    cachedOwnerMaps.value.clear();
-    cachedActiveMap.value = null;
-    cacheTimestamp.value = 0;
-  };
-  
+
+  // Shared TTL cache for all filtered Maps
+  const cache = createMapCache(10_000);
+  const invalidateCache = cache.invalidate;
+
   // Getters - Map-based with caching
   const propertiesArray = computed((): Property[] => {
     return Array.from(properties.value.values());
   });
-  
+
   // Cached active properties Map
-  const activePropertiesMap = computed((): Map<string, Property> => {
-    if (isCacheValid.value && cachedActiveMap.value) {
-      return cachedActiveMap.value;
-    }
-    
-    const activeMap = new Map<string, Property>();
-    properties.value.forEach((property: Property, id: string) => {
-      if (property.active) {
-        activeMap.set(id, property);
-      }
-    });
-    
-    cachedActiveMap.value = activeMap;
-    cacheTimestamp.value = Date.now();
-    
-    return activeMap;
-  });
-  
+  const activePropertiesMap = cache.cachedFilter<Property>(
+    () => properties.value,
+    (property) => property.active
+  );
+
   // Array getter for active properties (when components need arrays)
   const activeProperties = computed((): Property[] => {
     return Array.from(activePropertiesMap.value.values());
   });
-  
+
   const getPropertyById = computed(() => (id: string): Property | undefined => {
     return properties.value.get(id);
   });
-  
+
   // Map-based pricing tier filtering with caching
-  const propertiesByPricingTierMap = computed(() => {
-    if (isCacheValid.value && cachedTierMaps.value) {
-      return cachedTierMaps.value;
-    }
-    
-    const tierMaps = new Map<PricingTier, Map<string, Property>>();
-    
-    properties.value.forEach((property: Property, id: string) => {
-      const tier = property.pricing_tier;
-      if (!tierMaps.has(tier)) {
-        tierMaps.set(tier, new Map());
-      }
-      tierMaps.get(tier)!.set(id, property);
-    });
-    
-    cachedTierMaps.value = tierMaps;
-    cacheTimestamp.value = Date.now();
-    
-    return tierMaps;
-  });
-  
+  const propertiesByPricingTierMap = cache.cachedGroupBy<Property, PricingTier>(
+    () => properties.value,
+    (property) => property.pricing_tier
+  );
+
   // Efficient getter function that returns Map
   const propertiesByPricingTier = computed(() => (tier: PricingTier): Map<string, Property> => {
     return propertiesByPricingTierMap.value.get(tier) || new Map();
   });
-  
+
   // Map-based owner filtering with caching
-  const propertiesByOwner = computed(() => (ownerId: string): Map<string, Property> => {
-    if (isCacheValid.value && cachedOwnerMaps.value.has(ownerId)) {
-      return cachedOwnerMaps.value.get(ownerId)!;
-    }
-    
-    const filtered = new Map<string, Property>();
-    properties.value.forEach((property: Property, id: string) => {
-      if (property.owner_id === ownerId) {
-        filtered.set(id, property);
-      }
-    });
-    
-    cachedOwnerMaps.value.set(ownerId, filtered);
-    return filtered;
-  });
+  const propertiesByOwner = cache.cachedFilterBy<Property>(
+    () => properties.value,
+    (property, ownerId) => property.owner_id === ownerId
+  );
   
   // Optimized status counting using Map iteration
   const propertiesByActiveStatus = computed(() => {

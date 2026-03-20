@@ -23,7 +23,6 @@ src/components/smart/owner/HomeOwner.vue -
           :loading="loading"
           :properties="myProperties"
           @create-booking="handleCreateBookingFromCalendar"
-          @date-change="handleCalendarDateChange"
           @date-select="handleDateSelect"
           @day-view-open="handleDayViewOpen"
           @event-click="handleEventClick"
@@ -403,10 +402,6 @@ src/components/smart/owner/HomeOwner.vue -
       month: 'dayGridMonth',
     }
     setCalendarView(viewMap[view] ?? 'dayGridMonth')
-  }
-
-  function handleCalendarDateChange (date: Date): void {
-    calendarRef.value?.goToDate(date)
   }
 
   function handleDayViewOpen (payload: { date: Date, bookings: Booking[] }): void {

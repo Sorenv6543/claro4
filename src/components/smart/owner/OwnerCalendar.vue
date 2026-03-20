@@ -22,8 +22,13 @@
   import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, Property } from '@/types'
-  import { nextTick, onMounted, ref, watch } from 'vue'
-  import FullCalendar from '@/components/smart/shared/FullCalendar.vue'
+  import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
+
+  // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
+  // packages (~250 kB) only download when a calendar route is visited.
+  const FullCalendar = defineAsyncComponent(() =>
+    import('@/components/smart/shared/FullCalendar.vue')
+  )
   import { useCalendarState } from '@/composables/shared/useCalendarState'
 
   interface Props {
@@ -139,11 +144,17 @@
     })
   })
 
-  // Watch for date changes from parent — sync to FullCalendar without emitting
+  // Watch for date changes from parent — sync to FullCalendar without emitting.
+  // Guard: only call goToDate if FullCalendar isn't already on this date,
+  // preventing the circular loop (prop change → goToDate → datesSet → singleton update → prop change).
   watch(() => props.currentDate, newDate => {
     nextTick(() => {
       if (newDate && calendarRef.value) {
-        calendarRef.value.goToDate(newDate)
+        const api = calendarRef.value.getApi?.()
+        const currentCalDate = api?.getDate?.()
+        if (!currentCalDate || currentCalDate.getTime() !== newDate.getTime()) {
+          calendarRef.value.goToDate(newDate)
+        }
       }
     })
   })

@@ -121,10 +121,15 @@
   import type { Booking, BookingFormData } from '@/types/booking.ts'
   import type { Cleaner, User } from '@/types/user.ts'
 
-  import { computed, nextTick, onMounted, ref, watch } from 'vue'
+  import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
   import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
   import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
-  import FullCalendar from '@/components/smart/shared/FullCalendar.vue'
+
+  // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
+  // packages (~250 kB) only download when the schedule route is visited.
+  const FullCalendar = defineAsyncComponent(() =>
+    import('@/components/smart/shared/FullCalendar.vue')
+  )
   import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
 
   import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts'

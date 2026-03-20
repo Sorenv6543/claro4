@@ -210,41 +210,26 @@ watch(isAdminAuthenticated, (newValue) => {
   console.log('🎨 [HomeAdmin] Template will render, isAdminAuthenticated:', newValue);
 }, { immediate: true });
 
-onMounted(async () => {
+async function loadSystemData() {
+  try {
+    await Promise.all([
+      propertyStore.fetchProperties(),
+      bookingStore.fetchBookings(),
+      fetchAllUsers()
+    ]);
+    console.log('✅ [HomeAdmin] System data loaded successfully');
+  } catch (error) {
+    console.error('❌ [HomeAdmin] Failed to load system data:', error);
+  }
+}
+
+onMounted(() => {
   console.log('🚀 [HomeAdmin] Admin component mounted successfully!');
-  // Wait for auth to be properly initialized
-  if (authStore.loading) {
-    console.log('⏳ [HomeAdmin] Auth store still loading, waiting...');
-    const maxWait = 5000; // 5 seconds max
-    const startTime = Date.now();
-    while (authStore.loading && (Date.now() - startTime) < maxWait) {
-      await new Promise(resolve => setTimeout(resolve, 100));
-    }
-  }
-  
-  console.log('🔍 [HomeAdmin] Auth state after waiting:', {
-    isAuthenticated: authStore.isAuthenticated,
-    user: authStore.user,
-    loading: authStore.loading,
-    isAdminAuthenticated: isAdminAuthenticated.value
-  });
-  
+  // If auth is already resolved, load data immediately
   if (isAdminAuthenticated.value) {
-    console.log('✅ [HomeAdmin] User is authenticated as admin, loading system data...');
-    try {
-      // Fetch ALL data across system - admin has full access
-      await Promise.all([
-        propertyStore.fetchProperties(),
-        bookingStore.fetchBookings(),
-        fetchAllUsers()
-      ]);
-      console.log('✅ [HomeAdmin] System data loaded successfully');
-    } catch (error) {
-      console.error('❌ [HomeAdmin] Failed to load system data:', error);
-    }
-  } else {
-    console.warn('⚠️ [HomeAdmin] User is not authenticated as admin, redirecting or showing error');
+    loadSystemData();
   }
+  // Otherwise the watch below will trigger when auth resolves
 });
 
 onUnmounted(() => {
@@ -261,29 +246,11 @@ watch(xs, (newValue) => {
   }
 });
 
-// Watch for authentication changes
-watch(isAdminAuthenticated, async (newValue, oldValue) => {
-  console.log('🔄 [HomeAdmin] isAdminAuthenticated changed:', { 
-    from: oldValue, 
-    to: newValue,
-    user: authStore.user
-  });
+// Watch for authentication changes — also covers the case where auth
+// is still loading when onMounted fires (replaces the old 5s polling loop).
+watch(isAdminAuthenticated, (newValue, oldValue) => {
   if (newValue && !oldValue) {
-    // User became authenticated as admin - load all system data
-    console.log('✅ [HomeAdmin] User gained admin authentication, loading system data...');
-    try {
-      await Promise.all([
-        propertyStore.fetchProperties(),
-        bookingStore.fetchBookings(),
-        fetchAllUsers()
-      ]);
-      console.log('✅ [HomeAdmin] System data loaded after auth change');
-    } catch (error) {
-      console.error('❌ [HomeAdmin] Failed to load system data after auth change:', error);
-    }
-  } else if (!newValue && oldValue) {
-    // User lost admin authentication
-    console.log('⚠️ [HomeAdmin] User lost admin authentication');
+    loadSystemData();
   }
 });
 </script>

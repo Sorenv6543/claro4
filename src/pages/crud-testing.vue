@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
+import { ref, reactive, onMounted, defineAsyncComponent } from 'vue';
 import { usePropertyStore } from '@/stores/property';
 import { useBookingStore } from '@/stores/booking';
 import { useProperties } from '@/composables/shared/useProperties';
 import { useBookings } from '@/composables/shared/useBookings';
-import FullCalendar from '@/components/smart/shared/FullCalendar.vue';
+
+const FullCalendar = defineAsyncComponent(() =>
+  import('@/components/smart/shared/FullCalendar.vue')
+);
 import type { PropertyFormData, BookingFormData } from '@/types';
 import { formatPropertyAddress } from '@/types/property';
 

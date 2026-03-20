@@ -1,4 +1,5 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
+import supabase from '@/plugins/supabase'
 import type { Booking, BookingFormData } from '@/types/booking'
 import type { Property, PropertyFormData } from '@/types/property'
 
@@ -187,56 +188,42 @@ export const useBackgroundSync = () => {
     }
   }
 
-  // Sync operation implementations (replace with actual API calls)
+  // Sync operation implementations using Supabase
   const createBookingSync = async (data: BookingFormData): Promise<void> => {
-    // TODO: Replace with actual Supabase API call
-    console.log('Syncing create booking:', data)
-    await mockApiCall('/api/bookings', 'POST', data)
+    const { error } = await supabase.from('bookings').insert(data)
+    if (error) throw new Error(`Create booking failed: ${error.message}`)
   }
 
   const updateBookingSync = async (id: string, data: Partial<Booking>): Promise<void> => {
-    // TODO: Replace with actual Supabase API call
-    console.log('Syncing update booking:', id, data)
-    await mockApiCall(`/api/bookings/${id}`, 'PATCH', data)
+    // Strip id from the update payload to avoid overwriting it
+    const { id: _id, ...updates } = data as Partial<Booking> & { id?: string }
+    const { error } = await supabase.from('bookings').update(updates).eq('id', id)
+    if (error) throw new Error(`Update booking failed: ${error.message}`)
   }
 
   const createPropertySync = async (data: PropertyFormData): Promise<void> => {
-    // TODO: Replace with actual Supabase API call
-    console.log('Syncing create property:', data)
-    await mockApiCall('/api/properties', 'POST', data)
+    const { error } = await supabase.from('properties').insert(data)
+    if (error) throw new Error(`Create property failed: ${error.message}`)
   }
 
   const updatePropertySync = async (id: string, data: Partial<Property>): Promise<void> => {
-    // TODO: Replace with actual Supabase API call
-    console.log('Syncing update property:', id, data)
-    await mockApiCall(`/api/properties/${id}`, 'PATCH', data)
+    const { id: _id, ...updates } = data as Partial<Property> & { id?: string }
+    const { error } = await supabase.from('properties').update(updates).eq('id', id)
+    if (error) throw new Error(`Update property failed: ${error.message}`)
   }
 
   const deleteBookingSync = async (id: string): Promise<void> => {
-    // TODO: Replace with actual Supabase API call
-    console.log('Syncing delete booking:', id)
-    await mockApiCall(`/api/bookings/${id}`, 'DELETE')
+    const { error } = await supabase.from('bookings').delete().eq('id', id)
+    if (error) throw new Error(`Delete booking failed: ${error.message}`)
   }
 
   const deletePropertySync = async (id: string): Promise<void> => {
-    // TODO: Replace with actual Supabase API call
-    console.log('Syncing delete property:', id)
-    await mockApiCall(`/api/properties/${id}`, 'DELETE')
-  }
-
-  // Mock API call for development
-   
-  const mockApiCall = async (url: string, method: string, _data?: unknown): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        // Simulate 90% success rate
-        if (Math.random() > 0.1) {
-          resolve()
-        } else {
-          reject(new Error(`Mock API error for ${method} ${url}`))
-        }
-      }, 500 + Math.random() * 1000) // Random delay 500-1500ms
-    })
+    // Soft delete: set active = false to preserve historical data
+    const { error } = await supabase
+      .from('properties')
+      .update({ active: false, updated_at: new Date().toISOString() })
+      .eq('id', id)
+    if (error) throw new Error(`Delete property failed: ${error.message}`)
   }
 
   // Utility functions

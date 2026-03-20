@@ -7,6 +7,7 @@ import {
   getUrgentTurns,
   getUpcomingBookings
 } from '@/utils/businessLogic.ts';
+import { createMapCache } from '@/utils/cachedMapFilter.ts';
 import supabase from '@/plugins/supabase.ts';
 
 // Uses Map collections for efficient booking access and management
@@ -15,121 +16,50 @@ export const useBookingStore = defineStore('booking', () => {
   const bookings = ref<BookingMap>(new Map());
   const loading = ref<boolean>(false);
   const error = ref<string | null>(null);
-  
-  // Cached filtered Maps for O(1) performance
-  const cachedStatusMaps = ref<Map<BookingStatus, Map<string, Booking>> | null>(null);
-  const cachedTypeMaps = ref<Map<BookingType, Map<string, Booking>> | null>(null);
-  const cachedPropertyMaps = ref(new Map<string, Map<string, Booking>>());
-  const cachedOwnerMaps = ref(new Map<string, Map<string, Booking>>());
-  const cacheTimestamp = ref(0);
-  const CACHE_TTL = 10000; // 10 seconds
-  
-  // Cache management
-  const isCacheValid = computed(() => {
-    return (Date.now() - cacheTimestamp.value) < CACHE_TTL;
-  });
-  
-  const invalidateCache = () => {
-    cachedStatusMaps.value = null;
-    cachedTypeMaps.value = null;
-    cachedPropertyMaps.value.clear();
-    cachedOwnerMaps.value.clear();
-    cacheTimestamp.value = 0;
-  };
-  
+
+  // Shared TTL cache for all filtered Maps
+  const cache = createMapCache(10_000);
+  const invalidateCache = cache.invalidate;
+
   // GET EVENTS/BOOKINGS BY FILTER FUNCTIONS - Optimized Map-based filtering
   const bookingsArray = computed((): Booking[] => {
     return Array.from(bookings.value.values());
   });
-  
+
   const getBookingById = computed(() => (id: string): Booking | undefined => {
     return bookings.value.get(id);
   });
-  
+
   // Map-based status filtering with caching
-  const bookingsByStatusMap = computed(() => {
-    if (isCacheValid.value && cachedStatusMaps.value) {
-      return cachedStatusMaps.value;
-    }
-    
-    const statusMaps = new Map<BookingStatus, Map<string, Booking>>();
-    
-    bookings.value.forEach((booking: Booking, id: string) => {
-      const status = booking.status;
-      if (!statusMaps.has(status)) {
-        statusMaps.set(status, new Map());
-      }
-      statusMaps.get(status)!.set(id, booking);
-    });
-    
-    cachedStatusMaps.value = statusMaps;
-    cacheTimestamp.value = Date.now();
-    
-    return statusMaps;
-  });
-  
+  const bookingsByStatusMap = cache.cachedGroupBy<Booking, BookingStatus>(
+    () => bookings.value,
+    (booking) => booking.status
+  );
+
   // Map-based type filtering with caching
-  const bookingsByTypeMap = computed(() => {
-    if (isCacheValid.value && cachedTypeMaps.value) {
-      return cachedTypeMaps.value;
-    }
-    
-    const typeMaps = new Map<BookingType, Map<string, Booking>>();
-    
-    bookings.value.forEach((booking: Booking, id: string) => {
-      const type = booking.booking_type;
-      if (!typeMaps.has(type)) {
-        typeMaps.set(type, new Map());
-      }
-      typeMaps.get(type)!.set(id, booking);
-    });
-    
-    cachedTypeMaps.value = typeMaps;
-    cacheTimestamp.value = Date.now();
-    
-    return typeMaps;
-  });
-  
+  const bookingsByTypeMap = cache.cachedGroupBy<Booking, BookingType>(
+    () => bookings.value,
+    (booking) => booking.booking_type
+  );
+
   // Efficient getter functions that return Maps
   const bookingsByStatus = computed(() => (status: BookingStatus): Map<string, Booking> => {
     return bookingsByStatusMap.value.get(status) || new Map();
   });
-  
+
   const bookingsByType = computed(() => (type: BookingType): Map<string, Booking> => {
     return bookingsByTypeMap.value.get(type) || new Map();
   });
-  
-  const bookingsByProperty = computed(() => (propertyId: string): Map<string, Booking> => {
-    if (isCacheValid.value && cachedPropertyMaps.value.has(propertyId)) {
-      return cachedPropertyMaps.value.get(propertyId)!;
-    }
-    
-    const filtered = new Map<string, Booking>();
-    bookings.value.forEach((booking: Booking, id: string) => {
-      if (booking.property_id === propertyId) {
-        filtered.set(id, booking);
-      }
-    });
-    
-    cachedPropertyMaps.value.set(propertyId, filtered);
-    return filtered;
-  });
-  
-  const bookingsByOwner = computed(() => (ownerId: string): Map<string, Booking> => {
-    if (isCacheValid.value && cachedOwnerMaps.value.has(ownerId)) {
-      return cachedOwnerMaps.value.get(ownerId)!;
-    }
-    
-    const filtered = new Map<string, Booking>();
-    bookings.value.forEach((booking: Booking, id: string) => {
-      if (booking.owner_id === ownerId) {
-        filtered.set(id, booking);
-      }
-    });
-    
-    cachedOwnerMaps.value.set(ownerId, filtered);
-    return filtered;
-  });
+
+  const bookingsByProperty = cache.cachedFilterBy<Booking>(
+    () => bookings.value,
+    (booking, propertyId) => booking.property_id === propertyId
+  );
+
+  const bookingsByOwner = cache.cachedFilterBy<Booking>(
+    () => bookings.value,
+    (booking, ownerId) => booking.owner_id === ownerId
+  );
 
   // Use business logic utilities for complex filtering
   const bookingsByDateRange = computed(() => (startDate: string, endDate: string): Map<string, Booking> => {

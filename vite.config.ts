@@ -9,6 +9,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 import vuetify from 'vite-plugin-vuetify'
 
 const chunkNames = [
+  'admin-app',
   'admin-components',
   'owner-components',
   'shared-ui',
@@ -114,7 +115,10 @@ export default defineConfig(({ mode }) => {
           globDirectory: 'dist',
           runtimeCaching: [
             {
-              urlPattern: ({ url }) => chunkNames.some(chunk => url.pathname.includes(chunk)),
+              // Note: urlPattern callbacks are serialized into sw.js, so they
+              // cannot reference variables from vite.config scope. Inline the
+              // chunk names directly.
+              urlPattern: ({ url }) => ['admin-app', 'admin-components', 'owner-components', 'shared-ui', 'admin-logic', 'owner-logic', 'shared-logic'].some(chunk => url.pathname.includes(chunk)),
               handler: 'StaleWhileRevalidate',
               options: {
                 cacheName: 'role-based-chunks',
@@ -258,19 +262,23 @@ export default defineConfig(({ mode }) => {
               return undefined
             }
 
-            if (id.includes('/owner/') || id.includes('\\owner\\')) {
+            // Role-based composables go into dedicated chunks. Pages and
+            // smart/dumb components are left to Rollup's natural code-splitting
+            // via the router's lazy () => import(...) calls, which avoids
+            // circular chunk issues (app ↔ owner-app ↔ app).
+            if (
+              id.includes('/composables/owner/')
+              || id.includes('\\composables\\owner\\')
+            ) {
               return 'owner-app'
             }
 
-            if (id.includes('/admin/') || id.includes('\\admin\\')) {
+            if (
+              id.includes('/composables/admin/')
+              || id.includes('\\composables\\admin\\')
+            ) {
               return 'admin-app'
             }
-
-            // NOTE: 3 circular chunk warnings (app→admin-app→app, app→owner-app→app,
-            // vuetify→app→owner-app→vuetify) are pre-existing and stem from the router
-            // eagerly importing admin/owner pages. Eliminating them requires converting
-            // all routes to lazy imports: () => import('./pages/...'). Tracked as a
-            // follow-up task.
             if (
               id.includes('/stores/')
               || id.includes('\\stores\\')
@@ -282,7 +290,10 @@ export default defineConfig(({ mode }) => {
               return 'app-core'
             }
 
-            return 'app'
+            // Don't force remaining modules into a single 'app' chunk.
+            // Rollup splits them naturally, which avoids circular TDZ errors
+            // (e.g. _export_sfc referenced before initialization).
+            return undefined
           },
         },
       },

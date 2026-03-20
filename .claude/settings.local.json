@@ -49,12 +49,15 @@
       "Bash(npx pnpm:*)"
     ],
     "deny": [
-      "mcp__plugin_serena_serena__deactivate_project",
-      "mcp__plugin_serena_serena__restart_project"
+      "mcp__plugin_serena_serena__deactivate_project"
+     
     ]
   },
-  "enableAllProjectMcpServers": false,
+  "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [],
   "disabledMcpjsonServers": [],
-  "enabledPlugins": {}
+  "enabledPlugins": {
+    
+
+  }
 }
