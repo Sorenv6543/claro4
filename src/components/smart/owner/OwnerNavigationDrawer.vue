@@ -8,7 +8,7 @@
     @update:model-value="emit('update:modelValue', $event)"
   >
     <!-- Navigation section -->
-    <v-list nav density="compact" class="pt-2">
+    <v-list nav density="comfortable" class="pt-2">
       <v-list-subheader class="text-overline">Navigation</v-list-subheader>
 
       <template v-for="item in navItems" :key="item.label">
@@ -23,7 +23,9 @@
           @click="item.disabled ? undefined : onNavItemClick()"
         >
           <template v-if="item.soon" #append>
-            <v-chip size="x-small" color="success" variant="tonal" class="text-uppercase font-weight-bold">
+            <v-chip size="small"
+
+              color="success" variant="tonal" class="text-uppercase font-weight-bold">
               Soon
             </v-chip>
           </template>
@@ -31,6 +33,25 @@
       </template>
     </v-list>
 
+            <!-- My Properties list -->
+        <div v-if="properties.length" class="mt-1">
+          <div class="text-overline text-medium-emphasis px-5 mb-1" style="font-size:0.67rem">My Properties</div>
+          <v-list nav density="compact" class="pa-0">
+            <v-list-item
+              v-for="(property, index) in properties"
+              :key="property.id"
+              :to="`/owner/properties/${property.id}`"
+              :active="isActive(`/owner/properties/${property.id}`)"
+              color="primary"
+              prepend-icon="mdi-home"
+              rounded="lg"
+              :style="{ '--property-icon-color': propertyColor(index) }"
+              class="property-nav-item"
+              :title="formatPropertyAddress(property, 'short')"
+              @click="onNavItemClick()"
+            />
+          </v-list>
+        </div>
     <v-divider class="mx-4 my-1" />
 
     <!-- Account section -->
@@ -64,25 +85,7 @@
           </div>
         </div>
 
-        <!-- My Properties list -->
-        <div v-if="properties.length" class="mt-1">
-          <div class="text-overline text-medium-emphasis px-1 mb-1" style="font-size:0.67rem">My Properties</div>
-          <v-list nav density="compact" class="pa-0">
-            <v-list-item
-              v-for="(property, index) in properties"
-              :key="property.id"
-              :to="`/owner/properties/${property.id}`"
-              :active="isActive(`/owner/properties/${property.id}`)"
-              color="primary"
-              prepend-icon="mdi-home"
-              rounded="lg"
-              :style="{ '--property-icon-color': propertyColor(index) }"
-              class="property-nav-item"
-              :title="formatPropertyAddress(property, 'short')"
-              @click="onNavItemClick()"
-            />
-          </v-list>
-        </div>
+
       </div>
       <div class="pb-2" />
     </template>
@@ -130,7 +133,7 @@ function isActive(itemPath: string): boolean {
 }
 
 // ── Property colors ────────────────────────────────────────────
-const PROPERTY_COLORS = ['#5c6bc0', '#43a047', '#8e24aa', '#f57c00']
+const PROPERTY_COLORS = ['#43a047', '#8e24aa', '#f57c00']
 function propertyColor(index: number): string {
   return PROPERTY_COLORS[index % PROPERTY_COLORS.length]
 }
@@ -163,11 +166,20 @@ function onNavItemClick() {
 
 <style scoped>
 .property-nav-item :deep(.v-list-item__prepend) {
-  width: 36px;
+  width: 56px;
+  padding-left: 8px;;
 }
 
 .property-nav-item :deep(.v-list-item__prepend .v-icon) {
   color: var(--property-icon-color) !important;
-  opacity: 0.6;
+  opacity: 0.8;
+}
+</style>
+
+<!-- Non-scoped: temporary drawers are teleported to v-app root, so scoped CSS can't reach them -->
+<style>
+.v-navigation-drawer--temporary {
+  top: var(--app-bar-height, 64px) !important;
+  height: calc(100% - var(--app-bar-height, 64px)) !important;
 }
 </style>

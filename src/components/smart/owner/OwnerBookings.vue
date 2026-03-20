@@ -269,11 +269,11 @@
 
 <script setup lang="ts">
   import type { Booking, ModalData } from '@/types'
-  import { formatPropertyAddress } from '@/types/property'
   import { computed, onMounted, ref } from 'vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useUIStore } from '@/stores/ui'
+  import { formatPropertyAddress } from '@/types/property'
 
   defineOptions({
     name: 'OwnerBookingsComponent',

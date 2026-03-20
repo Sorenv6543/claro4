@@ -42,22 +42,36 @@
       "mcp__plugin_serena_serena__search_for_pattern",
       "mcp__plugin_serena_serena__replace_content",
       "mcp__plugin_serena_serena__list_dir",
-      "mcp__vuetify-mcp__get_component_api_by_version",
-      "mcp__vuetify-mcp__get_feature_guide",
       "mcp__plugin_playwright_playwright__browser_snapshot",
       "mcp__plugin_playwright_playwright__browser_evaluate",
-      "Bash(npx pnpm:*)"
+      "Bash(npx pnpm:*)",
+      "Bash(chrome-devtools:*)",
+      "Bash(npx chrome-devtools:*)",
+      "Bash(npx @anthropic/chrome-devtools-mcp take_snapshot)",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__list_pages",
+      "mcp__chrome-devtools__select_page",
+      "mcp__chrome-devtools__evaluate_script",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__new_page",
+      "mcp__chrome-devtools__take_screenshot",
+      "mcp__chrome-devtools__resize_page",
+      "mcp__chrome-devtools__click"
     ],
-    "deny": [
-      "mcp__plugin_serena_serena__deactivate_project"
-     
-    ]
+    "deny": []
   },
   "enableAllProjectMcpServers": true,
   "enabledMcpjsonServers": [],
   "disabledMcpjsonServers": [],
   "enabledPlugins": {
-    
-
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "github@claude-plugins-official": true,
+    "context7@claude-plugins-official": true,
+    "feature-dev@claude-plugins-official": true,
+    "playwright@claude-plugins-official": true,
+    "greptile@claude-plugins-official": true,
+    "feature-dev@claude-code-plugins": true,
+    "hookify@claude-code-plugins": true,
+    "pr-review-toolkit@claude-code-plugins": true
   }
 }

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Multi-tenant property cleaning scheduler with role-based Owner/Admin UI. Core product: guest-stay booking plus cleaning operations. Tech stack: Vue 3 + Vite + Vuetify 3, Pinia for state, Supabase for auth/Postgres/RLS/realtime. FullCalendar for scheduling views.
+Multi-tenant property cleaning scheduler with role-based Owner/Admin UI. Core product: guest-stay booking plus cleaning operations. Tech stack: Vue 3 + Vite + Vuetify 4, Pinia for state, Supabase for auth/Postgres/RLS/realtime. FullCalendar for scheduling views.
 
 Two user types: **Property Owners** (30-40 clients with personal property/booking management) and **Business Admin** (1 user with system-wide operations and cleaner management).
 
@@ -75,6 +75,8 @@ Owner and Admin have separate component trees throughout:
 - `src/utils/constants.ts` - Application constants
 - `src/utils/errorMessages.ts` - Centralized error messages
 - `src/utils/typeHelpers.ts` - TypeScript type helper utilities (`safeDate`, `safeString`, `safeBookingField`)
+- `src/utils/cachedMapFilter.ts` - Reusable TTL-based cache for store Map computeds (`createMapCache`)
+- `src/utils/calendarHelpers.ts` - Booking → FullCalendar event conversion (`bookingToCalendarEvent`)
 
 ```typescript
 // Business logic helpers - use these, never reimplement ad-hoc date math
@@ -205,7 +207,7 @@ onMounted(() => {
 ## Vuetify UI/UX Patterns
 
 ### Setup
-- **Version**: Vuetify 4 (`^4.0.1`) with `vite-plugin-vuetify` for auto-imports
+- **Version**: Vuetify 4 (`^4.0.1`) with `vite-plugin-vuetify` for auto-imports; components are auto-imported (no manual import needed)
 - **Icons**: MDI (`mdi-*`) via `@mdi/font`
 - **Config**: `src/plugins/vuetify.ts` - theme colors, component defaults, breakpoints
 
@@ -283,19 +285,9 @@ Use semantic colors, not hex values:
 Check `src/components/dumb/shared/` before creating new UI:
 - `ConfirmationDialog.vue`, `LoadingSpinner.vue`, `ErrorAlert.vue`, `SkeletonLoader.vue`, `EnhancedToast.vue`
 
-## Vuetify MCP
+## Vuetify Reference
 
-Use `mcp__vuetify-mcp__*` tools instead of guessing at v4 APIs or component props.
-
-| Situation | Tool |
-|-----------|------|
-| Check props / events / slots for any component | `get_component_api_by_version` — pass `version: "latest"` for v4 |
-| Something broke after a Vuetify upgrade | `get_v4_breaking_changes` — filter by category (`v-btn`, `theme`, `v-select`, etc.) |
-| Configure theme, SASS vars, icons, i18n, display | `get_feature_guide` — topics: `theme`, `sass-variables`, `icon-fonts`, `display-and-platform`, `global-configuration` |
-| Directive API (`v-ripple`, `v-intersect`, etc.) | `get_directive_api_by_version` |
-| Release notes for a specific version | `get_release_notes_by_version` |
-| Migrate v3 → v4 | `get_upgrade_guide` with `version: "v3"` |
-| Create a repro or file a Vuetify bug | `create_vuetify_bin` + `create_bug_report` |
+For Vuetify 4 API questions, use the Context7 MCP (`mcp__claude_ai_Context7__query-docs`) with library ID `/vuetifyjs/vuetify` to look up component props, events, and slots.
 
 ## Fixing Type Errors
 
@@ -363,4 +355,5 @@ These areas require careful modification - extend existing patterns rather than 
 - Before finishing changes: run `pnpm test:run` and `pnpm build`
 - For auth/routing or subscription changes: also run `pnpm test:performance`
 - Build flags `__ENABLE_OWNER_FEATURES__` and `__ENABLE_ADMIN_FEATURES__` control role-specific code inclusion
-- Vite chunk strategy splits: `vue-core`, `vuetify`, `calendar`, `vendor` (node_modules) and role-based app chunks
+- Vite chunk strategy splits: `vue-core`, `vuetify`, `calendar`, `supabase`, `vendor` (node_modules), `app-core` (stores/utils/shared composables), `owner-app`, `admin-app`
+- CSS custom property `--app-bar-height` (from `src/styles/responsive.scss`) — use `var(--app-bar-height, 64px)` instead of hardcoding `64px`

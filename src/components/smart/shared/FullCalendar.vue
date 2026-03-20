@@ -187,7 +187,10 @@
     calendarOptions.eventDisplay = opts.eventDisplay
   })
 
-  // After an event mounts, position a TURN label on the event bar at the turn day column
+  // After an event mounts, position a TURN label on the event bar at the turn day column.
+  // Each multi-week event is split into segments (one per row). We scope the turn-cell
+  // lookup to the same <tr> so the badge only appears on the segment whose week row
+  // actually contains the turn date — not on other rows that share the same column X.
   function handleEventDidMount (info: { event: { extendedProps: Record<string, unknown> }, el: HTMLElement }) {
     const booking = info.event.extendedProps?.booking as Booking | undefined
     if (!booking?.turn_date || booking.booking_type !== 'turn') return
@@ -197,21 +200,28 @@
     requestAnimationFrame(() => {
       const eventEl = info.el
       if (!eventEl.isConnected) return
-      const turnCell = document.querySelector(`td.fc-day[data-date="${booking.turn_date}"]`)
+
+      // Scope the turn-cell lookup to the same table row as this event segment.
+      // This prevents false positives from columns on other week rows that share
+      // the same horizontal position.
+      const eventRow = eventEl.closest('tr')
+      if (!eventRow) return
+      const turnCell = eventRow.querySelector(`td.fc-day[data-date="${booking.turn_date}"]`)
       if (!turnCell) return
 
       const eventRect = eventEl.getBoundingClientRect()
       const cellRect = turnCell.getBoundingClientRect()
+      if (eventRect.width === 0) return
 
-      // Only add badge if this event segment overlaps the turn day column
-      if (cellRect.left + cellRect.width <= eventRect.left || cellRect.left >= eventRect.right) return
-
-      const offset = cellRect.left - eventRect.left
+      // Use percentages so the badge scales correctly on window resize
+      // instead of being stuck at the pixel values calculated at mount time.
+      const leftPct = ((cellRect.left - eventRect.left) / eventRect.width) * 100
+      const widthPct = (cellRect.width / eventRect.width) * 100
       const badge = document.createElement('div')
       badge.className = 'turn-event-badge'
       badge.textContent = 'TURN'
-      badge.style.left = `${offset}px`
-      badge.style.width = `${cellRect.width}px`
+      badge.style.left = `${leftPct}%`
+      badge.style.width = `${widthPct}%`
 
       // The FullCalendar event harness needs position:relative for absolute children
       const harness = eventEl.closest('.fc-daygrid-event-harness') as HTMLElement
@@ -348,15 +358,11 @@
     )
     const statusBadge = getStatusBadge(booking.status || 'pending')
 
-    const turnBadge = booking.booking_type === 'turn'
-      ? '<span class="turn-badge">TURN</span>'
-      : ''
-
     return {
       html: `
       <div class="fc-event-content-wrapper booking-${booking.booking_type} priority-${booking.priority}">
         <div class="fc-event-title">
-          ${priorityIcon} ${property ? formatPropertyAddress(property, 'short') : 'Property'} ${turnBadge}
+          ${priorityIcon} ${property ? formatPropertyAddress(property, 'short') : 'Property'}
         </div>
         <div class="fc-event-subtitle">
           ${statusBadge} ${booking.status.toUpperCase()}
