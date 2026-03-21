@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { bookingToCalendarEvent, subtractOneDay } from '@/utils/calendarHelpers'
+import { bookingToCalendarEvent, bookingToTransitionEvents, subtractOneDay } from '@/utils/calendarHelpers'
 import type { Booking } from '@/types'
 import type { Property } from '@/types/property'
 
@@ -90,5 +90,96 @@ describe('subtractOneDay', () => {
 
   it('handles year boundaries', () => {
     expect(subtractOneDay('2026-01-01')).toBe('2025-12-31')
+  })
+})
+
+describe('bookingToTransitionEvents', () => {
+  it('standard booking produces 2 events (IN + OUT)', () => {
+    const events = bookingToTransitionEvents(makeBooking(), mockProperty)
+    expect(events).toHaveLength(2)
+    expect(events[0].extendedProps.transitionType).toBe('in')
+    expect(events[1].extendedProps.transitionType).toBe('out')
+  })
+
+  it('turn booking with turn_date produces 3 events (IN + TURN + OUT)', () => {
+    const booking = makeBooking({ turn_date: '2026-03-22' })
+    const events = bookingToTransitionEvents(booking, mockProperty)
+    expect(events).toHaveLength(3)
+    expect(events[0].extendedProps.transitionType).toBe('in')
+    expect(events[1].extendedProps.transitionType).toBe('turn')
+    expect(events[2].extendedProps.transitionType).toBe('out')
+  })
+
+  it('turn booking where turn_date === checkout_date produces 2 events (IN + TURN, OUT skipped)', () => {
+    const booking = makeBooking({ turn_date: '2026-03-28', checkout_date: '2026-03-28' })
+    const events = bookingToTransitionEvents(booking, mockProperty)
+    expect(events).toHaveLength(2)
+    expect(events[0].extendedProps.transitionType).toBe('in')
+    expect(events[1].extendedProps.transitionType).toBe('turn')
+  })
+
+  it('IDs are suffixed correctly', () => {
+    const booking = makeBooking({ id: 'abc123', turn_date: '2026-03-22' })
+    const events = bookingToTransitionEvents(booking, mockProperty)
+    expect(events[0].id).toBe('abc123-in')
+    expect(events[1].id).toBe('abc123-turn')
+    expect(events[2].id).toBe('abc123-out')
+  })
+
+  it('each event is single-day (start and end one day apart)', () => {
+    const booking = makeBooking({ turn_date: '2026-03-22' })
+    const events = bookingToTransitionEvents(booking, mockProperty)
+    for (const event of events) {
+      const start = new Date(event.start)
+      const end = new Date(event.end)
+      const diffDays = (end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)
+      expect(diffDays).toBe(1)
+    }
+  })
+
+  it('all events have the transition-event class', () => {
+    const booking = makeBooking({ turn_date: '2026-03-22' })
+    const events = bookingToTransitionEvents(booking, mockProperty)
+    for (const event of events) {
+      expect(event.classNames).toContain('transition-event')
+    }
+  })
+
+  it('events have correct type-specific classes', () => {
+    const booking = makeBooking({ turn_date: '2026-03-22' })
+    const events = bookingToTransitionEvents(booking, mockProperty)
+    expect(events[0].classNames).toContain('transition-in')
+    expect(events[1].classNames).toContain('transition-turn')
+    expect(events[2].classNames).toContain('transition-out')
+  })
+
+  it('title includes transition label and property address', () => {
+    const booking = makeBooking({ turn_date: '2026-03-22' })
+    const events = bookingToTransitionEvents(booking, mockProperty)
+    expect(events[0].title).toMatch(/^IN/)
+    expect(events[0].title).toContain('434 ggg')
+    expect(events[1].title).toMatch(/^TURN/)
+    expect(events[1].title).toContain('434 ggg')
+    expect(events[2].title).toMatch(/^OUT/)
+    expect(events[2].title).toContain('434 ggg')
+  })
+
+  it('extendedProps includes bookingType, status, priority for CalendarBookingEvent compatibility', () => {
+    const booking = makeBooking({ booking_type: 'turn', status: 'confirmed', priority: 'high', turn_date: '2026-03-22' })
+    const events = bookingToTransitionEvents(booking, mockProperty)
+    for (const event of events) {
+      expect(event.extendedProps.bookingType).toBe('turn')
+      expect(event.extendedProps.status).toBe('confirmed')
+      expect(event.extendedProps.priority).toBe('high')
+    }
+  })
+
+  it('TURN event dates are correct (start=turn_date, end=turn_date+1)', () => {
+    const booking = makeBooking({ turn_date: '2026-03-22' })
+    const events = bookingToTransitionEvents(booking, mockProperty)
+    const turnEvent = events.find(e => e.extendedProps.transitionType === 'turn')
+    expect(turnEvent).toBeDefined()
+    expect(turnEvent!.start).toBe('2026-03-22')
+    expect(turnEvent!.end).toBe('2026-03-23')
   })
 })

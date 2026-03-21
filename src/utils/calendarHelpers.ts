@@ -30,6 +30,7 @@ export interface CalendarBookingEvent {
     priority: string
     guestCount: number | null | undefined
     notes: string | null | undefined
+    transitionType?: 'in' | 'turn' | 'out'
   }
 }
 
@@ -64,4 +65,66 @@ export function bookingToCalendarEvent(
       notes: booking.notes,
     },
   }
+}
+
+/**
+ * Convert a Booking into 1–3 single-day transition events (IN / TURN / OUT)
+ * for use in an "events" calendar view mode.
+ *
+ * - IN  — always present on checkin_date
+ * - TURN — present when booking.turn_date is set
+ * - OUT  — present when checkout_date !== turn_date (skipped for turn-only bookings)
+ */
+export function bookingToTransitionEvents(
+  booking: Booking,
+  property: Property | undefined
+): CalendarBookingEvent[] {
+  const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
+  const events: CalendarBookingEvent[] = []
+
+  const baseExtendedProps = {
+    booking,
+    property,
+    bookingType: booking.booking_type,
+    status: booking.status,
+    priority: booking.priority,
+    guestCount: booking.guest_count,
+    notes: booking.notes,
+  }
+
+  // IN event — always present
+  events.push({
+    id: `${booking.id}-in`,
+    title: `IN · ${propertyLabel}`,
+    start: booking.checkin_date,
+    end: addOneDay(booking.checkin_date),
+    classNames: ['transition-event', 'transition-in'],
+    extendedProps: { ...baseExtendedProps, transitionType: 'in' as const },
+  })
+
+  // TURN event — only if turn_date exists
+  if (booking.turn_date) {
+    events.push({
+      id: `${booking.id}-turn`,
+      title: `TURN · ${propertyLabel}`,
+      start: booking.turn_date,
+      end: addOneDay(booking.turn_date),
+      classNames: ['transition-event', 'transition-turn'],
+      extendedProps: { ...baseExtendedProps, transitionType: 'turn' as const },
+    })
+  }
+
+  // OUT event — skip if same as turn_date
+  if (booking.checkout_date !== booking.turn_date) {
+    events.push({
+      id: `${booking.id}-out`,
+      title: `OUT · ${propertyLabel}`,
+      start: booking.checkout_date,
+      end: addOneDay(booking.checkout_date),
+      classNames: ['transition-event', 'transition-out'],
+      extendedProps: { ...baseExtendedProps, transitionType: 'out' as const },
+    })
+  }
+
+  return events
 }
