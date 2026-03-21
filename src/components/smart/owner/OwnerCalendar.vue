@@ -7,6 +7,7 @@
       class="owner-calendar"
       :loading="props.loading"
       :properties="props.properties"
+      :view-mode="viewMode"
       @create-booking="handleCreateBooking"
       @date-select="handleDateSelect"
       @dates-set="handleDatesSet"
@@ -37,6 +38,7 @@
     loading?: boolean
     currentView?: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'
     currentDate?: Date
+    viewMode?: 'ranges' | 'events'
   }
 
   interface Emits {

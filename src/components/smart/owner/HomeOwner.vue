@@ -22,6 +22,7 @@ src/components/smart/owner/HomeOwner.vue -
           :current-view="currentView"
           :loading="loading"
           :properties="myProperties"
+          :view-mode="viewMode"
           @create-booking="handleCreateBookingFromCalendar"
           @date-select="handleDateSelect"
           @day-view-open="handleDayViewOpen"
@@ -142,6 +143,7 @@ src/components/smart/owner/HomeOwner.vue -
     currentDate,
     filterBookings,
     setCalendarView,
+    viewMode,
   } = useCalendarState()
 
   // ============================================================================
@@ -302,9 +304,9 @@ src/components/smart/owner/HomeOwner.vue -
       return
     }
 
-    // Fallback: Only allow editing owner's bookings
-    const booking = myBookings.value.find(b => b.id === clickInfo.event.id)
-    if (booking) {
+    // Use extendedProps.booking (works for both ranges and events mode)
+    const booking = extendedProps?.booking as Booking | undefined
+    if (booking && myBookings.value.some(b => b.id === booking.id)) {
       uiStore.openModal('eventModal', 'edit', booking as unknown as Record<string, unknown>)
     } else {
       console.warn('Cannot edit booking not owned by current user')
