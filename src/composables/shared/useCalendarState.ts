@@ -27,6 +27,8 @@ const showStandardBookings = ref<boolean>(true);
 
 const selectedPropertyIds = ref<Set<string>>(new Set());
 
+const viewMode = ref<'ranges' | 'events'>('ranges');
+
 // ============================================================================
 
 /**
@@ -50,6 +52,10 @@ export function useCalendarState() {
   function setCalendarView(view: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek') {
     currentView.value = view;
     uiStore.setFilter('calendarView', view);
+  }
+
+  function setViewMode(mode: 'ranges' | 'events') {
+    viewMode.value = mode;
   }
 
   /**
@@ -274,9 +280,11 @@ export function useCalendarState() {
     showTurnBookings,
     showStandardBookings,
     selectedPropertyIds,
+    viewMode,
 
     // Calendar navigation
     setCalendarView,
+    setViewMode,
     goToDate,
     goToToday,
     next,
