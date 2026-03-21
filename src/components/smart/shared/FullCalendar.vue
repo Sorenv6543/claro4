@@ -35,7 +35,7 @@
   } from 'vue'
   // Import event logger for component communication
   import eventLogger from '@/composables/shared/useComponentEventLogger'
-  import { bookingToCalendarEvent } from '@/utils/calendarHelpers'
+  import { bookingToCalendarEvent, bookingToTransitionEvents } from '@/utils/calendarHelpers'
   import {
     getMobileCalendarOptions,
     handleViewportResize,
@@ -45,6 +45,7 @@
     bookings: Booking[]
     properties: Property[]
     loading?: boolean
+    viewMode?: 'ranges' | 'events'
   }
   // fullcalendar emits are all lowercase with dashes for consistency and to avoid issues with Vue's event system
   interface Emits {
@@ -63,6 +64,7 @@
 
   const props = withDefaults(defineProps<Props>(), {
     loading: false,
+    viewMode: 'ranges',
   })
 
   const emit = defineEmits<Emits>()
@@ -72,6 +74,20 @@
   // Convert bookings array to FullCalendar events
   const calendarEvents = computed(() => {
     const propertyMap = new Map(props.properties.map(p => [p.id, p]))
+
+    if (props.viewMode === 'events') {
+      return props.bookings.flatMap(booking => {
+        const property = propertyMap.get(booking.property_id)
+        return bookingToTransitionEvents(booking, property).map(event => ({
+          ...event,
+          editable: false,
+          startEditable: false,
+          durationEditable: false,
+          overlap: true,
+        }))
+      })
+    }
+
     return props.bookings.map(booking => {
       const property = propertyMap.get(booking.property_id)
       const base = bookingToCalendarEvent(booking, property)
@@ -240,6 +256,7 @@
 
   // After an event segment mounts, add TURN and OUT badges at the appropriate day columns.
   function handleEventDidMount (info: { event: { extendedProps: Record<string, unknown> }, el: HTMLElement }) {
+    if (props.viewMode === 'events') return
     const booking = info.event.extendedProps?.booking as Booking | undefined
     if (!booking) return
 
@@ -297,6 +314,23 @@
     )
 
     emit('event-click', clickInfo)
+
+    // In events mode, highlight related transition events
+    if (props.viewMode === 'events') {
+      const bookingId = (clickInfo.event.extendedProps?.booking as Booking | undefined)?.id
+      if (bookingId && calendarRef.value) {
+        const calendarApi = calendarRef.value.getApi()
+        const relatedEvents = calendarApi.getEvents()
+          .filter((e: any) => e.extendedProps?.booking?.id === bookingId)
+        relatedEvents.forEach((e: any) => {
+          const original = [...e.classNames]
+          e.setProp('classNames', [...e.classNames, 'transition-highlight'])
+          setTimeout(() => {
+            e.setProp('classNames', original)
+          }, 2000)
+        })
+      }
+    }
   }
 
   function handleEventDrop (dropInfo: EventDropArg): void {
@@ -313,9 +347,29 @@
       extendedProps: {
         booking: Booking
         property: Property
+        transitionType?: string
       }
     }
   }) {
+    // Events mode: simplified rendering
+    if (props.viewMode === 'events') {
+      const transitionType = eventInfo.event.extendedProps.transitionType || 'in'
+      const label = transitionType.toUpperCase()
+      const booking = eventInfo.event.extendedProps.booking as Booking
+      const property = eventInfo.event.extendedProps.property as Property
+      const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Property'
+
+      return {
+        html: `
+        <div class="fc-event-content-wrapper transition-${transitionType}">
+          <div class="fc-event-title">${label} · ${propertyLabel}</div>
+          <div class="fc-event-subtitle">${booking.status.toUpperCase()}</div>
+        </div>
+        `,
+      }
+    }
+
+    // Ranges mode: existing logic below...
     const booking = eventInfo.event.extendedProps.booking as Booking
     const property = eventInfo.event.extendedProps.property as Property
 
@@ -594,23 +648,37 @@
     const [year, month, day] = dateAttr.split('-').map(Number)
     const clickedDate = new Date(year, month - 1, day) // month is 0-indexed in JS Date
 
-    // Filter bookings for this date (same logic as before)
+    // Filter bookings for this date
     const clickedDateStr = clickedDate.toDateString()
     const dayBookings: Booking[] = []
 
-    for (const booking of props.bookings) {
-      const checkoutDate = new Date(booking.checkout_date)
-      const checkinDate = new Date(booking.checkin_date)
+    if (props.viewMode === 'events') {
+      // Events mode: match bookings with a transition on this exact date
+      for (const booking of props.bookings) {
+        const hasTransition =
+          booking.checkin_date === dateAttr ||
+          booking.turn_date === dateAttr ||
+          booking.checkout_date === dateAttr
+        if (hasTransition) {
+          dayBookings.push(booking)
+        }
+      }
+    } else {
+      // Ranges mode: existing range-overlap logic
+      for (const booking of props.bookings) {
+        const checkoutDate = new Date(booking.checkout_date)
+        const checkinDate = new Date(booking.checkin_date)
 
-      // Check if the clicked date falls within the booking period
-      const bookingStartsOnDate = checkinDate.toDateString() === clickedDateStr
-      const bookingSpansDate
-        = clickedDate >= checkinDate && clickedDate <= checkoutDate
+        // Check if the clicked date falls within the booking period
+        const bookingStartsOnDate = checkinDate.toDateString() === clickedDateStr
+        const bookingSpansDate
+          = clickedDate >= checkinDate && clickedDate <= checkoutDate
 
-      const dateMatches = bookingStartsOnDate || bookingSpansDate
+        const dateMatches = bookingStartsOnDate || bookingSpansDate
 
-      if (dateMatches) {
-        dayBookings.push(booking)
+        if (dateMatches) {
+          dayBookings.push(booking)
+        }
       }
     }
 
