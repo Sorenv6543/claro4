@@ -13,16 +13,13 @@
   import { useRoute } from 'vue-router'
 
   import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
-  import ErrorAlert from '@/components/dumb/shared/ErrorAlert.vue'
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
 
   function lazyLayout(loader: () => Promise<any>) {
     return defineAsyncComponent({
       loader,
       loadingComponent: LoadingSpinner,
-      errorComponent: ErrorAlert,
       delay: 200,
-      timeout: 10000,
     })
   }
 

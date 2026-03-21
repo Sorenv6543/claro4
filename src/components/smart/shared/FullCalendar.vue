@@ -9,42 +9,46 @@
 </template>
 
 <script setup lang="ts">
-  import type {
-    CalendarOptions,
-    DateSelectArg,
-    DatesSetArg,
-    EventClickArg,
-    EventDropArg,
-  } from '@fullcalendar/core'
-  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, Property } from '@/types'
-  import { formatPropertyAddress } from '@/types/property'
-  import dayGridPlugin from '@fullcalendar/daygrid'
-  import interactionPlugin from '@fullcalendar/interaction'
-  import listPlugin from '@fullcalendar/list'
-  import timeGridPlugin from '@fullcalendar/timegrid'
-  import FullCalendar from '@fullcalendar/vue3'
-  import {
-    computed,
-    onBeforeUnmount,
-    onMounted,
-    onUnmounted,
-    reactive,
-    ref,
-    watch,
-  } from 'vue'
+import type {
+  CalendarOptions,
+  DateSelectArg,
+  DatesSetArg,
+  EventClickArg,
+  EventDropArg,
+} from '@fullcalendar/core'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import type { EventResizeDoneArg } from '@fullcalendar/interaction'
+import interactionPlugin from '@fullcalendar/interaction'
+import listPlugin from '@fullcalendar/list'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import FullCalendar from '@fullcalendar/vue3'
+import {
+  computed,
+  onBeforeUnmount,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  watch,
+} from 'vue'
   // Import event logger for component communication
   import eventLogger from '@/composables/shared/useComponentEventLogger'
-  import { bookingToCalendarEvent, bookingToTransitionEvents } from '@/utils/calendarHelpers'
-  import {
-    getMobileCalendarOptions,
-    handleViewportResize,
-  } from '@/utils/mobileViewport'
+import { formatPropertyAddress } from '@/types/property'
+import { bookingToCalendarEvent, bookingToTransitionEvents } from '@/utils/calendarHelpers'
+import {
+  getMobileCalendarOptions,
+  handleViewportResize,
+} from '@/utils/mobileViewport'
 
-  function escapeHtml(str: string): string {
-    const div = document.createElement('div')
-    div.textContent = str
-    return div.innerHTML
+  function escapeHtml (str: string): string {
+    if (str == null) return ''
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
   }
 
   interface Props {
@@ -112,7 +116,6 @@
       }
     })
   })
-
 
   // Mobile viewport height management
   const mobileOptions = ref(getMobileCalendarOptions())
@@ -199,12 +202,12 @@
   }) as CalendarOptions
 
   // Patch events slot incrementally — FullCalendar diffs, not full re-render
-  watch(calendarEvents, (events) => {
+  watch(calendarEvents, events => {
     calendarOptions.events = events
   }, { immediate: true })
 
   // Patch mobile-responsive fields when viewport changes
-  watch(mobileOptions, (opts) => {
+  watch(mobileOptions, opts => {
     calendarOptions.height = opts.height
     calendarOptions.dayMaxEvents = opts.dayMaxEvents
     calendarOptions.eventDisplay = opts.eventDisplay
@@ -257,7 +260,7 @@
     }
     m.eventEl.style.position = 'relative'
     m.eventEl.style.overflow = 'visible'
-    m.eventEl.appendChild(badge)
+    m.eventEl.append(badge)
   }
 
   // After an event segment mounts, add TURN and OUT badges at the appropriate day columns.
@@ -513,7 +516,7 @@
   // Watch for changes in props from Home
   watch(
     () => props.bookings,
-    (newBookings) => {
+    newBookings => {
       // Log receiving updated bookings from Home
       eventLogger.logEvent(
         'Home',
@@ -585,7 +588,6 @@
           capture: true,
         })
       }
-
     } catch (error) {
       console.warn('Error attaching more link listeners:', error)
     }
@@ -663,10 +665,10 @@
     if (props.viewMode === 'events') {
       // Events mode: match bookings with a transition on this exact date
       for (const booking of props.bookings) {
-        const hasTransition =
-          booking.checkin_date === dateAttr ||
-          booking.turn_date === dateAttr ||
-          booking.checkout_date === dateAttr
+        const hasTransition
+          = booking.checkin_date === dateAttr
+            || booking.turn_date === dateAttr
+            || booking.checkout_date === dateAttr
         if (hasTransition) {
           dayBookings.push(booking)
         }

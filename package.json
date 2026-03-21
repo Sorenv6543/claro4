@@ -34,8 +34,7 @@
     "mcp:browser-tools": "node scripts/start-browser-tools-mcp.js",
     "mcp:browser-tools:basic": "npx browser-tools-mcp",
     "mcp:browser-tools:enhanced": "npx @eqiz/browser-tools-mcp-enhanced",
-    "mcp:browser-tools:test": "node scripts/test-browser-tools.js",
-    "chrome:debug": "node scripts/open-chrome-debug.js"
+    "mcp:browser-tools:test": "node scripts/test-browser-tools.js"
   },
   "keywords": [],
   "author": "",

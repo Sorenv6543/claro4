@@ -20,24 +20,21 @@
 </template>
 
 <script setup lang="ts">
-  import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
-  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, Property } from '@/types'
-  import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
+import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+import type { EventResizeDoneArg } from '@fullcalendar/interaction'
+import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when a calendar route is visited.
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
-  import ErrorAlert from '@/components/dumb/shared/ErrorAlert.vue'
+  import { useCalendarState } from '@/composables/shared/useCalendarState'
 
   const FullCalendar = defineAsyncComponent({
     loader: () => import('@/components/smart/shared/FullCalendar.vue'),
     loadingComponent: LoadingSpinner,
-    errorComponent: ErrorAlert,
     delay: 200,
-    timeout: 10000,
   })
-  import { useCalendarState } from '@/composables/shared/useCalendarState'
 
   interface Props {
     bookings: Booking[]
@@ -222,9 +219,6 @@
 }
 
 /* Owner calendar specific adjustments */
-:deep(.fc-header-toolbar) {
-  margin-bottom: 0.5em;
-}
 
 :deep(.fc-daygrid-day-number) {
   font-weight: 500;
@@ -267,7 +261,7 @@
 
   :deep(.fc-header-toolbar) {
     flex-direction: column;
-    gap: 0.5em;
+    gap: 0.0em;
   }
 
   :deep(.fc-toolbar-chunk) {
@@ -277,7 +271,7 @@
 
   :deep(.fc-button) {
     font-size: 0.875rem;
-    padding: 0.5em 0.75em;
+    padding: 0.0em 0.75em;
   }
 }
 
