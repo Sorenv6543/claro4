@@ -182,4 +182,36 @@ describe('bookingToTransitionEvents', () => {
     expect(turnEvent!.start).toBe('2026-03-22')
     expect(turnEvent!.end).toBe('2026-03-23')
   })
+
+  it('uses "Unknown Property" label when property is undefined', () => {
+    const events = bookingToTransitionEvents(makeBooking(), undefined)
+    expect(events[0].title).toContain('Unknown Property')
+    expect(events[1].title).toContain('Unknown Property')
+  })
+
+  it('handles turn_date: null (Supabase default) same as absent', () => {
+    const events = bookingToTransitionEvents(makeBooking({ turn_date: null }), mockProperty)
+    expect(events).toHaveLength(2)
+    expect(events.map(e => e.extendedProps.transitionType)).toEqual(['in', 'out'])
+  })
+
+  it('same-day booking (checkin === checkout, no turn) produces IN + OUT on same date', () => {
+    const events = bookingToTransitionEvents(
+      makeBooking({ checkin_date: '2026-03-20', checkout_date: '2026-03-20' }),
+      mockProperty,
+    )
+    expect(events).toHaveLength(2)
+    expect(events[0].start).toBe('2026-03-20')
+    expect(events[1].start).toBe('2026-03-20')
+    expect(events[0].extendedProps.transitionType).toBe('in')
+    expect(events[1].extendedProps.transitionType).toBe('out')
+  })
+
+  it('extendedProps.booking is the original booking object (referential equality)', () => {
+    const booking = makeBooking({ turn_date: '2026-03-22' })
+    const events = bookingToTransitionEvents(booking, mockProperty)
+    for (const event of events) {
+      expect(event.extendedProps.booking).toBe(booking)
+    }
+  })
 })
