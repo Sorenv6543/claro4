@@ -95,6 +95,7 @@
   // Mobile viewport height management
   const mobileOptions = ref(getMobileCalendarOptions())
   let cleanupViewportListener: (() => void) | null = null
+  let resizeObserver: ResizeObserver | null = null
 
   // Calendar configuration — reactive so we can patch individual fields
   // without rebuilding the entire options object on every booking change
@@ -187,48 +188,59 @@
     calendarOptions.eventDisplay = opts.eventDisplay
   })
 
-  // After an event mounts, position a TURN label on the event bar at the turn day column.
+  // Position a labelled badge on the event bar at a specific date's column.
   // Events spanning more than one week row are split into segments (one per row). We scope
-  // the turn-cell lookup to the same <tr> so the badge only appears on the segment whose
-  // row actually contains the turn date — not on other rows that share the same column X.
+  // the cell lookup to the same <tr> so the badge only appears on the correct segment.
+  function placeBadge (eventEl: HTMLElement, dateStr: string, className: string, label: string) {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return
+
+    const eventRow = eventEl.closest('tr')
+    if (!eventRow) return
+    const cell = eventRow.querySelector(`td.fc-day[data-date="${dateStr}"]`)
+    if (!cell) return
+
+    const eventRect = eventEl.getBoundingClientRect()
+    const cellRect = cell.getBoundingClientRect()
+    if (eventRect.width === 0) return
+
+    // Use percentages so the badge scales correctly on window resize.
+    const leftPct = ((cellRect.left - eventRect.left) / eventRect.width) * 100
+    const widthPct = (cellRect.width / eventRect.width) * 100
+    const badge = document.createElement('div')
+    badge.className = className
+    badge.textContent = label
+    badge.style.left = `${leftPct}%`
+    badge.style.width = `${widthPct}%`
+
+    // The harness clips overflow by default; make it visible so the badge
+    // can extend beyond the event bar. eventEl is the positioning context.
+    const harness = eventEl.closest('.fc-daygrid-event-harness') as HTMLElement
+    if (harness) {
+      harness.style.overflow = 'visible'
+    }
+    eventEl.style.position = 'relative'
+    eventEl.style.overflow = 'visible'
+    eventEl.appendChild(badge)
+  }
+
+  // After an event segment mounts, add TURN and OUT badges at the appropriate day columns.
   function handleEventDidMount (info: { event: { extendedProps: Record<string, unknown> }, el: HTMLElement }) {
     const booking = info.event.extendedProps?.booking as Booking | undefined
-    if (!booking?.turn_date || booking.booking_type !== 'turn') return
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(booking.turn_date)) return
+    if (!booking) return
 
-    // Wait for layout to finalize
     requestAnimationFrame(() => {
       const eventEl = info.el
       if (!eventEl.isConnected) return
 
-      const eventRow = eventEl.closest('tr')
-      if (!eventRow) return
-      const turnCell = eventRow.querySelector(`td.fc-day[data-date="${booking.turn_date}"]`)
-      if (!turnCell) return
-
-      const eventRect = eventEl.getBoundingClientRect()
-      const cellRect = turnCell.getBoundingClientRect()
-      if (eventRect.width === 0) return
-
-      // Use percentages so the badge scales correctly on window resize
-      // instead of being stuck at the pixel values calculated at mount time.
-      const leftPct = ((cellRect.left - eventRect.left) / eventRect.width) * 100
-      const widthPct = (cellRect.width / eventRect.width) * 100
-      const badge = document.createElement('div')
-      badge.className = 'turn-event-badge'
-      badge.textContent = 'TURN'
-      badge.style.left = `${leftPct}%`
-      badge.style.width = `${widthPct}%`
-
-      // The harness clips overflow by default; make it visible so the badge
-      // can extend beyond the event bar. eventEl is the positioning context.
-      const harness = eventEl.closest('.fc-daygrid-event-harness') as HTMLElement
-      if (harness) {
-        harness.style.overflow = 'visible'
+      // TURN badge on the turn date
+      if (booking.turn_date) {
+        placeBadge(eventEl, booking.turn_date, 'turn-event-badge', 'TURN')
       }
-      eventEl.style.position = 'relative'
-      eventEl.style.overflow = 'visible'
-      eventEl.appendChild(badge)
+
+      // OUT badge on the checkout date — skip if TURN already covers the same day
+      if (booking.checkout_date && booking.checkout_date !== booking.turn_date) {
+        placeBadge(eventEl, booking.checkout_date, 'checkout-event-badge', 'OUT')
+      }
     })
   }
 
@@ -592,6 +604,21 @@
     cleanupViewportListener = handleViewportResize(() => {
       mobileOptions.value = getMobileCalendarOptions()
     })
+
+    // Watch for container resize (e.g. sidebar toggle) and tell FullCalendar to recalculate.
+    // Debounced to avoid calling updateSize() at 60fps during sidebar animation.
+    const containerEl = calendarRef.value?.$el?.parentElement
+    if (containerEl) {
+      let resizeTimeout: ReturnType<typeof setTimeout> | null = null
+      resizeObserver = new ResizeObserver(() => {
+        if (resizeTimeout) clearTimeout(resizeTimeout)
+        resizeTimeout = setTimeout(() => {
+          if (!calendarRef.value) return
+          calendarRef.value.getApi()?.updateSize()
+        }, 150)
+      })
+      resizeObserver.observe(containerEl)
+    }
   })
 
   onBeforeUnmount(() => {
@@ -615,6 +642,10 @@
       cleanupViewportListener()
       cleanupViewportListener = null
     }
+    if (resizeObserver) {
+      resizeObserver.disconnect()
+      resizeObserver = null
+    }
   })
 
   onUnmounted(() => {
@@ -625,6 +656,10 @@
     if (cleanupViewportListener) {
       cleanupViewportListener()
       cleanupViewportListener = null
+    }
+    if (resizeObserver) {
+      resizeObserver.disconnect()
+      resizeObserver = null
     }
   })
 
@@ -687,19 +722,87 @@
   position: absolute;
   top: 0;
   bottom: 0;
-  background: rgba(230, 81, 0, 0.85);
+  background: linear-gradient(135deg, #e65100, #bf360c);
   color: #fff;
   font-size: 0.6em;
   font-weight: 800;
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
   pointer-events: none;
   z-index: 5;
-  border-left: 2px solid rgba(255, 255, 255, 0.6);
-  border-right: 2px solid rgba(255, 255, 255, 0.6);
+  border-left: 2px solid rgba(255, 255, 255, 0.3);
+  border-right: 2px solid rgba(255, 255, 255, 0.3);
+  overflow: hidden;
+}
+
+/* Shimmer sweep across the badge */
+:deep(.turn-event-badge)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 25%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.08) 75%,
+    transparent 100%
+  );
+  animation: turn-shimmer 2.5s ease-in-out infinite;
+}
+
+@keyframes turn-shimmer {
+  0% { left: -100%; }
+  60% { left: 100%; }
+  100% { left: 100%; }
+}
+
+/* OUT (checkout) label overlaid on the event bar at the checkout day column */
+:deep(.checkout-event-badge) {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, #546e7a, #455a64);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.6em;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 5;
+  border-left: 2px solid rgba(255, 255, 255, 0.2);
+  border-right: 2px solid rgba(255, 255, 255, 0.2);
+  overflow: hidden;
+}
+
+/* Shimmer sweep across the OUT badge */
+:deep(.checkout-event-badge)::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.06) 25%,
+    rgba(255, 255, 255, 0.18) 50%,
+    rgba(255, 255, 255, 0.06) 75%,
+    transparent 100%
+  );
+  animation: turn-shimmer 3s ease-in-out infinite;
 }
 
 /* Standard booking styling */
