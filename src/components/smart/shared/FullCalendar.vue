@@ -188,39 +188,54 @@
     calendarOptions.eventDisplay = opts.eventDisplay
   })
 
-  // Position a labelled badge on the event bar at a specific date's column.
+  // Position labelled badges on the event bar at specific date columns.
   // Events spanning more than one week row are split into segments (one per row). We scope
   // the cell lookup to the same <tr> so the badge only appears on the correct segment.
-  function placeBadge (eventEl: HTMLElement, dateStr: string, className: string, label: string) {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return
+  // Reads and writes are separated to avoid forced reflows.
+
+  interface BadgeMeasurement {
+    eventEl: HTMLElement
+    leftPct: number
+    widthPct: number
+    className: string
+    label: string
+    harness: HTMLElement | null
+  }
+
+  // Phase 1: DOM reads only — no style mutations
+  function measureBadge (eventEl: HTMLElement, dateStr: string, className: string, label: string): BadgeMeasurement | null {
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null
 
     const eventRow = eventEl.closest('tr')
-    if (!eventRow) return
+    if (!eventRow) return null
     const cell = eventRow.querySelector(`td.fc-day[data-date="${dateStr}"]`)
-    if (!cell) return
+    if (!cell) return null
 
     const eventRect = eventEl.getBoundingClientRect()
     const cellRect = cell.getBoundingClientRect()
-    if (eventRect.width === 0) return
+    if (eventRect.width === 0) return null
 
-    // Use percentages so the badge scales correctly on window resize.
     const leftPct = ((cellRect.left - eventRect.left) / eventRect.width) * 100
     const widthPct = (cellRect.width / eventRect.width) * 100
-    const badge = document.createElement('div')
-    badge.className = className
-    badge.textContent = label
-    badge.style.left = `${leftPct}%`
-    badge.style.width = `${widthPct}%`
+    const harness = eventEl.closest('.fc-daygrid-event-harness') as HTMLElement | null
 
-    // The harness clips overflow by default; make it visible so the badge
-    // can extend beyond the event bar. eventEl is the positioning context.
-    const harness = eventEl.closest('.fc-daygrid-event-harness') as HTMLElement
-    if (harness) {
-      harness.style.overflow = 'visible'
+    return { eventEl, leftPct, widthPct, className, label, harness }
+  }
+
+  // Phase 2: DOM writes only — no layout queries
+  function applyBadge (m: BadgeMeasurement) {
+    const badge = document.createElement('div')
+    badge.className = m.className
+    badge.textContent = m.label
+    badge.style.left = `${m.leftPct}%`
+    badge.style.width = `${m.widthPct}%`
+
+    if (m.harness) {
+      m.harness.style.overflow = 'visible'
     }
-    eventEl.style.position = 'relative'
-    eventEl.style.overflow = 'visible'
-    eventEl.appendChild(badge)
+    m.eventEl.style.position = 'relative'
+    m.eventEl.style.overflow = 'visible'
+    m.eventEl.appendChild(badge)
   }
 
   // After an event segment mounts, add TURN and OUT badges at the appropriate day columns.
@@ -232,15 +247,19 @@
       const eventEl = info.el
       if (!eventEl.isConnected) return
 
-      // TURN badge on the turn date
+      // Phase 1: all reads
+      const measurements: BadgeMeasurement[] = []
       if (booking.turn_date) {
-        placeBadge(eventEl, booking.turn_date, 'turn-event-badge', 'TURN')
+        const m = measureBadge(eventEl, booking.turn_date, 'turn-event-badge', 'TURN')
+        if (m) measurements.push(m)
+      }
+      if (booking.checkout_date && booking.checkout_date !== booking.turn_date) {
+        const m = measureBadge(eventEl, booking.checkout_date, 'checkout-event-badge', 'OUT')
+        if (m) measurements.push(m)
       }
 
-      // OUT badge on the checkout date — skip if TURN already covers the same day
-      if (booking.checkout_date && booking.checkout_date !== booking.turn_date) {
-        placeBadge(eventEl, booking.checkout_date, 'checkout-event-badge', 'OUT')
-      }
+      // Phase 2: all writes
+      measurements.forEach(applyBadge)
     })
   }
 
