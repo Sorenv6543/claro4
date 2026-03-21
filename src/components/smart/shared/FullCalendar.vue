@@ -744,7 +744,7 @@
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
+  left: 0;
   width: 100%;
   height: 100%;
   background: linear-gradient(
@@ -755,13 +755,14 @@
     rgba(255, 255, 255, 0.08) 75%,
     transparent 100%
   );
+  will-change: transform;
   animation: turn-shimmer 2.5s ease-in-out infinite;
 }
 
 @keyframes turn-shimmer {
-  0% { left: -100%; }
-  60% { left: 100%; }
-  100% { left: 100%; }
+  0% { transform: translateX(-100%); }
+  60% { transform: translateX(100%); }
+  100% { transform: translateX(100%); }
 }
 
 /* OUT (checkout) label overlaid on the event bar at the checkout day column */
@@ -791,7 +792,7 @@
   content: '';
   position: absolute;
   top: 0;
-  left: -100%;
+  left: 0;
   width: 100%;
   height: 100%;
   background: linear-gradient(
@@ -802,6 +803,7 @@
     rgba(255, 255, 255, 0.06) 75%,
     transparent 100%
   );
+  will-change: transform;
   animation: turn-shimmer 3s ease-in-out infinite;
 }
 
