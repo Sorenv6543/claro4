@@ -1070,5 +1070,33 @@
   :deep(.fc-daygrid-day-frame) {
     min-height: 120px !important;
   }
+
+  /* ── Events view mode: transition event styles ── */
+  :deep(.transition-event) {
+    border-radius: 6px !important;
+    font-weight: 700;
+    border: none !important;
+  }
+
+  :deep(.transition-in) {
+    background: #43a047 !important;
+    color: white !important;
+  }
+
+  :deep(.transition-turn) {
+    background: #e65100 !important;
+    color: white !important;
+  }
+
+  :deep(.transition-out) {
+    background: #546e7a !important;
+    color: white !important;
+  }
+
+  :deep(.transition-highlight) {
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.6) !important;
+    transform: scale(1.05);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
 }
 </style>
