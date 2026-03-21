@@ -16,7 +16,6 @@ src/components/smart/owner/HomeOwner.vue -
       <!-- Calendar Content -->
       <div class="calendar-content">
         <OwnerCalendar
-          ref="calendarRef"
           :bookings="ownerFilteredBookings"
           :current-date="currentDate"
           :current-view="currentView"
@@ -149,7 +148,6 @@ src/components/smart/owner/HomeOwner.vue -
   // ============================================================================
   // LOCAL STATE
   // ============================================================================
-  const calendarRef = ref<InstanceType<typeof OwnerCalendar> | null>(null)
   const selectedPropertyFilter = ref<string | null>(null)
 
   // Day view bottom sheet state

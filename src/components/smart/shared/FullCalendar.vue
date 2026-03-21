@@ -41,6 +41,12 @@
     handleViewportResize,
   } from '@/utils/mobileViewport'
 
+  function escapeHtml(str: string): string {
+    const div = document.createElement('div')
+    div.textContent = str
+    return div.innerHTML
+  }
+
   interface Props {
     bookings: Booking[]
     properties: Property[]
@@ -361,9 +367,9 @@
 
       return {
         html: `
-        <div class="fc-event-content-wrapper transition-${transitionType}">
-          <div class="fc-event-title">${label} · ${propertyLabel}</div>
-          <div class="fc-event-subtitle">${booking.status.toUpperCase()}</div>
+        <div class="fc-event-content-wrapper transition-${escapeHtml(transitionType)}">
+          <div class="fc-event-title">${escapeHtml(label)} · ${escapeHtml(propertyLabel)}</div>
+          <div class="fc-event-subtitle">${escapeHtml(booking.status.toUpperCase())}</div>
         </div>
         `,
       }
@@ -441,15 +447,17 @@
     )
     const statusBadge = getStatusBadge(booking.status || 'pending')
 
+    const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Property'
+
     return {
       html: `
-      <div class="fc-event-content-wrapper booking-${booking.booking_type} priority-${booking.priority}">
+      <div class="fc-event-content-wrapper booking-${escapeHtml(booking.booking_type)} priority-${escapeHtml(booking.priority)}">
         <div class="fc-event-title">
-          ${priorityIcon} ${property ? formatPropertyAddress(property, 'short') : 'Property'}
+          ${priorityIcon} ${escapeHtml(propertyLabel)}
         </div>
         <div class="fc-event-subtitle">
-          ${statusBadge} ${booking.status.toUpperCase()}
-          ${booking.guest_count ? ` • ${booking.guest_count}👥` : ''}
+          ${statusBadge} ${escapeHtml(booking.status.toUpperCase())}
+          ${booking.guest_count ? ` • ${escapeHtml(String(booking.guest_count))}👥` : ''}
         </div>
       </div>
     `,

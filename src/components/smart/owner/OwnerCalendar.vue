@@ -27,9 +27,16 @@
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when a calendar route is visited.
-  const FullCalendar = defineAsyncComponent(() =>
-    import('@/components/smart/shared/FullCalendar.vue')
-  )
+  import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
+  import ErrorAlert from '@/components/dumb/shared/ErrorAlert.vue'
+
+  const FullCalendar = defineAsyncComponent({
+    loader: () => import('@/components/smart/shared/FullCalendar.vue'),
+    loadingComponent: LoadingSpinner,
+    errorComponent: ErrorAlert,
+    delay: 200,
+    timeout: 10000,
+  })
   import { useCalendarState } from '@/composables/shared/useCalendarState'
 
   interface Props {

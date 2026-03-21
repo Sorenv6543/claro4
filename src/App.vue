@@ -13,13 +13,25 @@
   import { useRoute } from 'vue-router'
 
   import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
+  import ErrorAlert from '@/components/dumb/shared/ErrorAlert.vue'
+  import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
+
+  function lazyLayout(loader: () => Promise<any>) {
+    return defineAsyncComponent({
+      loader,
+      loadingComponent: LoadingSpinner,
+      errorComponent: ErrorAlert,
+      delay: 200,
+      timeout: 10000,
+    })
+  }
 
   const layouts = {
-    default: defineAsyncComponent(() => import('@/layouts/default.vue')),
-    auth: defineAsyncComponent(() => import('@/layouts/auth.vue')),
-    admin: defineAsyncComponent(() => import('@/layouts/admin.vue')),
-    owner: defineAsyncComponent(() => import('@/layouts/owner.vue')),
-    bare: defineAsyncComponent(() => import('@/layouts/bare.vue')),
+    default: lazyLayout(() => import('@/layouts/default.vue')),
+    auth: lazyLayout(() => import('@/layouts/auth.vue')),
+    admin: lazyLayout(() => import('@/layouts/admin.vue')),
+    owner: lazyLayout(() => import('@/layouts/owner.vue')),
+    bare: lazyLayout(() => import('@/layouts/bare.vue')),
   }
 
   const route = useRoute()
