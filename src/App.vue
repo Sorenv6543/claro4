@@ -9,24 +9,17 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, markRaw } from 'vue'
+  import { computed, defineAsyncComponent } from 'vue'
   import { useRoute } from 'vue-router'
 
   import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
-  import AdminLayout from '@/layouts/admin.vue'
-  import AuthLayout from '@/layouts/auth.vue'
-  import BareLayout from '@/layouts/bare.vue'
-  // Import layouts
-  import DefaultLayout from '@/layouts/default.vue'
-  import OwnerLayout from '@/layouts/owner.vue'
 
-  // Available layouts
   const layouts = {
-    default: markRaw(DefaultLayout),
-    auth: markRaw(AuthLayout),
-    admin: markRaw(AdminLayout),
-    owner: markRaw(OwnerLayout),
-    bare: markRaw(BareLayout),
+    default: defineAsyncComponent(() => import('@/layouts/default.vue')),
+    auth: defineAsyncComponent(() => import('@/layouts/auth.vue')),
+    admin: defineAsyncComponent(() => import('@/layouts/admin.vue')),
+    owner: defineAsyncComponent(() => import('@/layouts/owner.vue')),
+    bare: defineAsyncComponent(() => import('@/layouts/bare.vue')),
   }
 
   const route = useRoute()
