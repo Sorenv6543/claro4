@@ -59,6 +59,21 @@
 
       <v-spacer />
 
+      <!-- View mode toggle (Ranges / Events) -->
+      <template v-if="isCalendarPage">
+        <v-btn-toggle
+          v-model="viewMode"
+          mandatory
+          density="compact"
+          rounded="pill"
+          color="primary"
+          class="mr-2"
+        >
+          <v-btn value="ranges" size="small" class="text-none">Ranges</v-btn>
+          <v-btn value="events" size="small" class="text-none">Events</v-btn>
+        </v-btn-toggle>
+      </template>
+
       <!-- View switcher — calendar page only -->
       <template v-if="isCalendarPage">
         <v-menu location="bottom end">
@@ -194,6 +209,7 @@ const authStore = useAuthStore()
 const calendarState = useCalendarState()
 
 const sidebarOpen = ref(mdAndUp.value)
+const viewMode = calendarState.viewMode
 
 // Show calendar controls only on the schedule/dashboard page
 const isCalendarPage = computed(() => route.path === '/owner/dashboard')
