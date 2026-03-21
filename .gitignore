@@ -64,3 +64,6 @@ dist-ssr
 .cursor/mcp.json
 .claude/mcp.json
 .claude/*.local.md
+
+# Git worktrees
+.worktrees/
