@@ -1071,32 +1071,44 @@
     min-height: 120px !important;
   }
 
-  /* ── Events view mode: transition event styles ── */
-  :deep(.transition-event) {
-    border-radius: 6px !important;
-    font-weight: 700;
-    border: none !important;
-  }
+}
+</style>
 
-  :deep(.transition-in) {
-    background: #43a047 !important;
-    color: white !important;
-  }
+<!-- Unscoped: FullCalendar renders its own DOM outside Vue's scoping -->
+<style>
+.fc-event.transition-event {
+  border-radius: 6px !important;
+  font-weight: 700;
+  border: none !important;
+}
 
-  :deep(.transition-turn) {
-    background: #e65100 !important;
-    color: white !important;
-  }
+.fc-event.transition-in {
+  --fc-event-bg-color: #43a047;
+  --fc-event-border-color: #43a047;
+  background-color: #43a047 !important;
+  border-color: #43a047 !important;
+  color: white !important;
+}
 
-  :deep(.transition-out) {
-    background: #546e7a !important;
-    color: white !important;
-  }
+.fc-event.transition-turn {
+  --fc-event-bg-color: #e65100;
+  --fc-event-border-color: #e65100;
+  background-color: #e65100 !important;
+  border-color: #e65100 !important;
+  color: white !important;
+}
 
-  :deep(.transition-highlight) {
-    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.6) !important;
-    transform: scale(1.05);
-    transition: box-shadow 0.3s ease, transform 0.3s ease;
-  }
+.fc-event.transition-out {
+  --fc-event-bg-color: #546e7a;
+  --fc-event-border-color: #546e7a;
+  background-color: #546e7a !important;
+  border-color: #546e7a !important;
+  color: white !important;
+}
+
+.fc-event.transition-highlight {
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.6) !important;
+  transform: scale(1.05);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
 }
 </style>
