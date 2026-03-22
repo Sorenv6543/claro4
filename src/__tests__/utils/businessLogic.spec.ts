@@ -1,11 +1,11 @@
-import { describe, it, expect } from 'vitest'
-import {
-  validateBooking,
-  validateTurnBooking,
-  detectBookingConflicts,
-} from '@/utils/businessLogic'
 import type { Booking } from '@/types'
 import type { Property } from '@/types/property'
+import { describe, expect, it } from 'vitest'
+import {
+  detectBookingConflicts,
+  validateBooking,
+  validateTurnBooking,
+} from '@/utils/businessLogic'
 
 const mockProperty: Property = {
   id: 'prop1',
@@ -18,6 +18,7 @@ const mockProperty: Property = {
   pricing_tier: 'standard',
   cleaning_duration: 120,
   active: true,
+  color: '#5c6bc0',
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
 }
@@ -37,7 +38,7 @@ describe('validateBooking — date ordering', () => {
   it('accepts when checkout_date is after checkin_date', () => {
     const result = validateBooking(
       { ...baseBooking, checkin_date: '2026-04-01', checkout_date: '2026-04-05' },
-      mockProperty
+      mockProperty,
     )
     expect(result.valid).toBe(true)
     expect(result.errors).toHaveLength(0)
@@ -53,7 +54,7 @@ describe('validateBooking — date ordering', () => {
         checkin_time: '14:00',
         checkout_time: '22:00',
       },
-      mockProperty
+      mockProperty,
     )
     expect(result.valid).toBe(true)
   })
@@ -61,7 +62,7 @@ describe('validateBooking — date ordering', () => {
   it('rejects when checkout_date is before checkin_date', () => {
     const result = validateBooking(
       { ...baseBooking, checkin_date: '2026-04-05', checkout_date: '2026-04-01' },
-      mockProperty
+      mockProperty,
     )
     expect(result.valid).toBe(false)
     expect(result.errors).toContain('Checkout date must be on or after checkin date')
@@ -70,7 +71,7 @@ describe('validateBooking — date ordering', () => {
   it('produces no warnings for a standard booking with sufficient time between dates', () => {
     const result = validateBooking(
       { ...baseBooking, checkin_date: '2026-04-01', checkout_date: '2026-04-05' },
-      mockProperty
+      mockProperty,
     )
     expect(result.valid).toBe(true)
     expect(result.warnings).toHaveLength(0)
@@ -88,7 +89,7 @@ describe('validateTurnBooking — time ordering (checkout_time must follow check
         checkin_time: '14:00',
         checkout_time: '10:00',
       },
-      mockProperty
+      mockProperty,
     )
     expect(result.valid).toBe(false)
     expect(result.errors).toContain('For turn bookings, checkout time must be after checkin time')
@@ -104,7 +105,7 @@ describe('validateTurnBooking — time ordering (checkout_time must follow check
         checkin_time: '14:00',
         checkout_time: '22:00',
       },
-      mockProperty
+      mockProperty,
     )
     expect(result.valid).toBe(true)
   })
@@ -167,7 +168,7 @@ describe('validateTurnBooking — warnings', () => {
         checkin_time: '10:00',
         checkout_time: '15:00',
       },
-      mockProperty
+      mockProperty,
     )
     expect(result.valid).toBe(true)
     expect(result.warnings.some(w => w.includes('Late checkout'))).toBe(true)
@@ -183,7 +184,7 @@ describe('validateTurnBooking — warnings', () => {
         checkin_time: '13:00',
         checkout_time: '22:00',
       },
-      mockProperty
+      mockProperty,
     )
     expect(result.valid).toBe(true)
     expect(result.warnings.some(w => w.includes('Early checkin'))).toBe(true)
@@ -192,7 +193,7 @@ describe('validateTurnBooking — warnings', () => {
   it('returns valid with no errors for a non-turn booking', () => {
     const result = validateTurnBooking(
       { ...baseBooking, booking_type: 'standard', checkin_date: '2026-04-01', checkout_date: '2026-04-05' },
-      mockProperty
+      mockProperty,
     )
     expect(result.valid).toBe(true)
     expect(result.errors).toHaveLength(0)
@@ -217,7 +218,7 @@ describe('validateBooking — conflict detection', () => {
     const result = validateBooking(
       { ...baseBooking, checkin_date: '2026-04-05', checkout_date: '2026-04-09' },
       mockProperty,
-      [existing]
+      [existing],
     )
     expect(result.warnings.some(w => w.includes('scheduling conflicts'))).toBe(true)
     expect(result.conflicts).toHaveLength(1)
