@@ -8,22 +8,22 @@
     @update:model-value="emit('update:modelValue', $event)"
   >
     <!-- Navigation section -->
-    <v-list nav density="comfortable" class="pt-2">
+    <v-list class="pt-2" density="comfortable" nav>
       <v-list-subheader class="text-overline">Navigation</v-list-subheader>
 
       <template v-for="item in navItems" :key="item.label">
         <v-list-item
+          :active="isActive(item.to)"
+          color="primary"
+          :disabled="item.disabled"
           :prepend-icon="item.icon"
+          rounded="lg"
           :title="item.label"
           :to="item.disabled ? undefined : item.to"
-          :active="isActive(item.to)"
-          :disabled="item.disabled"
-          color="primary"
-          rounded="lg"
           @click="item.disabled ? undefined : onNavItemClick()"
         >
           <template v-if="item.soon" #append>
-            <v-chip size="small" color="success" variant="tonal" class="text-uppercase font-weight-bold">
+            <v-chip class="text-uppercase font-weight-bold" color="success" size="small" variant="tonal">
               Soon
             </v-chip>
           </template>
@@ -32,20 +32,20 @@
     </v-list>
 
     <!-- My Properties list -->
-    <div v-if="properties.length" class="mt-1">
+    <div v-if="properties.length > 0" class="mt-1">
       <div class="text-overline text-medium-emphasis px-5 mb-1" style="font-size:0.67rem">My Properties</div>
-      <v-list nav density="compact" class="pa-0">
+      <v-list class="pa-0" density="compact" nav>
         <v-list-item
           v-for="(property, index) in properties"
           :key="property.id"
-          :to="`/owner/properties/${property.id}`"
           :active="isActive(`/owner/properties/${property.id}`)"
+          class="property-nav-item"
           color="primary"
           prepend-icon="mdi-home"
           rounded="lg"
-          :style="{ '--property-icon-color': propertyColor(index) }"
-          class="property-nav-item"
+          :style="{ '--property-icon-color': propertyColor(property, index) }"
           :title="formatPropertyAddress(property, 'short')"
+          :to="`/owner/properties/${property.id}`"
           @click="onNavItemClick()"
         />
       </v-list>
@@ -53,17 +53,17 @@
     <v-divider class="mx-4 my-1" />
 
     <!-- Account section -->
-    <v-list nav density="compact">
+    <v-list density="compact" nav>
       <v-list-subheader class="text-overline">Account</v-list-subheader>
       <v-list-item
         v-for="item in accountItems"
         :key="item.label"
-        :prepend-icon="item.icon"
-        :title="item.label"
-        :to="item.to"
         :active="isActive(item.to)"
         color="primary"
+        :prepend-icon="item.icon"
         rounded="lg"
+        :title="item.label"
+        :to="item.to"
         @click="onNavItemClick()"
       />
     </v-list>
@@ -83,7 +83,6 @@
           </div>
         </div>
 
-
       </div>
       <div class="pb-2" />
     </template>
@@ -91,75 +90,76 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useDisplay } from 'vuetify'
-import { useAuthStore } from '@stores/auth'
-import { useOwnerProperties } from '@composables/owner/useOwnerProperties'
-import { formatPropertyAddress } from '@/types/property'
+  import { useOwnerProperties } from '@composables/owner/useOwnerProperties'
+  import { useAuthStore } from '@stores/auth'
+  import { PROPERTY_COLORS } from '@/utils/constants'
+  import { computed } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { useDisplay } from 'vuetify'
+  import { formatPropertyAddress } from '@/types/property'
+  import type { Property } from '@/types/property'
 
-defineProps<{
-  modelValue: boolean
-}>()
+  defineProps<{
+    modelValue: boolean
+  }>()
 
-const emit = defineEmits<{
-  'update:modelValue': [value: boolean]
-}>()
+  const emit = defineEmits<{
+    'update:modelValue': [value: boolean]
+  }>()
 
-const route = useRoute()
-const { mdAndUp } = useDisplay()
-const authStore = useAuthStore()
-// useOwnerProperties exports `myProperties` — alias it for clarity in this component
-const { myProperties: properties } = useOwnerProperties()
+  const route = useRoute()
+  const { mdAndUp } = useDisplay()
+  const authStore = useAuthStore()
+  // useOwnerProperties exports `myProperties` — alias it for clarity in this component
+  const { myProperties: properties } = useOwnerProperties()
 
-// ── Nav items ──────────────────────────────────────────────────
-const navItems = [
-  { label: 'Schedule',          icon: 'mdi-calendar-month-outline',  to: '/owner/dashboard' },
-  { label: 'Check-ins & Turns', icon: 'mdi-clipboard-check-outline', to: '/owner/checkins', disabled: true, soon: true },
-  { label: 'Bookings',          icon: 'mdi-format-list-bulleted',     to: '/owner/bookings' },
-  { label: 'Properties',        icon: 'mdi-home-outline',             to: '/owner/properties' },
-]
+  // ── Nav items ──────────────────────────────────────────────────
+  const navItems = [
+    { label: 'Schedule', icon: 'mdi-calendar-month-outline', to: '/owner/dashboard' },
+    { label: 'Check-ins & Turns', icon: 'mdi-clipboard-check-outline', to: '/owner/checkins', disabled: true, soon: true },
+    { label: 'Bookings', icon: 'mdi-format-list-bulleted', to: '/owner/bookings' },
+    { label: 'Properties', icon: 'mdi-home-outline', to: '/owner/properties' },
+  ]
 
-const accountItems = [
-  { label: 'Settings', icon: 'mdi-cog-outline', to: '/owner/settings' },
-]
+  const accountItems = [
+    { label: 'Settings', icon: 'mdi-cog-outline', to: '/owner/settings' },
+  ]
 
-// ── Active state ───────────────────────────────────────────────
-function isActive(itemPath: string): boolean {
-  if (itemPath === route.path) return true
-  return route.path.startsWith(itemPath + '/')
-}
-
-// ── Property colors ────────────────────────────────────────────
-const PROPERTY_COLORS = ['#5c6bc0', '#43a047', '#8e24aa', '#f57c00']
-function propertyColor(index: number): string {
-  return PROPERTY_COLORS[index % PROPERTY_COLORS.length]
-}
-
-// ── User info ──────────────────────────────────────────────────
-const userName = computed(() => {
-  return authStore.user?.name
-    || authStore.user?.email?.split('@')[0]
-    || 'Owner'
-})
-
-const userEmail = computed(() => authStore.user?.email || '')
-
-const userInitials = computed(() => {
-  return userName.value
-    .split(' ')
-    .map((n: string) => n[0] ?? '')
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-})
-
-// ── Close on mobile nav ────────────────────────────────────────
-function onNavItemClick() {
-  if (!mdAndUp.value) {
-    emit('update:modelValue', false)
+  // ── Active state ───────────────────────────────────────────────
+  function isActive (itemPath: string): boolean {
+    if (itemPath === route.path) return true
+    return route.path.startsWith(itemPath + '/')
   }
-}
+
+  // ── Property colors ────────────────────────────────────────────
+  function propertyColor (property: Property, index: number): string {
+    return property.color ?? PROPERTY_COLORS[index % PROPERTY_COLORS.length]
+  }
+
+  // ── User info ──────────────────────────────────────────────────
+  const userName = computed(() => {
+    return authStore.user?.name
+      || authStore.user?.email?.split('@')[0]
+      || 'Owner'
+  })
+
+  const userEmail = computed(() => authStore.user?.email || '')
+
+  const userInitials = computed(() => {
+    return userName.value
+      .split(' ')
+      .map((n: string) => n[0] ?? '')
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  })
+
+  // ── Close on mobile nav ────────────────────────────────────────
+  function onNavItemClick () {
+    if (!mdAndUp.value) {
+      emit('update:modelValue', false)
+    }
+  }
 </script>
 
 <style scoped>
