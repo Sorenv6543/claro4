@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { THEMES, REGISTERED_THEME_KEYS } from '@/layouts/ownerThemes'
+import { describe, expect, it } from 'vitest'
+import { REGISTERED_THEME_KEYS, THEMES } from '@/layouts/ownerThemes'
 
 describe('THEMES swatch array', () => {
   it('has an entry for every registered theme', () => {

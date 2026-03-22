@@ -1,7 +1,7 @@
-import { describe, it, expect } from 'vitest'
-import { bookingToCalendarEvent, bookingToTransitionEvents, subtractOneDay } from '@/utils/calendarHelpers'
 import type { Booking } from '@/types'
 import type { Property } from '@/types/property'
+import { describe, expect, it } from 'vitest'
+import { bookingToCalendarEvent, bookingToTransitionEvents, subtractOneDay } from '@/utils/calendarHelpers'
 
 const mockProperty: Property = {
   id: 'prop1',
@@ -15,27 +15,30 @@ const mockProperty: Property = {
   pricing_tier: 'standard',
   cleaning_duration: 120,
   active: true,
+  color: '#5c6bc0',
   created_at: '2026-01-01T00:00:00Z',
   updated_at: '2026-01-01T00:00:00Z',
 }
 
-const makeBooking = (overrides: Partial<Booking> = {}): Booking => ({
-  id: 'b1',
-  property_id: 'prop1',
-  owner_id: 'owner1',
-  booking_type: 'standard',
-  status: 'pending',
-  priority: 'normal',
-  checkin_date: '2026-03-19',
-  checkout_date: '2026-03-28',
-  checkin_time: '15:00',
-  checkout_time: '11:00',
-  guest_count: 2,
-  notes: '',
-  created_at: '2026-01-01T00:00:00Z',
-  updated_at: '2026-01-01T00:00:00Z',
-  ...overrides,
-})
+function makeBooking (overrides: Partial<Booking> = {}): Booking {
+  return {
+    id: 'b1',
+    property_id: 'prop1',
+    owner_id: 'owner1',
+    booking_type: 'standard',
+    status: 'pending',
+    priority: 'normal',
+    checkin_date: '2026-03-19',
+    checkout_date: '2026-03-28',
+    checkin_time: '15:00',
+    checkout_time: '11:00',
+    guest_count: 2,
+    notes: '',
+    created_at: '2026-01-01T00:00:00Z',
+    updated_at: '2026-01-01T00:00:00Z',
+    ...overrides,
+  }
+}
 
 describe('bookingToCalendarEvent', () => {
   it('sets start to checkin_date', () => {

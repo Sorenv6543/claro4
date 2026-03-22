@@ -1,4 +1,4 @@
-import { beforeAll, afterAll, vi } from 'vitest'
+import { afterAll, beforeAll, vi } from 'vitest'
 
 // Global Supabase mock for all tests
 vi.mock('@/plugins/supabase', () => {
@@ -19,7 +19,7 @@ vi.mock('@/plugins/supabase', () => {
     order: vi.fn().mockReturnThis(),
     limit: vi.fn().mockReturnThis(),
     range: vi.fn().mockReturnThis(),
-  });
+  })
 
   const supabase = {
     from: vi.fn(() => createQueryBuilder()),
@@ -30,12 +30,12 @@ vi.mock('@/plugins/supabase', () => {
       signInWithPassword: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
       signOut: vi.fn().mockResolvedValue({ error: null }),
     },
-  };
+  }
   return {
     supabase,
     default: supabase, // Provide default export
-  };
-});
+  }
+})
 
 // Mock CSS imports
 vi.mock('vuetify/styles', () => ({}))
@@ -66,4 +66,4 @@ beforeAll(() => {
 
 afterAll(() => {
   // Cleanup if needed
-}) 
+})
