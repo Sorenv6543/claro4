@@ -106,7 +106,7 @@
       <!-- Property List -->
       <v-row>
         <v-col
-          v-for="(property, index) in myProperties"
+          v-for="property in myProperties"
           :key="property.id"
           class="pa-2"
           cols="12"
@@ -116,14 +116,14 @@
         >
           <v-card
             class="compact-property-card"
-            :class="getPropertyCardClass(index)"
             elevation="2"
+            :style="{ borderLeft: '4px solid ' + property.color }"
             @click="viewProperty(property)"
           >
             <v-card-text class="pa-3">
               <div class="d-flex align-center justify-space-between mb-2">
                 <v-icon
-                  :color="getPropertyIconColor(index)"
+                  :color="property.color"
                   size="20"
                 >
                   {{ getPropertyIcon(property.property_type) }}
@@ -222,9 +222,11 @@
       :mode="propertyModalMode"
       :open="propertyModalOpen"
       :property="propertyModalData"
+      :stepper="propertyModalMode === 'create'"
       @close="handlePropertyModalClose"
       @delete="handlePropertyModalDelete"
       @save="handlePropertyModalSave"
+      @skip="handlePropertyModalSkip"
     />
 
     <!-- Confirmation Dialog - Same system as HomeOwner -->
@@ -244,16 +246,16 @@
 
 <script setup lang="ts">
   import type { Property, PropertyFormData, PropertyRecord } from '@/types'
-  import { formatPropertyAddress } from '@/types/property'
   import { computed, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useAuthStore } from '@/stores/auth'
   import { useUIStore } from '@/stores/ui'
+  import { formatPropertyAddress } from '@/types/property'
 
   // Component metadata
   defineOptions({
@@ -324,23 +326,6 @@
   // ============================================================================
   // HELPER FUNCTIONS - STYLING AND ICONS
   // ============================================================================
-
-  // Property card styling based on index
-  function getPropertyCardClass (index: number): string {
-    const classes = [
-      'property-card-blue',
-      'property-card-green',
-      'property-card-purple',
-      'property-card-orange',
-    ]
-    return classes[index % classes.length]
-  }
-
-  // Property icon color based on index
-  function getPropertyIconColor (index: number): string {
-    const colors = ['primary', 'success', 'secondary', 'warning']
-    return colors[index % colors.length]
-  }
 
   // Property type icon mapping
   function getPropertyIcon (propertyType?: string): string {
@@ -420,6 +405,12 @@
     } catch (error) {
       console.error('Failed to save your property:', error)
     }
+  }
+
+  async function handlePropertyModalSkip (data: PropertyFormData): Promise<void> {
+    const id = await createMyProperty(data)
+    uiStore.closeModal('propertyModal')
+    if (id) router.push(`/owner/properties/${id}`)
   }
 
   async function handlePropertyModalDelete (propertyId: string): Promise<void> {
@@ -604,42 +595,6 @@
   border-radius: 4px;
 }
 
-/* Property card color themes */
-.property-card-blue {
-  background: linear-gradient(135deg, #e3f2fd 0%, #e1f5fe 100%);
-  border-left: 4px solid #2196f3;
-}
-
-.property-card-blue .property-name {
-  color: #1976d2;
-}
-
-.property-card-green {
-  background: linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%);
-  border-left: 4px solid #4caf50;
-}
-
-.property-card-green .property-name {
-  color: #388e3c;
-}
-
-.property-card-purple {
-  background: linear-gradient(135deg, #f3e5f5 0%, #fce4ec 100%);
-  border-left: 4px solid #9c27b0;
-}
-
-.property-card-purple .property-name {
-  color: #7b1fa2;
-}
-
-.property-card-orange {
-  background: linear-gradient(135deg, #fff3e0 0%, #ffe0b2 100%);
-  border-left: 4px solid #ff9800;
-}
-
-.property-card-orange .property-name {
-  color: #f57c00;
-}
 
 .owner-properties-container {
   --owner-primary: rgb(var(--v-theme-primary));
