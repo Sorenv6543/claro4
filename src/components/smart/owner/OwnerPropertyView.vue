@@ -28,13 +28,6 @@
               class="d-flex gap-2"
             >
               <v-btn
-                color="primary"
-                prepend-icon="mdi-pencil"
-                @click="handleEdit"
-              >
-                Edit
-              </v-btn>
-              <v-btn
                 color="error"
                 prepend-icon="mdi-delete"
                 variant="outlined"
@@ -71,68 +64,109 @@
           cols="12"
           md="8"
         >
-          <!-- Property Info -->
-          <v-card class="mb-4">
+          <PropertyInfoSection
+            ref="infoRef"
+            :error="sectionState.info.error"
+            :loading="sectionState.info.loading"
+            :property="property"
+            @save="(data) => handleSectionSave('info', data)"
+          />
+          <PropertyCleaningSection
+            ref="cleaningRef"
+            :error="sectionState.cleaning.error"
+            :loading="sectionState.cleaning.loading"
+            :property="property"
+            @save="(data) => handleSectionSave('cleaning', data)"
+          />
+          <PropertyAccessSection
+            ref="accessRef"
+            :error="sectionState.access.error"
+            :loading="sectionState.access.loading"
+            :property="property"
+            @save="(data) => handleSectionSave('access', data)"
+          />
+          <PropertyContactSection
+            ref="contactRef"
+            :error="sectionState.contact.error"
+            :loading="sectionState.contact.loading"
+            :property="property"
+            @save="(data) => handleSectionSave('contact', data)"
+          />
+        </v-col>
+
+        <!-- Right column -->
+        <v-col
+          cols="12"
+          md="4"
+        >
+          <PropertyPhotosSection :property="property" />
+
+          <!-- Statistics & Bookings (combined read-only card) -->
+          <v-card class="mt-4">
             <v-card-title>
               <v-icon
                 class="mr-2"
-                color="primary"
+                color="success"
               >
-                mdi-home
+                mdi-chart-line
               </v-icon>
-              Property Information
+              Statistics
             </v-card-title>
             <v-card-text>
-              <v-row>
-                <v-col cols="12">
-                  <div class="property-detail">
-                    <strong>Address:</strong>
-                    <div>{{ formatPropertyAddress(property) }}</div>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="6"
+              <div class="stat-item">
+                <div class="stat-value">
+                  {{ totalBookings }}
+                </div>
+                <div class="stat-label">
+                  Total Bookings
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">
+                  {{ upcomingCount }}
+                </div>
+                <div class="stat-label">
+                  Upcoming Bookings
+                </div>
+              </div>
+              <div class="stat-item">
+                <v-chip
+                  :color="property.active ? 'success' : 'grey'"
+                  size="small"
                 >
-                  <div class="property-detail">
-                    <strong>Type:</strong>
-                    <div>{{ property.property_type || 'Not specified' }}</div>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="6"
-                >
-                  <div class="property-detail">
-                    <strong>Bedrooms:</strong>
-                    <div>{{ property.bedrooms || 'Not specified' }}</div>
-                  </div>
-                </v-col>
-                <v-col
-                  cols="12"
-                  sm="6"
-                >
-                  <div class="property-detail">
-                    <strong>Bathrooms:</strong>
-                    <div>{{ property.bathrooms || 'Not specified' }}</div>
-                  </div>
-                </v-col>
-                <v-col
-                  v-if="property.special_instructions"
-                  cols="12"
-                >
-                  <div class="property-detail">
-                    <strong>Special Instructions:</strong>
-                    <div>{{ property.special_instructions }}</div>
-                  </div>
-                </v-col>
-              </v-row>
+                  {{ property.active ? 'Active' : 'Inactive' }}
+                </v-chip>
+                <div class="stat-label mt-1">
+                  Status
+                </div>
+              </div>
             </v-card-text>
-          </v-card>
 
-          <!-- Upcoming Arrivals -->
-          <v-card class="mb-4">
-            <v-card-title>
+            <v-divider />
+
+            <v-card-title class="pt-4">
+              <v-icon
+                class="mr-2"
+                color="info"
+              >
+                mdi-information
+              </v-icon>
+              Details
+            </v-card-title>
+            <v-card-text class="text-body-2">
+              <p><strong>Pricing Tier:</strong> {{ property.pricing_tier }}</p>
+              <p><strong>Cleaning Duration:</strong> {{ property.cleaning_duration }} min</p>
+              <p v-if="property.created_at">
+                <strong>Created:</strong> {{ formatDate(property.created_at) }}
+              </p>
+              <p v-if="property.updated_at">
+                <strong>Last Updated:</strong> {{ formatDate(property.updated_at) }}
+              </p>
+            </v-card-text>
+
+            <v-divider />
+
+            <v-card-title class="pt-4">
               <v-icon
                 class="mr-2"
                 color="warning"
@@ -177,11 +211,10 @@
                 </v-list-item>
               </v-list>
             </v-card-text>
-          </v-card>
 
-          <!-- Recent Bookings -->
-          <v-card>
-            <v-card-title>
+            <v-divider />
+
+            <v-card-title class="pt-4">
               <v-icon
                 class="mr-2"
                 color="info"
@@ -228,77 +261,6 @@
             </v-card-text>
           </v-card>
         </v-col>
-
-        <!-- Right column -->
-        <v-col
-          cols="12"
-          md="4"
-        >
-          <!-- Stats -->
-          <v-card class="mb-4">
-            <v-card-title>
-              <v-icon
-                class="mr-2"
-                color="success"
-              >
-                mdi-chart-line
-              </v-icon>
-              Statistics
-            </v-card-title>
-            <v-card-text>
-              <div class="stat-item">
-                <div class="stat-value">
-                  {{ totalBookings }}
-                </div>
-                <div class="stat-label">
-                  Total Bookings
-                </div>
-              </div>
-              <div class="stat-item">
-                <div class="stat-value">
-                  {{ upcomingCount }}
-                </div>
-                <div class="stat-label">
-                  Upcoming Bookings
-                </div>
-              </div>
-              <div class="stat-item">
-                <v-chip
-                  :color="property.active ? 'success' : 'grey'"
-                  size="small"
-                >
-                  {{ property.active ? 'Active' : 'Inactive' }}
-                </v-chip>
-                <div class="stat-label mt-1">
-                  Status
-                </div>
-              </div>
-            </v-card-text>
-          </v-card>
-
-          <!-- Details -->
-          <v-card>
-            <v-card-title>
-              <v-icon
-                class="mr-2"
-                color="info"
-              >
-                mdi-information
-              </v-icon>
-              Details
-            </v-card-title>
-            <v-card-text class="text-body-2">
-              <p><strong>Pricing Tier:</strong> {{ property.pricing_tier }}</p>
-              <p><strong>Cleaning Duration:</strong> {{ property.cleaning_duration }} min</p>
-              <p v-if="property.created_at">
-                <strong>Created:</strong> {{ formatDate(property.created_at) }}
-              </p>
-              <p v-if="property.updated_at">
-                <strong>Last Updated:</strong> {{ formatDate(property.updated_at) }}
-              </p>
-            </v-card-text>
-          </v-card>
-        </v-col>
       </v-row>
 
       <!-- Error or not-found state -->
@@ -331,18 +293,6 @@
       </v-row>
     </v-container>
 
-    <!-- Save error alert -->
-    <v-alert
-      v-if="saveError"
-      class="mt-4 mx-4"
-      closable
-      type="error"
-      variant="tonal"
-      @click:close="saveError = null"
-    >
-      {{ saveError }}
-    </v-alert>
-
     <!-- Delete error alert -->
     <v-alert
       v-if="deleteError"
@@ -354,15 +304,6 @@
     >
       {{ deleteError }}
     </v-alert>
-
-    <!-- Edit Modal -->
-    <PropertyModal
-      mode="edit"
-      :open="editModalOpen"
-      :property="property ?? undefined"
-      @close="editModalOpen = false"
-      @save="handleEditSave"
-    />
 
     <!-- Delete Confirmation -->
     <ConfirmationDialog
@@ -380,14 +321,18 @@
 </template>
 
 <script setup lang="ts">
-  import type { Booking, PropertyFormData } from '@/types'
-  import { formatPropertyAddress } from '@/types/property'
-  import { computed, onMounted, ref } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
+  import type { Booking, Property } from '@/types'
+  import { computed, onMounted, reactive, ref } from 'vue'
+  import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+  import PropertyAccessSection from '@/components/dumb/owner/PropertyAccessSection.vue'
+  import PropertyCleaningSection from '@/components/dumb/owner/PropertyCleaningSection.vue'
+  import PropertyContactSection from '@/components/dumb/owner/PropertyContactSection.vue'
+  import PropertyInfoSection from '@/components/dumb/owner/PropertyInfoSection.vue'
+  import PropertyPhotosSection from '@/components/dumb/owner/PropertyPhotosSection.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+  import { formatPropertyAddress } from '@/types/property'
 
   defineOptions({ name: 'OwnerPropertyViewComponent' })
 
@@ -406,16 +351,16 @@
 
   const { myBookings, fetchMyBookings } = useOwnerBookings()
 
-  const editModalOpen = ref(false)
   const deleteDialogOpen = ref(false)
   const loadError = ref<string | null>(null)
+  const deleteError = ref<string | null>(null)
 
   const property = computed(() => myProperties.value.find(p => p.id === propertyId) ?? null)
 
   const propertyBookings = computed(() =>
     myBookings.value
       .filter(b => b.property_id === propertyId)
-      .sort((a, b) => new Date(b.checkin_date).getTime() - new Date(a.checkin_date).getTime())
+      .toSorted((a, b) => new Date(b.checkin_date).getTime() - new Date(a.checkin_date).getTime())
       .slice(0, 10),
   )
 
@@ -423,7 +368,7 @@
     const today = new Date()
     return myBookings.value
       .filter(b => b.property_id === propertyId && new Date(b.checkin_date) >= today)
-      .sort((a, b) => new Date(a.checkin_date).getTime() - new Date(b.checkin_date).getTime())
+      .toSorted((a, b) => new Date(a.checkin_date).getTime() - new Date(b.checkin_date).getTime())
       .slice(0, 10)
   })
 
@@ -448,25 +393,51 @@
     }
   })
 
-  const goBack = () => router.push('/owner/properties')
-  function handleEdit () {
-    editModalOpen.value = true
+  // Section refs
+  const infoRef = ref()
+  const cleaningRef = ref()
+  const accessRef = ref()
+  const contactRef = ref()
+
+  // Per-section state
+  const sectionState = reactive<Record<string, { loading: boolean; error: string | null }>>({
+    info: { loading: false, error: null },
+    cleaning: { loading: false, error: null },
+    access: { loading: false, error: null },
+    contact: { loading: false, error: null },
+  })
+
+  const sectionRefs: Record<string, any> = { info: infoRef, cleaning: cleaningRef, access: accessRef, contact: contactRef }
+
+  async function handleSectionSave (section: string, data: Partial<Property>) {
+    const state = sectionState[section]
+    state.loading = true
+    state.error = null
+    const ok = await updateMyProperty(propertyId, data)
+    state.loading = false
+    if (ok) {
+      sectionRefs[section]?.value?.closeEdit()
+    } else {
+      state.error = error.value ?? 'Failed to save. Please try again.'
+    }
   }
+
+  // Navigation guard — warn about unsaved section edits
+  onBeforeRouteLeave((_to, _from, next) => {
+    const dirtySections = [infoRef, cleaningRef, accessRef, contactRef]
+      .filter(r => r.value?.editing && r.value?.isDirty)
+    if (dirtySections.length > 0) {
+      const leave = window.confirm('You have unsaved changes. Discard?')
+      next(leave)
+    } else {
+      next()
+    }
+  })
+
+  const goBack = () => router.push('/owner/properties')
+
   function handleDelete () {
     deleteDialogOpen.value = true
-  }
-
-  const saveError = ref<string | null>(null)
-  const deleteError = ref<string | null>(null)
-
-  async function handleEditSave (data: PropertyFormData) {
-    saveError.value = null
-    const ok = await updateMyProperty(propertyId, data)
-    if (ok) {
-      editModalOpen.value = false
-    } else {
-      saveError.value = error.value ?? 'Failed to save property. Please try again.'
-    }
   }
 
   async function confirmDelete () {
@@ -514,20 +485,6 @@
 <style scoped>
 .property-view-page {
   background: rgb(var(--v-theme-background));
-}
-
-.property-detail {
-  margin-bottom: 16px;
-}
-
-.property-detail strong {
-  color: rgb(var(--v-theme-primary));
-  font-weight: 600;
-}
-
-.property-detail div {
-  margin-top: 4px;
-  font-size: 0.95rem;
 }
 
 .stat-item {
