@@ -3,14 +3,14 @@ import type { Property } from '@/types/property'
 import { formatPropertyAddress } from '@/types/property'
 
 /** Add one day to a YYYY-MM-DD string (for FullCalendar exclusive end dates). */
-function addOneDay(dateString: string): string {
+function addOneDay (dateString: string): string {
   const date = new Date(dateString)
   date.setDate(date.getDate() + 1)
   return date.toISOString().split('T')[0]
 }
 
 /** Subtract one day from a YYYY-MM-DD string (reverses FullCalendar exclusive end offset on write-back). */
-export function subtractOneDay(dateString: string): string {
+export function subtractOneDay (dateString: string): string {
   const date = new Date(dateString)
   date.setDate(date.getDate() - 1)
   return date.toISOString().split('T')[0]
@@ -22,6 +22,8 @@ export interface CalendarBookingEvent {
   start: string
   end: string
   classNames: string[]
+  backgroundColor?: string
+  borderColor?: string
   extendedProps: {
     booking: Booking
     property: Property | undefined
@@ -40,9 +42,9 @@ export interface CalendarBookingEvent {
  * Turn bookings render as a single event spanning the full stay.
  * The turn day indicator is handled by eventContent + dayCellDidMount in FullCalendar.vue.
  */
-export function bookingToCalendarEvent(
+export function bookingToCalendarEvent (
   booking: Booking,
-  property: Property | undefined
+  property: Property | undefined,
 ): CalendarBookingEvent {
   const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
 
@@ -55,6 +57,8 @@ export function bookingToCalendarEvent(
       `type-${booking.booking_type}`,
       `priority-${booking.priority}`,
     ],
+    backgroundColor: property?.color,
+    borderColor: property?.color,
     extendedProps: {
       booking,
       property,
@@ -75,9 +79,9 @@ export function bookingToCalendarEvent(
  * - TURN — present when booking.turn_date is set
  * - OUT  — present when checkout_date !== turn_date (skipped for turn-only bookings)
  */
-export function bookingToTransitionEvents(
+export function bookingToTransitionEvents (
   booking: Booking,
-  property: Property | undefined
+  property: Property | undefined,
 ): CalendarBookingEvent[] {
   const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
   const events: CalendarBookingEvent[] = []
@@ -92,6 +96,8 @@ export function bookingToTransitionEvents(
     notes: booking.notes,
   }
 
+  const propertyColor = property?.color
+
   // IN event — always present
   events.push({
     id: `${booking.id}-in`,
@@ -99,6 +105,8 @@ export function bookingToTransitionEvents(
     start: booking.checkin_date,
     end: addOneDay(booking.checkin_date),
     classNames: ['transition-event', 'transition-in'],
+    backgroundColor: propertyColor,
+    borderColor: propertyColor,
     extendedProps: { ...baseExtendedProps, transitionType: 'in' as const },
   })
 
@@ -110,6 +118,8 @@ export function bookingToTransitionEvents(
       start: booking.turn_date,
       end: addOneDay(booking.turn_date),
       classNames: ['transition-event', 'transition-turn'],
+      backgroundColor: propertyColor,
+      borderColor: propertyColor,
       extendedProps: { ...baseExtendedProps, transitionType: 'turn' as const },
     })
   }
@@ -122,6 +132,8 @@ export function bookingToTransitionEvents(
       start: booking.checkout_date,
       end: addOneDay(booking.checkout_date),
       classNames: ['transition-event', 'transition-out'],
+      backgroundColor: propertyColor,
+      borderColor: propertyColor,
       extendedProps: { ...baseExtendedProps, transitionType: 'out' as const },
     })
   }
