@@ -41,6 +41,7 @@ vi.mock('@/plugins/supabase', () => {
 vi.mock('vuetify/styles', () => ({}))
 vi.mock('@mdi/font/css/materialdesignicons.css', () => ({}))
 vi.mock('vuetify/lib/components/VCode/VCode.css', () => ({}))
+vi.mock('vuetify/lib/components/VAlert/VAlert.css', () => ({}))
 
 // Global setup
 beforeAll(() => {
