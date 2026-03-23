@@ -499,6 +499,7 @@
     mode?: 'create' | 'edit'
     property?: Property
     stepper?: boolean
+    existingPropertyCount?: number
   }
 
   interface Emits {
@@ -513,6 +514,7 @@
     mode: 'create',
     property: undefined,
     stepper: false,
+    existingPropertyCount: 0,
   })
 
   const emit = defineEmits<Emits>()
@@ -540,8 +542,8 @@
     address_city: '',
     address_state: '',
     address_zip: '',
-    cleaning_duration: 60, // Default to 1 hour
-    pricing_tier: 'basic',
+    cleaning_duration: 120, // Default to 2 hours
+    pricing_tier: 'standard',
     special_instructions: '',
     active: true,
     owner_id: '', // Will be set by the parent component or from auth store
@@ -635,15 +637,15 @@
     } else {
       // Reset to defaults for create mode
       // Auto-assign color based on how many properties the owner has (cycling)
-      const assignedColor = PROPERTY_COLORS[0]
+      const assignedColor = PROPERTY_COLORS[props.existingPropertyCount % PROPERTY_COLORS.length]
       Object.assign(form, {
         address_street: '',
         address_unit: '',
         address_city: '',
         address_state: '',
         address_zip: '',
-        cleaning_duration: 60,
-        pricing_tier: 'basic',
+        cleaning_duration: 120,
+        pricing_tier: 'standard',
         special_instructions: '',
         active: true,
         owner_id: authStore.user?.id || '',

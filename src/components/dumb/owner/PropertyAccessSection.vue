@@ -1,9 +1,11 @@
 <template>
   <PropertySectionCard
+    :error="error"
     icon="mdi-key-variant"
     icon-color="warning"
     :editing="editing"
-    :save-disabled="!isDirty"
+    :loading="loading"
+    :save-disabled="!isDirty || !formValid"
     title="Access & Parking"
     @cancel="closeEdit"
     @edit="editing = true"
@@ -28,6 +30,7 @@
 
     <!-- Edit mode -->
     <template #edit>
+      <v-form v-model="formValid">
       <v-row dense>
         <v-col cols="12">
           <v-textarea
@@ -51,6 +54,7 @@
           />
         </v-col>
       </v-row>
+      </v-form>
     </template>
   </PropertySectionCard>
 </template>
@@ -62,6 +66,8 @@
 
   const props = defineProps<{
     property: Property
+    loading?: boolean
+    error?: string | null
   }>()
 
   const emit = defineEmits<{
@@ -69,6 +75,7 @@
   }>()
 
   const editing = ref(false)
+  const formValid = ref(false)
 
   const form = reactive({
     access_info: '',

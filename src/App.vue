@@ -12,10 +12,10 @@
   import { computed, defineAsyncComponent } from 'vue'
   import { useRoute } from 'vue-router'
 
-  import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
+  import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
 
-  function lazyLayout(loader: () => Promise<any>) {
+  function lazyLayout (loader: () => Promise<any>) {
     return defineAsyncComponent({
       loader,
       loadingComponent: LoadingSpinner,
@@ -46,7 +46,7 @@ html, body {
   margin: 0;
   padding: 0;
   height: 100%;
-  font-family: 'Roboto', sans-serif;
+  font-family: 'Inter', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   transition: background-color 0.3s ease;
@@ -59,7 +59,7 @@ html, body {
 
 /* Ensure Vuetify works properly */
 .v-application {
-  font-family: 'Roboto', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
 }
 
 /* Custom scrollbar styling */

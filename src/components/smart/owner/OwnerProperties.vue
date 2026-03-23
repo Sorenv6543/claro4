@@ -219,6 +219,7 @@
 
     <!-- Property Modal - Same modal system as HomeOwner -->
     <PropertyModal
+      :existing-property-count="myProperties.length"
       :mode="propertyModalMode"
       :open="propertyModalOpen"
       :property="propertyModalData"

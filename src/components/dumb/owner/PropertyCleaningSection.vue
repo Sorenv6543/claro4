@@ -1,9 +1,11 @@
 <template>
   <PropertySectionCard
+    :error="error"
     icon="mdi-broom"
     icon-color="warning"
     :editing="editing"
-    :save-disabled="!isDirty"
+    :loading="loading"
+    :save-disabled="!isDirty || !formValid"
     title="Cleaning"
     @cancel="closeEdit"
     @edit="editing = true"
@@ -26,6 +28,7 @@
 
     <!-- Edit mode -->
     <template #edit>
+      <v-form v-model="formValid">
       <v-row dense>
         <v-col cols="12" md="6">
           <v-text-field
@@ -55,6 +58,7 @@
           />
         </v-col>
       </v-row>
+      </v-form>
     </template>
   </PropertySectionCard>
 </template>
@@ -66,6 +70,8 @@
 
   const props = defineProps<{
     property: Property
+    loading?: boolean
+    error?: string | null
   }>()
 
   const emit = defineEmits<{
@@ -73,6 +79,7 @@
   }>()
 
   const editing = ref(false)
+  const formValid = ref(false)
 
   const form = reactive({
     cleaning_duration: 120,
