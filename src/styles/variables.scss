@@ -4,6 +4,6 @@
 //
 // To add more variable overrides, extend the `with (...)` clause below:
 @use 'vuetify/settings' with (
-  $body-font-family: ('Roboto', sans-serif),
-  $border-radius-root: 8px,
+  $body-font-family: ('Inter', sans-serif),
+  $border-radius-root: 6px,
 );
