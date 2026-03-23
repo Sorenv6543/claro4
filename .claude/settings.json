@@ -50,7 +50,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "FILE=$(node -e \"console.log((JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}')).file_path||'')\" 2>/dev/null); [[ \"$FILE\" == *supabase/migrations* ]] && supabase gen types typescript --project-id aejkrsvemqnftivzkkxd > /c/Users/Soren/claro4/src/types/supabase.ts && echo 'Types regenerated from schema' || true",
+            "command": "FILE=$(node -e \"console.log((JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}')).file_path||'')\" 2>/dev/null); [[ \"$FILE\" == *supabase/migrations* ]] && supabase gen types typescript --project-id aejkrsvemqnftivzkkxd > /c/Users/Soren/claro4/src/types/supabase.ts.tmp && mv /c/Users/Soren/claro4/src/types/supabase.ts.tmp /c/Users/Soren/claro4/src/types/supabase.ts && echo 'Types regenerated from schema' || true",
             "timeout": 30000
           }
         ]
