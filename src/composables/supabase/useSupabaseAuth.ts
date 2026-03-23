@@ -16,7 +16,7 @@ export function useSupabaseAuth () {
   const currentUserId = computed(() => session.value?.user?.id || null)
 
   // Guard against concurrent profile loads
-  let profileLoadInFlight = false
+  let profileLoadPromise: Promise<void> | null = null
 
   let initializationTimeout: ReturnType<typeof setTimeout>
 
@@ -98,15 +98,14 @@ export function useSupabaseAuth () {
 
   /**
    * Fire-and-forget wrapper for loadUserProfile.
-   * Prevents concurrent loads and uses fallback on failure.
+   * Deduplicates concurrent calls by sharing a single in-flight promise.
    */
   function loadUserProfileSafe (userId: string) {
-    if (profileLoadInFlight) {
+    if (profileLoadPromise) {
       return
     }
-    profileLoadInFlight = true
 
-    loadUserProfile(userId)
+    profileLoadPromise = loadUserProfile(userId)
       .catch(error_ => {
         // Single retry after 1s for transient network errors
         console.warn('Profile load failed, retrying once:', error_.message)
@@ -118,7 +117,7 @@ export function useSupabaseAuth () {
         user.value = buildFallbackProfile(userId)
       })
       .finally(() => {
-        profileLoadInFlight = false
+        profileLoadPromise = null
         if (initializing.value) {
           initializing.value = false
           clearTimeout(initializationTimeout)
