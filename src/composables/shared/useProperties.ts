@@ -162,11 +162,8 @@ export function useProperties () {
         }
       }
 
-      // Update property status
-      propertyStore.setPropertyActiveStatus(id, active)
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      // Update property status (calls Supabase with optimistic update + rollback)
+      await propertyStore.updateProperty(id, { active })
 
       success.value = `Property ${active ? 'activated' : 'deactivated'} successfully`
       loading.value = false

@@ -194,9 +194,6 @@ export const usePropertyStore = defineStore('property', () => {
     }
   }
 
-  function setPropertyActiveStatus (id: string, active: boolean) {
-    updateProperty(id, { active })
-  }
 
   function clearAll () {
     properties.value.clear()
@@ -231,7 +228,6 @@ export const usePropertyStore = defineStore('property', () => {
     addProperty,
     updateProperty,
     removeProperty,
-    setPropertyActiveStatus,
     clearAll,
 
     // Cache management

@@ -257,7 +257,8 @@ export function useAdminProperties () {
           // Update property (calls Supabase with optimistic update + rollback)
           await propertyStore.updateProperty(propertyId, updates)
           results.success.push(propertyId)
-        } catch {
+        } catch (error_) {
+          console.error(`Failed to update property ${propertyId}:`, error_)
           results.failed.push(propertyId)
         }
       }
@@ -317,13 +318,11 @@ export function useAdminProperties () {
             }
           }
 
-          // Update property status
-          propertyStore.setPropertyActiveStatus(propertyId, active)
+          // Update property status (calls Supabase with optimistic update + rollback)
+          await propertyStore.updateProperty(propertyId, { active })
           results.success.push(propertyId)
-
-          // Simulate API delay
-          await new Promise(resolve => setTimeout(resolve, 100))
-        } catch {
+        } catch (error_) {
+          console.error(`Failed to toggle property ${propertyId}:`, error_)
           results.failed.push(propertyId)
         }
       }
