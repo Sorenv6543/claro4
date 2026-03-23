@@ -254,12 +254,9 @@ export function useAdminProperties () {
             continue
           }
 
-          // Update property
-          propertyStore.updateProperty(propertyId, updates)
+          // Update property (calls Supabase with optimistic update + rollback)
+          await propertyStore.updateProperty(propertyId, updates)
           results.success.push(propertyId)
-
-          // Simulate API delay
-          await new Promise(resolve => setTimeout(resolve, 100))
         } catch {
           results.failed.push(propertyId)
         }

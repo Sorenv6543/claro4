@@ -49,11 +49,8 @@ export function useProperties () {
         updated_at: new Date().toISOString(),
       } as Property
 
-      // Add to store
-      propertyStore.addProperty(newProperty)
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      // Add to store (calls Supabase with optimistic update + rollback)
+      await propertyStore.addProperty(newProperty)
 
       success.value = 'Property created successfully'
       loading.value = false
@@ -90,11 +87,8 @@ export function useProperties () {
         throw new Error('Invalid pricing tier')
       }
 
-      // Update property in store
-      propertyStore.updateProperty(id, updates)
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      // Update property in store (calls Supabase with optimistic update + rollback)
+      await propertyStore.updateProperty(id, updates)
 
       success.value = 'Property updated successfully'
       loading.value = false
@@ -127,11 +121,8 @@ export function useProperties () {
         throw new Error('Cannot delete property with existing bookings')
       }
 
-      // Remove from store
-      propertyStore.removeProperty(id)
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      // Remove from store (calls Supabase with optimistic update + rollback)
+      await propertyStore.removeProperty(id)
 
       success.value = 'Property deleted successfully'
       loading.value = false
