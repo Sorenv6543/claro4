@@ -141,7 +141,7 @@
 </template>
 
 <script setup lang="ts">
-  import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
+import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
 import PropertySectionCard from '@/components/dumb/owner/PropertySectionCard.vue'
 import type { Property } from '@/types'
 import { formatPropertyAddress } from '@/types/property'

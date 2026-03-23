@@ -475,10 +475,7 @@ export function useCleanerManagement () {
         throw new Error(`Cleaner ${cleaner.name} is not available on ${booking.checkout_date.split('T')[0]} (${availability.currentBookings}/${availability.maxBookings} bookings)`)
       }
 
-      // In a real app, this would make an API call to assign the cleaner
-      await new Promise(resolve => setTimeout(resolve, 500))
-
-      // Update booking in store (simulate the assignment)
+      // Update booking in store
       const updatedBooking = { ...booking, assigned_cleaner_id: cleanerId, status: 'scheduled' as const }
       bookingStore.bookings.set(bookingId, updatedBooking)
 

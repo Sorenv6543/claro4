@@ -97,12 +97,12 @@ export function useSupabaseAuth () {
   }
 
   /**
-   * Fire-and-forget wrapper for loadUserProfile.
-   * Deduplicates concurrent calls by sharing a single in-flight promise.
+   * Deduplicates concurrent profile loads by sharing a single in-flight promise.
+   * Returns the shared promise so callers can optionally await completion.
    */
-  function loadUserProfileSafe (userId: string) {
+  function loadUserProfileSafe (userId: string): Promise<void> | undefined {
     if (profileLoadPromise) {
-      return
+      return profileLoadPromise
     }
 
     profileLoadPromise = loadUserProfile(userId)
@@ -123,6 +123,8 @@ export function useSupabaseAuth () {
           clearTimeout(initializationTimeout)
         }
       })
+
+    return profileLoadPromise
   }
 
   async function loadUserProfile (userId: string): Promise<void> {

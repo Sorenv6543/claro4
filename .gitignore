@@ -1,4 +1,6 @@
 node_modules/
+.console-ninja*
+
 # Logs
 logs
 *.log

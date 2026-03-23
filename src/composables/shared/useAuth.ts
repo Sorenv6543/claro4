@@ -253,9 +253,6 @@ export function useAuth () {
         throw new Error('User not logged in')
       }
 
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 500))
-
       // Update user in store with new settings, mapping UserSettings keys to flat User fields
       const settingsMap: Record<keyof UserSettings, keyof User> = {
         notifications: 'notifications_enabled',

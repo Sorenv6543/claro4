@@ -74,10 +74,7 @@ export function useBookings () {
       }
 
       // Add to store
-      bookingStore.addBooking(newBooking)
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await bookingStore.addBooking(newBooking)
 
       success.value = 'Booking created successfully'
       loading.value = false
@@ -143,10 +140,7 @@ export function useBookings () {
       }
 
       // Update booking in store
-      bookingStore.updateBooking(id, updates)
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await bookingStore.updateBooking(id, updates)
 
       success.value = 'Booking updated successfully'
       loading.value = false
@@ -172,10 +166,7 @@ export function useBookings () {
       }
 
       // Remove from store
-      bookingStore.removeBooking(id)
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await bookingStore.removeBooking(id)
 
       success.value = 'Booking deleted successfully'
       loading.value = false
@@ -206,10 +197,7 @@ export function useBookings () {
       }
 
       // Update status in store
-      bookingStore.updateBookingStatus(id, status)
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await bookingStore.updateBooking(id, { status })
 
       success.value = 'Booking status updated successfully'
       loading.value = false
@@ -238,10 +226,7 @@ export function useBookings () {
       // For now, we'll just update the booking
 
       // Update cleaner assignment in store
-      bookingStore.assignCleaner(bookingId, cleanerId)
-
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await bookingStore.updateBooking(bookingId, { assigned_cleaner_id: cleanerId })
 
       success.value = 'Cleaner assigned successfully'
       loading.value = false

@@ -331,14 +331,13 @@ export function useAdminBookings () {
     error.value = null
 
     try {
-      // In a real app, this would make an API call to get all bookings
-      // For now, we simulate the call and rely on store data
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await bookingStore.fetchBookings()
 
       success.value = `Loaded ${allBookings.value.length} bookings across all properties`
       loading.value = false
       return true
-    } catch {
+    } catch (error_) {
+      console.error('[useAdminBookings] fetchAllBookings error:', error_)
       error.value = 'Unable to load system bookings. Please try again.'
       loading.value = false
       return false

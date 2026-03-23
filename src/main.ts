@@ -9,7 +9,7 @@ import '@/styles/calendar-tokens.css'
 
 // Early preconnect to Supabase for faster API calls
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-if (supabaseUrl) {
+if (supabaseUrl && !document.querySelector(`link[rel="preconnect"][href="${supabaseUrl}"]`)) {
   const link = document.createElement('link')
   link.rel = 'preconnect'
   link.href = supabaseUrl
