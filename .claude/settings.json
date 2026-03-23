@@ -1,9 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(supabase start:*)",
-      "Bash(test:*)",
-      "Bash(powershell -Command \"$vars = [System.Environment]::GetEnvironmentVariables\\(''User''\\); foreach\\($k in \\($vars.Keys | Sort-Object\\)\\) { Write-Output \\($k + ''='' + $vars[$k]\\) }\")"
+      // "Bash(gh pr:*)",
+      // "Bash(supabase start:*)",
+      // "Bash(test:*)",
+      // "Bash(powershell -Command \"$vars = [System.Environment]::GetEnvironmentVariables\\(''User''\\); foreach\\($k in \\($vars.Keys | Sort-Object\\)\\) { Write-Output \\($k + ''='' + $vars[$k]\\) }\")"
     ]
   },
   "enabledMcpjsonServers": [],
@@ -21,26 +22,7 @@
       }
     ],
     "PostToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "FILE=$(node -e \"console.log((JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}')).file_path||'')\" 2>/dev/null); [[ \"$FILE\" == *.vue || \"$FILE\" == *.ts ]] && cd /c/Users/Soren/claro4 && npx eslint --fix \"$FILE\" 2>&1 | tail -3 || true",
-            "timeout": 15000
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "FILE=$(node -e \"console.log((JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}')).file_path||'')\" 2>/dev/null); [[ \"$FILE\" == *supabase/migrations* ]] && supabase gen types typescript --project-id aejkrsvemqnftivzkkxd > /c/Users/Soren/claro4/src/types/supabase.ts && echo 'Types regenerated from schema' || true",
-            "timeout": 30000
-          }
-        ]
-      }
+     
     ]
   },
   "enabledPlugins": {
