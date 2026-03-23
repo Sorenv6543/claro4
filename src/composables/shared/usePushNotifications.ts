@@ -1,14 +1,14 @@
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAuth } from './useAuth'
 
 // Notification Types for Property Cleaning Business
-export type NotificationType = 
-  | 'booking_confirmation'
-  | 'booking_reminder' 
-  | 'turn_alert'
-  | 'cleaner_assigned'
-  | 'cleaning_completed'
-  | 'system_alert'
+export type NotificationType
+  = | 'booking_confirmation'
+    | 'booking_reminder'
+    | 'turn_alert'
+    | 'cleaner_assigned'
+    | 'cleaning_completed'
+    | 'system_alert'
 
 export interface PushNotificationPayload {
   type: NotificationType
@@ -35,7 +35,7 @@ export interface NotificationData extends Record<string, unknown> {
   message?: string
 }
 
-export const usePushNotifications = () => {
+export function usePushNotifications () {
   // State
   const isSupported = ref('Notification' in window && 'serviceWorker' in navigator)
   const permission = ref<'default' | 'granted' | 'denied'>('default')
@@ -53,16 +53,16 @@ export const usePushNotifications = () => {
   }
 
   // Computed properties
-  const canRequestPermission = computed(() => 
-    isSupported.value && permission.value === 'default'
+  const canRequestPermission = computed(() =>
+    isSupported.value && permission.value === 'default',
   )
 
-  const hasPermission = computed(() => 
-    isSupported.value && permission.value === 'granted'
+  const hasPermission = computed(() =>
+    isSupported.value && permission.value === 'granted',
   )
 
-  const needsPermission = computed(() => 
-    isSupported.value && permission.value === 'denied'
+  const needsPermission = computed(() =>
+    isSupported.value && permission.value === 'denied',
   )
 
   // Request notification permission
@@ -75,7 +75,7 @@ export const usePushNotifications = () => {
     try {
       const result = await Notification.requestPermission()
       permission.value = result
-      
+
       if (result === 'granted') {
         console.log('Push notification permission granted')
         await subscribeToPush()
@@ -99,24 +99,24 @@ export const usePushNotifications = () => {
 
     try {
       const registration = await navigator.serviceWorker.ready
-      
+
       // Check for existing subscription
       let subscription = await registration.pushManager.getSubscription()
-      
+
       if (!subscription) {
         // Create new subscription
         subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           // Browser API accepts Uint8Array despite strict TypeScript definitions
-          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey.value)
+          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey.value),
         })
       }
 
       subscriptionActive.value = true
-      
+
       // Send subscription to server for role-based targeting
       await sendSubscriptionToServer(subscription)
-      
+
       console.log('Push subscription created:', subscription)
       return subscription
     } catch (error) {
@@ -131,18 +131,18 @@ export const usePushNotifications = () => {
     try {
       const registration = await navigator.serviceWorker.ready
       const subscription = await registration.pushManager.getSubscription()
-      
+
       if (subscription) {
         await subscription.unsubscribe()
         subscriptionActive.value = false
-        
+
         // Notify server to remove subscription
         await removeSubscriptionFromServer(subscription)
-        
+
         console.log('Unsubscribed from push notifications')
         return true
       }
-      
+
       return false
     } catch (error) {
       console.error('Error unsubscribing from push notifications:', error)
@@ -164,7 +164,7 @@ export const usePushNotifications = () => {
       requireInteraction: payload.requireInteraction || false,
       actions: payload.actions,
       icon: '/pwa-icon.svg',
-      badge: '/pwa-icon.svg'
+      badge: '/pwa-icon.svg',
     }
 
     new Notification(payload.title, options)
@@ -172,7 +172,9 @@ export const usePushNotifications = () => {
 
   // Role-specific notification helpers
   const sendOwnerNotification = (type: NotificationType, data: NotificationData) => {
-    if (userRole.value !== 'owner') return
+    if (userRole.value !== 'owner') {
+      return
+    }
 
     const notifications = {
       booking_confirmation: {
@@ -181,8 +183,8 @@ export const usePushNotifications = () => {
         tag: `booking-${data.bookingId}`,
         actions: [
           { action: 'view', title: 'View Details' },
-          { action: 'modify', title: 'Modify' }
-        ]
+          { action: 'modify', title: 'Modify' },
+        ],
       },
       turn_alert: {
         title: 'Urgent Turn Alert',
@@ -191,17 +193,17 @@ export const usePushNotifications = () => {
         requireInteraction: true,
         actions: [
           { action: 'confirm', title: 'Confirm Ready' },
-          { action: 'delay', title: 'Request Delay' }
-        ]
+          { action: 'delay', title: 'Request Delay' },
+        ],
       },
       cleaning_completed: {
         title: 'Cleaning Completed',
         body: `${data.propertyName} cleaning finished. Ready for guests!`,
         tag: `completed-${data.bookingId}`,
         actions: [
-          { action: 'view', title: 'View Report' }
-        ]
-      }
+          { action: 'view', title: 'View Report' },
+        ],
+      },
     }
 
     const notificationConfig = notifications[type as keyof typeof notifications]
@@ -209,13 +211,15 @@ export const usePushNotifications = () => {
       sendLocalNotification({
         type,
         ...notificationConfig,
-        data
+        data,
       })
     }
   }
 
   const sendAdminNotification = (type: NotificationType, data: NotificationData) => {
-    if (userRole.value !== 'admin') return
+    if (userRole.value !== 'admin') {
+      return
+    }
 
     const notifications = {
       turn_alert: {
@@ -225,8 +229,8 @@ export const usePushNotifications = () => {
         requireInteraction: true,
         actions: [
           { action: 'view-all', title: 'View All Turns' },
-          { action: 'assign', title: 'Assign Cleaners' }
-        ]
+          { action: 'assign', title: 'Assign Cleaners' },
+        ],
       },
       system_alert: {
         title: 'System Alert',
@@ -234,9 +238,9 @@ export const usePushNotifications = () => {
         tag: 'system-alert',
         requireInteraction: true,
         actions: [
-          { action: 'acknowledge', title: 'Acknowledge' }
-        ]
-      }
+          { action: 'acknowledge', title: 'Acknowledge' },
+        ],
+      },
     }
 
     const notificationConfig = notifications[type as keyof typeof notifications]
@@ -244,7 +248,7 @@ export const usePushNotifications = () => {
       sendLocalNotification({
         type,
         ...notificationConfig,
-        data
+        data,
       })
     }
   }
@@ -255,9 +259,9 @@ export const usePushNotifications = () => {
     const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
     const rawData = window.atob(base64)
     const outputArray = new Uint8Array(rawData.length)
-    
+
     for (let i = 0; i < rawData.length; ++i) {
-      outputArray[i] = rawData.charCodeAt(i)
+      outputArray[i] = rawData.codePointAt(i)!
     }
     return outputArray
   }
@@ -269,9 +273,9 @@ export const usePushNotifications = () => {
       subscription: subscription.toJSON(),
       userId: currentUser.value?.id,
       userRole: userRole.value,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     }
-    
+
     console.log('Would send subscription to server:', subscriptionData)
     // await fetch('/api/push/subscribe', {
     //   method: 'POST',
@@ -300,12 +304,12 @@ export const usePushNotifications = () => {
     isSupported,
     permission,
     subscriptionActive,
-    
+
     // Computed
     canRequestPermission,
     hasPermission,
     needsPermission,
-    
+
     // Methods
     requestPermission,
     subscribeToPush,
@@ -313,6 +317,6 @@ export const usePushNotifications = () => {
     sendLocalNotification,
     sendOwnerNotification,
     sendAdminNotification,
-    setVapidKey
+    setVapidKey,
   }
-} 
+}

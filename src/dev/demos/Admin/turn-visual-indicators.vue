@@ -1,16 +1,16 @@
 <template>
   <v-container
-    fluid
     class="turn-visual-indicators-demo"
+    fluid
   >
     <v-row>
       <v-col cols="12">
         <div class="demo-header mb-6">
           <h1 class="text-h3 font-weight-bold mb-2">
             <v-icon
-              icon="mdi-alert-decagram"
-              color="warning"
               class="mr-3"
+              color="warning"
+              icon="mdi-alert-decagram"
             />
             Turn Booking Visual Indicators Demo
           </h1>
@@ -25,34 +25,34 @@
     <v-row>
       <v-col cols="12">
         <v-card
-          variant="outlined"
           class="mb-6"
+          variant="outlined"
         >
           <v-card-title>
             <v-icon
-              icon="mdi-account-switch"
               class="mr-2"
+              icon="mdi-account-switch"
             />
             Role-Based Styling Demo
           </v-card-title>
           <v-card-text>
-            <v-btn-toggle 
-              v-model="currentRole" 
+            <v-btn-toggle
+              v-model="currentRole"
+              class="mb-4"
               mandatory
               variant="outlined"
-              class="mb-4"
             >
               <v-btn value="owner">
                 <v-icon
-                  icon="mdi-home-account"
                   class="mr-2"
+                  icon="mdi-home-account"
                 />
                 Property Owner
               </v-btn>
               <v-btn value="admin">
                 <v-icon
-                  icon="mdi-shield-account"
                   class="mr-2"
+                  icon="mdi-shield-account"
                 />
                 Admin
               </v-btn>
@@ -69,13 +69,13 @@
     <v-row>
       <v-col cols="12">
         <v-card
-          variant="outlined"
           class="mb-6"
+          variant="outlined"
         >
           <v-card-title>
             <v-icon
-              icon="mdi-label"
               class="mr-2"
+              icon="mdi-label"
             />
             Priority Badges (TurnPriorityBadge Component)
           </v-card-title>
@@ -85,52 +85,52 @@
                 v-for="priority in priorities"
                 :key="priority"
                 cols="12"
-                sm="6"
                 md="3"
+                sm="6"
               >
                 <div class="demo-section">
                   <h4 class="text-h6 mb-3 text-capitalize">
                     {{ priority }} Priority
                   </h4>
-                  
+
                   <!-- Basic Badge -->
                   <div class="mb-3">
-                    <TurnPriorityBadge 
+                    <TurnPriorityBadge
+                      :animated="true"
                       :priority="priority"
                       :user-role="currentRole"
-                      :animated="true"
                     />
                   </div>
-                  
+
                   <!-- Badge with Time Remaining -->
                   <div class="mb-3">
-                    <TurnPriorityBadge 
-                      :priority="priority"
-                      :user-role="currentRole"
+                    <TurnPriorityBadge
                       :animated="true"
+                      :clickable="true"
+                      :priority="priority"
                       :show-time-remaining="true"
                       :time-remaining="getTimeRemainingForPriority(priority)"
-                      :clickable="true"
+                      :user-role="currentRole"
                       @click="showToast(`Clicked ${priority} priority badge`)"
                     />
                   </div>
-                  
+
                   <!-- Different Sizes -->
                   <div class="d-flex flex-wrap gap-2">
-                    <TurnPriorityBadge 
+                    <TurnPriorityBadge
                       :priority="priority"
-                      :user-role="currentRole"
                       size="x-small"
-                    />
-                    <TurnPriorityBadge 
-                      :priority="priority"
                       :user-role="currentRole"
+                    />
+                    <TurnPriorityBadge
+                      :priority="priority"
                       size="small"
-                    />
-                    <TurnPriorityBadge 
-                      :priority="priority"
                       :user-role="currentRole"
+                    />
+                    <TurnPriorityBadge
+                      :priority="priority"
                       size="default"
+                      :user-role="currentRole"
                     />
                   </div>
                 </div>
@@ -145,13 +145,13 @@
     <v-row>
       <v-col cols="12">
         <v-card
-          variant="outlined"
           class="mb-6"
+          variant="outlined"
         >
           <v-card-title>
             <v-icon
-              icon="mdi-alert-circle"
               class="mr-2"
+              icon="mdi-alert-circle"
             />
             Urgent Turn Indicators (UrgentTurnIndicator Component)
           </v-card-title>
@@ -164,20 +164,20 @@
                 lg="6"
               >
                 <UrgentTurnIndicator
-                  :priority="alert.priority"
-                  :user-role="currentRole"
-                  :property-name="alert.propertyName"
-                  :checkout-date="alert.checkoutDate"
-                  :checkin-date="alert.checkinDate"
-                  :cleaning-window="alert.cleaningWindow"
-                  :time-remaining="alert.timeRemaining"
                   :animated="true"
-                  :striped="alert.priority === 'urgent'"
+                  :checkin-date="alert.checkinDate"
+                  :checkout-date="alert.checkoutDate"
                   class="mb-4"
-                  @view="showToast(`View details for ${alert.propertyName}`)"
+                  :cleaning-window="alert.cleaningWindow"
+                  :priority="alert.priority"
+                  :property-name="alert.propertyName"
+                  :striped="alert.priority === 'urgent'"
+                  :time-remaining="alert.timeRemaining"
+                  :user-role="currentRole"
                   @assign="showToast(`Assign cleaner for ${alert.propertyName}`)"
-                  @reschedule="showToast(`Reschedule ${alert.propertyName}`)"
                   @close="showToast(`Closed alert for ${alert.propertyName}`)"
+                  @reschedule="showToast(`Reschedule ${alert.propertyName}`)"
+                  @view="showToast(`View details for ${alert.propertyName}`)"
                 />
               </v-col>
             </v-row>
@@ -190,13 +190,13 @@
     <v-row>
       <v-col cols="12">
         <v-card
-          variant="outlined"
           class="mb-6"
+          variant="outlined"
         >
           <v-card-title>
             <v-icon
-              icon="mdi-format-paint"
               class="mr-2"
+              icon="mdi-format-paint"
             />
             Enhanced CSS Classes Demo
           </v-card-title>
@@ -210,8 +210,8 @@
                 <h4 class="text-h6 mb-3">
                   Priority Styling
                 </h4>
-                <div 
-                  v-for="priority in priorities" 
+                <div
+                  v-for="priority in priorities"
                   :key="`css-${priority}`"
                   :class="[
                     `${priority}-priority`,
@@ -219,7 +219,7 @@
                     'mb-3',
                     'rounded-lg',
                     'elevation-2',
-                    { 
+                    {
                       'owner-interface': currentRole === 'owner',
                       'admin-interface': currentRole === 'admin'
                     }
@@ -240,7 +240,7 @@
                 <h4 class="text-h6 mb-3">
                   Booking Type Styling
                 </h4>
-                <div 
+                <div
                   :class="[
                     'turn-booking',
                     'urgent-priority',
@@ -260,8 +260,8 @@
                     Enhanced turn booking with emoji badge, animations, and role-based colors
                   </div>
                 </div>
-                
-                <div 
+
+                <div
                   :class="[
                     'standard-booking',
                     'normal-priority',
@@ -288,13 +288,13 @@
     <v-row>
       <v-col cols="12">
         <v-card
-          variant="outlined"
           class="mb-6"
+          variant="outlined"
         >
           <v-card-title>
             <v-icon
-              icon="mdi-animation"
               class="mr-2"
+              icon="mdi-animation"
             />
             Animation Showcase
           </v-card-title>
@@ -307,14 +307,14 @@
                 <h4 class="text-h6 mb-3">
                   Urgent Pulse Animation
                 </h4>
-                <div 
+                <div
                   class="urgent-priority pa-4 rounded-lg elevation-2 mb-3"
                   style="min-height: 80px; display: flex; align-items: center; justify-content: center;"
                 >
                   <strong>Urgent Priority with Pulse</strong>
                 </div>
               </v-col>
-              
+
               <v-col
                 cols="12"
                 md="4"
@@ -322,14 +322,14 @@
                 <h4 class="text-h6 mb-3">
                   Striped Animation
                 </h4>
-                <div 
+                <div
                   class="urgent-priority turn-booking pa-4 rounded-lg elevation-2 mb-3 position-relative"
                   style="min-height: 80px; display: flex; align-items: center; justify-content: center;"
                 >
                   <strong>Turn Booking Stripes</strong>
                 </div>
               </v-col>
-              
+
               <v-col
                 cols="12"
                 md="4"
@@ -337,7 +337,7 @@
                 <h4 class="text-h6 mb-3">
                   Hover Effects
                 </h4>
-                <div 
+                <div
                   class="urgent-priority pa-4 rounded-lg elevation-2 mb-3 cursor-pointer"
                   style="min-height: 80px; display: flex; align-items: center; justify-content: center;"
                   @mouseover="showToast('Hover effect triggered!')"
@@ -357,8 +357,8 @@
         <v-card variant="outlined">
           <v-card-title>
             <v-icon
-              icon="mdi-tune"
               class="mr-2"
+              icon="mdi-tune"
             />
             Interactive Controls
           </v-card-title>
@@ -370,54 +370,54 @@
               >
                 <v-switch
                   v-model="animationsEnabled"
-                  label="Enable Animations"
+                  class="mb-3"
                   color="primary"
                   hide-details
-                  class="mb-3"
+                  label="Enable Animations"
                 />
                 <v-switch
                   v-model="stripedEnabled"
-                  label="Enable Striped Backgrounds"
+                  class="mb-3"
                   color="primary"
                   hide-details
-                  class="mb-3"
+                  label="Enable Striped Backgrounds"
                 />
                 <v-switch
                   v-model="darkMode"
-                  label="Dark Mode"
                   color="primary"
                   hide-details
+                  label="Dark Mode"
                   @change="toggleDarkMode"
                 />
               </v-col>
-              
+
               <v-col
                 cols="12"
                 md="6"
               >
                 <v-btn
-                  color="warning"
-                  variant="outlined"
-                  prepend-icon="mdi-test-tube"
                   class="mr-2 mb-2"
+                  color="warning"
+                  prepend-icon="mdi-test-tube"
+                  variant="outlined"
                   @click="triggerTestAlert"
                 >
                   Test Urgent Alert
                 </v-btn>
                 <v-btn
-                  color="primary"
-                  variant="outlined"
-                  prepend-icon="mdi-refresh"
                   class="mr-2 mb-2"
+                  color="primary"
+                  prepend-icon="mdi-refresh"
+                  variant="outlined"
                   @click="refreshData"
                 >
                   Refresh Demo Data
                 </v-btn>
                 <v-btn
-                  color="info"
-                  variant="outlined"
-                  prepend-icon="mdi-information"
                   class="mb-2"
+                  color="info"
+                  prepend-icon="mdi-information"
+                  variant="outlined"
                   @click="showImplementationInfo"
                 >
                   Implementation Details
@@ -432,8 +432,8 @@
     <!-- Toast Notifications -->
     <v-snackbar
       v-model="toast.show"
-      :timeout="3000"
       :color="toast.color"
+      :timeout="3000"
     >
       {{ toast.message }}
     </v-snackbar>
@@ -441,124 +441,129 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue';
-import { useTheme } from 'vuetify';
-import TurnPriorityBadge from '@/components/dumb/shared/TurnPriorityBadge.vue';
-import UrgentTurnIndicator from '@/components/dumb/shared/UrgentTurnIndicator.vue';
+  import { onMounted, ref, watch } from 'vue'
+  import { useTheme } from 'vuetify'
+  import TurnPriorityBadge from '@/components/dumb/shared/TurnPriorityBadge.vue'
+  import UrgentTurnIndicator from '@/components/dumb/shared/UrgentTurnIndicator.vue'
 
-type Priority = 'low' | 'normal' | 'high' | 'urgent';
+  type Priority = 'low' | 'normal' | 'high' | 'urgent'
 
-// Component state
-const currentRole = ref<'owner' | 'admin'>('owner');
-const animationsEnabled = ref(true);
-const stripedEnabled = ref(true);
-const darkMode = ref(false);
-const theme = useTheme();
+  // Component state
+  const currentRole = ref<'owner' | 'admin'>('owner')
+  const animationsEnabled = ref(true)
+  const stripedEnabled = ref(true)
+  const darkMode = ref(false)
+  const theme = useTheme()
 
-// Toast notification system
-const toast = ref({
-  show: false,
-  message: '',
-  color: 'info'
-});
+  // Toast notification system
+  const toast = ref({
+    show: false,
+    message: '',
+    color: 'info',
+  })
 
-// Demo data
-const priorities: Priority[] = ['low', 'normal', 'high', 'urgent'];
+  // Demo data
+  const priorities: Priority[] = ['low', 'normal', 'high', 'urgent']
 
-const alertExamples = ref([
-  {
-    id: '1',
-    priority: 'urgent' as Priority,
-    propertyName: 'Oceanview Villa #205',
-    checkoutDate: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutes from now
-    checkinDate: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours from now
-    cleaningWindow: {
-      start: new Date(Date.now() + 45 * 60 * 1000).toISOString(),
-      end: new Date(Date.now() + 3.5 * 60 * 60 * 1000).toISOString(),
-      duration: 165 // 2h 45m
+  const alertExamples = ref([
+    {
+      id: '1',
+      priority: 'urgent' as Priority,
+      propertyName: 'Oceanview Villa #205',
+      checkoutDate: new Date(Date.now() + 30 * 60 * 1000).toISOString(), // 30 minutes from now
+      checkinDate: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours from now
+      cleaningWindow: {
+        start: new Date(Date.now() + 45 * 60 * 1000).toISOString(),
+        end: new Date(Date.now() + 3.5 * 60 * 60 * 1000).toISOString(),
+        duration: 165, // 2h 45m
+      },
+      timeRemaining: 25, // 25 minutes until checkout
     },
-    timeRemaining: 25 // 25 minutes until checkout
-  },
-  {
-    id: '2',
-    priority: 'high' as Priority,
-    propertyName: 'Downtown Loft #12B',
-    checkoutDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
-    checkinDate: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(), // 6 hours from now
-    cleaningWindow: {
-      start: new Date(Date.now() + 2.5 * 60 * 60 * 1000).toISOString(),
-      end: new Date(Date.now() + 5.5 * 60 * 60 * 1000).toISOString(),
-      duration: 180 // 3 hours
+    {
+      id: '2',
+      priority: 'high' as Priority,
+      propertyName: 'Downtown Loft #12B',
+      checkoutDate: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(), // 2 hours from now
+      checkinDate: new Date(Date.now() + 6 * 60 * 60 * 1000).toISOString(), // 6 hours from now
+      cleaningWindow: {
+        start: new Date(Date.now() + 2.5 * 60 * 60 * 1000).toISOString(),
+        end: new Date(Date.now() + 5.5 * 60 * 60 * 1000).toISOString(),
+        duration: 180, // 3 hours
+      },
+      timeRemaining: 115, // 1h 55m until checkout
     },
-    timeRemaining: 115 // 1h 55m until checkout
-  },
-  {
-    id: '3',
-    priority: 'normal' as Priority,
-    propertyName: 'Suburban House #45',
-    checkoutDate: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(), // 8 hours from now
-    checkinDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // tomorrow
-    cleaningWindow: {
-      start: new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString(),
-      end: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
-      duration: 180 // 3 hours
+    {
+      id: '3',
+      priority: 'normal' as Priority,
+      propertyName: 'Suburban House #45',
+      checkoutDate: new Date(Date.now() + 8 * 60 * 60 * 1000).toISOString(), // 8 hours from now
+      checkinDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // tomorrow
+      cleaningWindow: {
+        start: new Date(Date.now() + 9 * 60 * 60 * 1000).toISOString(),
+        end: new Date(Date.now() + 12 * 60 * 60 * 1000).toISOString(),
+        duration: 180, // 3 hours
+      },
+      timeRemaining: 480, // 8 hours until checkout
     },
-    timeRemaining: 480 // 8 hours until checkout
+  ])
+
+  // Helper functions
+  function getTimeRemainingForPriority (priority: Priority): number {
+    switch (priority) {
+      case 'urgent': { return 15
+      }
+      case 'high': { return 75
+      }
+      case 'normal': { return 240
+      }
+      case 'low': { return 720
+      }
+      default: { return 120
+      }
+    }
   }
-]);
 
-// Helper functions
-const getTimeRemainingForPriority = (priority: Priority): number => {
-  switch (priority) {
-    case 'urgent': return 15;
-    case 'high': return 75;
-    case 'normal': return 240;
-    case 'low': return 720;
-    default: return 120;
+  function showToast (message: string, color = 'info') {
+    toast.value = {
+      show: true,
+      message,
+      color,
+    }
   }
-};
 
-const showToast = (message: string, color: string = 'info') => {
-  toast.value = {
-    show: true,
-    message,
-    color
-  };
-};
+  function toggleDarkMode () {
+    theme.global.name.value = darkMode.value ? 'dark' : 'light'
+  }
 
-const toggleDarkMode = () => {
-  theme.global.name.value = darkMode.value ? 'dark' : 'light';
-};
+  function triggerTestAlert () {
+    showToast('🚨 Test urgent alert triggered! Check the visual indicators.', 'warning')
+  }
 
-const triggerTestAlert = () => {
-  showToast('🚨 Test urgent alert triggered! Check the visual indicators.', 'warning');
-};
+  function refreshData () {
+    // Refresh time remaining values
+    alertExamples.value[0].timeRemaining = Math.max(5, Math.floor(Math.random() * 60))
+    alertExamples.value[1].timeRemaining = Math.max(30, Math.floor(Math.random() * 180))
+    alertExamples.value[2].timeRemaining = Math.max(120, Math.floor(Math.random() * 480))
 
-const refreshData = () => {
-  // Refresh time remaining values
-  alertExamples.value[0].timeRemaining = Math.max(5, Math.floor(Math.random() * 60));
-  alertExamples.value[1].timeRemaining = Math.max(30, Math.floor(Math.random() * 180));
-  alertExamples.value[2].timeRemaining = Math.max(120, Math.floor(Math.random() * 480));
-  
-  showToast('Demo data refreshed with new time values!', 'success');
-};
+    showToast('Demo data refreshed with new time values!', 'success')
+  }
 
-const showImplementationInfo = () => {
-  showToast('TASK-039: Enhanced visual indicators with role-based styling, animations, and priority badges', 'info');
-};
+  function showImplementationInfo () {
+    showToast('TASK-039: Enhanced visual indicators with role-based styling, animations, and priority badges', 'info')
+  }
 
-// Add dynamic CSS class to body for role-based styling
-const updateBodyClass = () => {
-  document.body.classList.remove('owner-interface', 'admin-interface');
-  document.body.classList.add(`${currentRole.value}-interface`);
-};
+  // Add dynamic CSS class to body for role-based styling
+  function updateBodyClass () {
+    document.body.classList.remove('owner-interface', 'admin-interface')
+    document.body.classList.add(`${currentRole.value}-interface`)
+  }
 
-// Watch for role changes
-watch(currentRole, updateBodyClass);
+  // Watch for role changes
+  watch(currentRole, updateBodyClass)
 
-onMounted(() => {
-  updateBodyClass();
-});
+  onMounted(() => {
+    updateBodyClass()
+  })
 </script>
 
 <style scoped>
@@ -605,13 +610,13 @@ onMounted(() => {
   .demo-header {
     padding: 1rem;
   }
-  
+
   .demo-header h1 {
     font-size: 1.5rem !important;
   }
-  
+
   .demo-header p {
     font-size: 1rem !important;
   }
 }
-</style> 
+</style>

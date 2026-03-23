@@ -5,21 +5,21 @@
         <v-card class="mb-4">
           <v-card-title class="d-flex align-center">
             <v-icon
-              icon="mdi-responsive"
               class="mr-2"
+              icon="mdi-responsive"
             />
             Responsive Layout System Demo
           </v-card-title>
           <v-card-text>
             <p>This demo shows the responsive layout system in action across different breakpoints.</p>
-            
+
             <!-- Current Breakpoint Info -->
             <v-alert
+              class="mb-4"
               :type="alertType"
               variant="tonal"
-              class="mb-4"
             >
-              <strong>Current Breakpoint:</strong> {{ currentBreakpoint.toUpperCase() }} 
+              <strong>Current Breakpoint:</strong> {{ currentBreakpoint.toUpperCase() }}
               ({{ width }}x{{ height }})
               <br>
               <strong>Device Type:</strong> {{ deviceType }}
@@ -40,7 +40,7 @@
                       <v-list-item>
                         <v-list-item-title>Drawer Open</v-list-item-title>
                         <template #append>
-                          <v-chip 
+                          <v-chip
                             :color="isDrawerOpen ? 'success' : 'default'"
                             size="small"
                           >
@@ -51,7 +51,7 @@
                       <v-list-item>
                         <v-list-item-title>Drawer Permanent</v-list-item-title>
                         <template #append>
-                          <v-chip 
+                          <v-chip
                             :color="shouldDrawerBePermanent ? 'primary' : 'default'"
                             size="small"
                           >
@@ -62,7 +62,7 @@
                       <v-list-item>
                         <v-list-item-title>Rail Mode</v-list-item-title>
                         <template #append>
-                          <v-chip 
+                          <v-chip
                             :color="isDrawerRail ? 'warning' : 'default'"
                             size="small"
                           >
@@ -82,7 +82,7 @@
                   </v-card-text>
                 </v-card>
               </v-col>
-              
+
               <v-col
                 cols="12"
                 sm="6"
@@ -125,8 +125,8 @@
 
             <!-- Layout Controls -->
             <v-card
-              variant="outlined"
               class="mt-4"
+              variant="outlined"
             >
               <v-card-title class="text-h6">
                 Layout Controls
@@ -138,10 +138,10 @@
                     sm="6"
                   >
                     <v-btn
-                      :prepend-icon="isDrawerOpen ? 'mdi-menu-open' : 'mdi-menu'"
-                      :color="isDrawerOpen ? 'primary' : 'default'"
-                      variant="outlined"
                       block
+                      :color="isDrawerOpen ? 'primary' : 'default'"
+                      :prepend-icon="isDrawerOpen ? 'mdi-menu-open' : 'mdi-menu'"
+                      variant="outlined"
                       @click="toggleDrawer"
                     >
                       {{ isDrawerOpen ? 'Close' : 'Open' }} Drawer
@@ -152,11 +152,11 @@
                     sm="6"
                   >
                     <v-btn
-                      :prepend-icon="isDrawerRail ? 'mdi-menu-open' : 'mdi-menu'"
-                      :color="isDrawerRail ? 'warning' : 'default'"
-                      variant="outlined"
                       block
+                      :color="isDrawerRail ? 'warning' : 'default'"
                       :disabled="!isDesktop"
+                      :prepend-icon="isDrawerRail ? 'mdi-menu-open' : 'mdi-menu'"
+                      variant="outlined"
                       @click="isDrawerRail = !isDrawerRail"
                     >
                       Toggle Rail Mode
@@ -168,8 +168,8 @@
 
             <!-- Responsive Features Demo -->
             <v-card
-              variant="outlined"
               class="mt-4"
+              variant="outlined"
             >
               <v-card-title class="text-h6">
                 Responsive Features
@@ -179,9 +179,9 @@
                 <v-row class="mb-4">
                   <v-col
                     cols="12"
-                    sm="6"
-                    md="4"
                     lg="3"
+                    md="4"
+                    sm="6"
                   >
                     <v-card
                       color="primary"
@@ -199,9 +199,9 @@
                   </v-col>
                   <v-col
                     cols="12"
-                    sm="6"
-                    md="4"
                     lg="3"
+                    md="4"
+                    sm="6"
                   >
                     <v-card
                       color="secondary"
@@ -219,9 +219,9 @@
                   </v-col>
                   <v-col
                     cols="12"
-                    sm="6"
-                    md="4"
                     lg="3"
+                    md="4"
+                    sm="6"
                   >
                     <v-card
                       color="success"
@@ -239,9 +239,9 @@
                   </v-col>
                   <v-col
                     cols="12"
-                    sm="6"
-                    md="4"
                     lg="3"
+                    md="4"
+                    sm="6"
                   >
                     <v-card
                       color="warning"
@@ -293,24 +293,24 @@
                   class="mobile-optimized"
                 >
                   <v-alert
+                    class="mb-3"
                     type="info"
                     variant="tonal"
-                    class="mb-3"
                   >
                     Mobile optimizations active: larger touch targets, adjusted spacing
                   </v-alert>
                   <div class="d-flex flex-column gap-3">
                     <v-btn
-                      size="large"
-                      color="primary"
                       block
+                      color="primary"
+                      size="large"
                     >
                       Large Touch Button
                     </v-btn>
                     <v-btn
-                      size="large"
-                      color="secondary"
                       block
+                      color="secondary"
+                      size="large"
                     >
                       Another Touch Button
                     </v-btn>
@@ -323,28 +323,28 @@
                   class="hide-mobile"
                 >
                   <v-alert
+                    class="mb-3"
                     type="success"
                     variant="tonal"
-                    class="mb-3"
                   >
                     Desktop features active: hover effects, smaller targets, dense layout
                   </v-alert>
                   <div class="d-flex gap-2">
                     <v-btn
-                      size="small"
                       color="primary"
+                      size="small"
                     >
                       Hover Me
                     </v-btn>
                     <v-btn
-                      size="small"
                       color="secondary"
+                      size="small"
                     >
                       Dense Button
                     </v-btn>
                     <v-btn
-                      size="small"
                       color="success"
+                      size="small"
                     >
                       Desktop Action
                     </v-btn>
@@ -355,15 +355,15 @@
 
             <!-- CSS Classes Applied -->
             <v-card
-              variant="outlined"
               class="mt-4"
+              variant="outlined"
             >
               <v-card-title class="text-h6">
                 Applied CSS Classes
               </v-card-title>
               <v-card-text>
                 <v-chip-group>
-                  <v-chip 
+                  <v-chip
                     v-for="(value, key) in layoutClasses"
                     :key="key"
                     :color="value ? 'primary' : 'default'"
@@ -377,8 +377,8 @@
 
             <!-- CSS Variables -->
             <v-card
-              variant="outlined"
               class="mt-4"
+              variant="outlined"
             >
               <v-card-title class="text-h6">
                 CSS Variables
@@ -405,47 +405,47 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useResponsiveLayout } from '@/composables/shared/useResponsiveLayout'
+  import { computed } from 'vue'
+  import { useResponsiveLayout } from '@/composables/shared/useResponsiveLayout'
 
-// Use the responsive layout composable
-const {
-  // Breakpoint info
-  currentBreakpoint,
-  width,
-  height,
-  isMobile,
-  isTablet,
-  isDesktop,
-  
-  // Layout state
-  isDrawerOpen,
-  shouldDrawerBePermanent,
-  isDrawerRail,
-  drawerWidth,
-  
-  // Layout properties
-  layoutClasses,
-  layoutStyles,
-  
-  // Methods
-  toggleDrawer
-} = useResponsiveLayout()
+  // Use the responsive layout composable
+  const {
+    // Breakpoint info
+    currentBreakpoint,
+    width,
+    height,
+    isMobile,
+    isTablet,
+    isDesktop,
 
-// Computed properties for the demo
-const deviceType = computed(() => {
-  if (isMobile.value) return 'Mobile'
-  if (isTablet.value) return 'Tablet'
-  if (isDesktop.value) return 'Desktop'
-  return 'Unknown'
-})
+    // Layout state
+    isDrawerOpen,
+    shouldDrawerBePermanent,
+    isDrawerRail,
+    drawerWidth,
 
-const alertType = computed((): 'info' | 'warning' | 'success' | 'error' => {
-  if (isMobile.value) return 'info'
-  if (isTablet.value) return 'warning'
-  if (isDesktop.value) return 'success'
-  return 'error'
-})
+    // Layout properties
+    layoutClasses,
+    layoutStyles,
+
+    // Methods
+    toggleDrawer,
+  } = useResponsiveLayout()
+
+  // Computed properties for the demo
+  const deviceType = computed(() => {
+    if (isMobile.value) return 'Mobile'
+    if (isTablet.value) return 'Tablet'
+    if (isDesktop.value) return 'Desktop'
+    return 'Unknown'
+  })
+
+  const alertType = computed((): 'info' | 'warning' | 'success' | 'error' => {
+    if (isMobile.value) return 'info'
+    if (isTablet.value) return 'warning'
+    if (isDesktop.value) return 'success'
+    return 'error'
+  })
 </script>
 
 <style scoped>
@@ -471,4 +471,4 @@ const alertType = computed((): 'info' | 'warning' | 'success' | 'error' => {
     transform: scale(0.98);
   }
 }
-</style> 
+</style>

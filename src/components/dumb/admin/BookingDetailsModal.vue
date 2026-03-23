@@ -1,7 +1,7 @@
 <template>
   <v-dialog
-    :model-value="modelValue"
     max-width="600px"
+    :model-value="modelValue"
     @update:model-value="$emit('update:modelValue', $event)"
   >
     <v-card>
@@ -111,8 +111,8 @@
       <v-card-text v-else>
         <div class="text-center pa-4">
           <v-icon
-            size="48"
             color="grey"
+            size="48"
           >
             mdi-calendar-remove
           </v-icon>
@@ -136,51 +136,59 @@
 </template>
 
 <script setup lang="ts">
-import type { Booking, Property, User } from '@/types';
-import { formatPropertyAddress } from '@/types/property';
+  import type { Booking, Property, User } from '@/types'
+  import { formatPropertyAddress } from '@/types/property'
 
-interface Props {
-  modelValue: boolean;
-  booking: Booking | null;
-  property: Property | null;
-  cleaner: User | null;
-}
-
-interface Emits {
-  (e: 'update:modelValue', value: boolean): void;
-  (e: 'close'): void;
-}
-
-defineProps<Props>();
-defineEmits<Emits>();
-
-function formatDate(date: string): string {
-  return new Date(date).toLocaleDateString();
-}
-
-function getStatusColor(status: string): string {
-  switch (status?.toLowerCase()) {
-    case 'completed':
-      return 'success';
-    case 'in_progress':
-      return 'warning';
-    case 'cancelled':
-      return 'error';
-    default:
-      return 'grey';
+  interface Props {
+    modelValue: boolean
+    booking: Booking | null
+    property: Property | null
+    cleaner: User | null
   }
-}
 
-function getPriorityColor(priority: string): string {
-  switch (priority?.toLowerCase()) {
-    case 'high':
-      return 'error';
-    case 'medium':
-      return 'warning';
-    case 'low':
-      return 'success';
-    default:
-      return 'grey';
+  interface Emits {
+    (e: 'update:modelValue', value: boolean): void
+    (e: 'close'): void
   }
-}
-</script> 
+
+  defineProps<Props>()
+  defineEmits<Emits>()
+
+  function formatDate (date: string): string {
+    return new Date(date).toLocaleDateString()
+  }
+
+  function getStatusColor (status: string): string {
+    switch (status?.toLowerCase()) {
+      case 'completed': {
+        return 'success'
+      }
+      case 'in_progress': {
+        return 'warning'
+      }
+      case 'cancelled': {
+        return 'error'
+      }
+      default: {
+        return 'grey'
+      }
+    }
+  }
+
+  function getPriorityColor (priority: string): string {
+    switch (priority?.toLowerCase()) {
+      case 'high': {
+        return 'error'
+      }
+      case 'medium': {
+        return 'warning'
+      }
+      case 'low': {
+        return 'success'
+      }
+      default: {
+        return 'grey'
+      }
+    }
+  }
+</script>

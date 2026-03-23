@@ -1,13 +1,13 @@
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useDisplay } from 'vuetify'
 
-export const useResponsiveLayout = () => {
+export function useResponsiveLayout () {
   // Vuetify display composable
-  const { 
-    mobile, 
+  const {
+    mobile,
     xs, sm, md, lg, xl,
     smAndDown, mdAndUp, lgAndUp,
-    width, height, name 
+    width, height, name,
   } = useDisplay()
 
   // Navigation drawer state
@@ -25,25 +25,35 @@ export const useResponsiveLayout = () => {
 
   // Computed layout properties
   const currentBreakpoint = computed(() => name.value)
-  
+
   const isMobile = computed(() => mobile.value)
   const isTablet = computed(() => sm.value || md.value)
   const isDesktop = computed(() => lgAndUp.value)
-  
+
   const drawerWidth = computed(() => {
-    if (isDrawerRail.value) return 72
-    if (isMobile.value) return 320
+    if (isDrawerRail.value) {
+      return 72
+    }
+    if (isMobile.value) {
+      return 320
+    }
     return 380
   })
 
   const appBarHeight = computed(() => {
-    if (isMobile.value) return 56
+    if (isMobile.value) {
+      return 56
+    }
     return 64
   })
 
   const contentPadding = computed(() => {
-    if (isMobile.value) return 16
-    if (isTablet.value) return 20
+    if (isMobile.value) {
+      return 16
+    }
+    if (isTablet.value) {
+      return 20
+    }
     return 24
   })
 
@@ -90,7 +100,7 @@ export const useResponsiveLayout = () => {
   }
 
   // Responsive behavior setup
-  watch(lgAndUp, (newValue) => {
+  watch(lgAndUp, newValue => {
     if (newValue) {
       // Desktop mode: permanent drawer
       isDrawerPermanent.value = true
@@ -134,7 +144,7 @@ export const useResponsiveLayout = () => {
     'drawer-rail': isDrawerRail.value,
     'drawer-open': isDrawerOpen.value,
     'mobile-keyboard-open': isMobileKeyboardOpen.value,
-    [`breakpoint-${currentBreakpoint.value}`]: true
+    [`breakpoint-${currentBreakpoint.value}`]: true,
   }))
 
   // CSS variables for dynamic styling
@@ -143,7 +153,7 @@ export const useResponsiveLayout = () => {
     '--app-bar-height': `${appBarHeight.value}px`,
     '--content-padding': `${contentPadding.value}px`,
     '--viewport-width': `${width.value}px`,
-    '--viewport-height': `${height.value}px`
+    '--viewport-height': `${height.value}px`,
   }))
 
   return {
@@ -153,12 +163,12 @@ export const useResponsiveLayout = () => {
     smAndDown, mdAndUp, lgAndUp,
     width, height,
     currentBreakpoint,
-    
+
     // Computed states
     isMobile,
     isTablet,
     isDesktop,
-    
+
     // Drawer state
     isDrawerOpen,
     isDrawerPermanent,
@@ -167,26 +177,26 @@ export const useResponsiveLayout = () => {
     shouldDrawerBePermanent,
     shouldDrawerBeTemporary,
     drawerWidth,
-    
+
     // App bar state
     isAppBarCollapsed,
     showBackButton,
     appBarHeight,
-    
+
     // Mobile state
     isMobileKeyboardOpen,
     mobileMenuOpen,
-    
+
     // Layout properties
     contentPadding,
     layoutClasses,
     layoutStyles,
-    
+
     // Methods
     toggleDrawer,
     openDrawer,
     closeDrawer,
     toggleMobileMenu,
-    handleRouteChange
+    handleRouteChange,
   }
-} 
+}

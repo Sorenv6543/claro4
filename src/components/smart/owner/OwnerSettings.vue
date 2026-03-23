@@ -2,12 +2,12 @@
 <template>
   <v-container class="pa-4">
     <v-row>
-      <v-col cols="12" md="8" lg="6">
+      <v-col cols="12" lg="6" md="8">
         <div class="text-h5 font-weight-bold mb-1">Settings</div>
         <div class="text-body-2 text-medium-emphasis mb-4">Account and application settings</div>
         <v-alert
-          type="info"
           icon="mdi-cog-outline"
+          type="info"
           variant="tonal"
         >
           Account settings are coming soon. Check back in a future update.

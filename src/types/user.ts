@@ -6,16 +6,16 @@
 /**
  * Valid user roles in the system
  */
-export type UserRole = 'owner' | 'admin' | 'cleaner';
+export type UserRole = 'owner' | 'admin' | 'cleaner'
 
 /**
  * User settings interface (nested structure)
  */
 export interface UserSettings {
-  notifications: boolean;
-  timezone: string;
-  theme: 'light' | 'dark' | 'system';
-  language: string;
+  notifications: boolean
+  timezone: string
+  theme: 'light' | 'dark' | 'system'
+  language: string
 }
 
 /**
@@ -23,41 +23,41 @@ export interface UserSettings {
  * Core data model for all users. Settings are stored as flat fields only.
  */
 export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: UserRole;
-  company_name?: string;
-  notifications_enabled: boolean;
-  timezone: string;
-  theme: 'light' | 'dark' | 'system';
-  language: string;
-  access_level?: 'full' | 'limited';
-  skills?: string[] | null;
-  max_daily_bookings?: number;
-  location_lat?: number;
-  location_lng?: number;
-  created_at?: string;
-  updated_at?: string;
-  last_sign_in_at?: string;
+  id: string
+  email: string
+  name: string
+  role: UserRole
+  company_name?: string
+  notifications_enabled: boolean
+  timezone: string
+  theme: 'light' | 'dark' | 'system'
+  language: string
+  access_level?: 'full' | 'limited'
+  skills?: string[] | null
+  max_daily_bookings?: number
+  location_lat?: number
+  location_lng?: number
+  created_at?: string
+  updated_at?: string
+  last_sign_in_at?: string
 }
 
 /**
  * Data emitted by UserFormDialog on submit
  */
 export interface UserFormData {
-  name: string;
-  email: string;
-  password: string;
-  role: UserRole;
-  company_name: string;
-  access_level: string;
-  skills: string[];
-  max_daily_bookings: number;
-  location: string;
-  timezone: string;
-  language: string;
-  notifications_enabled: boolean;
+  name: string
+  email: string
+  password: string
+  role: UserRole
+  company_name: string
+  access_level: string
+  skills: string[]
+  max_daily_bookings: number
+  location: string
+  timezone: string
+  language: string
+  notifications_enabled: boolean
 }
 
 /**
@@ -65,8 +65,8 @@ export interface UserFormData {
  * Has properties that need cleaning
  */
 export interface PropertyOwner extends User {
-  role: 'owner';
-  company_name?: string;
+  role: 'owner'
+  company_name?: string
 }
 
 /**
@@ -74,8 +74,8 @@ export interface PropertyOwner extends User {
  * Manages the cleaning company
  */
 export interface Admin extends User {
-  role: 'admin';
-  access_level: 'full' | 'limited';
+  role: 'admin'
+  access_level: 'full' | 'limited'
 }
 
 /**
@@ -83,32 +83,32 @@ export interface Admin extends User {
  * Performs the actual cleaning work
  */
 export interface Cleaner extends User {
-  role: 'cleaner';
-  skills: string[];
-  max_daily_bookings: number;
+  role: 'cleaner'
+  skills: string[]
+  max_daily_bookings: number
 }
 
 /**
  * Type guard for PropertyOwner
  */
-export function isPropertyOwner(user: User): user is PropertyOwner {
-  return user.role === 'owner';
+export function isPropertyOwner (user: User): user is PropertyOwner {
+  return user.role === 'owner'
 }
 
 /**
  * Type guard for Admin
  */
-export function isAdmin(user: User): user is Admin {
-  return user.role === 'admin';
+export function isAdmin (user: User): user is Admin {
+  return user.role === 'admin'
 }
 
 /**
  * Type guard for Cleaner
  */
-export function isCleaner(user: User): user is Cleaner {
+export function isCleaner (user: User): user is Cleaner {
   return (
-    user.role === 'cleaner' &&
-    Array.isArray(user.skills) &&
-    typeof user.max_daily_bookings === 'number'
-  );
+    user.role === 'cleaner'
+    && Array.isArray(user.skills)
+    && typeof user.max_daily_bookings === 'number'
+  )
 }

@@ -11,7 +11,7 @@ import vuetify from 'vite-plugin-vuetify'
 // Role-based chunk names used in manualChunks and PWA urlPattern.
 // When adding/removing chunks in manualChunks below, update this list
 // AND the inline array in workbox.runtimeCaching urlPattern (search "SYNC").
-const chunkNames = [
+const _chunkNames = [
   'admin-app',
   'owner-app',
   'app-core',

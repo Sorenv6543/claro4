@@ -2,17 +2,17 @@
   <v-card>
     <v-card-title class="d-flex align-center pa-4">
       <v-icon
-        icon="mdi-home-group"
         class="me-2"
         color="primary"
+        icon="mdi-home-group"
       />
       Properties ({{ properties.length }})
       <v-spacer />
       <v-btn
         v-if="editable"
         color="primary"
-        size="small"
         prepend-icon="mdi-plus"
+        size="small"
         @click="$emit('add')"
       >
         Add Property
@@ -27,10 +27,10 @@
       class="text-center pa-8"
     >
       <v-icon
+        class="mb-4"
+        color="medium-emphasis"
         icon="mdi-home-outline"
         size="64"
-        color="medium-emphasis"
-        class="mb-4"
       />
       <p class="text-body-1 text-medium-emphasis">
         No properties yet
@@ -50,17 +50,17 @@
           sm="6"
         >
           <v-card
-            variant="outlined"
             class="property-card h-100"
+            variant="outlined"
           >
             <v-card-text class="pa-4">
               <!-- Header row -->
               <div class="d-flex align-center mb-2">
                 <v-icon
-                  :icon="propertyTypeIcon(prop.property_type)"
-                  :color="prop.active ? 'primary' : 'medium-emphasis'"
-                  size="20"
                   class="me-2"
+                  :color="prop.active ? 'primary' : 'medium-emphasis'"
+                  :icon="propertyTypeIcon(prop.property_type)"
+                  size="20"
                 />
                 <span class="text-subtitle-1 font-weight-medium text-truncate">
                   {{ formatPropertyAddress(prop, 'short') }}
@@ -68,16 +68,16 @@
                 <v-spacer />
                 <v-chip
                   v-if="!prop.active"
-                  size="x-small"
                   color="error"
+                  size="x-small"
                   variant="tonal"
                 >
                   Inactive
                 </v-chip>
                 <v-chip
                   v-else
-                  size="x-small"
                   :color="tierColor(prop.pricing_tier)"
+                  size="x-small"
                   variant="tonal"
                 >
                   {{ prop.pricing_tier }}
@@ -89,9 +89,9 @@
                 class="d-flex align-center text-body-2 text-medium-emphasis mb-3"
               >
                 <v-icon
+                  class="me-1"
                   icon="mdi-map-marker-outline"
                   size="14"
-                  class="me-1"
                 />
                 {{ formatPropertyAddress(prop) }}
               </div>
@@ -103,10 +103,10 @@
                   class="d-flex align-center text-body-2"
                 >
                   <v-icon
-                    icon="mdi-bed-outline"
-                    size="16"
                     class="me-1"
                     color="medium-emphasis"
+                    icon="mdi-bed-outline"
+                    size="16"
                   />
                   {{ prop.bedrooms }} bd
                 </div>
@@ -115,10 +115,10 @@
                   class="d-flex align-center text-body-2"
                 >
                   <v-icon
-                    icon="mdi-shower"
-                    size="16"
                     class="me-1"
                     color="medium-emphasis"
+                    icon="mdi-shower"
+                    size="16"
                   />
                   {{ prop.bathrooms }} ba
                 </div>
@@ -127,19 +127,19 @@
                   class="d-flex align-center text-body-2"
                 >
                   <v-icon
-                    icon="mdi-ruler-square"
-                    size="16"
                     class="me-1"
                     color="medium-emphasis"
+                    icon="mdi-ruler-square"
+                    size="16"
                   />
                   {{ prop.square_feet.toLocaleString() }} ft²
                 </div>
                 <div class="d-flex align-center text-body-2">
                   <v-icon
-                    icon="mdi-clock-outline"
-                    size="16"
                     class="me-1"
                     color="medium-emphasis"
+                    icon="mdi-clock-outline"
+                    size="16"
                   />
                   {{ prop.cleaning_duration }}m clean
                 </div>
@@ -152,9 +152,9 @@
               >
                 <div class="d-flex align-center text-caption text-medium-emphasis mb-1">
                   <v-icon
+                    class="me-1"
                     icon="mdi-note-text-outline"
                     size="12"
-                    class="me-1"
                   />
                   Special Instructions
                 </div>
@@ -167,19 +167,19 @@
             <v-card-actions v-if="editable">
               <v-spacer />
               <v-btn
+                aria-label="Edit property"
                 icon="mdi-pencil-outline"
                 size="x-small"
                 variant="text"
-                aria-label="Edit property"
-                @click="$emit('editProperty', prop)"
+                @click="$emit('edit-property', prop)"
               />
               <v-btn
+                aria-label="Delete property"
+                color="error"
                 icon="mdi-delete-outline"
                 size="x-small"
                 variant="text"
-                color="error"
-                aria-label="Delete property"
-                @click="$emit('deleteProperty', prop)"
+                @click="$emit('delete-property', prop)"
               />
             </v-card-actions>
           </v-card>
@@ -190,43 +190,43 @@
 </template>
 
 <script setup lang="ts">
-import type { Property } from '@/types/property'
-import { formatPropertyAddress } from '@/types/property'
+  import type { Property } from '@/types/property'
+  import { formatPropertyAddress } from '@/types/property'
 
-interface Props {
-  properties: Property[]
-  editable?: boolean
-}
-
-withDefaults(defineProps<Props>(), {
-  editable: false
-})
-
-defineEmits<{
-  add: []
-  editProperty: [property: Property]
-  deleteProperty: [property: Property]
-}>()
-
-const propertyTypeIcon = (type?: string) => {
-  const icons: Record<string, string> = {
-    apartment: 'mdi-office-building-outline',
-    house: 'mdi-home-outline',
-    condo: 'mdi-domain',
-    townhouse: 'mdi-home-city-outline'
+  interface Props {
+    properties: Property[]
+    editable?: boolean
   }
-  return icons[type ?? ''] || 'mdi-home-outline'
-}
 
-const tierColor = (tier: string) => {
-  const colors: Record<string, string> = {
-    basic: 'info',
-    standard: 'primary',
-    premium: 'warning',
-    luxury: 'error'
+  withDefaults(defineProps<Props>(), {
+    editable: false,
+  })
+
+  defineEmits<{
+    'add': []
+    'edit-property': [property: Property]
+    'delete-property': [property: Property]
+  }>()
+
+  function propertyTypeIcon (type?: string) {
+    const icons: Record<string, string> = {
+      apartment: 'mdi-office-building-outline',
+      house: 'mdi-home-outline',
+      condo: 'mdi-domain',
+      townhouse: 'mdi-home-city-outline',
+    }
+    return icons[type ?? ''] || 'mdi-home-outline'
   }
-  return colors[tier] || 'primary'
-}
+
+  function tierColor (tier: string) {
+    const colors: Record<string, string> = {
+      basic: 'info',
+      standard: 'primary',
+      premium: 'warning',
+      luxury: 'error',
+    }
+    return colors[tier] || 'primary'
+  }
 </script>
 
 <style scoped>

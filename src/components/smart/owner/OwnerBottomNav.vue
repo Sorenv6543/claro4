@@ -2,20 +2,20 @@
 <template>
   <v-bottom-navigation
     v-if="smAndDown"
-    :model-value="activeTab"
     color="primary"
-    grow
     elevation="8"
+    grow
+    :model-value="activeTab"
   >
-    <v-btn value="/owner/dashboard" :to="'/owner/dashboard'">
+    <v-btn :to="'/owner/dashboard'" value="/owner/dashboard">
       <v-icon>mdi-calendar-month-outline</v-icon>
       <span>Schedule</span>
     </v-btn>
-    <v-btn value="/owner/bookings" :to="'/owner/bookings'">
+    <v-btn :to="'/owner/bookings'" value="/owner/bookings">
       <v-icon>mdi-format-list-bulleted</v-icon>
       <span>Bookings</span>
     </v-btn>
-    <v-btn value="/owner/properties" :to="'/owner/properties'">
+    <v-btn :to="'/owner/properties'" value="/owner/properties">
       <v-icon>mdi-home-outline</v-icon>
       <span>Properties</span>
     </v-btn>
@@ -27,20 +27,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useDisplay } from 'vuetify'
+  import { computed } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { useDisplay } from 'vuetify'
 
-const emit = defineEmits<{ 'open-drawer': [] }>()
+  const emit = defineEmits<{ 'open-drawer': [] }>()
 
-const route = useRoute()
-const { smAndDown } = useDisplay()
+  const route = useRoute()
+  const { smAndDown } = useDisplay()
 
-const activeTab = computed(() => {
-  const path = route.path
-  if (path.startsWith('/owner/bookings')) return '/owner/bookings'
-  if (path.startsWith('/owner/properties')) return '/owner/properties'
-  if (path === '/owner/dashboard') return '/owner/dashboard'
-  return undefined
-})
+  const activeTab = computed(() => {
+    const path = route.path
+    if (path.startsWith('/owner/bookings')) return '/owner/bookings'
+    if (path.startsWith('/owner/properties')) return '/owner/properties'
+    if (path === '/owner/dashboard') return '/owner/dashboard'
+    return undefined
+  })
 </script>

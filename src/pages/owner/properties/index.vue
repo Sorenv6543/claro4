@@ -7,16 +7,16 @@
 </template>
 
 <script setup lang="ts">
-import OwnerProperties from '@/components/smart/owner/OwnerProperties.vue'
+  import OwnerProperties from '@/components/smart/owner/OwnerProperties.vue'
 
-// Meta information for this page
-defineOptions({
-  name: 'OwnerPropertiesPage'
-})
+  // Meta information for this page
+  defineOptions({
+    name: 'OwnerPropertiesPage',
+  })
 </script>
 
 <style scoped>
 .properties-page {
   height: 100vh;
 }
-</style> 
+</style>

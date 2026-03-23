@@ -124,16 +124,16 @@
   import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
   import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
   import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
-
-  // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
-  // packages (~250 kB) only download when the schedule route is visited.
-  const FullCalendar = defineAsyncComponent(() =>
-    import('@/components/smart/shared/FullCalendar.vue')
-  )
   import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
 
   import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
+
+  // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
+  // packages (~250 kB) only download when the schedule route is visited.
+  const FullCalendar = defineAsyncComponent(() =>
+    import('@/components/smart/shared/FullCalendar.vue'),
+  )
 
   // Use the admin calendar state composable for centralized state management
   const {

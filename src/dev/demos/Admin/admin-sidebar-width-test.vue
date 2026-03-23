@@ -1,14 +1,14 @@
 <template>
   <div class="admin-sidebar-width-test">
     <v-app-bar
-      title="Admin Sidebar Width Test"
       color="primary"
+      title="Admin Sidebar Width Test"
     />
-    
+
     <v-main>
       <v-container
-        fluid
         class="pa-0"
+        fluid
       >
         <div class="test-info mb-4 pa-4">
           <h2>AdminSidebar Width Test</h2>
@@ -18,28 +18,28 @@
             <li><strong>Large Desktop (xl):</strong> Sidebar should be ~16.7% width (2/12 columns)</li>
             <li><strong>Mobile:</strong> Sidebar should be hidden by default</li>
           </ul>
-          
+
           <v-chip
-            :color="$vuetify.display.xl ? 'success' : 'default'"
             class="mr-2"
+            :color="$vuetify.display.xl ? 'success' : 'default'"
           >
             XL: {{ $vuetify.display.xl }}
           </v-chip>
           <v-chip
-            :color="$vuetify.display.lg ? 'success' : 'default'"
             class="mr-2"
+            :color="$vuetify.display.lg ? 'success' : 'default'"
           >
             LG: {{ $vuetify.display.lg }}
           </v-chip>
           <v-chip
-            :color="$vuetify.display.md ? 'success' : 'default'"
             class="mr-2"
+            :color="$vuetify.display.md ? 'success' : 'default'"
           >
             MD: {{ $vuetify.display.md }}
           </v-chip>
           <v-chip
-            :color="$vuetify.display.sm ? 'success' : 'default'"
             class="mr-2"
+            :color="$vuetify.display.sm ? 'success' : 'default'"
           >
             SM: {{ $vuetify.display.sm }}
           </v-chip>
@@ -52,65 +52,65 @@
 
         <!-- Replica of HomeAdmin layout structure -->
         <v-row
-          density="compact"
           class="fill-height test-layout"
+          density="compact"
         >
           <!-- Sidebar Column - Same structure as HomeAdmin -->
-          <v-col 
-            cols="12" 
-            lg="3" 
-            xl="2" 
+          <v-col
             class="sidebar-column test-sidebar"
             :class="{ 'mobile-hidden': !sidebarOpen }"
+            cols="12"
+            lg="3"
+            xl="2"
           >
             <div class="pa-2">
               <v-btn
                 v-if="$vuetify.display.lgAndDown"
+                class="mb-2"
                 icon="mdi-menu"
                 variant="outlined"
-                class="mb-2"
                 @click="toggleSidebar"
               >
                 <v-icon>mdi-menu</v-icon>
               </v-btn>
-              
+
               <!-- AdminSidebar Component -->
               <AdminSidebar
+                :loading="false"
+                :properties="mockProperties"
                 :today-turns="mockTodayTurns"
                 :upcoming-cleanings="mockUpcomingCleanings"
-                :properties="mockProperties"
-                :loading="false"
-                @navigate-to-booking="handleEvent"
-                @navigate-to-date="handleEvent"
-                @filter-by-property="handleEvent"
                 @create-booking="handleEvent"
                 @create-property="handleEvent"
+                @filter-by-property="handleEvent"
+                @navigate-to-booking="handleEvent"
+                @navigate-to-date="handleEvent"
               />
             </div>
           </v-col>
 
           <!-- Main Calendar Column - Same structure as HomeAdmin -->
-          <v-col 
-            cols="12" 
-            lg="9" 
-            xl="10" 
+          <v-col
             class="calendar-column test-main"
+            cols="12"
+            lg="9"
+            xl="10"
           >
             <div class="test-content pa-4">
               <h3>Main Content Area</h3>
               <p>This area simulates the calendar content.</p>
               <p>
-                <strong>Current breakpoint:</strong> 
+                <strong>Current breakpoint:</strong>
                 <span v-if="$vuetify.display.xl">XL (≥1904px) - Sidebar should be 2/12 = ~16.7%</span>
                 <span v-else-if="$vuetify.display.lg">LG (≥1264px) - Sidebar should be 3/12 = 25%</span>
                 <span v-else-if="$vuetify.display.md">MD (≥960px) - Mobile layout</span>
                 <span v-else>Mobile - Sidebar hidden/overlay</span>
               </p>
-              
+
               <v-btn
                 v-if="$vuetify.display.lgAndDown"
-                variant="outlined"
                 prepend-icon="mdi-menu"
+                variant="outlined"
                 @click="toggleSidebar"
               >
                 Toggle Sidebar
@@ -124,26 +124,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { useDisplay } from 'vuetify';
-import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue';
+  import { ref } from 'vue'
+  import { useDisplay } from 'vuetify'
+  import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue'
 
-const { xs } = useDisplay();
-const sidebarOpen = ref(!xs.value);
+  const { xs } = useDisplay()
+  const sidebarOpen = ref(!xs.value)
 
-// Mock data for AdminSidebar
-const mockTodayTurns = new Map();
-const mockUpcomingCleanings = new Map();
-const mockProperties = new Map();
+  // Mock data for AdminSidebar
+  const mockTodayTurns = new Map()
+  const mockUpcomingCleanings = new Map()
+  const mockProperties = new Map()
 
-// Event handlers
-const handleEvent = (data: unknown) => {
-  console.log('Event received:', data);
-};
+  // Event handlers
+  function handleEvent (data: unknown) {
+    console.log('Event received:', data)
+  }
 
-const toggleSidebar = () => {
-  sidebarOpen.value = !sidebarOpen.value;
-};
+  function toggleSidebar () {
+    sidebarOpen.value = !sidebarOpen.value
+  }
 </script>
 
 <style scoped>
@@ -208,14 +208,14 @@ const toggleSidebar = () => {
     box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     height: calc(100vh - 64px);
   }
-  
+
   .mobile-hidden {
     transform: translateX(-100%);
     transition: transform 0.3s ease;
   }
-  
+
   .sidebar-column:not(.mobile-hidden) {
     transform: translateX(0);
   }
 }
-</style> 
+</style>

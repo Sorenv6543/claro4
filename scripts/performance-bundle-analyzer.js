@@ -3,13 +3,13 @@
 /**
  * Enhanced Bundle Performance Analyzer
  * Task 57: Performance Monitoring & Optimization
- * 
+ *
  * Analyzes role-based chunking efficiency and performance regression
  */
 
-import fs from 'fs/promises'
-import path from 'path'
-import { fileURLToPath } from 'url'
+import fs from 'node:fs/promises'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -30,8 +30,8 @@ const PERFORMANCE_THRESHOLDS = {
     'shared-logic': { max: 50, target: 33 },
     'vuetify': { max: 1000, target: 874 },
     'vue-core': { max: 750, target: 683 },
-    'calendar': { max: 650, target: 581 }
-  }
+    'calendar': { max: 650, target: 581 },
+  },
 }
 
 // Current baseline achievements to maintain
@@ -40,23 +40,23 @@ const PERFORMANCE_BASELINES = {
   chunkCount: 18,
   roleBasedChunks: 9,
   subscriptionReduction: 0.67,
-  memoryReduction: 0.60,
-  buildTimeTarget: 17.47 // seconds
+  memoryReduction: 0.6,
+  buildTimeTarget: 17.47, // seconds
 }
 
 class PerformanceBundleAnalyzer {
-  constructor() {
+  constructor () {
     this.results = {
       timestamp: new Date().toISOString(),
       bundleAnalysis: {},
       roleBasedAnalysis: {},
       performanceScore: 0,
       regressionDetected: false,
-      recommendations: []
+      recommendations: [],
     }
   }
 
-  async analyze() {
+  async analyze () {
     console.log('🚀 Enhanced Performance Bundle Analysis')
     console.log('=====================================')
     console.log(`📋 Task 57: Performance Monitoring & Optimization`)
@@ -66,12 +66,12 @@ class PerformanceBundleAnalyzer {
     try {
       // Check if dist directory exists
       const distExists = await this.directoryExists(distPath)
-      if (!distExists) {
-        console.log('⚠️  Dist directory not found. Creating mock analysis...')
-        await this.createMockAnalysis()
-      } else {
+      if (distExists) {
         await this.analyzeBundleSize()
         await this.analyzeRoleBasedChunking()
+      } else {
+        console.log('⚠️  Dist directory not found. Creating mock analysis...')
+        await this.createMockAnalysis()
       }
 
       await this.detectPerformanceRegression()
@@ -80,14 +80,13 @@ class PerformanceBundleAnalyzer {
       await this.saveResults()
 
       this.displayResults()
-      
     } catch (error) {
       console.error('❌ Error during analysis:', error.message)
       process.exit(1)
     }
   }
 
-  async directoryExists(dirPath) {
+  async directoryExists (dirPath) {
     try {
       const stats = await fs.stat(dirPath)
       return stats.isDirectory()
@@ -96,10 +95,10 @@ class PerformanceBundleAnalyzer {
     }
   }
 
-  async createMockAnalysis() {
+  async createMockAnalysis () {
     console.log('📊 Creating Mock Bundle Analysis (No Build Available)')
     console.log('====================================================')
-    
+
     // Simulate current achievements based on established baselines
     this.results.bundleAnalysis = {
       totalSize: PERFORMANCE_BASELINES.totalBundleSize,
@@ -115,32 +114,32 @@ class PerformanceBundleAnalyzer {
         'vuetify-[hash].js': 874.5,
         'vue-core-[hash].js': 683.2,
         'calendar-[hash].js': 581.3,
-        'vendor-[hash].js': 297.8
-      }
+        'vendor-[hash].js': 297.8,
+      },
     }
 
     // Analyze role-based distribution
     this.results.roleBasedAnalysis = {
       adminTotal: 169.2 + 54.2, // 223.4 KB
-      ownerTotal: 59.1 + 19.4,  // 78.5 KB
+      ownerTotal: 59.1 + 19.4, // 78.5 KB
       sharedTotal: 84.3 + 33.1, // 117.4 KB
       efficiency: 'optimal',
       roleIsolation: 95, // %
       loadingPerformance: {
         ownerFirstLoad: '1.2s', // Smaller chunks load faster
-        adminFirstLoad: '2.1s'  // Larger chunks take longer
-      }
+        adminFirstLoad: '2.1s', // Larger chunks take longer
+      },
     }
 
     console.log('✅ Mock analysis created based on current baselines')
   }
 
-  async analyzeBundleSize() {
+  async analyzeBundleSize () {
     console.log('📦 Analyzing Bundle Size...')
-    
+
     const files = await fs.readdir(distPath)
     const jsFiles = files.filter(file => file.endsWith('.js'))
-    
+
     let totalSize = 0
     const chunks = {}
 
@@ -148,7 +147,7 @@ class PerformanceBundleAnalyzer {
       const filePath = path.join(distPath, file)
       const stats = await fs.stat(filePath)
       const sizeKB = Math.round(stats.size / 1024 * 10) / 10
-      
+
       chunks[file] = sizeKB
       totalSize += sizeKB
     }
@@ -156,16 +155,16 @@ class PerformanceBundleAnalyzer {
     this.results.bundleAnalysis = {
       totalSize: Math.round(totalSize * 10) / 10,
       chunkCount: jsFiles.length,
-      chunks
+      chunks,
     }
 
     console.log(`📊 Total Bundle Size: ${totalSize.toFixed(1)} KB`)
     console.log(`📦 Chunk Count: ${jsFiles.length}`)
   }
 
-  async analyzeRoleBasedChunking() {
+  async analyzeRoleBasedChunking () {
     console.log('🎯 Analyzing Role-Based Chunking...')
-    
+
     const chunks = this.results.bundleAnalysis.chunks
     let adminTotal = 0
     let ownerTotal = 0
@@ -186,7 +185,7 @@ class PerformanceBundleAnalyzer {
       ownerTotal: Math.round(ownerTotal * 10) / 10,
       sharedTotal: Math.round(sharedTotal * 10) / 10,
       efficiency: this.calculateChunkingEfficiency(adminTotal, ownerTotal, sharedTotal),
-      roleIsolation: this.calculateRoleIsolation(chunks)
+      roleIsolation: this.calculateRoleIsolation(chunks),
     }
 
     console.log(`🏢 Admin Chunks: ${adminTotal.toFixed(1)} KB`)
@@ -194,11 +193,11 @@ class PerformanceBundleAnalyzer {
     console.log(`🔄 Shared Chunks: ${sharedTotal.toFixed(1)} KB`)
   }
 
-  calculateChunkingEfficiency(adminTotal, ownerTotal, sharedTotal) {
+  calculateChunkingEfficiency (adminTotal, ownerTotal, sharedTotal) {
     // Owner chunks should be smaller (simpler functionality)
     // Admin chunks can be larger (complex functionality)
     // Shared chunks should be moderate (reusable components)
-    
+
     const ownerEfficient = ownerTotal <= PERFORMANCE_THRESHOLDS.roleBasedChunks['owner-components'].max
     const adminEfficient = adminTotal <= PERFORMANCE_THRESHOLDS.roleBasedChunks['admin-components'].max
     const sharedEfficient = sharedTotal <= PERFORMANCE_THRESHOLDS.roleBasedChunks['shared-ui'].max
@@ -213,18 +212,18 @@ class PerformanceBundleAnalyzer {
     }
   }
 
-  calculateRoleIsolation(chunks) {
+  calculateRoleIsolation (chunks) {
     const totalChunks = Object.keys(chunks).length
     const roleSpecificChunks = Object.keys(chunks).filter(
-      filename => filename.includes('admin') || filename.includes('owner')
+      filename => filename.includes('admin') || filename.includes('owner'),
     ).length
 
     return Math.round((roleSpecificChunks / totalChunks) * 100)
   }
 
-  async detectPerformanceRegression() {
+  async detectPerformanceRegression () {
     console.log('🔍 Detecting Performance Regression...')
-    
+
     const currentSize = this.results.bundleAnalysis.totalSize
     const baselineSize = PERFORMANCE_BASELINES.totalBundleSize
     const regressionThreshold = 1.1 // 10% increase is considered regression
@@ -235,30 +234,30 @@ class PerformanceBundleAnalyzer {
         type: 'regression',
         severity: 'high',
         message: `Bundle size increased by ${((currentSize / baselineSize - 1) * 100).toFixed(1)}%`,
-        suggestion: 'Review recent changes and optimize imports'
+        suggestion: 'Review recent changes and optimize imports',
       })
     }
 
     // Check chunk count regression
     const currentChunks = this.results.bundleAnalysis.chunkCount
     const baselineChunks = PERFORMANCE_BASELINES.chunkCount
-    
+
     if (currentChunks > baselineChunks * 1.2) {
       this.results.regressionDetected = true
       this.results.recommendations.push({
         type: 'regression',
         severity: 'medium',
         message: `Chunk count increased significantly: ${currentChunks} vs ${baselineChunks}`,
-        suggestion: 'Consider consolidating similar chunks'
+        suggestion: 'Consider consolidating similar chunks',
       })
     }
 
     console.log(this.results.regressionDetected ? '⚠️  Performance regression detected' : '✅ No performance regression detected')
   }
 
-  async generateRecommendations() {
+  async generateRecommendations () {
     console.log('💡 Generating Performance Recommendations...')
-    
+
     const analysis = this.results.bundleAnalysis
     const roleAnalysis = this.results.roleBasedAnalysis
 
@@ -268,7 +267,7 @@ class PerformanceBundleAnalyzer {
         type: 'optimization',
         severity: 'medium',
         message: `Bundle size approaching threshold: ${analysis.totalSize} KB`,
-        suggestion: 'Consider implementing lazy loading for non-critical features'
+        suggestion: 'Consider implementing lazy loading for non-critical features',
       })
     }
 
@@ -278,7 +277,7 @@ class PerformanceBundleAnalyzer {
         type: 'architecture',
         severity: 'medium',
         message: 'Role-based chunking could be improved',
-        suggestion: 'Review component placement and ensure proper role separation'
+        suggestion: 'Review component placement and ensure proper role separation',
       })
     }
 
@@ -288,14 +287,14 @@ class PerformanceBundleAnalyzer {
         type: 'optimization',
         severity: 'high',
         message: 'Owner chunks larger than optimal',
-        suggestion: 'Optimize owner interface for mobile performance'
+        suggestion: 'Optimize owner interface for mobile performance',
       })
     }
 
     console.log(`💡 Generated ${this.results.recommendations.length} recommendations`)
   }
 
-  calculatePerformanceScore() {
+  calculatePerformanceScore () {
     let score = 100
     const analysis = this.results.bundleAnalysis
     const roleAnalysis = this.results.roleBasedAnalysis
@@ -333,7 +332,7 @@ class PerformanceBundleAnalyzer {
     console.log(`🎯 Performance Score: ${this.results.performanceScore}/100`)
   }
 
-  async saveResults() {
+  async saveResults () {
     const reportPath = path.join(projectRoot, 'performance-bundle-report.json')
     const historyPath = path.join(projectRoot, 'performance-bundle-history.json')
 
@@ -343,7 +342,7 @@ class PerformanceBundleAnalyzer {
     // Update history
     let history = []
     try {
-      const existingHistory = await fs.readFile(historyPath, 'utf-8')
+      const existingHistory = await fs.readFile(historyPath, 'utf8')
       history = JSON.parse(existingHistory)
     } catch {
       // File doesn't exist, start new history
@@ -354,7 +353,7 @@ class PerformanceBundleAnalyzer {
       totalSize: this.results.bundleAnalysis.totalSize,
       chunkCount: this.results.bundleAnalysis.chunkCount,
       performanceScore: this.results.performanceScore,
-      regressionDetected: this.results.regressionDetected
+      regressionDetected: this.results.regressionDetected,
     })
 
     // Keep only last 50 entries
@@ -363,19 +362,19 @@ class PerformanceBundleAnalyzer {
     }
 
     await fs.writeFile(historyPath, JSON.stringify(history, null, 2))
-    
+
     console.log(`📄 Report saved to: ${reportPath}`)
     console.log(`📊 History updated: ${historyPath}`)
   }
 
-  displayResults() {
+  displayResults () {
     console.log('')
     console.log('🎯 Performance Bundle Analysis Results')
     console.log('======================================')
-    
+
     const analysis = this.results.bundleAnalysis
     const roleAnalysis = this.results.roleBasedAnalysis
-    
+
     // Bundle Overview
     console.log('📦 Bundle Overview:')
     console.log(`   Total Size: ${analysis.totalSize} KB (Target: ≤${PERFORMANCE_BASELINES.totalBundleSize} KB)`)
@@ -401,19 +400,26 @@ class PerformanceBundleAnalyzer {
     // Recommendations
     if (this.results.recommendations.length > 0) {
       console.log('💡 Recommendations:')
-      this.results.recommendations.forEach((rec, index) => {
-        const severity = rec.severity === 'high' ? '🔴' : rec.severity === 'medium' ? '🟡' : '🟢'
+      for (const [index, rec] of this.results.recommendations.entries()) {
+        const severity = rec.severity === 'high' ? '🔴' : (rec.severity === 'medium' ? '🟡' : '🟢')
         console.log(`   ${index + 1}. ${severity} ${rec.message}`)
         console.log(`      💡 ${rec.suggestion}`)
-      })
+      }
       console.log('')
     }
 
     // Summary
-    const status = this.results.performanceScore >= 90 ? '🎯 EXCELLENT' :
-                  this.results.performanceScore >= 70 ? '✅ GOOD' :
-                  this.results.performanceScore >= 50 ? '⚠️  NEEDS IMPROVEMENT' : '🔴 CRITICAL'
-    
+    let status
+    if (this.results.performanceScore >= 90) {
+      status = '🎯 EXCELLENT'
+    } else if (this.results.performanceScore >= 70) {
+      status = '✅ GOOD'
+    } else if (this.results.performanceScore >= 50) {
+      status = '⚠️  NEEDS IMPROVEMENT'
+    } else {
+      status = '🔴 CRITICAL'
+    }
+
     console.log(`🎯 Overall Status: ${status}`)
     console.log('======================================')
   }

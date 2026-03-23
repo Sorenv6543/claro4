@@ -2,28 +2,28 @@
   <v-navigation-drawer
     v-model="sidebarOpen"
     class="admin-sidebar"
-    :width="SIDEBAR_WIDTH"
-    elevation="4"
     color="white"
-    :temporary="mobile"
+    elevation="4"
     location="left"
     :permanent="!mobile"
+    :temporary="mobile"
+    :width="SIDEBAR_WIDTH"
   >
     <!-- Main Content Wrapper -->
     <div class="sidebar-content-wrapper">
       <!-- Brand Overlay -->
-      <div 
+      <div
         v-show="showBrandOverlay"
         class="claro-brand-overlay"
       >
         <div class="claro-brand-section">
           <div class="claro-brand-icon">
             <v-btn
-              icon
+              class="prominent-icon"
               color="primary"
               elevation="8"
+              icon
               size="x-large"
-              class="prominent-icon"
             >
               <v-icon
                 color="white"
@@ -49,7 +49,7 @@
         <div class="section-header">
           Administration
         </div>
-        
+
         <v-list
           class="nav-list"
           density="compact"
@@ -66,14 +66,14 @@
               #append
             >
               <v-icon
-                size="16"
                 color="white"
+                size="16"
               >
                 mdi-chevron-right
               </v-icon>
             </template>
           </v-list-item>
-          
+
           <v-list-item
             class="nav-item"
             :class="{ 'active-nav-item': route.path === '/admin/schedule' }"
@@ -86,14 +86,14 @@
               #append
             >
               <v-icon
-                size="16"
                 color="white"
+                size="16"
               >
                 mdi-chevron-right
               </v-icon>
             </template>
           </v-list-item>
-          
+
           <v-list-item
             class="nav-item"
             :class="{ 'active-nav-item': route.path === '/admin/bookings' }"
@@ -106,14 +106,14 @@
               #append
             >
               <v-icon
-                size="16"
                 color="white"
+                size="16"
               >
                 mdi-chevron-right
               </v-icon>
             </template>
           </v-list-item>
-          
+
           <v-list-item
             class="nav-item"
             :class="{ 'active-nav-item': route.path === '/admin/properties' }"
@@ -126,14 +126,14 @@
               #append
             >
               <v-icon
-                size="16"
                 color="white"
+                size="16"
               >
                 mdi-chevron-right
               </v-icon>
             </template>
           </v-list-item>
-          
+
           <v-list-item
             class="nav-item"
             :class="{ 'active-nav-item': route.path === '/admin/cleaners' }"
@@ -146,14 +146,14 @@
               #append
             >
               <v-icon
-                size="16"
                 color="white"
+                size="16"
               >
                 mdi-chevron-right
               </v-icon>
             </template>
           </v-list-item>
-          
+
           <v-list-item
             class="nav-item"
             :class="{ 'active-nav-item': route.path === '/admin/property-owners' }"
@@ -166,14 +166,14 @@
               #append
             >
               <v-icon
-                size="16"
                 color="white"
+                size="16"
               >
                 mdi-chevron-right
               </v-icon>
             </template>
           </v-list-item>
-          
+
           <v-list-item
             class="nav-item"
             :class="{ 'active-nav-item': route.path === '/admin/users' }"
@@ -186,14 +186,14 @@
               #append
             >
               <v-icon
-                size="16"
                 color="white"
+                size="16"
               >
                 mdi-chevron-right
               </v-icon>
             </template>
           </v-list-item>
-          
+
           <v-list-item
             class="nav-item"
             :class="{ 'active-nav-item': route.path === '/admin/reports' }"
@@ -206,8 +206,8 @@
               #append
             >
               <v-icon
-                size="16"
                 color="white"
+                size="16"
               >
                 mdi-chevron-right
               </v-icon>
@@ -221,14 +221,14 @@
         <div class="section-header">
           <span>Business Overview</span>
           <v-btn
+            color="primary"
             icon="mdi-refresh"
             size="small"
             variant="text"
-            color="primary"
             @click="refreshMetrics"
           />
         </div>
-        
+
         <div class="metrics-cards">
           <v-card
             class="metric-card"
@@ -243,7 +243,7 @@
               </div>
             </v-card-text>
           </v-card>
-          
+
           <v-card
             class="metric-card"
             variant="outlined"
@@ -257,7 +257,7 @@
               </div>
             </v-card-text>
           </v-card>
-          
+
           <v-card
             class="metric-card"
             variant="outlined"
@@ -271,7 +271,7 @@
               </div>
             </v-card-text>
           </v-card>
-          
+
           <v-card
             class="metric-card"
             variant="outlined"
@@ -296,14 +296,14 @@
         <div class="section-header">
           <span>Urgent Alerts</span>
           <v-chip
-            size="small"
             color="error"
+            size="small"
             variant="flat"
           >
             {{ urgentBookings.length }}
           </v-chip>
         </div>
-        
+
         <v-list
           class="alert-list"
           density="compact"
@@ -315,14 +315,14 @@
             @click="viewBooking(booking)"
           >
             <template #prepend>
-              <v-icon 
+              <v-icon
                 color="error"
                 size="16"
               >
                 mdi-alert-circle
               </v-icon>
             </template>
-            
+
             <div class="alert-content">
               <div class="alert-title">
                 {{ getPropertyName(booking.property_id) }}
@@ -331,7 +331,7 @@
                 Turn cleaning needed
               </div>
             </div>
-            
+
             <template #append>
               <v-btn
                 icon="mdi-chevron-right"
@@ -340,21 +340,21 @@
               />
             </template>
           </v-list-item>
-          
+
           <v-list-item
             v-if="urgentBookings.length > 3"
             class="view-all-item"
             @click="navigateTo('/admin/bookings?filter=urgent')"
           >
             <template #prepend>
-              <v-icon 
+              <v-icon
                 color="primary"
                 size="16"
               >
                 mdi-eye
               </v-icon>
             </template>
-            
+
             <div class="alert-content">
               <div class="alert-title">
                 View all urgent items ({{ urgentBookings.length }})
@@ -369,7 +369,7 @@
         <div class="section-header">
           Quick Actions
         </div>
-        
+
         <v-list
           class="actions-list"
           density="compact"
@@ -378,30 +378,30 @@
             class="action-item"
             prepend-icon="mdi-calendar-plus"
             title="New Booking"
-            @click="emit('createBooking')"
+            @click="emit('create-booking')"
           />
-          
+
           <v-list-item
             class="action-item"
             prepend-icon="mdi-home-plus"
             title="Add Property"
-            @click="emit('createProperty')"
+            @click="emit('create-property')"
           />
-          
+
           <v-list-item
             class="action-item"
             prepend-icon="mdi-account-plus"
             title="Add Cleaner"
             @click="navigateTo('/admin/cleaners/create')"
           />
-          
+
           <v-list-item
             class="action-item"
             prepend-icon="mdi-file-chart"
             title="Generate Report"
-            @click="emit('generateReports')"
+            @click="emit('generate-reports')"
           />
-          
+
           <v-list-item
             class="action-item"
             prepend-icon="mdi-cog"
@@ -417,9 +417,9 @@
       <v-divider class="mb-3" />
       <div class="user-info-card">
         <v-avatar
+          class="user-avatar"
           color="primary"
           size="32"
-          class="user-avatar"
         >
           <v-icon
             color="white"
@@ -428,7 +428,7 @@
             mdi-shield-account
           </v-icon>
         </v-avatar>
-        
+
         <div class="user-details">
           <div class="user-name">
             {{ authStore.user?.name || 'Admin' }}
@@ -437,22 +437,22 @@
             {{ authStore.user?.email || 'No email' }}
           </div>
         </div>
-        
+
         <v-menu offset-y>
           <template #activator="{ props }">
             <v-btn
               v-bind="props"
+              class="user-menu-btn"
               icon
               size="small"
               variant="text"
-              class="user-menu-btn"
             >
               <v-icon size="16">
                 mdi-dots-vertical
               </v-icon>
             </v-btn>
           </template>
-          
+
           <v-list density="compact">
             <v-list-item
               prepend-icon="mdi-account"
@@ -478,117 +478,117 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useDisplay } from 'vuetify';
-import { useAuthStore } from '@/stores/auth.ts';
-import type { Booking} from '@/types/booking.ts';
-import type { Property } from '@/types/property.ts';
-import { formatPropertyAddress } from '@/types/property';
+  import type { Booking } from '@/types/booking.ts'
+  import type { Property } from '@/types/property.ts'
+  import { computed } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { useDisplay } from 'vuetify'
+  import { useAuthStore } from '@/stores/auth.ts'
+  import { formatPropertyAddress } from '@/types/property'
 
-// Constants for consistent sizing
-const SIDEBAR_WIDTH = 280;
-const BRAND_HEIGHT_DESKTOP = 200;
-const BRAND_HEIGHT_MOBILE = 100;
+  // Constants for consistent sizing
+  const SIDEBAR_WIDTH = 280
+  const BRAND_HEIGHT_DESKTOP = 200
+  const BRAND_HEIGHT_MOBILE = 100
 
-// Define props matching HomeAdmin expectations
-interface Props {
-  modelValue?: boolean;
-  bookings?: Booking[];
-  properties?: Property[];
-  totalProperties?: number;
-  activeCleaningsToday?: number;
-  urgentTurnsCount?: number;
-  loading?: boolean;
-  currentView?: string;
-  currentDate?: Date;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  modelValue: false,
-  bookings: () => [],
-  properties: () => [],
-  totalProperties: 0,
-  activeCleaningsToday: 0,
-  urgentTurnsCount: 0,
-  loading: false,
-  currentView: 'month',
-  currentDate: () => new Date()
-});
-
-const emit = defineEmits<{
-  'update:modelValue': [value: boolean];
-  navigateToBooking: [bookingId: string];
-  navigateToDate: [date: Date];
-  filterByProperty: [propertyId: string | null];
-  createBooking: [];
-  createProperty: [];
-  assignCleaner: [data: { bookingId: string; cleanerId?: string }];
-  generateReports: [];
-  manageSystem: [];
-  emergencyResponse: [];
-}>();
-
-// Composables
-const router = useRouter();
-const route = useRoute();
-const { mobile } = useDisplay();
-const authStore = useAuthStore();
-
-// v-model support
-const sidebarOpen = computed({
-  get: () => props.modelValue,
-  set: (value: boolean) => emit('update:modelValue', value)
-});
-
-// Brand overlay display logic
-const showBrandOverlay = computed(() => {
-  return !mobile.value || sidebarOpen.value;
-});
-
-// Computed metrics from props
-const availableCleanersCount = computed(() => {
-  // TODO: Calculate from actual cleaner data
-  return 5; // Placeholder
-});
-
-// Urgent bookings for alerts
-const urgentBookings = computed(() => {
-  return props.bookings.filter(booking => 
-    booking.booking_type === 'turn' && 
-    booking.status === 'pending'
-  );
-});
-
-// Navigation helper
-const navigateTo = (path: string) => {
-  router.push(path);
-};
-
-// Sign out handler
-const handleSignOut = async () => {
-  const success = await authStore.logout();
-  if (success) {
-    router.push('/');
+  // Define props matching HomeAdmin expectations
+  interface Props {
+    modelValue?: boolean
+    bookings?: Booking[]
+    properties?: Property[]
+    totalProperties?: number
+    activeCleaningsToday?: number
+    urgentTurnsCount?: number
+    loading?: boolean
+    currentView?: string
+    currentDate?: Date
   }
-};
 
-// Booking actions
-const viewBooking = (booking: Booking) => {
-  emit('navigateToBooking', booking.id);
-};
+  const props = withDefaults(defineProps<Props>(), {
+    modelValue: false,
+    bookings: () => [],
+    properties: () => [],
+    totalProperties: 0,
+    activeCleaningsToday: 0,
+    urgentTurnsCount: 0,
+    loading: false,
+    currentView: 'month',
+    currentDate: () => new Date(),
+  })
 
-// Get property name helper
-const getPropertyName = (propertyId: string): string => {
-  const property = props.properties.find(p => p.id === propertyId);
-  return property ? formatPropertyAddress(property, 'short') : 'Unknown Property';
-};
+  const emit = defineEmits<{
+    'update:modelValue': [value: boolean]
+    'navigate-to-booking': [bookingId: string]
+    'navigate-to-date': [date: Date]
+    'filter-by-property': [propertyId: string | null]
+    'create-booking': []
+    'create-property': []
+    'assign-cleaner': [data: { bookingId: string, cleanerId?: string }]
+    'generate-reports': []
+    'manage-system': []
+    'emergency-response': []
+  }>()
 
-// Refresh metrics
-const refreshMetrics = () => {
-  // TODO: Implement metrics refresh
-  console.log('Refreshing metrics...');
-};
+  // Composables
+  const router = useRouter()
+  const route = useRoute()
+  const { mobile } = useDisplay()
+  const authStore = useAuthStore()
+
+  // v-model support
+  const sidebarOpen = computed({
+    get: () => props.modelValue,
+    set: (value: boolean) => emit('update:modelValue', value),
+  })
+
+  // Brand overlay display logic
+  const showBrandOverlay = computed(() => {
+    return !mobile.value || sidebarOpen.value
+  })
+
+  // Computed metrics from props
+  const availableCleanersCount = computed(() => {
+    // TODO: Calculate from actual cleaner data
+    return 5 // Placeholder
+  })
+
+  // Urgent bookings for alerts
+  const urgentBookings = computed(() => {
+    return props.bookings.filter(booking =>
+      booking.booking_type === 'turn'
+      && booking.status === 'pending',
+    )
+  })
+
+  // Navigation helper
+  function navigateTo (path: string) {
+    router.push(path)
+  }
+
+  // Sign out handler
+  async function handleSignOut () {
+    const success = await authStore.logout()
+    if (success) {
+      router.push('/')
+    }
+  }
+
+  // Booking actions
+  function viewBooking (booking: Booking) {
+    emit('navigate-to-booking', booking.id)
+  }
+
+  // Get property name helper
+  function getPropertyName (propertyId: string): string {
+    const property = props.properties.find(p => p.id === propertyId)
+    return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
+  }
+
+  // Refresh metrics
+  function refreshMetrics () {
+    // TODO: Implement metrics refresh
+    console.log('Refreshing metrics...')
+  }
 </script>
 
 <style scoped>
@@ -845,7 +845,7 @@ const refreshMetrics = () => {
   .sidebar-content-spacing {
     margin-top: v-bind('BRAND_HEIGHT_MOBILE + "px"');
   }
-  
+
   .metrics-cards {
     grid-template-columns: 1fr;
   }
@@ -919,22 +919,22 @@ const refreshMetrics = () => {
     height: v-bind('BRAND_HEIGHT_MOBILE + "px"');
     padding: 0 16px;
   }
-  
+
   .claro-brand-icon {
     width: 48px;
     height: 48px;
   }
-  
+
   .prominent-icon {
     width: 48px !important;
     height: 48px !important;
   }
-  
+
   .claro-brand-title {
     font-size: 1.4rem !important;
     font-weight: 700;
   }
-  
+
   .claro-brand-subtitle {
     font-size: 0.85rem !important;
   }

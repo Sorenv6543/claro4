@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import AdminOwnerDetail from '@/components/smart/admin/AdminOwnerDetail.vue'
+  import AdminOwnerDetail from '@/components/smart/admin/AdminOwnerDetail.vue'
 
-defineOptions({ name: 'AdminOwnerDetailPage' })
+  defineOptions({ name: 'AdminOwnerDetailPage' })
 </script>

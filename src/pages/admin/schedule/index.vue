@@ -3,11 +3,11 @@
 </template>
 
 <script setup lang="ts">
-import AdminCalendar from '@/components/smart/admin/AdminCalendar.vue';
+  import AdminCalendar from '@/components/smart/admin/AdminCalendar.vue'
 
-defineOptions({
-  name: 'AdminSchedulePage'
-});
+  defineOptions({
+    name: 'AdminSchedulePage',
+  })
 </script>
 
 <style scoped>

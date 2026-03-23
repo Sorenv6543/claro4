@@ -1,21 +1,21 @@
 <template>
   <v-snackbar
     v-model="isVisible"
-    :color="toastColor"
-    :timeout="computedTimeout"
-    :location="location"
     :class="toastClasses"
-    :vertical="isVertical"
+    :color="toastColor"
     elevation="8"
+    :location="location"
+    :timeout="computedTimeout"
+    :vertical="isVertical"
     @after-leave="handleAfterLeave"
   >
     <div class="toast-content">
       <!-- Icon Section -->
       <div class="toast-icon-section">
         <v-icon
+          :class="iconClasses"
           :icon="toastIcon"
           :size="iconSize"
-          :class="iconClasses"
         />
       </div>
 
@@ -30,16 +30,16 @@
         <div class="toast-message">
           {{ notification.message }}
         </div>
-        
+
         <!-- Progress Indicators -->
         <div
           v-if="notification.showProgress"
           class="toast-progress"
         >
           <v-progress-linear
-            :model-value="progressValue"
             :color="progressColor"
             height="2"
+            :model-value="progressValue"
             rounded
           />
         </div>
@@ -50,12 +50,12 @@
           class="toast-details"
         >
           <v-expansion-panels
-            variant="accordion"
             class="details-panel"
+            variant="accordion"
           >
             <v-expansion-panel
-              title="Show Details"
               elevation="0"
+              title="Show Details"
             >
               <v-expansion-panel-text>
                 {{ notification.details }}
@@ -74,18 +74,18 @@
           <v-btn
             v-for="action in notification.actions"
             :key="action.id"
-            :color="action.color || 'white'"
-            :variant="action.variant || 'text'"
-            size="small"
-            :loading="action.loading"
             class="action-btn"
+            :color="action.color || 'white'"
+            :loading="action.loading"
+            size="small"
+            :variant="action.variant || 'text'"
             @click="handleActionClick(action)"
           >
             <v-icon
               v-if="action.icon"
+              class="mr-1"
               :icon="action.icon"
               size="small"
-              class="mr-1"
             />
             {{ action.label }}
           </v-btn>
@@ -95,10 +95,10 @@
       <!-- Close Button -->
       <v-btn
         v-if="notification.closable !== false"
-        icon="mdi-close"
-        variant="text"
-        size="small"
         class="toast-close-btn"
+        icon="mdi-close"
+        size="small"
+        variant="text"
         @click="closeToast"
       />
     </div>
@@ -112,179 +112,178 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, onMounted } from 'vue';
+  import { computed, onMounted, ref, watch } from 'vue'
 
-export interface ToastAction {
-  id: string;
-  label: string;
-  icon?: string;
-  color?: string;
-  variant?: 'text' | 'outlined' | 'flat' | 'elevated' | 'tonal' | 'plain';
-  loading?: boolean;
-  action?: () => void | Promise<void>;
-}
+  export interface ToastAction {
+    id: string
+    label: string
+    icon?: string
+    color?: string
+    variant?: 'text' | 'outlined' | 'flat' | 'elevated' | 'tonal' | 'plain'
+    loading?: boolean
+    action?: () => void | Promise<void>
+  }
 
-export interface ToastNotification {
-  id: string;
-  title?: string;
-  message: string;
-  type: 'success' | 'warning' | 'error' | 'info';
-  priority?: 'low' | 'normal' | 'high' | 'critical';
-  timeout?: number;
-  persistent?: boolean;
-  closable?: boolean;
-  actions?: ToastAction[];
-  details?: string;
-  showProgress?: boolean;
-  progressValue?: number;
-  metadata?: Record<string, any>;
-}
+  export interface ToastNotification {
+    id: string
+    title?: string
+    message: string
+    type: 'success' | 'warning' | 'error' | 'info'
+    priority?: 'low' | 'normal' | 'high' | 'critical'
+    timeout?: number
+    persistent?: boolean
+    closable?: boolean
+    actions?: ToastAction[]
+    details?: string
+    showProgress?: boolean
+    progressValue?: number
+    metadata?: Record<string, any>
+  }
 
-interface Props {
-  notification: ToastNotification;
-  location?: 'top' | 'bottom' | 'left' | 'right' | 'center';
-}
+  interface Props {
+    notification: ToastNotification
+    location?: 'top' | 'bottom' | 'left' | 'right' | 'center'
+  }
 
-interface Emits {
-  (e: 'close', id: string): void;
-  (e: 'action-click', action: ToastAction, notification: ToastNotification): void;
-  (e: 'timeout', id: string): void;
-}
+  interface Emits {
+    (e: 'close' | 'timeout', id: string): void
+    (e: 'action-click', action: ToastAction, notification: ToastNotification): void
+  }
 
-const props = withDefaults(defineProps<Props>(), {
-  location: 'bottom'
-});
+  const props = withDefaults(defineProps<Props>(), {
+    location: 'bottom',
+  })
 
-const emit = defineEmits<Emits>();
+  const emit = defineEmits<Emits>()
 
-const isVisible = ref(true);
-const progressValue = ref(props.notification.progressValue || 0);
+  const isVisible = ref(true)
+  const progressValue = ref(props.notification.progressValue || 0)
 
-// Computed properties for styling
-const toastColor = computed(() => {
-  const typeColors = {
-    success: 'success',
-    warning: 'warning', 
-    error: 'error',
-    info: 'info'
-  };
-  return typeColors[props.notification.type];
-});
+  // Computed properties for styling
+  const toastColor = computed(() => {
+    const typeColors = {
+      success: 'success',
+      warning: 'warning',
+      error: 'error',
+      info: 'info',
+    }
+    return typeColors[props.notification.type]
+  })
 
-const toastIcon = computed(() => {
-  const typeIcons = {
-    success: 'mdi-check-circle',
-    warning: 'mdi-alert',
-    error: 'mdi-alert-circle',
-    info: 'mdi-information'
-  };
-  return typeIcons[props.notification.type];
-});
+  const toastIcon = computed(() => {
+    const typeIcons = {
+      success: 'mdi-check-circle',
+      warning: 'mdi-alert',
+      error: 'mdi-alert-circle',
+      info: 'mdi-information',
+    }
+    return typeIcons[props.notification.type]
+  })
 
-const iconSize = computed(() => {
-  return props.notification.priority === 'critical' ? 'large' : 'default';
-});
+  const iconSize = computed(() => {
+    return props.notification.priority === 'critical' ? 'large' : 'default'
+  })
 
-const iconClasses = computed(() => ({
-  'critical-icon': props.notification.priority === 'critical',
-  'pulse-icon': props.notification.priority === 'critical'
-}));
+  const iconClasses = computed(() => ({
+    'critical-icon': props.notification.priority === 'critical',
+    'pulse-icon': props.notification.priority === 'critical',
+  }))
 
-const progressColor = computed(() => {
-  return props.notification.type === 'error' ? 'white' : 'primary';
-});
+  const progressColor = computed(() => {
+    return props.notification.type === 'error' ? 'white' : 'primary'
+  })
 
-const computedTimeout = computed(() => {
-  if (props.notification.persistent) return -1;
-  if (props.notification.timeout) return props.notification.timeout;
-  
-  // Priority-based timeouts
-  const priorityTimeouts = {
-    low: 3000,
-    normal: 5000,
-    high: 8000,
-    critical: -1 // Persistent for critical
-  };
-  
-  return priorityTimeouts[props.notification.priority || 'normal'];
-});
+  const computedTimeout = computed(() => {
+    if (props.notification.persistent) return -1
+    if (props.notification.timeout) return props.notification.timeout
 
-const toastClasses = computed(() => ({
-  'toast-enhanced': true,
-  [`toast-${props.notification.type}`]: true,
-  [`toast-priority-${props.notification.priority || 'normal'}`]: true,
-  'toast-has-actions': hasActions.value,
-  'toast-critical': props.notification.priority === 'critical'
-}));
+    // Priority-based timeouts
+    const priorityTimeouts = {
+      low: 3000,
+      normal: 5000,
+      high: 8000,
+      critical: -1, // Persistent for critical
+    }
 
-const isVertical = computed(() => {
-  return hasActions.value && props.notification.actions!.length > 2;
-});
+    return priorityTimeouts[props.notification.priority || 'normal']
+  })
 
-const hasActions = computed(() => {
-  return props.notification.actions && props.notification.actions.length > 0;
-});
+  const toastClasses = computed(() => ({
+    'toast-enhanced': true,
+    [`toast-${props.notification.type}`]: true,
+    [`toast-priority-${props.notification.priority || 'normal'}`]: true,
+    'toast-has-actions': hasActions.value,
+    'toast-critical': props.notification.priority === 'critical',
+  }))
 
-// Action handlers
-const handleActionClick = async (action: ToastAction) => {
-  try {
-    if (action.action) {
-      const result = action.action();
-      if (result instanceof Promise) {
-        action.loading = true;
-        await result;
-        action.loading = false;
+  const isVertical = computed(() => {
+    return hasActions.value && props.notification.actions!.length > 2
+  })
+
+  const hasActions = computed(() => {
+    return props.notification.actions && props.notification.actions.length > 0
+  })
+
+  // Action handlers
+  async function handleActionClick (action: ToastAction) {
+    try {
+      if (action.action) {
+        const result = action.action()
+        if (result instanceof Promise) {
+          action.loading = true
+          await result
+          action.loading = false
+        }
       }
-    }
-    emit('action-click', action, props.notification);
-  } catch (error) {
-    action.loading = false;
-    console.error('Toast action failed:', error);
-  }
-};
-
-const closeToast = () => {
-  isVisible.value = false;
-};
-
-const handleAfterLeave = () => {
-  emit('close', props.notification.id);
-};
-
-// Auto-update progress value
-watch(
-  () => props.notification.progressValue,
-  (newValue) => {
-    if (newValue !== undefined) {
-      progressValue.value = newValue;
+      emit('action-click', action, props.notification)
+    } catch (error) {
+      action.loading = false
+      console.error('Toast action failed:', error)
     }
   }
-);
 
-// Critical notification audio alert
-const playAudioAlert = () => {
-  if (props.notification.priority === 'critical') {
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-    const oscillator = audioContext.createOscillator();
-    const gainNode = audioContext.createGain();
-    
-    oscillator.connect(gainNode);
-    gainNode.connect(audioContext.destination);
-    
-    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-    oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1);
-    
-    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2);
-    
-    oscillator.start(audioContext.currentTime);
-    oscillator.stop(audioContext.currentTime + 0.2);
+  function closeToast () {
+    isVisible.value = false
   }
-};
 
-onMounted(() => {
-  playAudioAlert();
-});
+  function handleAfterLeave () {
+    emit('close', props.notification.id)
+  }
+
+  // Auto-update progress value
+  watch(
+    () => props.notification.progressValue,
+    newValue => {
+      if (newValue !== undefined) {
+        progressValue.value = newValue
+      }
+    },
+  )
+
+  // Critical notification audio alert
+  function playAudioAlert () {
+    if (props.notification.priority === 'critical') {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+      const oscillator = audioContext.createOscillator()
+      const gainNode = audioContext.createGain()
+
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+
+      oscillator.frequency.setValueAtTime(800, audioContext.currentTime)
+      oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.1)
+
+      gainNode.gain.setValueAtTime(0.1, audioContext.currentTime)
+      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.2)
+
+      oscillator.start(audioContext.currentTime)
+      oscillator.stop(audioContext.currentTime + 0.2)
+    }
+  }
+
+  onMounted(() => {
+    playAudioAlert()
+  })
 </script>
 
 <style scoped>
@@ -477,17 +476,17 @@ onMounted(() => {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .toast-actions {
     align-self: stretch;
     margin-left: 0;
     margin-top: 8px;
   }
-  
+
   .action-buttons {
     justify-content: flex-end;
   }
-  
+
   .toast-close-btn {
     position: absolute;
     top: 8px;
@@ -515,10 +514,10 @@ onMounted(() => {
   :deep(.v-snackbar.toast-enhanced) {
     border: 2px solid white;
   }
-  
+
   .toast-title,
   .toast-message {
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
   }
 }
-</style> 
+</style>

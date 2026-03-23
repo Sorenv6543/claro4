@@ -1,6 +1,6 @@
-import { ref } from 'vue'
 import type { Ref } from 'vue'
 import type { User, UserRole } from '@/types/user'
+import { ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
 
 // State (module-level singleton)
@@ -13,9 +13,9 @@ const error = ref<string | null>(null)
  * The function verifies the caller is an admin via JWT, then uses the
  * service role key for auth.admin operations.
  */
-async function invokeAdminUsers(body: Record<string, unknown>): Promise<{ data: unknown; error: string | null }> {
+async function invokeAdminUsers (body: Record<string, unknown>): Promise<{ data: unknown, error: string | null }> {
   const { data, error: fnError } = await supabase.functions.invoke('admin-users', {
-    body
+    body,
   })
 
   if (fnError) {
@@ -31,7 +31,7 @@ async function invokeAdminUsers(body: Record<string, unknown>): Promise<{ data: 
   return { data, error: null }
 }
 
-function extractErrorMessage(err: unknown, fallback: string): string {
+function extractErrorMessage (err: unknown, fallback: string): string {
   if (err && typeof err === 'object' && 'message' in err) {
     return (err as { message?: string }).message || fallback
   }
@@ -39,7 +39,7 @@ function extractErrorMessage(err: unknown, fallback: string): string {
 }
 
 // Reads — use direct client (works with RLS + anon key)
-async function fetchAllUsers(): Promise<void> {
+async function fetchAllUsers (): Promise<void> {
   loading.value = true
   error.value = null
   try {
@@ -52,8 +52,8 @@ async function fetchAllUsers(): Promise<void> {
       throw supabaseError
     }
     users.value = (data as User[]) || []
-  } catch (err: unknown) {
-    error.value = extractErrorMessage(err, 'Failed to fetch users')
+  } catch (error_: unknown) {
+    error.value = extractErrorMessage(error_, 'Failed to fetch users')
     users.value = []
   } finally {
     loading.value = false
@@ -62,7 +62,7 @@ async function fetchAllUsers(): Promise<void> {
 
 // Writes that need service role key — routed through edge function
 
-async function createUser(userData: Partial<User> & { password: string }): Promise<boolean> {
+async function createUser (userData: Partial<User> & { password: string }): Promise<boolean> {
   loading.value = true
   error.value = null
   try {
@@ -80,7 +80,7 @@ async function createUser(userData: Partial<User> & { password: string }): Promi
       location_lng: userData.location_lng || null,
       timezone: userData.timezone || null,
       language: userData.language || null,
-      notifications_enabled: userData.notifications_enabled ?? true
+      notifications_enabled: userData.notifications_enabled ?? true,
     })
 
     if (fnError) {
@@ -89,8 +89,8 @@ async function createUser(userData: Partial<User> & { password: string }): Promi
 
     await fetchAllUsers()
     return true
-  } catch (err: unknown) {
-    error.value = extractErrorMessage(err, 'Failed to create user')
+  } catch (error_: unknown) {
+    error.value = extractErrorMessage(error_, 'Failed to create user')
     return false
   } finally {
     loading.value = false
@@ -98,7 +98,7 @@ async function createUser(userData: Partial<User> & { password: string }): Promi
 }
 
 // Profile updates — direct client (RLS allows admins to update user_profiles)
-async function updateUser(userId: string, updateData: Partial<User>): Promise<boolean> {
+async function updateUser (userId: string, updateData: Partial<User>): Promise<boolean> {
   loading.value = true
   error.value = null
   try {
@@ -118,7 +118,7 @@ async function updateUser(userId: string, updateData: Partial<User>): Promise<bo
         max_daily_bookings: updateData.max_daily_bookings,
         location_lat: updateData.location_lat,
         location_lng: updateData.location_lng,
-        updated_at: new Date().toISOString()
+        updated_at: new Date().toISOString(),
       })
       .eq('id', userId)
     if (updateError) {
@@ -126,21 +126,21 @@ async function updateUser(userId: string, updateData: Partial<User>): Promise<bo
     }
     await fetchAllUsers()
     return true
-  } catch (err: unknown) {
-    error.value = extractErrorMessage(err, 'Failed to update user')
+  } catch (error_: unknown) {
+    error.value = extractErrorMessage(error_, 'Failed to update user')
     return false
   } finally {
     loading.value = false
   }
 }
 
-async function deleteUser(userId: string): Promise<boolean> {
+async function deleteUser (userId: string): Promise<boolean> {
   loading.value = true
   error.value = null
   try {
     const { data, error: fnError } = await invokeAdminUsers({
       action: 'delete',
-      userId
+      userId,
     })
 
     if (fnError) {
@@ -156,8 +156,8 @@ async function deleteUser(userId: string): Promise<boolean> {
 
     await fetchAllUsers()
     return true
-  } catch (err: unknown) {
-    error.value = extractErrorMessage(err, 'Failed to delete user')
+  } catch (error_: unknown) {
+    error.value = extractErrorMessage(error_, 'Failed to delete user')
     return false
   } finally {
     loading.value = false
@@ -165,7 +165,7 @@ async function deleteUser(userId: string): Promise<boolean> {
 }
 
 // Bulk role change — direct client (RLS)
-async function bulkChangeRoles(userIds: string[], newRole: UserRole): Promise<boolean> {
+async function bulkChangeRoles (userIds: string[], newRole: UserRole): Promise<boolean> {
   loading.value = true
   error.value = null
   try {
@@ -173,7 +173,7 @@ async function bulkChangeRoles(userIds: string[], newRole: UserRole): Promise<bo
       supabase
         .from('user_profiles')
         .update({ role: newRole, updated_at: new Date().toISOString() })
-        .eq('id', userId)
+        .eq('id', userId),
     )
     const results = await Promise.all(updatePromises)
     const anyError = results.some(r => r.error)
@@ -183,22 +183,22 @@ async function bulkChangeRoles(userIds: string[], newRole: UserRole): Promise<bo
     }
     await fetchAllUsers()
     return true
-  } catch (err: unknown) {
-    error.value = extractErrorMessage(err, 'Failed to change user roles')
+  } catch (error_: unknown) {
+    error.value = extractErrorMessage(error_, 'Failed to change user roles')
     return false
   } finally {
     loading.value = false
   }
 }
 
-async function resetUserPassword(userId: string, newPassword: string): Promise<boolean> {
+async function resetUserPassword (userId: string, newPassword: string): Promise<boolean> {
   loading.value = true
   error.value = null
   try {
     const { error: fnError } = await invokeAdminUsers({
       action: 'reset-password',
       userId,
-      newPassword
+      newPassword,
     })
 
     if (fnError) {
@@ -206,15 +206,15 @@ async function resetUserPassword(userId: string, newPassword: string): Promise<b
     }
 
     return true
-  } catch (err: unknown) {
-    error.value = extractErrorMessage(err, 'Failed to update password')
+  } catch (error_: unknown) {
+    error.value = extractErrorMessage(error_, 'Failed to update password')
     return false
   } finally {
     loading.value = false
   }
 }
 
-export function useAdminUserManagement() {
+export function useAdminUserManagement () {
   return {
     users,
     loading,
@@ -224,6 +224,6 @@ export function useAdminUserManagement() {
     updateUser,
     deleteUser,
     bulkChangeRoles,
-    resetUserPassword
+    resetUserPassword,
   }
 }

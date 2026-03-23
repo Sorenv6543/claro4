@@ -1,5 +1,5 @@
 <template>
-  <div 
+  <div
     class="skeleton-loader"
     :class="[
       `skeleton-${type}`,
@@ -19,20 +19,20 @@
           </div>
           <div class="skeleton-badge" />
         </div>
-        
+
         <div class="skeleton-content">
           <div class="skeleton-metrics">
             <div class="skeleton-metric" />
             <div class="skeleton-metric" />
           </div>
-          
+
           <div class="skeleton-text-lines">
             <div class="skeleton-line full" />
             <div class="skeleton-line medium" />
             <div class="skeleton-line small" />
           </div>
         </div>
-        
+
         <div class="skeleton-actions">
           <div class="skeleton-button" />
           <div class="skeleton-button" />
@@ -124,7 +124,7 @@
     <!-- Navigation menu skeleton -->
     <template v-else-if="type === 'nav-menu'">
       <div class="skeleton-nav-menu">
-        <div 
+        <div
           v-for="item in menuItemCount"
           :key="item"
           class="skeleton-nav-item"
@@ -139,7 +139,7 @@
     <!-- Custom text skeleton -->
     <template v-else-if="type === 'text'">
       <div class="skeleton-text">
-        <div 
+        <div
           v-for="line in textLines"
           :key="line"
           class="skeleton-line"
@@ -152,10 +152,10 @@
     <template v-else-if="type === 'image'">
       <div class="skeleton-image">
         <div class="skeleton-image-placeholder">
-          <v-icon 
-            icon="mdi-image-outline" 
-            size="large" 
+          <v-icon
             class="skeleton-image-icon"
+            icon="mdi-image-outline"
+            size="large"
           />
         </div>
       </div>
@@ -167,87 +167,87 @@
     </template>
 
     <!-- Loading progress indicator (optional) -->
-    <div 
-      v-if="showProgress" 
+    <div
+      v-if="showProgress"
       class="skeleton-progress"
     >
       <v-progress-linear
-        indeterminate
+        class="skeleton-progress-bar"
         :color="progressColor"
         height="2"
-        class="skeleton-progress-bar"
+        indeterminate
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+  import { computed } from 'vue'
 
-type SkeletonType = 
-  | 'card' 
-  | 'list-item' 
-  | 'table-row' 
-  | 'calendar-event' 
-  | 'form-field' 
-  | 'dashboard-widget' 
-  | 'nav-menu' 
-  | 'text' 
-  | 'image' 
-  | 'rectangle';
+  type SkeletonType
+    = | 'card'
+      | 'list-item'
+      | 'table-row'
+      | 'calendar-event'
+      | 'form-field'
+      | 'dashboard-widget'
+      | 'nav-menu'
+      | 'text'
+      | 'image'
+      | 'rectangle'
 
-type SkeletonVariant = 'wave' | 'pulse' | 'shimmer' | 'static';
+  type SkeletonVariant = 'wave' | 'pulse' | 'shimmer' | 'static'
 
-interface Props {
-  type?: SkeletonType;
-  variant?: SkeletonVariant;
-  animated?: boolean;
-  width?: string | number;
-  height?: string | number;
-  lines?: number;
-  menuItems?: number;
-  showProgress?: boolean;
-  progressColor?: string;
-  loading?: boolean;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  type: 'rectangle',
-  variant: 'shimmer',
-  animated: true,
-  lines: 3,
-  menuItems: 5,
-  showProgress: false,
-  progressColor: 'primary',
-  loading: true
-});
-
-// Computed styles for custom dimensions
-const customStyles = computed(() => {
-  const styles: Record<string, string> = {};
-  
-  if (props.width) {
-    styles.width = typeof props.width === 'number' ? `${props.width}px` : props.width;
+  interface Props {
+    type?: SkeletonType
+    variant?: SkeletonVariant
+    animated?: boolean
+    width?: string | number
+    height?: string | number
+    lines?: number
+    menuItems?: number
+    showProgress?: boolean
+    progressColor?: string
+    loading?: boolean
   }
-  
-  if (props.height) {
-    styles.height = typeof props.height === 'number' ? `${props.height}px` : props.height;
+
+  const props = withDefaults(defineProps<Props>(), {
+    type: 'rectangle',
+    variant: 'shimmer',
+    animated: true,
+    lines: 3,
+    menuItems: 5,
+    showProgress: false,
+    progressColor: 'primary',
+    loading: true,
+  })
+
+  // Computed styles for custom dimensions
+  const customStyles = computed(() => {
+    const styles: Record<string, string> = {}
+
+    if (props.width) {
+      styles.width = typeof props.width === 'number' ? `${props.width}px` : props.width
+    }
+
+    if (props.height) {
+      styles.height = typeof props.height === 'number' ? `${props.height}px` : props.height
+    }
+
+    return styles
+  })
+
+  // Text lines for text skeleton
+  const textLines = computed(() => props.lines || 3)
+
+  // Menu items for navigation skeleton
+  const menuItemCount = computed(() => props.menuItems || 5)
+
+  // Generate text line classes for varying widths
+  function getTextLineClass (lineIndex: number): string {
+    const classes = ['full', 'large', 'medium', 'small']
+    return classes[lineIndex % classes.length] || 'medium'
   }
-  
-  return styles;
-});
-
-// Text lines for text skeleton
-const textLines = computed(() => props.lines || 3);
-
-// Menu items for navigation skeleton
-const menuItemCount = computed(() => props.menuItems || 5);
-
-// Generate text line classes for varying widths
-const getTextLineClass = (lineIndex: number): string => {
-  const classes = ['full', 'large', 'medium', 'small'];
-  return classes[lineIndex % classes.length] || 'medium';
-};
 </script>
 
 <style scoped>
@@ -714,17 +714,17 @@ const getTextLineClass = (lineIndex: number): string => {
     grid-template-columns: 1fr;
     gap: 8px;
   }
-  
+
   .skeleton-header {
     flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-  
+
   .skeleton-actions {
     justify-content: stretch;
   }
-  
+
   .skeleton-button {
     flex: 1;
   }
@@ -753,4 +753,4 @@ const getTextLineClass = (lineIndex: number): string => {
     border: 1px solid rgba(var(--v-theme-on-surface), 0.3);
   }
 }
-</style> 
+</style>

@@ -3,5 +3,5 @@
 </template>
 
 <script setup lang="ts">
-import HomeAdminDemo from './HomeAdminDemo.vue'
-</script> 
+  import HomeAdminDemo from './HomeAdminDemo.vue'
+</script>

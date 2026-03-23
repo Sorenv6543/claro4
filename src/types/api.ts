@@ -7,46 +7,46 @@
  * Generic API response wrapper
  */
 export interface ApiResponse<T> {
-  data: T | null;
-  error: string | null;
-  status: number;
-  message?: string;
+  data: T | null
+  error: string | null
+  status: number
+  message?: string
 }
 
 /**
  * Pagination parameters for API requests
  */
 export interface PaginationParams {
-  page: number;
-  pageSize: number;
-  orderBy?: string;
-  orderDirection?: 'asc' | 'desc';
+  page: number
+  pageSize: number
+  orderBy?: string
+  orderDirection?: 'asc' | 'desc'
 }
 
 /**
  * Paginated response from API
  */
 export interface PaginatedResponse<T> {
-  data: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
+  data: T[]
+  total: number
+  page: number
+  pageSize: number
+  totalPages: number
 }
 
 /**
  * Supabase table names
  */
-export type TableName = 'user_profiles' | 'properties' | 'bookings';
+export type TableName = 'user_profiles' | 'properties' | 'bookings'
 
 /**
  * Error response from Supabase
  */
 export interface SupabaseErrorResponse {
-  code: string;
-  details: string;
-  hint: string;
-  message: string;
+  code: string
+  details: string
+  hint: string
+  message: string
 }
 
 /**
@@ -54,9 +54,9 @@ export interface SupabaseErrorResponse {
  */
 export interface AuthResponse {
   user: {
-    id: string;
-    email: string;
-  } | null;
-  session: Record<string, unknown> | null;
-  error: string | null;
+    id: string
+    email: string
+  } | null
+  session: Record<string, unknown> | null
+  error: string | null
 }

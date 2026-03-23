@@ -1,67 +1,67 @@
-import type { RouteLocationNormalized } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
-import { getDefaultRouteForRole } from '@/utils/authHelpers';
-import type { UserRole } from '@/types';
+import type { RouteLocationNormalized } from 'vue-router'
+import type { UserRole } from '@/types'
+import { useAuthStore } from '@/stores/auth'
+import { getDefaultRouteForRole } from '@/utils/authHelpers'
 
-export async function authGuard(
+export async function authGuard (
   to: RouteLocationNormalized,
-  _from: RouteLocationNormalized
+  _from: RouteLocationNormalized,
 ) {
-  const authStore = useAuthStore();
+  const authStore = useAuthStore()
 
   // Only call checkAuth once per session. After logout, the auth store's
   // signOut action resets authChecked so the next navigation re-checks.
   if (!authStore.authChecked) {
-    await authStore.checkAuth();
-    authStore.authChecked = true;
+    await authStore.checkAuth()
+    authStore.authChecked = true
   }
 
   // Check if route requires authentication
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    return '/';
+    return '/'
   }
 
   // Check role-based access
-  const requiredRole = to.meta.role as UserRole;
+  const requiredRole = to.meta.role as UserRole
   if (requiredRole && authStore.user?.role !== requiredRole) {
-    return getDefaultRouteForRole(authStore.user?.role);
+    return getDefaultRouteForRole(authStore.user?.role)
   }
 
   // Block admin routes for non-admins
   if (to.path.startsWith('/admin') && !authStore.isAdmin) {
-    return getDefaultRouteForRole(authStore.user?.role);
+    return getDefaultRouteForRole(authStore.user?.role)
   }
 
   // Block owner routes for non-owners
   if (to.path.startsWith('/owner') && !authStore.isOwner) {
-    return getDefaultRouteForRole(authStore.user?.role);
+    return getDefaultRouteForRole(authStore.user?.role)
   }
 
   // Redirect authenticated users away from auth/login pages
   if ((to.path === '/' || to.path.startsWith('/auth')) && authStore.isAuthenticated) {
-    return getDefaultRouteForRole(authStore.user?.role);
+    return getDefaultRouteForRole(authStore.user?.role)
   }
 }
 
-export function loadingGuard(
+export function loadingGuard (
   _to: RouteLocationNormalized,
-  _from: RouteLocationNormalized
+  _from: RouteLocationNormalized,
 ) {
   // TODO: set loading state here (e.g. uiStore.setLoading(true))
 }
 
-export function afterNavigationGuard(
-  _to: RouteLocationNormalized
+export function afterNavigationGuard (
+  _to: RouteLocationNormalized,
 ) {
   // Post-navigation hook — add analytics, page title updates, etc. here
 }
 
-export function developmentGuard(
+export function developmentGuard (
   to: RouteLocationNormalized,
-  _from: RouteLocationNormalized
+  _from: RouteLocationNormalized,
 ) {
   // Block development/demo routes in production
   if (import.meta.env.PROD && (to.path.startsWith('/dev') || to.meta.demo)) {
-    return '/404';
+    return '/404'
   }
 }

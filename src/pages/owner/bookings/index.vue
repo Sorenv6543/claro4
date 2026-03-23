@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import OwnerBookings from '@/components/smart/owner/OwnerBookings.vue'
+  import OwnerBookings from '@/components/smart/owner/OwnerBookings.vue'
 
-defineOptions({ name: 'OwnerBookingsPage' })
+  defineOptions({ name: 'OwnerBookingsPage' })
 </script>

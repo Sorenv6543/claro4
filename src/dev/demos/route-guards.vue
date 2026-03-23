@@ -23,8 +23,8 @@
             <v-card-text>
               <div v-if="authStore.isAuthenticated">
                 <v-chip
-                  :color="getRoleColor(authStore.user?.role)"
                   class="mb-2"
+                  :color="getRoleColor(authStore.user?.role)"
                 >
                   {{ authStore.user?.role?.toUpperCase() || 'UNKNOWN' }}
                 </v-chip>
@@ -34,8 +34,8 @@
               </div>
               <div v-else>
                 <v-chip
-                  color="grey"
                   class="mb-2"
+                  color="grey"
                 >
                   NOT AUTHENTICATED
                 </v-chip>
@@ -54,41 +54,41 @@
             <v-card-text>
               <v-btn-toggle
                 v-model="selectedRole"
-                mandatory
                 class="mb-3"
+                mandatory
               >
                 <v-btn
-                  value="owner"
                   size="small"
+                  value="owner"
                 >
                   Owner
                 </v-btn>
                 <v-btn
-                  value="admin"
                   size="small"
+                  value="admin"
                 >
                   Admin
                 </v-btn>
                 <v-btn
-                  value="cleaner"
                   size="small"
+                  value="cleaner"
                 >
                   Cleaner
                 </v-btn>
               </v-btn-toggle>
               <div class="d-flex gap-2">
-                <v-btn 
-                  color="primary" 
-                  size="small" 
+                <v-btn
+                  color="primary"
                   :loading="authStore.loading"
+                  size="small"
                   @click="loginAsRole(selectedRole)"
                 >
                   Login as {{ selectedRole }}
                 </v-btn>
-                <v-btn 
-                  color="error" 
-                  size="small" 
+                <v-btn
+                  color="error"
                   :disabled="!authStore.isAuthenticated"
+                  size="small"
                   @click="authStore.logout()"
                 >
                   Logout
@@ -116,8 +116,8 @@
                   👤 Owner Routes
                 </h3>
                 <div class="d-flex flex-wrap gap-2">
-                  <v-btn 
-                    v-for="route in ownerRoutes" 
+                  <v-btn
+                    v-for="route in ownerRoutes"
                     :key="route.path"
                     :color="getRouteButtonColor('owner')"
                     size="small"
@@ -135,8 +135,8 @@
                   🔧 Admin Routes
                 </h3>
                 <div class="d-flex flex-wrap gap-2">
-                  <v-btn 
-                    v-for="route in adminRoutes" 
+                  <v-btn
+                    v-for="route in adminRoutes"
                     :key="route.path"
                     :color="getRouteButtonColor('admin')"
                     size="small"
@@ -154,8 +154,8 @@
                   🌐 Public Routes
                 </h3>
                 <div class="d-flex flex-wrap gap-2">
-                  <v-btn 
-                    v-for="route in publicRoutes" 
+                  <v-btn
+                    v-for="route in publicRoutes"
                     :key="route.path"
                     color="success"
                     size="small"
@@ -173,8 +173,8 @@
                   🔐 Auth Routes
                 </h3>
                 <div class="d-flex flex-wrap gap-2">
-                  <v-btn 
-                    v-for="route in authRoutes" 
+                  <v-btn
+                    v-for="route in authRoutes"
                     :key="route.path"
                     color="info"
                     size="small"
@@ -208,8 +208,8 @@
                       <strong>{{ result.route }}</strong>
                       <span class="text-body-2 ml-2">as {{ result.role }}</span>
                     </div>
-                    <v-chip 
-                      :color="result.success ? 'success' : 'error'" 
+                    <v-chip
+                      :color="result.success ? 'success' : 'error'"
                       size="small"
                     >
                       {{ result.success ? 'ALLOWED' : 'DENIED' }}
@@ -223,11 +223,11 @@
                   </div>
                 </v-timeline-item>
               </v-timeline>
-              
-              <v-btn 
-                color="warning" 
-                size="small" 
-                class="mt-3" 
+
+              <v-btn
+                class="mt-3"
+                color="warning"
+                size="small"
                 @click="clearResults"
               >
                 Clear Results
@@ -241,121 +241,125 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import type { UserRole } from '@/types/router'
+  import type { UserRole } from '@/types/router'
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useAuthStore } from '@/stores/auth'
 
-const router = useRouter()
-const authStore = useAuthStore()
+  const router = useRouter()
+  const authStore = useAuthStore()
 
-// State
-const selectedRole = ref<UserRole>('owner')
-const testResults = ref<Array<{
-  id: string
-  route: string
-  role: string
-  success: boolean
-  message?: string
-  timestamp: Date
-}>>([])
+  // State
+  const selectedRole = ref<UserRole>('owner')
+  const testResults = ref<Array<{
+    id: string
+    route: string
+    role: string
+    success: boolean
+    message?: string
+    timestamp: Date
+  }>>([])
 
-// Route definitions for testing
-const ownerRoutes = [
-  { name: 'Owner Dashboard', path: '/owner/dashboard' },
-  { name: 'Owner Properties', path: '/owner/properties' },
-  { name: 'Owner Calendar', path: '/owner/calendar' },
-  { name: 'Owner Bookings', path: '/owner/bookings' }
-]
+  // Route definitions for testing
+  const ownerRoutes = [
+    { name: 'Owner Dashboard', path: '/owner/dashboard' },
+    { name: 'Owner Properties', path: '/owner/properties' },
+    { name: 'Owner Calendar', path: '/owner/calendar' },
+    { name: 'Owner Bookings', path: '/owner/bookings' },
+  ]
 
-const adminRoutes = [
-  { name: 'Admin Dashboard', path: '/admin' },
-  { name: 'Admin Schedule', path: '/admin/schedule' },
-  { name: 'Admin Cleaners', path: '/admin/cleaners' },
-  { name: 'Admin Properties', path: '/admin/properties' },
-  { name: 'Admin Bookings', path: '/admin/bookings' },
-  { name: 'Admin Reports', path: '/admin/reports' }
-]
+  const adminRoutes = [
+    { name: 'Admin Dashboard', path: '/admin' },
+    { name: 'Admin Schedule', path: '/admin/schedule' },
+    { name: 'Admin Cleaners', path: '/admin/cleaners' },
+    { name: 'Admin Properties', path: '/admin/properties' },
+    { name: 'Admin Bookings', path: '/admin/bookings' },
+    { name: 'Admin Reports', path: '/admin/reports' },
+  ]
 
-const publicRoutes = [
-  { name: 'Home', path: '/' },
-  { name: 'Demos', path: '/demos' },
-  { name: 'CRUD Testing', path: '/testing/crud' }
-]
+  const publicRoutes = [
+    { name: 'Home', path: '/' },
+    { name: 'Demos', path: '/demos' },
+    { name: 'CRUD Testing', path: '/testing/crud' },
+  ]
 
-const authRoutes = [
-  { name: 'Login', path: '/auth/login' },
-  { name: 'Register', path: '/auth/register' }
-]
+  const authRoutes = [
+    { name: 'Login', path: '/auth/login' },
+    { name: 'Register', path: '/auth/register' },
+  ]
 
-// Methods
-async function loginAsRole(role: UserRole) {
-  try {
-    await authStore.login(`${role}@example.com`, 'password')
-    
-    // Update the user role after login
-    if (authStore.user) {
-      authStore.user.role = role
-      authStore.user.name = `Demo ${role.charAt(0).toUpperCase() + role.slice(1)}`
+  // Methods
+  async function loginAsRole (role: UserRole) {
+    try {
+      await authStore.login(`${role}@example.com`, 'password')
+
+      // Update the user role after login
+      if (authStore.user) {
+        authStore.user.role = role
+        authStore.user.name = `Demo ${role.charAt(0).toUpperCase() + role.slice(1)}`
+      }
+
+      addTestResult('Login', `Logged in as ${role}`, true, `Successfully authenticated as ${role}`)
+    } catch (error) {
+      addTestResult('Login', `Failed to login as ${role}`, false, String(error))
     }
-    
-    addTestResult('Login', `Logged in as ${role}`, true, `Successfully authenticated as ${role}`)
-  } catch (error) {
-    addTestResult('Login', `Failed to login as ${role}`, false, String(error))
   }
-}
 
-function testRoute(path: string) {
-  const currentRole = authStore.user?.role || 'unauthenticated'
-  
-  try {
-    // Attempt to navigate to the route
-    router.push(path).then(() => {
-      addTestResult(path, currentRole, true, 'Navigation successful')
-    }).catch((error) => {
-      addTestResult(path, currentRole, false, `Navigation failed: ${error.message}`)
+  function testRoute (path: string) {
+    const currentRole = authStore.user?.role || 'unauthenticated'
+
+    try {
+      // Attempt to navigate to the route
+      router.push(path).then(() => {
+        addTestResult(path, currentRole, true, 'Navigation successful')
+      }).catch(error => {
+        addTestResult(path, currentRole, false, `Navigation failed: ${error.message}`)
+      })
+    } catch (error) {
+      addTestResult(path, currentRole, false, `Error: ${String(error)}`)
+    }
+  }
+
+  function addTestResult (route: string, role: string, success: boolean, message?: string) {
+    testResults.value.unshift({
+      id: `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      route,
+      role,
+      success,
+      message,
+      timestamp: new Date(),
     })
-  } catch (error) {
-    addTestResult(path, currentRole, false, `Error: ${String(error)}`)
+
+    // Keep only last 20 results
+    if (testResults.value.length > 20) {
+      testResults.value = testResults.value.slice(0, 20)
+    }
   }
-}
 
-function addTestResult(route: string, role: string, success: boolean, message?: string) {
-  testResults.value.unshift({
-    id: `test-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    route,
-    role,
-    success,
-    message,
-    timestamp: new Date()
-  })
-  
-  // Keep only last 20 results
-  if (testResults.value.length > 20) {
-    testResults.value = testResults.value.slice(0, 20)
+  function clearResults () {
+    testResults.value = []
   }
-}
 
-function clearResults() {
-  testResults.value = []
-}
-
-function getRoleColor(role?: string) {
-  switch (role) {
-    case 'owner': return 'primary'
-    case 'admin': return 'error'
-    case 'cleaner': return 'success'
-    default: return 'grey'
+  function getRoleColor (role?: string) {
+    switch (role) {
+      case 'owner': { return 'primary'
+      }
+      case 'admin': { return 'error'
+      }
+      case 'cleaner': { return 'success'
+      }
+      default: { return 'grey'
+      }
+    }
   }
-}
 
-function getRouteButtonColor(requiredRole: string) {
-  const userRole = authStore.user?.role
-  if (!authStore.isAuthenticated) return 'grey'
-  if (userRole === requiredRole) return 'success'
-  if (userRole === 'admin' && requiredRole === 'owner') return 'warning' // Admin can access owner routes
-  return 'error'
-}
+  function getRouteButtonColor (requiredRole: string) {
+    const userRole = authStore.user?.role
+    if (!authStore.isAuthenticated) return 'grey'
+    if (userRole === requiredRole) return 'success'
+    if (userRole === 'admin' && requiredRole === 'owner') return 'warning' // Admin can access owner routes
+    return 'error'
+  }
 </script>
 
 <style scoped>
@@ -367,4 +371,4 @@ function getRouteButtonColor(requiredRole: string) {
 .gap-2 {
   gap: 8px;
 }
-</style> 
+</style>

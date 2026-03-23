@@ -1,8 +1,8 @@
 <!-- eslint-disable vue/valid-v-slot -->
 <template>
   <v-container
-    fluid
     class="pa-6"
+    fluid
   >
     <v-row>
       <v-col cols="12">
@@ -50,8 +50,8 @@
                 md="3"
               >
                 <v-card
-                  variant="outlined"
                   color="primary"
+                  variant="outlined"
                 >
                   <v-card-text class="text-center">
                     <div class="text-h4 font-weight-bold">
@@ -68,8 +68,8 @@
                 md="3"
               >
                 <v-card
-                  variant="outlined"
                   color="success"
+                  variant="outlined"
                 >
                   <v-card-text class="text-center">
                     <div class="text-h4 font-weight-bold">
@@ -89,8 +89,8 @@
                 md="3"
               >
                 <v-card
-                  variant="outlined"
                   color="warning"
+                  variant="outlined"
                 >
                   <v-card-text class="text-center">
                     <div class="text-h4 font-weight-bold">
@@ -107,8 +107,8 @@
                 md="3"
               >
                 <v-card
-                  variant="outlined"
                   color="info"
+                  variant="outlined"
                 >
                   <v-card-text class="text-center">
                     <div class="text-h4 font-weight-bold">
@@ -158,8 +158,8 @@
                 <v-list-item-subtitle>{{ properties.length }} properties</v-list-item-subtitle>
                 <template #append>
                   <v-chip
-                    size="small"
                     color="primary"
+                    size="small"
                   >
                     {{ properties.length }}
                   </v-chip>
@@ -203,8 +203,8 @@
                 <v-list-item-subtitle>{{ properties.length }} properties</v-list-item-subtitle>
                 <template #append>
                   <v-chip
-                    size="small"
                     :color="getTierColor(tier)"
+                    size="small"
                   >
                     {{ properties.length }}
                   </v-chip>
@@ -233,11 +233,11 @@
                 md="4"
               >
                 <v-btn
-                  :loading="loading"
-                  color="primary"
-                  variant="outlined"
                   block
                   class="mb-3"
+                  color="primary"
+                  :loading="loading"
+                  variant="outlined"
                   @click="testFetchAllProperties"
                 >
                   <v-icon start>
@@ -251,11 +251,11 @@
                 md="4"
               >
                 <v-btn
-                  :loading="loading"
-                  color="warning"
-                  variant="outlined"
                   block
                   class="mb-3"
+                  color="warning"
+                  :loading="loading"
+                  variant="outlined"
                   @click="testBulkUpdate"
                 >
                   <v-icon start>
@@ -269,10 +269,10 @@
                 md="4"
               >
                 <v-btn
-                  color="info"
-                  variant="outlined"
                   block
                   class="mb-3"
+                  color="info"
+                  variant="outlined"
                   @click="testAnalytics"
                 >
                   <v-icon start>
@@ -305,8 +305,8 @@
                 md="6"
               >
                 <v-card
-                  variant="outlined"
                   class="mb-4"
+                  variant="outlined"
                 >
                   <v-card-title class="text-h6">
                     <v-icon
@@ -326,15 +326,15 @@
                       >
                         <template #prepend>
                           <v-chip
-                            size="small"
                             :color="index === 0 ? 'success' : 'primary'"
+                            size="small"
                           >
                             {{ (index as number) + 1 }}
                           </v-chip>
                         </template>
                         <v-list-item-title>{{ performer.property.name }}</v-list-item-title>
                         <v-list-item-subtitle>
-                          Revenue: ${{ performer.revenueProjection }} | 
+                          Revenue: ${{ performer.revenueProjection }} |
                           Utilization: {{ Math.round(performer.utilizationRate * 100) }}%
                         </v-list-item-subtitle>
                       </v-list-item>
@@ -349,8 +349,8 @@
                 md="6"
               >
                 <v-card
-                  variant="outlined"
                   class="mb-4"
+                  variant="outlined"
                 >
                   <v-card-title class="text-h6">
                     <v-icon
@@ -370,15 +370,15 @@
                       >
                         <template #prepend>
                           <v-chip
-                            size="small"
                             color="warning"
+                            size="small"
                           >
                             {{ Math.round(performer.utilizationRate * 100) }}%
                           </v-chip>
                         </template>
                         <v-list-item-title>{{ performer.property.name }}</v-list-item-title>
                         <v-list-item-subtitle>
-                          Bookings: {{ performer.totalBookings }} | 
+                          Bookings: {{ performer.totalBookings }} |
                           Avg Gap: {{ performer.averageGapDays }} days
                         </v-list-item-subtitle>
                       </v-list-item>
@@ -410,13 +410,13 @@
                         md="3"
                       >
                         <v-card
-                          variant="outlined"
                           :color="getTierColor(tier as unknown as PricingTier)"
+                          variant="outlined"
                         >
                           <v-card-text class="text-center">
                             <div class="text-h6 font-weight-bold">
                               ${{ revenue }}
-                            </div>  
+                            </div>
                             <div class="text-subtitle-2 text-capitalize">
                               {{ tier }}
                             </div>
@@ -451,10 +451,10 @@
           </v-card-title>
           <v-card-text>
             <v-data-table
+              class="elevation-1"
               :headers="utilizationHeaders"
               :items="utilizationItems"
               :items-per-page="10"
-              class="elevation-1"
             >
               <template #item.property.name="{ item }">
                 <div class="font-weight-medium">
@@ -464,13 +464,13 @@
                   {{ item.property.address }}
                 </div>
               </template>
-              
+
               <template #item.utilizationRate="{ item }">
                 <!-- eslint-disable-next-line vue/no-v-html -->
                 <v-progress-linear
-                  :model-value="item.utilizationRate * 100"
                   :color="getUtilizationColor(item.utilizationRate)"
                   height="20"
+                  :model-value="item.utilizationRate * 100"
                   rounded
                 >
                   <template #default>
@@ -480,7 +480,7 @@
                   </template>
                 </v-progress-linear>
               </template>
-              
+
               <!-- eslint-disable-next-line vue/no-v-html -->
               <template #item.cleaningLoad="{ item }">
                 <v-chip
@@ -491,7 +491,7 @@
                   {{ item.cleaningLoad }}
                 </v-chip>
               </template>
-              
+
               <!-- eslint-disable-next-line vue/no-v-html -->
               <template #item.revenueProjection="{ item }">
                 <div class="font-weight-medium">
@@ -577,11 +577,11 @@
               >
                 <v-select
                   v-model="filterCriteria.owner_id"
+                  clearable
+                  density="compact"
                   :items="ownerOptions"
                   label="Filter by Owner"
-                  clearable
                   variant="outlined"
-                  density="compact"
                 />
               </v-col>
               <v-col
@@ -590,11 +590,11 @@
               >
                 <v-select
                   v-model="filterCriteria.pricing_tier"
+                  clearable
+                  density="compact"
                   :items="tierOptions"
                   label="Filter by Pricing Tier"
-                  clearable
                   variant="outlined"
-                  density="compact"
                 />
               </v-col>
               <v-col
@@ -603,20 +603,20 @@
               >
                 <v-select
                   v-model="filterCriteria.active"
+                  clearable
+                  density="compact"
                   :items="activeOptions"
                   label="Filter by Status"
-                  clearable
                   variant="outlined"
-                  density="compact"
                 />
               </v-col>
             </v-row>
             <v-row>
               <v-col cols="12">
                 <v-btn
+                  class="mr-2"
                   color="primary"
                   variant="outlined"
-                  class="mr-2"
                   @click="testFilterProperties"
                 >
                   <v-icon start>
@@ -639,9 +639,9 @@
             <v-row v-if="filteredResults.length > 0">
               <v-col cols="12">
                 <v-alert
+                  class="mt-4"
                   type="info"
                   variant="outlined"
-                  class="mt-4"
                 >
                   <v-icon start>
                     mdi-information
@@ -682,10 +682,10 @@
       <v-col cols="12">
         <v-alert
           v-if="success || composableSuccess"
+          class="mb-4"
+          closable
           type="success"
           variant="outlined"
-          closable
-          class="mb-4"
           @click:close="success = null"
         >
           <v-icon start>
@@ -693,13 +693,13 @@
           </v-icon>
           {{ success || composableSuccess }}
         </v-alert>
-        
+
         <v-alert
           v-if="error || composableError"
+          class="mb-4"
+          closable
           type="error"
           variant="outlined"
-          closable
-          class="mb-4"
           @click:close="error = null"
         >
           <v-icon start>
@@ -713,183 +713,182 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useAdminProperties } from '@/composables/admin/useAdminProperties';
-import type { PricingTier, Property } from '@/types';
+  import type { PricingTier, Property } from '@/types'
+  import { computed, onMounted, ref } from 'vue'
+  import { useAdminProperties } from '@/composables/admin/useAdminProperties'
 
-// Use the admin properties composable
-const {
-  // State
-  loading,
-  error: composableError,
-  success: composableSuccess,
-  
-  // System-wide data (no filtering)
-  allProperties,
-  allActiveProperties,
-  propertiesByOwner,
-  propertiesByPricingTier,
-  systemPropertyMetrics,
-  propertyUtilizationData,
-  
-  // Admin operations
-  fetchAllProperties,
-  bulkUpdateProperties,
-  getPropertyAnalytics,
-  filterProperties
-} = useAdminProperties();
+  // Use the admin properties composable
+  const {
+    // State
+    loading,
+    error: composableError,
+    success: composableSuccess,
 
-// Demo state
-const analytics = ref<unknown>(null);
-const filterCriteria = ref({
-  owner_id: '',
-  pricing_tier: '',
-  active: null as boolean | null
-});
-const filteredResults = ref<unknown[]>([]);
-const error = ref<string | null>(null);
-const success = ref<string | null>(null);
+    // System-wide data (no filtering)
+    allProperties,
+    allActiveProperties,
+    propertiesByOwner,
+    propertiesByPricingTier,
+    systemPropertyMetrics,
+    propertyUtilizationData,
 
-// Computed properties for demo display
-const utilizationItems = computed(() => {
-  return Object.values(propertyUtilizationData.value);
-});
+    // Admin operations
+    fetchAllProperties,
+    bulkUpdateProperties,
+    getPropertyAnalytics,
+    filterProperties,
+  } = useAdminProperties()
 
-const utilizationHeaders = [
-  { title: 'Property', key: 'property.name', sortable: true },
-  { title: 'Total Bookings', key: 'totalBookings', sortable: true },
-  { title: 'Turn Bookings', key: 'turnBookings', sortable: true },
-  { title: 'Utilization', key: 'utilizationRate', sortable: true },
-  { title: 'Cleaning Load', key: 'cleaningLoad', sortable: true },
-  { title: 'Revenue Projection', key: 'revenueProjection', sortable: true }
-];
-
-// Filter options for demo
-const ownerOptions = computed(() => {
-  const owners = new Set(allProperties.value.map(p => p.owner_id));
-  return Array.from(owners).map(id => ({
-    title: `Owner ${id.slice(0, 8)}...`,
-    value: id
-  }));
-});
-
-const tierOptions = [
-  { title: 'Basic', value: 'basic' },
-  { title: 'Standard', value: 'standard' },
-  { title: 'Premium', value: 'premium' },
-  { title: 'Luxury', value: 'luxury' }
-];
-
-const activeOptions = [
-  { title: 'Active', value: true },
-  { title: 'Inactive', value: false }
-];
-
-// Helper functions
-function getTierColor(tier: PricingTier): string {
-  const colors = {
-    basic: 'blue-grey',
-    standard: 'blue',
-    premium: 'purple',
-    luxury: 'amber'
-  };
-  return colors[tier] || 'grey';
-}
-
-function getTierIcon(tier: PricingTier): string {
-  const icons = {
-    basic: 'mdi-home',
-    standard: 'mdi-home-plus',
-    premium: 'mdi-home-heart',
-    luxury: 'mdi-home-luxury'
-  };
-  return icons[tier] || 'mdi-home';
-}
-
-function getUtilizationColor(rate: number): string {
-  if (rate < 0.3) return 'error';
-  if (rate < 0.7) return 'warning';
-  return 'success';
-}
-
-function getLoadColor(load: 'light' | 'moderate' | 'heavy'): string {
-  const colors = {
-    light: 'success',
-    moderate: 'warning',
-    heavy: 'error'
-  };
-  return colors[load];
-}
-
-// Demo functions
-async function testFetchAllProperties() {
-  const result = await fetchAllProperties();
-  console.log('Fetch all properties result:', result);
-}
-
-async function testBulkUpdate() {
-  // Get first 3 properties for testing
-  const propertyIds = allProperties.value.slice(0, 3).map(p => p.id);
-  
-  if (propertyIds.length === 0) {
-    error.value = 'No properties available for bulk update test';
-    return;
-  }
-  
-  const updates = {
-    special_instructions: 'Updated via bulk operation - Admin test'
-  };
-  
-  const result = await bulkUpdateProperties(propertyIds, updates);
-  console.log('Bulk update result:', result);
-}
-
-function testAnalytics() {
-  analytics.value = getPropertyAnalytics();
-  console.log('Property analytics:', analytics.value);
-}
-
-function testFilterProperties() {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const criteria: any = {};
-  
-  if (filterCriteria.value.owner_id) {
-    criteria.owner_id = filterCriteria.value.owner_id;
-  }
-  
-  if (filterCriteria.value.pricing_tier) {
-    criteria.pricing_tier = filterCriteria.value.pricing_tier;
-  }
-  
-  if (filterCriteria.value.active !== null) {
-    criteria.active = filterCriteria.value.active;
-  }
-  
-  filteredResults.value = filterProperties(criteria);
-  console.log('Filter results:', filteredResults.value);
-}
-
-function clearFilters() {
-  filterCriteria.value = {
+  // Demo state
+  const analytics = ref<unknown>(null)
+  const filterCriteria = ref({
     owner_id: '',
     pricing_tier: '',
-    active: null
-  };
-  filteredResults.value = [];
-}
+    active: null as boolean | null,
+  })
+  const filteredResults = ref<unknown[]>([])
+  const error = ref<string | null>(null)
+  const success = ref<string | null>(null)
 
-// Initialize demo data on mount
-onMounted(async () => {
-  console.log('UseAdminProperties Demo initialized');
-  console.log('System metrics:', systemPropertyMetrics.value);
-  console.log('Properties by owner:', propertiesByOwner.value);
-  console.log('Properties by tier:', propertiesByPricingTier.value);
-  
-  // Auto-generate analytics for demo
-  setTimeout(() => {
-    testAnalytics();
-  }, 1000);
-});
+  // Computed properties for demo display
+  const utilizationItems = computed(() => {
+    return Object.values(propertyUtilizationData.value)
+  })
+
+  const utilizationHeaders = [
+    { title: 'Property', key: 'property.name', sortable: true },
+    { title: 'Total Bookings', key: 'totalBookings', sortable: true },
+    { title: 'Turn Bookings', key: 'turnBookings', sortable: true },
+    { title: 'Utilization', key: 'utilizationRate', sortable: true },
+    { title: 'Cleaning Load', key: 'cleaningLoad', sortable: true },
+    { title: 'Revenue Projection', key: 'revenueProjection', sortable: true },
+  ]
+
+  // Filter options for demo
+  const ownerOptions = computed(() => {
+    const owners = new Set(allProperties.value.map(p => p.owner_id))
+    return Array.from(owners).map(id => ({
+      title: `Owner ${id.slice(0, 8)}...`,
+      value: id,
+    }))
+  })
+
+  const tierOptions = [
+    { title: 'Basic', value: 'basic' },
+    { title: 'Standard', value: 'standard' },
+    { title: 'Premium', value: 'premium' },
+    { title: 'Luxury', value: 'luxury' },
+  ]
+
+  const activeOptions = [
+    { title: 'Active', value: true },
+    { title: 'Inactive', value: false },
+  ]
+
+  // Helper functions
+  function getTierColor (tier: PricingTier): string {
+    const colors = {
+      basic: 'blue-grey',
+      standard: 'blue',
+      premium: 'purple',
+      luxury: 'amber',
+    }
+    return colors[tier] || 'grey'
+  }
+
+  function getTierIcon (tier: PricingTier): string {
+    const icons = {
+      basic: 'mdi-home',
+      standard: 'mdi-home-plus',
+      premium: 'mdi-home-heart',
+      luxury: 'mdi-home-luxury',
+    }
+    return icons[tier] || 'mdi-home'
+  }
+
+  function getUtilizationColor (rate: number): string {
+    if (rate < 0.3) return 'error'
+    if (rate < 0.7) return 'warning'
+    return 'success'
+  }
+
+  function getLoadColor (load: 'light' | 'moderate' | 'heavy'): string {
+    const colors = {
+      light: 'success',
+      moderate: 'warning',
+      heavy: 'error',
+    }
+    return colors[load]
+  }
+
+  // Demo functions
+  async function testFetchAllProperties () {
+    const result = await fetchAllProperties()
+    console.log('Fetch all properties result:', result)
+  }
+
+  async function testBulkUpdate () {
+    // Get first 3 properties for testing
+    const propertyIds = allProperties.value.slice(0, 3).map(p => p.id)
+
+    if (propertyIds.length === 0) {
+      error.value = 'No properties available for bulk update test'
+      return
+    }
+
+    const updates = {
+      special_instructions: 'Updated via bulk operation - Admin test',
+    }
+
+    const result = await bulkUpdateProperties(propertyIds, updates)
+    console.log('Bulk update result:', result)
+  }
+
+  function testAnalytics () {
+    analytics.value = getPropertyAnalytics()
+    console.log('Property analytics:', analytics.value)
+  }
+
+  function testFilterProperties () {
+    const criteria: any = {}
+
+    if (filterCriteria.value.owner_id) {
+      criteria.owner_id = filterCriteria.value.owner_id
+    }
+
+    if (filterCriteria.value.pricing_tier) {
+      criteria.pricing_tier = filterCriteria.value.pricing_tier
+    }
+
+    if (filterCriteria.value.active !== null) {
+      criteria.active = filterCriteria.value.active
+    }
+
+    filteredResults.value = filterProperties(criteria)
+    console.log('Filter results:', filteredResults.value)
+  }
+
+  function clearFilters () {
+    filterCriteria.value = {
+      owner_id: '',
+      pricing_tier: '',
+      active: null,
+    }
+    filteredResults.value = []
+  }
+
+  // Initialize demo data on mount
+  onMounted(async () => {
+    console.log('UseAdminProperties Demo initialized')
+    console.log('System metrics:', systemPropertyMetrics.value)
+    console.log('Properties by owner:', propertiesByOwner.value)
+    console.log('Properties by tier:', propertiesByPricingTier.value)
+
+    // Auto-generate analytics for demo
+    setTimeout(() => {
+      testAnalytics()
+    }, 1000)
+  })
 </script>
 
 <style scoped>
@@ -909,4 +908,4 @@ onMounted(async () => {
 .v-progress-linear {
   border-radius: 10px;
 }
-</style> 
+</style>

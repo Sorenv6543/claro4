@@ -1,11 +1,11 @@
 <template>
   <v-card
     class="property-card hover-elevate glass-card fade-in"
-    :elevation="isHovered ? 8 : 2"
-    :class="{ 
+    :class="{
       'inactive-property': !property.active,
-      'card-hover': isHovered 
+      'card-hover': isHovered
     }"
+    :elevation="isHovered ? 8 : 2"
     @click="emit('view', property.id)"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
@@ -19,25 +19,25 @@
           </div>
           <div class="property-address text-caption text-medium-emphasis">
             <v-icon
+              class="mr-1"
               icon="mdi-map-marker"
               size="x-small"
-              class="mr-1"
             />
             {{ formatPropertyAddress(property) }}
           </div>
         </div>
-        
+
         <div class="header-actions">
           <v-chip
-            :color="activeStatusColor"
-            :variant="property.active ? 'flat' : 'outlined'"
-            size="small"
             class="status-chip"
+            :color="activeStatusColor"
+            size="small"
+            :variant="property.active ? 'flat' : 'outlined'"
           >
-            <v-icon 
-              :icon="property.active ? 'mdi-check-circle' : 'mdi-pause-circle'" 
-              size="x-small" 
+            <v-icon
               class="mr-1"
+              :icon="property.active ? 'mdi-check-circle' : 'mdi-pause-circle'"
+              size="x-small"
             />
             {{ property.active ? 'Active' : 'Inactive' }}
           </v-chip>
@@ -50,11 +50,11 @@
       <!-- Key Metrics Row -->
       <div class="metrics-grid mb-3">
         <div class="metric-item">
-          <v-icon 
-            icon="mdi-clock-outline" 
-            size="small" 
-            :color="property.active ? 'primary' : 'disabled'"
+          <v-icon
             class="metric-icon"
+            :color="property.active ? 'primary' : 'disabled'"
+            icon="mdi-clock-outline"
+            size="small"
           />
           <div class="metric-content">
             <div class="metric-label">
@@ -67,11 +67,11 @@
         </div>
 
         <div class="metric-item">
-          <v-icon 
-            icon="mdi-star-outline" 
-            size="small" 
-            :color="pricingTierColor"
+          <v-icon
             class="metric-icon"
+            :color="pricingTierColor"
+            icon="mdi-star-outline"
+            size="small"
           />
           <div class="metric-content">
             <div class="metric-label">
@@ -90,20 +90,20 @@
         class="special-instructions"
       >
         <v-expansion-panels
-          variant="accordion"
           class="instructions-panel"
+          variant="accordion"
         >
           <v-expansion-panel
-            :title="`Special Instructions (${property.special_instructions.length} chars)`"
             elevation="0"
+            :title="`Special Instructions (${property.special_instructions.length} chars)`"
           >
             <v-expansion-panel-text class="pt-2">
               <div class="instructions-content">
-                <v-icon 
-                  icon="mdi-information-outline" 
-                  size="small" 
-                  color="info" 
+                <v-icon
                   class="mr-2 instructions-icon"
+                  color="info"
+                  icon="mdi-information-outline"
+                  size="small"
                 />
                 {{ property.special_instructions }}
               </div>
@@ -118,10 +118,10 @@
           <v-col cols="6">
             <div class="stat-item">
               <v-icon
-                icon="mdi-calendar-check"
-                size="x-small"
                 class="mr-1"
                 color="success"
+                icon="mdi-calendar-check"
+                size="x-small"
               />
               <span class="text-caption">Recent bookings: {{ recentBookingsCount }}</span>
             </div>
@@ -129,10 +129,10 @@
           <v-col cols="6">
             <div class="stat-item">
               <v-icon
-                icon="mdi-trending-up"
-                size="x-small"
                 class="mr-1"
                 color="info"
+                icon="mdi-trending-up"
+                size="x-small"
               />
               <span class="text-caption">Last cleaned: {{ lastCleanedText }}</span>
             </div>
@@ -148,25 +148,25 @@
       :class="{ 'actions-visible': isHovered || $vuetify.display.smAndDown }"
     >
       <v-spacer />
-      
+
       <!-- Quick Action Buttons -->
       <v-btn
-        variant="text"
-        color="primary"
-        size="small"
         class="action-btn"
+        color="primary"
         prepend-icon="mdi-calendar-plus"
+        size="small"
+        variant="text"
         @click.stop="handleQuickBooking"
       >
         Book
       </v-btn>
 
       <v-btn
-        variant="text"
-        color="secondary"
-        size="small"
         class="action-btn"
+        color="secondary"
         prepend-icon="mdi-pencil"
+        size="small"
+        variant="text"
         @click.stop="emit('edit', property.id)"
       >
         Edit
@@ -177,15 +177,15 @@
     <!-- Hover Overlay for Enhanced Interactivity -->
     <v-overlay
       v-model="isHovered"
-      contained
       class="property-overlay"
+      contained
       opacity="0.05"
     >
       <div class="overlay-content">
-        <v-icon 
-          icon="mdi-cursor-pointer" 
-          size="small" 
+        <v-icon
           color="primary"
+          icon="mdi-cursor-pointer"
+          size="small"
         />
         <span class="text-caption">Click to view</span>
       </div>
@@ -194,90 +194,87 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import type { Property, PricingTier } from '@/types';
-import { formatPropertyAddress } from '@/types/property';
+  import type { PricingTier, Property } from '@/types'
+  import { computed, ref } from 'vue'
+  import { formatPropertyAddress } from '@/types/property'
 
-interface Props {
-  property: Property;
-  displayActions?: boolean;
-  recentBookingsCount?: number;
-  lastCleaned?: Date | string | null;
-}
-
-interface Emits {
-  (e: 'edit', id: string): void;
-  (e: 'delete', id: string): void;
-  (e: 'view', id: string): void;
-  (e: 'quick-booking', id: string): void;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  displayActions: true,
-  recentBookingsCount: 0,
-  lastCleaned: null
-});
-
-const emit = defineEmits<Emits>();
-
-// Reactive hover state for enhanced interactions
-const isHovered = ref(false);
-
-// Format cleaning duration from minutes to hours and minutes
-const formattedCleaningDuration = computed((): string => {
-  const { cleaning_duration } = props.property;
-  
-  if (cleaning_duration < 60) {
-    return `${cleaning_duration}m`;
+  interface Props {
+    property: Property
+    displayActions?: boolean
+    recentBookingsCount?: number
+    lastCleaned?: Date | string | null
   }
-  
-  const hours = Math.floor(cleaning_duration / 60);
-  const minutes = cleaning_duration % 60;
-  
-  if (minutes === 0) {
-    return `${hours}h`;
+
+  interface Emits {
+    (e: 'edit' | 'delete' | 'view' | 'quick-booking', id: string): void
   }
-  
-  return `${hours}h ${minutes}m`;
-});
 
-// Format last cleaned date
-const lastCleanedText = computed((): string => {
-  if (!props.lastCleaned) return 'Never';
-  
-  const date = new Date(props.lastCleaned);
-  const now = new Date();
-  const diffTime = Math.abs(now.getTime() - date.getTime());
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-  
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays} days ago`;
-  if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`;
-  
-  return date.toLocaleDateString();
-});
+  const props = withDefaults(defineProps<Props>(), {
+    displayActions: true,
+    recentBookingsCount: 0,
+    lastCleaned: null,
+  })
 
-// Determine pricing tier color with enhanced palette
-const pricingTierColor = computed((): string => {
-  const tierColors: Record<PricingTier, string> = {
-    basic: 'blue-grey',
-    standard: 'primary',
-    premium: 'deep-purple',
-    luxury: 'amber'
-  };
-  
-  return tierColors[props.property.pricing_tier];
-});
+  const emit = defineEmits<Emits>()
 
-// Determine active status color
-const activeStatusColor = computed((): string => {
-  return props.property.active ? 'success' : 'warning';
-});
+  // Reactive hover state for enhanced interactions
+  const isHovered = ref(false)
 
-// Quick action handlers
-const handleQuickBooking = () => {
-  emit('quick-booking', props.property.id);
-};
+  // Format cleaning duration from minutes to hours and minutes
+  const formattedCleaningDuration = computed((): string => {
+    const { cleaning_duration } = props.property
+
+    if (cleaning_duration < 60) {
+      return `${cleaning_duration}m`
+    }
+
+    const hours = Math.floor(cleaning_duration / 60)
+    const minutes = cleaning_duration % 60
+
+    if (minutes === 0) {
+      return `${hours}h`
+    }
+
+    return `${hours}h ${minutes}m`
+  })
+
+  // Format last cleaned date
+  const lastCleanedText = computed((): string => {
+    if (!props.lastCleaned) return 'Never'
+
+    const date = new Date(props.lastCleaned)
+    const now = new Date()
+    const diffTime = Math.abs(now.getTime() - date.getTime())
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+    if (diffDays === 1) return 'Yesterday'
+    if (diffDays < 7) return `${diffDays} days ago`
+    if (diffDays < 30) return `${Math.floor(diffDays / 7)} weeks ago`
+
+    return date.toLocaleDateString()
+  })
+
+  // Determine pricing tier color with enhanced palette
+  const pricingTierColor = computed((): string => {
+    const tierColors: Record<PricingTier, string> = {
+      basic: 'blue-grey',
+      standard: 'primary',
+      premium: 'deep-purple',
+      luxury: 'amber',
+    }
+
+    return tierColors[props.property.pricing_tier]
+  })
+
+  // Determine active status color
+  const activeStatusColor = computed((): string => {
+    return props.property.active ? 'success' : 'warning'
+  })
+
+  // Quick action handlers
+  function handleQuickBooking () {
+    emit('quick-booking', props.property.id)
+  }
 
 </script>
 
@@ -476,16 +473,16 @@ const handleQuickBooking = () => {
     grid-template-columns: 1fr;
     gap: 8px;
   }
-  
+
   .header-content {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .header-actions {
     align-self: flex-end;
   }
-  
+
   .action-bar {
     opacity: 1;
   }
@@ -516,4 +513,4 @@ const handleQuickBooking = () => {
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 }
-</style> 
+</style>

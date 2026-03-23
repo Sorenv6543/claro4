@@ -31,16 +31,16 @@
         <v-row>
           <v-col
             cols="12"
-            sm="6"
             md="3"
+            sm="6"
           >
             <v-card>
               <v-card-text>
                 <div class="d-flex align-center">
                   <v-icon
+                    class="me-3"
                     color="primary"
                     size="40"
-                    class="me-3"
                   >
                     mdi-account-group
                   </v-icon>
@@ -58,16 +58,16 @@
           </v-col>
           <v-col
             cols="12"
-            sm="6"
             md="3"
+            sm="6"
           >
             <v-card>
               <v-card-text>
                 <div class="d-flex align-center">
                   <v-icon
+                    class="me-3"
                     color="success"
                     size="40"
-                    class="me-3"
                   >
                     mdi-check-circle
                   </v-icon>
@@ -85,16 +85,16 @@
           </v-col>
           <v-col
             cols="12"
-            sm="6"
             md="3"
+            sm="6"
           >
             <v-card>
               <v-card-text>
                 <div class="d-flex align-center">
                   <v-icon
+                    class="me-3"
                     color="warning"
                     size="40"
-                    class="me-3"
                   >
                     mdi-clock-outline
                   </v-icon>
@@ -112,16 +112,16 @@
           </v-col>
           <v-col
             cols="12"
-            sm="6"
             md="3"
+            sm="6"
           >
             <v-card>
               <v-card-text>
                 <div class="d-flex align-center">
                   <v-icon
+                    class="me-3"
                     color="info"
                     size="40"
-                    class="me-3"
                   >
                     mdi-star
                   </v-icon>
@@ -152,11 +152,11 @@
           >
             <v-text-field
               v-model="searchQuery"
-              prepend-inner-icon="mdi-magnify"
-              label="Search cleaners..."
-              variant="outlined"
-              density="compact"
               clearable
+              density="compact"
+              label="Search cleaners..."
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
             />
           </v-col>
           <v-col
@@ -165,11 +165,11 @@
           >
             <v-select
               v-model="statusFilter"
+              clearable
+              density="compact"
               :items="statusOptions"
               label="Status"
               variant="outlined"
-              density="compact"
-              clearable
             />
           </v-col>
           <v-col
@@ -177,9 +177,9 @@
             md="3"
           >
             <v-btn
+              block
               color="secondary"
               variant="outlined"
-              block
               @click="resetFilters"
             >
               Reset Filters
@@ -193,15 +193,15 @@
             v-for="cleaner in filteredCleaners"
             :key="cleaner.id"
             cols="12"
-            md="6"
             lg="4"
+            md="6"
           >
             <v-card class="cleaner-card">
               <v-card-text>
                 <div class="d-flex align-center mb-3">
                   <v-avatar
-                    size="48"
                     class="me-3"
+                    size="48"
                   >
                     <v-icon size="24">
                       mdi-account
@@ -279,27 +279,27 @@
 
               <v-card-actions>
                 <v-btn
-                  variant="text"
-                  size="small"
                   prepend-icon="mdi-calendar"
+                  size="small"
+                  variant="text"
                   @click="viewSchedule(cleaner)"
                 >
                   Schedule
                 </v-btn>
                 <v-btn
-                  variant="text"
-                  size="small"
                   prepend-icon="mdi-pencil"
+                  size="small"
+                  variant="text"
                   @click="editCleaner(cleaner)"
                 >
                   Edit
                 </v-btn>
                 <v-spacer />
                 <v-btn
-                  variant="text"
-                  size="small"
                   color="error"
                   icon="mdi-delete"
+                  size="small"
+                  variant="text"
                   @click="handleDeleteCleaner(cleaner)"
                 />
               </v-card-actions>
@@ -313,8 +313,8 @@
           class="text-center py-8"
         >
           <v-icon
-            size="64"
             color="grey-lighten-1"
+            size="64"
           >
             mdi-account-search
           </v-icon>
@@ -345,33 +345,33 @@
           >
             <v-text-field
               v-model="formData.name"
+              class="mb-3"
               label="Full Name"
               :rules="[rules.required]"
               variant="outlined"
-              class="mb-3"
             />
             <v-text-field
               v-model="formData.email"
-              label="Email"
-              type="email"
-              :rules="[rules.required, rules.email]"
-              variant="outlined"
               class="mb-3"
+              label="Email"
+              :rules="[rules.required, rules.email]"
+              type="email"
+              variant="outlined"
             />
             <v-select
               v-model="formData.skills"
+              chips
+              class="mb-3"
               :items="availableSkills"
               label="Skills"
               multiple
-              chips
               variant="outlined"
-              class="mb-3"
             />
             <v-text-field
               v-model.number="formData.max_daily_bookings"
               label="Max Daily Bookings"
-              type="number"
               :rules="[rules.required, rules.positive]"
+              type="number"
               variant="outlined"
             />
           </v-form>
@@ -399,142 +399,138 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
-import type { Cleaner } from '@/types/user'
+  import type { Cleaner } from '@/types/user'
+  import { computed, onMounted, ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
 
-// Router and composables
-const router = useRouter()
-const { allCleaners, fetchCleaners, createCleaner, updateCleaner, deleteCleaner } = useCleanerManagement()
+  // Router and composables
+  const router = useRouter()
+  const { allCleaners, fetchCleaners, createCleaner, updateCleaner, deleteCleaner } = useCleanerManagement()
 
-// Reactive state
-const searchQuery = ref('')
-const statusFilter = ref<string | null>(null)
-const showAddDialog = ref(false)
-const editingCleaner = ref<Cleaner | null>(null)
-const formValid = ref(false)
-const saving = ref(false)
+  // Reactive state
+  const searchQuery = ref('')
+  const statusFilter = ref<string | null>(null)
+  const showAddDialog = ref(false)
+  const editingCleaner = ref<Cleaner | null>(null)
+  const formValid = ref(false)
+  const saving = ref(false)
 
-// Form data
-const formData = ref({
-  name: '',
-  email: '',
-  skills: [] as string[],
-  max_daily_bookings: 4
-})
-
-// Options
-const statusOptions = [
-  { title: 'Active', value: 'active' },
-  { title: 'Inactive', value: 'inactive' },
-  { title: 'On Leave', value: 'on_leave' }
-]
-
-const availableSkills = [
-  'Standard Cleaning',
-  'Deep Cleaning',
-  'Move-in/Move-out',
-  'Post-Construction',
-  'Carpet Cleaning',
-  'Window Cleaning',
-  'Pressure Washing',
-  'Organizing'
-]
-
-// Validation rules
-const rules = {
-  required: (value: string | number) => !!value || 'This field is required',
-  email: (value: string) => {
-    const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    return pattern.test(value) || 'Invalid email address'
-  },
-  positive: (value: number) => value > 0 || 'Must be greater than 0'
-}
-
-// Computed properties
-const filteredCleaners = computed(() => {
-  let filtered = allCleaners.value
-
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(cleaner =>
-      cleaner.name.toLowerCase().includes(query) ||
-      cleaner.email.toLowerCase().includes(query)
-    )
-  }
-
-  return filtered
-})
-
-const cleanerStats = computed(() => ({
-  total: allCleaners.value.length,
-  available: Math.floor(allCleaners.value.length * 0.7),
-  busy: Math.floor(allCleaners.value.length * 0.3)
-}))
-
-// Methods
-const resetFilters = () => {
-  searchQuery.value = ''
-  statusFilter.value = null
-}
-
-const viewSchedule = (cleaner: Cleaner) => {
-  router.push(`/admin/schedule?cleaner=${cleaner.id}`)
-}
-
-const editCleaner = (cleaner: Cleaner) => {
-  editingCleaner.value = cleaner
-  formData.value = {
-    name: cleaner.name,
-    email: cleaner.email,
-    skills: [...cleaner.skills],
-    max_daily_bookings: cleaner.max_daily_bookings
-  }
-  showAddDialog.value = true
-}
-
-const handleDeleteCleaner = async (cleaner: Cleaner) => {
-  if (confirm(`Are you sure you want to delete ${cleaner.name}?`)) {
-    try {
-      await deleteCleaner(cleaner.id)
-    } catch (error) {
-      console.error('Failed to delete cleaner:', error)
-    }
-  }
-}
-
-const saveCleaner = async () => {
-  saving.value = true
-  try {
-    if (editingCleaner.value) {
-      await updateCleaner(editingCleaner.value.id, formData.value)
-    } else {
-      await createCleaner(formData.value)
-    }
-    closeDialog()
-  } catch (error) {
-    console.error('Failed to save cleaner:', error)
-  } finally {
-    saving.value = false
-  }
-}
-
-const closeDialog = () => {
-  showAddDialog.value = false
-  editingCleaner.value = null
-  formData.value = {
+  // Form data
+  const formData = ref({
     name: '',
     email: '',
-    skills: [],
-    max_daily_bookings: 4
-  }
-}
+    skills: [] as string[],
+    max_daily_bookings: 4,
+  })
 
-// Lifecycle
-onMounted(() => {
-  fetchCleaners()
-})
+  // Options
+  const statusOptions = [
+    { title: 'Active', value: 'active' },
+    { title: 'Inactive', value: 'inactive' },
+    { title: 'On Leave', value: 'on_leave' },
+  ]
+
+  const availableSkills = [
+    'Standard Cleaning',
+    'Deep Cleaning',
+    'Move-in/Move-out',
+    'Post-Construction',
+    'Carpet Cleaning',
+    'Window Cleaning',
+    'Pressure Washing',
+    'Organizing',
+  ]
+
+  // Validation rules
+  const rules = {
+    required: (value: string | number) => !!value || 'This field is required',
+    email: (value: string) => {
+      const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      return pattern.test(value) || 'Invalid email address'
+    },
+    positive: (value: number) => value > 0 || 'Must be greater than 0',
+  }
+
+  // Computed properties
+  const filteredCleaners = computed(() => {
+    let filtered = allCleaners.value
+
+    if (searchQuery.value) {
+      const query = searchQuery.value.toLowerCase()
+      filtered = filtered.filter(cleaner =>
+        cleaner.name.toLowerCase().includes(query)
+        || cleaner.email.toLowerCase().includes(query),
+      )
+    }
+
+    return filtered
+  })
+
+  const cleanerStats = computed(() => ({
+    total: allCleaners.value.length,
+    available: Math.floor(allCleaners.value.length * 0.7),
+    busy: Math.floor(allCleaners.value.length * 0.3),
+  }))
+
+  // Methods
+  function resetFilters () {
+    searchQuery.value = ''
+    statusFilter.value = null
+  }
+
+  function viewSchedule (cleaner: Cleaner) {
+    router.push(`/admin/schedule?cleaner=${cleaner.id}`)
+  }
+
+  function editCleaner (cleaner: Cleaner) {
+    editingCleaner.value = cleaner
+    formData.value = {
+      name: cleaner.name,
+      email: cleaner.email,
+      skills: [...cleaner.skills],
+      max_daily_bookings: cleaner.max_daily_bookings,
+    }
+    showAddDialog.value = true
+  }
+
+  async function handleDeleteCleaner (cleaner: Cleaner) {
+    if (confirm(`Are you sure you want to delete ${cleaner.name}?`)) {
+      try {
+        await deleteCleaner(cleaner.id)
+      } catch (error) {
+        console.error('Failed to delete cleaner:', error)
+      }
+    }
+  }
+
+  async function saveCleaner () {
+    saving.value = true
+    try {
+      await (editingCleaner.value ? updateCleaner(editingCleaner.value.id, formData.value) : createCleaner(formData.value))
+      closeDialog()
+    } catch (error) {
+      console.error('Failed to save cleaner:', error)
+    } finally {
+      saving.value = false
+    }
+  }
+
+  function closeDialog () {
+    showAddDialog.value = false
+    editingCleaner.value = null
+    formData.value = {
+      name: '',
+      email: '',
+      skills: [],
+      max_daily_bookings: 4,
+    }
+  }
+
+  // Lifecycle
+  onMounted(() => {
+    fetchCleaners()
+  })
 </script>
 
 <style scoped>

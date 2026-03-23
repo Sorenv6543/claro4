@@ -3,24 +3,24 @@
  * Safe type conversion and accessor functions for handling unknown types
  */
 
-import type { Booking } from '@/types/booking';
+import type { Booking } from '@/types/booking'
 
 /**
  * Safely converts unknown values to Date objects
  * @param value - The value to convert to Date
  * @returns Valid Date object or current date if invalid
  */
-export function safeDate(value: unknown): Date {
+export function safeDate (value: unknown): Date {
   if (value instanceof Date) {
-    return value;
+    return value
   }
 
   if (typeof value === 'string' || typeof value === 'number') {
-    const date = new Date(value);
-    return isNaN(date.getTime()) ? new Date() : date;
+    const date = new Date(value)
+    return Number.isNaN(date.getTime()) ? new Date() : date
   }
 
-  return new Date();
+  return new Date()
 }
 
 /**
@@ -29,16 +29,16 @@ export function safeDate(value: unknown): Date {
  * @param fallback - Fallback string if conversion fails
  * @returns Valid string
  */
-export function safeString(value: unknown, fallback: string = ''): string {
+export function safeString (value: unknown, fallback = ''): string {
   if (typeof value === 'string') {
-    return value;
+    return value
   }
 
   if (value === null || value === undefined) {
-    return fallback;
+    return fallback
   }
 
-  return String(value);
+  return String(value)
 }
 
 /**
@@ -47,9 +47,9 @@ export function safeString(value: unknown, fallback: string = ''): string {
  * @param field - The field name to access
  * @returns Typed field value or fallback
  */
-export function safeBookingField(booking: Booking | Record<string, unknown>, field: keyof Booking): string {
-  const value = (booking as Record<string, unknown>)?.[field];
-  return safeString(value);
+export function safeBookingField (booking: Booking | Record<string, unknown>, field: keyof Booking): string {
+  const value = (booking as Record<string, unknown>)?.[field]
+  return safeString(value)
 }
 
 /**
@@ -57,9 +57,9 @@ export function safeBookingField(booking: Booking | Record<string, unknown>, fie
  * @param booking - The booking object
  * @returns Valid Date object
  */
-export function safeCheckoutDate(booking: Booking | Record<string, unknown>): Date {
-  const dateValue = booking?.checkout_date;
-  return safeDate(dateValue);
+export function safeCheckoutDate (booking: Booking | Record<string, unknown>): Date {
+  const dateValue = booking?.checkout_date
+  return safeDate(dateValue)
 }
 
 /**
@@ -67,9 +67,9 @@ export function safeCheckoutDate(booking: Booking | Record<string, unknown>): Da
  * @param booking - The booking object
  * @returns Valid Date object
  */
-export function safeCheckinDate(booking: Booking | Record<string, unknown>): Date {
-  const dateValue = booking?.checkin_date;
-  return safeDate(dateValue);
+export function safeCheckinDate (booking: Booking | Record<string, unknown>): Date {
+  const dateValue = booking?.checkin_date
+  return safeDate(dateValue)
 }
 
 /**
@@ -77,8 +77,10 @@ export function safeCheckinDate(booking: Booking | Record<string, unknown>): Dat
  * @param value - Value to check
  * @returns True if valid date string
  */
-export function isValidDateString(value: unknown): value is string {
-  if (typeof value !== 'string') return false;
-  const date = new Date(value);
-  return !isNaN(date.getTime());
+export function isValidDateString (value: unknown): value is string {
+  if (typeof value !== 'string') {
+    return false
+  }
+  const date = new Date(value)
+  return !Number.isNaN(date.getTime())
 }

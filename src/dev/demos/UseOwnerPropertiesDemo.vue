@@ -16,11 +16,11 @@
               Owner Role Testing
             </v-chip>
           </v-card-title>
-          
+
           <v-card-text>
             <v-alert
-              type="info"
               class="mb-4"
+              type="info"
             >
               This demo tests the owner-specific property composable that filters all operations to the current owner's properties only.
             </v-alert>
@@ -127,11 +127,11 @@
               <v-card-title class="text-h6 d-flex align-center">
                 My Properties ({{ myProperties.length }})
                 <v-spacer />
-                <v-btn 
-                  color="primary" 
-                  variant="outlined" 
-                  size="small"
+                <v-btn
+                  color="primary"
                   :loading="loading"
+                  size="small"
+                  variant="outlined"
                   @click="fetchMyProperties"
                 >
                   <v-icon start>
@@ -142,22 +142,22 @@
               </v-card-title>
               <v-card-text>
                 <v-row v-if="myProperties.length > 0">
-                  <v-col 
-                    v-for="property in myProperties" 
+                  <v-col
+                    v-for="property in myProperties"
                     :key="property.id"
-                    cols="12" 
-                    md="6" 
+                    cols="12"
                     lg="4"
+                    md="6"
                   >
                     <v-card
-                      variant="outlined"
                       :color="property.active ? 'success' : 'warning'"
+                      variant="outlined"
                     >
                       <v-card-title class="text-subtitle-1">
                         {{ property.name }}
                         <v-spacer />
-                        <v-chip 
-                          :color="property.active ? 'success' : 'warning'" 
+                        <v-chip
+                          :color="property.active ? 'success' : 'warning'"
                           size="small"
                           variant="tonal"
                         >
@@ -171,17 +171,17 @@
                         <div><strong>Owner ID:</strong> {{ property.owner_id }}</div>
                       </v-card-text>
                       <v-card-actions>
-                        <v-btn 
-                          size="small" 
+                        <v-btn
+                          size="small"
                           variant="outlined"
                           @click="viewPropertyMetrics(property.id)"
                         >
                           Metrics
                         </v-btn>
-                        <v-btn 
-                          size="small" 
-                          variant="outlined"
+                        <v-btn
                           :loading="loading"
+                          size="small"
+                          variant="outlined"
                           @click="togglePropertyStatus(property.id, !property.active)"
                         >
                           {{ property.active ? 'Deactivate' : 'Activate' }}
@@ -210,8 +210,8 @@
               </v-card-title>
               <v-card-text>
                 <v-list>
-                  <v-list-item 
-                    v-for="(recommendation, index) in recommendations" 
+                  <v-list-item
+                    v-for="(recommendation, index) in recommendations"
                     :key="index"
                   >
                     <template #prepend>
@@ -277,9 +277,9 @@
                       <v-text-field
                         v-model.number="newProperty.cleaning_duration"
                         label="Cleaning Duration (minutes)"
-                        type="number"
-                        :min="30"
                         :max="480"
+                        :min="30"
+                        type="number"
                         variant="outlined"
                       />
                     </v-col>
@@ -289,8 +289,8 @@
                     >
                       <v-switch
                         v-model="newProperty.active"
-                        label="Active"
                         color="success"
+                        label="Active"
                       />
                     </v-col>
                     <v-col cols="12">
@@ -302,11 +302,11 @@
                       />
                     </v-col>
                   </v-row>
-                  <v-btn 
-                    type="submit" 
+                  <v-btn
                     color="primary"
-                    :loading="loading"
                     :disabled="!newProperty.name || !newProperty.address"
+                    :loading="loading"
+                    type="submit"
                   >
                     Create Property
                   </v-btn>
@@ -317,18 +317,18 @@
             <!-- Status Messages -->
             <v-alert
               v-if="error"
-              type="error"
               class="mb-4"
               closable
+              type="error"
               @click:close="clearError"
             >
               {{ error }}
             </v-alert>
             <v-alert
               v-if="success"
-              type="success"
               class="mb-4"
               closable
+              type="success"
               @click:close="clearSuccess"
             >
               {{ success }}
@@ -345,8 +345,8 @@
                   <v-row>
                     <v-col cols="6">
                       <v-card
-                        variant="tonal"
                         color="info"
+                        variant="tonal"
                       >
                         <v-card-text class="text-center">
                           <div class="text-h5">
@@ -360,8 +360,8 @@
                     </v-col>
                     <v-col cols="6">
                       <v-card
-                        variant="tonal"
                         color="success"
+                        variant="tonal"
                       >
                         <v-card-text class="text-center">
                           <div class="text-h5">
@@ -375,8 +375,8 @@
                     </v-col>
                     <v-col cols="6">
                       <v-card
-                        variant="tonal"
                         color="warning"
+                        variant="tonal"
                       >
                         <v-card-text class="text-center">
                           <div class="text-h5">
@@ -390,8 +390,8 @@
                     </v-col>
                     <v-col cols="6">
                       <v-card
-                        variant="tonal"
                         color="primary"
+                        variant="tonal"
                       >
                         <v-card-text class="text-center">
                           <div class="text-h5">
@@ -404,9 +404,9 @@
                       </v-card>
                     </v-col>
                   </v-row>
-                  <v-alert 
-                    :type="selectedPropertyMetrics.cleaningLoad === 'heavy' ? 'warning' : 'info'" 
+                  <v-alert
                     class="mt-4"
+                    :type="selectedPropertyMetrics.cleaningLoad === 'heavy' ? 'warning' : 'info'"
                   >
                     <strong>Cleaning Load:</strong> {{ selectedPropertyMetrics.cleaningLoad }}
                   </v-alert>
@@ -427,95 +427,95 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useOwnerProperties } from '@/composables/owner/useOwnerProperties';
-import { useAuthStore } from '@/stores/auth';
-import type { PricingTier } from '@/types';
+  import type { PricingTier } from '@/types'
+  import { computed, onMounted, ref } from 'vue'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+  import { useAuthStore } from '@/stores/auth'
 
-// Composables
-const ownerProperties = useOwnerProperties();
-const authStore = useAuthStore();
+  // Composables
+  const ownerProperties = useOwnerProperties()
+  const authStore = useAuthStore()
 
-// Destructure composable
-const {
-  loading,
-  error,
-  success,
-  myProperties,
-  myPropertyMetrics,
-  fetchMyProperties,
-  createMyProperty,
-  toggleMyPropertyStatus,
-  getMyPropertyMetrics,
-  getMyPropertyRecommendations
-} = ownerProperties;
+  // Destructure composable
+  const {
+    loading,
+    error,
+    success,
+    myProperties,
+    myPropertyMetrics,
+    fetchMyProperties,
+    createMyProperty,
+    toggleMyPropertyStatus,
+    getMyPropertyMetrics,
+    getMyPropertyRecommendations,
+  } = ownerProperties
 
-// Local state
-const metricsDialog = ref(false);
-const selectedPropertyMetrics = ref<any>(null);
+  // Local state
+  const metricsDialog = ref(false)
+  const selectedPropertyMetrics = ref<any>(null)
 
-// Form data
-const newProperty = ref({
-  name: '',
-  address: '',
-  pricing_tier: 'basic' as PricingTier,
-  cleaning_duration: 120,
-  active: true,
-  special_instructions: ''
-});
+  // Form data
+  const newProperty = ref({
+    name: '',
+    address: '',
+    pricing_tier: 'basic' as PricingTier,
+    cleaning_duration: 120,
+    active: true,
+    special_instructions: '',
+  })
 
-// Constants
-const pricingTiers = [
-  { title: 'Basic', value: 'basic' },
-  { title: 'Standard', value: 'standard' },
-  { title: 'Premium', value: 'premium' },
-  { title: 'Luxury', value: 'luxury' }
-];
+  // Constants
+  const pricingTiers = [
+    { title: 'Basic', value: 'basic' },
+    { title: 'Standard', value: 'standard' },
+    { title: 'Premium', value: 'premium' },
+    { title: 'Luxury', value: 'luxury' },
+  ]
 
-// Computed
-const currentUserId = computed(() => authStore.user?.id);
-const recommendations = computed(() => getMyPropertyRecommendations());
+  // Computed
+  const currentUserId = computed(() => authStore.user?.id)
+  const recommendations = computed(() => getMyPropertyRecommendations())
 
-// Methods
-async function createProperty() {
-  const propertyId = await createMyProperty(newProperty.value);
-  if (propertyId) {
-    // Reset form
-    newProperty.value = {
-      name: '',
-      address: '',
-      pricing_tier: 'basic',
-      cleaning_duration: 120,
-      active: true,
-      special_instructions: ''
-    };
+  // Methods
+  async function createProperty () {
+    const propertyId = await createMyProperty(newProperty.value)
+    if (propertyId) {
+      // Reset form
+      newProperty.value = {
+        name: '',
+        address: '',
+        pricing_tier: 'basic',
+        cleaning_duration: 120,
+        active: true,
+        special_instructions: '',
+      }
+    }
   }
-}
 
-async function togglePropertyStatus(id: string, active: boolean) {
-  await toggleMyPropertyStatus(id, active);
-}
-
-function viewPropertyMetrics(id: string) {
-  const metrics = getMyPropertyMetrics(id);
-  if (metrics) {
-    selectedPropertyMetrics.value = metrics;
-    metricsDialog.value = true;
+  async function togglePropertyStatus (id: string, active: boolean) {
+    await toggleMyPropertyStatus(id, active)
   }
-}
 
-function clearError() {
-  error.value = null;
-}
+  function viewPropertyMetrics (id: string) {
+    const metrics = getMyPropertyMetrics(id)
+    if (metrics) {
+      selectedPropertyMetrics.value = metrics
+      metricsDialog.value = true
+    }
+  }
 
-function clearSuccess() {
-  success.value = null;
-}
+  function clearError () {
+    error.value = null
+  }
 
-// Lifecycle
-onMounted(() => {
-  fetchMyProperties();
-});
+  function clearSuccess () {
+    success.value = null
+  }
+
+  // Lifecycle
+  onMounted(() => {
+    fetchMyProperties()
+  })
 </script>
 
 <style scoped>
@@ -527,4 +527,4 @@ onMounted(() => {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0,0,0,0.12);
 }
-</style> 
+</style>

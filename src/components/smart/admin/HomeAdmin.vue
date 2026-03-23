@@ -1,11 +1,11 @@
-<!-- 
+<!--
 👑 ADMIN INTERFACE
- src/components/smart/admin/HomeAdmin.vue - 
+ src/components/smart/admin/HomeAdmin.vue -
 
 ✅ UNFILTERED VIEW - Admin sees all data
 ✅ Access to all properties across all owners
 ✅ System-wide metrics and controls
-✅ Can manage any owner's data 
+✅ Can manage any owner's data
 
  -->
 <template>
@@ -13,246 +13,245 @@
     <!-- Main Dashboard Content (sidebar and header are now in admin layout) -->
     <AdminDashboard />
   </div>
-   
+
   <!-- Owner-focused Modals -->
 
   <PropertyModal
-    :open="propertyModalOpen"
     :mode="propertyModalMode"
+    :open="propertyModalOpen"
     :property="propertyModalData"
     @close="handlePropertyModalClose"
-    @save="handlePropertyModalSave"
     @delete="handlePropertyModalDelete"
+    @save="handlePropertyModalSave"
   />
 
   <ConfirmationDialog
+    :cancel-text="confirmDialogCancelText"
+    :confirm-text="confirmDialogConfirmText"
+    :dangerous="confirmDialogDangerous"
+    :message="confirmDialogMessage"
     :open="confirmDialogOpen"
     :title="confirmDialogTitle"
-    :message="confirmDialogMessage"
-    :confirm-text="confirmDialogConfirmText"
-    :cancel-text="confirmDialogCancelText"
-    :dangerous="confirmDialogDangerous"
-    @confirm="handleConfirmDialogConfirm"
     @cancel="handleConfirmDialogCancel"
     @close="handleConfirmDialogClose"
+    @confirm="handleConfirmDialogConfirm"
   />
 </template>
 
 <script setup lang="ts">
-import { computed, watch, onMounted, onUnmounted } from 'vue';
-import { useUIStore } from '@/stores/ui';
-import { usePropertyStore } from '@/stores/property';
-import { useBookingStore } from '@/stores/booking';
-import { useAuthStore } from '@/stores/auth';
-import { useDisplay } from 'vuetify';
-import type { Property, PropertyFormData } from '@/types';
-import { formatPropertyAddress } from '@/types/property';
-import AdminDashboard from '@/components/smart/admin/AdminDashboard.vue';
-import PropertyModal from '@/components/dumb/shared/PropertyModal.vue';
-import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue';
+  import type { Property, PropertyFormData } from '@/types'
+  import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
-const uiStore = useUIStore();
-const propertyStore = usePropertyStore();
-const bookingStore = useBookingStore();
-const authStore = useAuthStore();
-const { xs } = useDisplay();
+  import { useDisplay } from 'vuetify'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+  import AdminDashboard from '@/components/smart/admin/AdminDashboard.vue'
+  import { useAuthStore } from '@/stores/auth'
+  import { useBookingStore } from '@/stores/booking'
+  import { usePropertyStore } from '@/stores/property'
+  import { useUIStore } from '@/stores/ui'
 
-// ============================================================================
-// REACTIVE STATE
-// ============================================================================
+  // ============================================================================
+  // REACTIVE STATE
+  // ============================================================================
 
-import { ref } from 'vue';
+  import { formatPropertyAddress } from '@/types/property'
 
-const sidebarOpen = ref(true);
+  const uiStore = useUIStore()
+  const propertyStore = usePropertyStore()
+  const bookingStore = useBookingStore()
+  const authStore = useAuthStore()
+  const { xs } = useDisplay()
 
-// ============================================================================
-// COMPUTED PROPERTIES - STATE
-// ============================================================================
+  const sidebarOpen = ref(true)
 
-const isAdminAuthenticated = computed(() => {
-  return authStore.isAuthenticated && authStore.user?.role === 'admin';
-});
+  // ============================================================================
+  // COMPUTED PROPERTIES - STATE
+  // ============================================================================
 
-// ============================================================================
-// API FUNCTIONS
-// ============================================================================
+  const isAdminAuthenticated = computed(() => {
+    return authStore.isAuthenticated && authStore.user?.role === 'admin'
+  })
 
-const fetchAllUsers = async (): Promise<void> => {
-  // Placeholder for fetching all users
-  // This should be implemented based on your API/store structure
-  console.log('📊 [HomeAdmin] fetchAllUsers called');
-};
+  // ============================================================================
+  // API FUNCTIONS
+  // ============================================================================
 
-// ============================================================================
-// UI STATE - MODAL MANAGEMENT
-// ============================================================================
+  async function fetchAllUsers (): Promise<void> {
+    // Placeholder for fetching all users
+    // This should be implemented based on your API/store structure
+    console.log('📊 [HomeAdmin] fetchAllUsers called')
+  }
 
-// Property Modal
-const propertyModalOpen = computed(() => uiStore.isModalOpen('propertyModal'));
-const propertyModalMode = computed(() => {
-  const modal = uiStore.getModalState('propertyModal');
-  return (modal?.mode as 'create' | 'edit') || 'create';
-});
-const propertyModalData = computed(() => {
-  const modal = uiStore.getModalState('propertyModal');
-  return modal?.data as Property | undefined;
-});
+  // ============================================================================
+  // UI STATE - MODAL MANAGEMENT
+  // ============================================================================
 
-// Confirmation Dialog
-const confirmDialogOpen = computed(() => uiStore.isConfirmDialogOpen('confirmDialog'));
-const confirmDialogTitle = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog');
-  return dialog?.title || 'Confirm';
-});
-const confirmDialogMessage = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog');
-  return dialog?.message || 'Are you sure you want to proceed?';
-});
-const confirmDialogConfirmText = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog');
-  return dialog?.confirmText || 'Confirm';
-});
-const confirmDialogCancelText = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog');
-  return dialog?.cancelText || 'Cancel';
-});
-const confirmDialogDangerous = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog');
-  return dialog?.dangerous || false;
-});
-const confirmDialogData = computed(() => {
-  const dialog = uiStore.getConfirmDialogState('confirmDialog');
-  return dialog?.data;
-});
+  // Property Modal
+  const propertyModalOpen = computed(() => uiStore.isModalOpen('propertyModal'))
+  const propertyModalMode = computed(() => {
+    const modal = uiStore.getModalState('propertyModal')
+    return (modal?.mode as 'create' | 'edit') || 'create'
+  })
+  const propertyModalData = computed(() => {
+    const modal = uiStore.getModalState('propertyModal')
+    return modal?.data as Property | undefined
+  })
 
+  // Confirmation Dialog
+  const confirmDialogOpen = computed(() => uiStore.isConfirmDialogOpen('confirmDialog'))
+  const confirmDialogTitle = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.title || 'Confirm'
+  })
+  const confirmDialogMessage = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.message || 'Are you sure you want to proceed?'
+  })
+  const confirmDialogConfirmText = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.confirmText || 'Confirm'
+  })
+  const confirmDialogCancelText = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.cancelText || 'Cancel'
+  })
+  const confirmDialogDangerous = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.dangerous || false
+  })
+  const confirmDialogData = computed(() => {
+    const dialog = uiStore.getConfirmDialogState('confirmDialog')
+    return dialog?.data
+  })
 
-// ============================================================================
-// PROPERTY MODAL HANDLERS
-// ============================================================================
+  // ============================================================================
+  // PROPERTY MODAL HANDLERS
+  // ============================================================================
 
-const handlePropertyModalClose = (): void => {
-  uiStore.closeModal('propertyModal');
-};
+  function handlePropertyModalClose (): void {
+    uiStore.closeModal('propertyModal')
+  }
 
-const handlePropertyModalSave = async (formData: PropertyFormData): Promise<void> => {
-  try {
-    if (propertyModalMode.value === 'create') {
-      await propertyStore.addProperty(formData as Property);
-    } else {
-      const existingProperty = propertyModalData.value;
-      if (existingProperty) {
-        await propertyStore.updateProperty(existingProperty.id, formData);
+  async function handlePropertyModalSave (formData: PropertyFormData): Promise<void> {
+    try {
+      if (propertyModalMode.value === 'create') {
+        await propertyStore.addProperty(formData as Property)
+      } else {
+        const existingProperty = propertyModalData.value
+        if (existingProperty) {
+          await propertyStore.updateProperty(existingProperty.id, formData)
+        }
+      }
+      uiStore.closeModal('propertyModal')
+    } catch (error) {
+      console.error('Failed to save property:', error)
+    }
+  }
+
+  async function handlePropertyModalDelete (propertyId: string): Promise<void> {
+    const property = propertyStore.getPropertyById(propertyId)
+    const propertyName = property ? formatPropertyAddress(property, 'short') : 'this property'
+    uiStore.openConfirmDialog('confirmDialog', {
+      title: 'Delete Property',
+      message: `Are you sure you want to delete "${propertyName}"? This action cannot be undone.`,
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      dangerous: true,
+      data: { type: 'property', id: propertyId },
+    })
+  }
+
+  // ============================================================================
+  // CONFIRMATION DIALOG HANDLERS
+  // ============================================================================
+
+  async function handleConfirmDialogConfirm (): Promise<void> {
+    const data = confirmDialogData.value
+
+    if (data?.type === 'booking' && data?.id) {
+      try {
+        // Admin can delete any booking - no ownership check needed
+        await bookingStore.removeBooking(data.id as string)
+        uiStore.closeModal('eventModal')
+      } catch (error) {
+        console.error('Failed to delete booking:', error)
+      }
+    } else if (data?.type === 'property' && data?.id) {
+      try {
+        // Admin can delete any property - no ownership check needed
+        await propertyStore.removeProperty(data.id as string)
+        uiStore.closeModal('propertyModal')
+      } catch (error) {
+        console.error('Failed to delete property:', error)
       }
     }
-    uiStore.closeModal('propertyModal');
-  } catch (error) {
-    console.error('Failed to save property:', error);
+
+    uiStore.closeConfirmDialog('confirmDialog')
   }
-};
 
-const handlePropertyModalDelete = async (propertyId: string): Promise<void> => {
-  const property = propertyStore.getPropertyById(propertyId);
-  const propertyName = property ? formatPropertyAddress(property, 'short') : 'this property';
-  uiStore.openConfirmDialog('confirmDialog', {
-    title: 'Delete Property',
-    message: `Are you sure you want to delete "${propertyName}"? This action cannot be undone.`,
-    confirmText: 'Delete',
-    cancelText: 'Cancel',
-    dangerous: true,
-    data: { type: 'property', id: propertyId }
-  });
-};
+  function handleConfirmDialogCancel (): void {
+    uiStore.closeConfirmDialog('confirmDialog')
+  }
 
-// ============================================================================
-// CONFIRMATION DIALOG HANDLERS
-// ============================================================================
+  function handleConfirmDialogClose (): void {
+    uiStore.closeConfirmDialog('confirmDialog')
+  }
 
-const handleConfirmDialogConfirm = async (): Promise<void> => {
-  const data = confirmDialogData.value;
-  
-  if (data?.type === 'booking' && data?.id) {
+  // ============================================================================
+  // LIFECYCLE HOOKS
+  // ============================================================================
+
+  console.log('🔄 [HomeAdmin] Admin component script setup running...')
+
+  // Watch for template rendering (proper debugging)
+  watch(isAdminAuthenticated, newValue => {
+    console.log('🎨 [HomeAdmin] Template will render, isAdminAuthenticated:', newValue)
+  }, { immediate: true })
+
+  async function loadSystemData () {
     try {
-      // Admin can delete any booking - no ownership check needed
-      await bookingStore.removeBooking(data.id as string);
-      uiStore.closeModal('eventModal');
+      await Promise.all([
+        propertyStore.fetchProperties(),
+        bookingStore.fetchBookings(),
+        fetchAllUsers(),
+      ])
+      console.log('✅ [HomeAdmin] System data loaded successfully')
     } catch (error) {
-      console.error('Failed to delete booking:', error);
-    }
-  } else if (data?.type === 'property' && data?.id) {
-    try {
-      // Admin can delete any property - no ownership check needed
-      await propertyStore.removeProperty(data.id as string);
-      uiStore.closeModal('propertyModal');
-    } catch (error) {
-      console.error('Failed to delete property:', error);
+      console.error('❌ [HomeAdmin] Failed to load system data:', error)
     }
   }
-  
-  uiStore.closeConfirmDialog('confirmDialog');
-};
 
-const handleConfirmDialogCancel = (): void => {
-  uiStore.closeConfirmDialog('confirmDialog');
-};
-
-const handleConfirmDialogClose = (): void => {
-  uiStore.closeConfirmDialog('confirmDialog');
-};
-
-// ============================================================================
-// LIFECYCLE HOOKS
-// ============================================================================
-
-console.log('🔄 [HomeAdmin] Admin component script setup running...');
-
-// Watch for template rendering (proper debugging)
-watch(isAdminAuthenticated, (newValue) => {
-  console.log('🎨 [HomeAdmin] Template will render, isAdminAuthenticated:', newValue);
-}, { immediate: true });
-
-async function loadSystemData() {
-  try {
-    await Promise.all([
-      propertyStore.fetchProperties(),
-      bookingStore.fetchBookings(),
-      fetchAllUsers()
-    ]);
-    console.log('✅ [HomeAdmin] System data loaded successfully');
-  } catch (error) {
-    console.error('❌ [HomeAdmin] Failed to load system data:', error);
-  }
-}
-
-onMounted(() => {
-  console.log('🚀 [HomeAdmin] Admin component mounted successfully!');
-  // If auth is already resolved, load data immediately
-  if (isAdminAuthenticated.value) {
-    loadSystemData();
-  }
+  onMounted(() => {
+    console.log('🚀 [HomeAdmin] Admin component mounted successfully!')
+    // If auth is already resolved, load data immediately
+    if (isAdminAuthenticated.value) {
+      loadSystemData()
+    }
   // Otherwise the watch below will trigger when auth resolves
-});
+  })
 
-onUnmounted(() => {
+  onUnmounted(() => {
   // Cleanup if needed
-});
+  })
 
-// ============================================================================
-// RESPONSIVE BEHAVIOR
-// ============================================================================
+  // ============================================================================
+  // RESPONSIVE BEHAVIOR
+  // ============================================================================
 
-watch(xs, (newValue) => {
-  if (newValue) {
-    sidebarOpen.value = false;
-  }
-});
+  watch(xs, newValue => {
+    if (newValue) {
+      sidebarOpen.value = false
+    }
+  })
 
-// Watch for authentication changes — also covers the case where auth
-// is still loading when onMounted fires (replaces the old 5s polling loop).
-watch(isAdminAuthenticated, (newValue, oldValue) => {
-  if (newValue && !oldValue) {
-    loadSystemData();
-  }
-});
+  // Watch for authentication changes — also covers the case where auth
+  // is still loading when onMounted fires (replaces the old 5s polling loop).
+  watch(isAdminAuthenticated, (newValue, oldValue) => {
+    if (newValue && !oldValue) {
+      loadSystemData()
+    }
+  })
 </script>
 
 <style scoped>
@@ -287,7 +286,7 @@ watch(isAdminAuthenticated, (newValue, oldValue) => {
   .calendar-main-container.sidebar-open {
     margin-left: 0; /* No push on mobile */
   }
-  
+
   .main-app-header.sidebar-open {
     margin-left: 0; /* No push on mobile */
   }
@@ -418,13 +417,13 @@ watch(isAdminAuthenticated, (newValue, oldValue) => {
 }
 
 @keyframes admin-pulse {
-  0% { 
+  0% {
     box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7);
   }
-  70% { 
+  70% {
     box-shadow: 0 0 0 6px rgba(211, 47, 47, 0);
   }
-  100% { 
+  100% {
     box-shadow: 0 0 0 0 rgba(211, 47, 47, 0);
   }
 }
@@ -477,23 +476,23 @@ watch(isAdminAuthenticated, (newValue, oldValue) => {
     height: 100vh !important;
     height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
   }
-  
+
   .calendar-main-container {
     height: calc(100vh - 56px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
     margin-top: calc(56px + env(safe-area-inset-top)) !important;
     padding-bottom: env(safe-area-inset-bottom);
   }
-  
+
   .prominent-header.admin-header {
     height: 70px !important;
     min-height: 70px !important;
     max-height: 70px !important;
   }
-  
+
   .calendar-content {
     height: calc(100% - 70px) !important;
   }
-  
+
   .month-display-prominent.admin-month {
     min-width: 180px !important;
     padding: 8px 16px !important;
@@ -508,4 +507,3 @@ watch(isAdminAuthenticated, (newValue, oldValue) => {
   }
 }
 </style>
-

@@ -6,8 +6,8 @@
   >
     <v-card-text class="pa-3">
       <v-container
-        fluid
         class="pa-0"
+        fluid
       >
         <!-- Main Controls Row -->
         <v-row
@@ -17,8 +17,8 @@
           <!-- Navigation Controls -->
           <v-col cols="auto">
             <v-btn-group
-              variant="outlined"
               density="comfortable"
+              variant="outlined"
             >
               <v-btn
                 :disabled="loading"
@@ -27,7 +27,7 @@
                 <v-icon>mdi-chevron-left</v-icon>
                 <span class="d-none d-sm-inline ml-1">Previous</span>
               </v-btn>
-              
+
               <v-btn
                 :disabled="loading"
                 @click="handleNavigation('today')"
@@ -35,7 +35,7 @@
                 <v-icon>mdi-calendar-today</v-icon>
                 <span class="d-none d-sm-inline ml-1">Today</span>
               </v-btn>
-              
+
               <v-btn
                 :disabled="loading"
                 @click="handleNavigation('next')"
@@ -45,13 +45,13 @@
               </v-btn>
             </v-btn-group>
           </v-col>
-          
+
           <v-spacer />
-          
+
           <!-- Current Date Display -->
           <v-col
-            cols="auto"
             class="text-center"
+            cols="auto"
           >
             <div class="text-h6 font-weight-medium">
               {{ currentDateDisplay }}
@@ -60,38 +60,38 @@
               {{ currentDateSubtitle }}
             </div>
           </v-col>
-          
+
           <v-spacer />
-          
+
           <!-- View Controls -->
           <v-col cols="auto">
             <v-btn-group
               v-model="selectedView"
-              variant="outlined"
               density="comfortable"
               mandatory
+              variant="outlined"
             >
               <v-btn
-                value="dayGridMonth"
                 :disabled="loading"
+                value="dayGridMonth"
                 @click="handleViewChange('dayGridMonth')"
               >
                 <v-icon>mdi-calendar-month</v-icon>
                 <span class="d-none d-md-inline ml-1">Month</span>
               </v-btn>
-              
+
               <v-btn
-                value="timeGridWeek"
                 :disabled="loading"
+                value="timeGridWeek"
                 @click="handleViewChange('timeGridWeek')"
               >
                 <v-icon>mdi-calendar-week</v-icon>
                 <span class="d-none d-md-inline ml-1">Week</span>
               </v-btn>
-              
+
               <v-btn
-                value="timeGridDay"
                 :disabled="loading"
+                value="timeGridDay"
                 @click="handleViewChange('timeGridDay')"
               >
                 <v-icon>mdi-calendar</v-icon>
@@ -100,7 +100,7 @@
             </v-btn-group>
           </v-col>
         </v-row>
-        
+
         <!-- Secondary Controls Row (Mobile/Tablet) -->
         <v-row
           v-if="showSecondaryControls"
@@ -109,49 +109,49 @@
           <!-- Property Filter -->
           <v-col
             cols="12"
-            sm="6"
             md="4"
+            sm="6"
           >
             <v-select
               v-model="selectedProperty"
-              :items="propertyFilterItems"
-              label="Filter by Property"
-              variant="outlined"
               density="compact"
               :disabled="loading"
+              :items="propertyFilterItems"
+              label="Filter by Property"
               prepend-inner-icon="mdi-home"
+              variant="outlined"
               @update:model-value="handlePropertyFilter"
             />
           </v-col>
-          
+
           <!-- Booking Type Filter -->
           <v-col
             cols="12"
-            sm="6"
             md="4"
+            sm="6"
           >
             <v-select
               v-model="selectedBookingType"
-              :items="bookingTypeFilterItems"
-              label="Filter by Type"
-              variant="outlined"
               density="compact"
               :disabled="loading"
+              :items="bookingTypeFilterItems"
+              label="Filter by Type"
               prepend-inner-icon="mdi-filter"
+              variant="outlined"
               @update:model-value="handleBookingTypeFilter"
             />
           </v-col>
-          
+
           <!-- Quick Actions -->
           <v-col
             cols="12"
             md="4"
           >
             <v-btn
-              color="primary"
-              variant="elevated"
               block
+              color="primary"
               :disabled="loading"
+              variant="elevated"
               @click="handleQuickAction('add-booking')"
             >
               <v-icon class="mr-2">
@@ -161,7 +161,7 @@
             </v-btn>
           </v-col>
         </v-row>
-        
+
         <!-- Toggle Secondary Controls (Mobile) -->
         <v-row
           v-if="!showSecondaryControls"
@@ -169,9 +169,9 @@
         >
           <v-col cols="12">
             <v-btn
-              variant="text"
-              size="small"
               block
+              size="small"
+              variant="text"
               @click="showSecondaryControls = true"
             >
               <v-icon class="mr-1">
@@ -181,7 +181,7 @@
             </v-btn>
           </v-col>
         </v-row>
-        
+
         <!-- Hide Secondary Controls -->
         <v-row
           v-else
@@ -189,9 +189,9 @@
         >
           <v-col cols="12">
             <v-btn
-              variant="text"
-              size="small"
               block
+              size="small"
+              variant="text"
               @click="showSecondaryControls = false"
             >
               <v-icon class="mr-1">
@@ -207,146 +207,142 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { formatPropertyAddress } from '@/types/property'
+  import { computed, ref } from 'vue'
+  import { formatPropertyAddress } from '@/types/property'
 
-// Props
-interface Props {
-  currentDate?: Date
-  view?: CalendarView
-  properties?: PropertyOption[]
-  loading?: boolean
-  elevation?: number
-  variant?: 'elevated' | 'flat' | 'tonal' | 'outlined' | 'text' | 'plain'
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  currentDate: () => new Date(),
-  view: 'dayGridMonth',
-  properties: () => [],
-  loading: false,
-  elevation: 1,
-  variant: 'outlined'
-})
-
-// Emits
-interface Emits {
-  (e: 'navigation', direction: NavigationDirection): void
-  (e: 'view-change', view: CalendarView): void
-  (e: 'property-filter', propertyId: string | null): void
-  (e: 'booking-type-filter', bookingType: BookingTypeFilter): void
-  (e: 'quick-action', action: QuickAction): void
-}
-
-const emit = defineEmits<Emits>()
-
-// Types
-type CalendarView = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'
-type NavigationDirection = 'prev' | 'next' | 'today'
-type BookingTypeFilter = 'all' | 'standard' | 'turn'
-type QuickAction = 'add-booking'
-
-interface PropertyOption {
-  id: string
-  address_street: string
-  address_unit?: string
-  address_city: string
-  address_state: string
-  address_zip: string
-}
-
-// Reactive data
-const selectedView = ref<CalendarView>(props.view)
-const selectedProperty = ref<string | null>(null)
-const selectedBookingType = ref<BookingTypeFilter>('all')
-const showSecondaryControls = ref(false)
-
-// Computed properties
-const currentDateDisplay = computed(() => {
-  const date = props.currentDate
-  const options: Intl.DateTimeFormatOptions = {
-    year: 'numeric',
-    month: 'long'
+  // Props
+  interface Props {
+    currentDate?: Date
+    view?: CalendarView
+    properties?: PropertyOption[]
+    loading?: boolean
+    elevation?: number
+    variant?: 'elevated' | 'flat' | 'tonal' | 'outlined' | 'text' | 'plain'
   }
-  
-  if (selectedView.value === 'timeGridWeek') {
-    // For week view, show week range
-    const startOfWeek = new Date(date)
-    startOfWeek.setDate(date.getDate() - date.getDay())
-    const endOfWeek = new Date(startOfWeek)
-    endOfWeek.setDate(startOfWeek.getDate() + 6)
-    
-    if (startOfWeek.getMonth() === endOfWeek.getMonth()) {
-      return `${startOfWeek.getDate()} - ${endOfWeek.getDate()} ${startOfWeek.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`
-    } else {
-      return `${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
-    }
-  } else if (selectedView.value === 'timeGridDay') {
-    // For day view, show full date
-    return date.toLocaleDateString('en-US', { 
-      weekday: 'long', 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    })
-  } else {
-    // For month view, show month and year
-    return date.toLocaleDateString('en-US', options)
-  }
-})
 
-const currentDateSubtitle = computed(() => {
-  if (selectedView.value === 'dayGridMonth') {
-    return 'Month View'
-  } else if (selectedView.value === 'timeGridWeek') {
-    return 'Week View'
-  } else {
-    return 'Day View'
-  }
-})
-
-const propertyFilterItems = computed(() => {
-  const items: { title: string; value: string | null }[] = [
-    { title: 'All Properties', value: null }
-  ]
-  
-  props.properties.forEach(property => {
-    items.push({
-      title: formatPropertyAddress(property, 'short'),
-      value: property.id
-    })
+  const props = withDefaults(defineProps<Props>(), {
+    currentDate: () => new Date(),
+    view: 'dayGridMonth',
+    properties: () => [],
+    loading: false,
+    elevation: 1,
+    variant: 'outlined',
   })
-  
-  return items
-})
 
-const bookingTypeFilterItems = [
-  { title: 'All Bookings', value: 'all' },
-  { title: 'Standard Cleanings', value: 'standard' },
-  { title: 'Same-Day Turns', value: 'turn' }
-]
+  // Emits
+  interface Emits {
+    (e: 'navigation', direction: NavigationDirection): void
+    (e: 'view-change', view: CalendarView): void
+    (e: 'property-filter', propertyId: string | null): void
+    (e: 'booking-type-filter', bookingType: BookingTypeFilter): void
+    (e: 'quick-action', action: QuickAction): void
+  }
 
-// Methods
-const handleNavigation = (direction: NavigationDirection) => {
-  emit('navigation', direction)
-}
+  const emit = defineEmits<Emits>()
 
-const handleViewChange = (view: CalendarView) => {
-  selectedView.value = view
-  emit('view-change', view)
-}
+  // Types
+  type CalendarView = 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay'
+  type NavigationDirection = 'prev' | 'next' | 'today'
+  type BookingTypeFilter = 'all' | 'standard' | 'turn'
+  type QuickAction = 'add-booking'
 
-const handlePropertyFilter = (propertyId: string | null) => {
-  emit('property-filter', propertyId)
-}
+  interface PropertyOption {
+    id: string
+    address_street: string
+    address_unit?: string
+    address_city: string
+    address_state: string
+    address_zip: string
+  }
 
-const handleBookingTypeFilter = (bookingType: BookingTypeFilter) => {
-  emit('booking-type-filter', bookingType)
-}
+  // Reactive data
+  const selectedView = ref<CalendarView>(props.view)
+  const selectedProperty = ref<string | null>(null)
+  const selectedBookingType = ref<BookingTypeFilter>('all')
+  const showSecondaryControls = ref(false)
 
-const handleQuickAction = (action: QuickAction) => {
-  emit('quick-action', action)
-}
+  // Computed properties
+  const currentDateDisplay = computed(() => {
+    const date = props.currentDate
+    const options: Intl.DateTimeFormatOptions = {
+      year: 'numeric',
+      month: 'long',
+    }
+
+    if (selectedView.value === 'timeGridWeek') {
+      // For week view, show week range
+      const startOfWeek = new Date(date)
+      startOfWeek.setDate(date.getDate() - date.getDay())
+      const endOfWeek = new Date(startOfWeek)
+      endOfWeek.setDate(startOfWeek.getDate() + 6)
+
+      return startOfWeek.getMonth() === endOfWeek.getMonth() ? `${startOfWeek.getDate()} - ${endOfWeek.getDate()} ${startOfWeek.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}` : `${startOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - ${endOfWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`
+    } else if (selectedView.value === 'timeGridDay') {
+      // For day view, show full date
+      return date.toLocaleDateString('en-US', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      })
+    } else {
+      // For month view, show month and year
+      return date.toLocaleDateString('en-US', options)
+    }
+  })
+
+  const currentDateSubtitle = computed(() => {
+    if (selectedView.value === 'dayGridMonth') {
+      return 'Month View'
+    } else if (selectedView.value === 'timeGridWeek') {
+      return 'Week View'
+    } else {
+      return 'Day View'
+    }
+  })
+
+  const propertyFilterItems = computed(() => {
+    const items: { title: string, value: string | null }[] = [
+      { title: 'All Properties', value: null },
+    ]
+
+    for (const property of props.properties) {
+      items.push({
+        title: formatPropertyAddress(property, 'short'),
+        value: property.id,
+      })
+    }
+
+    return items
+  })
+
+  const bookingTypeFilterItems = [
+    { title: 'All Bookings', value: 'all' },
+    { title: 'Standard Cleanings', value: 'standard' },
+    { title: 'Same-Day Turns', value: 'turn' },
+  ]
+
+  // Methods
+  function handleNavigation (direction: NavigationDirection) {
+    emit('navigation', direction)
+  }
+
+  function handleViewChange (view: CalendarView) {
+    selectedView.value = view
+    emit('view-change', view)
+  }
+
+  function handlePropertyFilter (propertyId: string | null) {
+    emit('property-filter', propertyId)
+  }
+
+  function handleBookingTypeFilter (bookingType: BookingTypeFilter) {
+    emit('booking-type-filter', bookingType)
+  }
+
+  function handleQuickAction (action: QuickAction) {
+    emit('quick-action', action)
+  }
 </script>
 
 <style scoped>
@@ -365,11 +361,11 @@ const handleQuickAction = (action: QuickAction) => {
     min-height: 36px;
     padding: 0 8px;
   }
-  
+
   .v-btn-group .v-btn .v-icon {
     font-size: 1.1rem;
   }
-  
+
   .text-h6 {
     font-size: 1.1rem !important;
   }
@@ -390,4 +386,4 @@ const handleQuickAction = (action: QuickAction) => {
 .v-btn-group .v-btn:not(:last-child) {
   border-right: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
-</style> 
+</style>

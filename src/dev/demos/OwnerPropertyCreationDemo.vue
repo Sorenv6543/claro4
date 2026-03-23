@@ -1,13 +1,13 @@
 <template>
   <div class="demo-container">
     <v-card
-      max-width="800"
       class="mx-auto"
+      max-width="800"
     >
       <v-card-title class="d-flex align-center">
         <v-icon
-          icon="mdi-home-plus"
           class="mr-3"
+          icon="mdi-home-plus"
         />
         Owner Property Creation Demo
         <v-spacer />
@@ -18,24 +18,24 @@
           Role-Based Architecture
         </v-chip>
       </v-card-title>
-      
+
       <v-card-text>
         <v-alert
+          class="mb-4"
           type="info"
           variant="tonal"
-          class="mb-4"
         >
           <v-icon
-            icon="mdi-information"
             class="mr-2"
+            icon="mdi-information"
           />
           This demo shows the proper role-based flow for creating properties as defined in the project guidelines.
         </v-alert>
 
         <!-- Architecture Flow Diagram -->
         <v-card
-          variant="outlined"
           class="mb-4"
+          variant="outlined"
         >
           <v-card-subtitle class="text-subtitle-2 font-weight-bold">
             🏗️ Role-Based Architecture Flow
@@ -57,8 +57,8 @@
                     Smart Component - User clicks "Add Property"
                   </div>
                   <v-chip
-                    size="small"
                     color="primary"
+                    size="small"
                     variant="tonal"
                   >
                     emit('createProperty')
@@ -67,8 +67,8 @@
               </div>
 
               <v-icon
-                color="surface-variant"
                 class="flow-arrow"
+                color="surface-variant"
               >
                 mdi-arrow-down
               </v-icon>
@@ -88,8 +88,8 @@
                     Orchestrator - Handles business logic
                   </div>
                   <v-chip
-                    size="small"
                     color="secondary"
+                    size="small"
                     variant="tonal"
                   >
                     handleCreateProperty()
@@ -98,8 +98,8 @@
               </div>
 
               <v-icon
-                color="surface-variant"
                 class="flow-arrow"
+                color="surface-variant"
               >
                 mdi-arrow-down
               </v-icon>
@@ -119,8 +119,8 @@
                     Shared Component - Displays form with owner_id set
                   </div>
                   <v-chip
-                    size="small"
                     color="success"
+                    size="small"
                     variant="tonal"
                   >
                     uiStore.openModal()
@@ -138,22 +138,22 @@
             md="6"
           >
             <v-card
-              variant="outlined"
               color="primary"
+              variant="outlined"
             >
               <v-card-subtitle class="text-subtitle-2 font-weight-bold text-primary">
                 ✅ Role-Based Data Access
               </v-card-subtitle>
               <v-card-text>
                 <v-list
-                  density="compact"
                   class="text-body-2"
+                  density="compact"
                 >
                   <v-list-item>
                     <template #prepend>
                       <v-icon
-                        size="16"
                         color="primary"
+                        size="16"
                       >
                         mdi-check
                       </v-icon>
@@ -163,8 +163,8 @@
                   <v-list-item>
                     <template #prepend>
                       <v-icon
-                        size="16"
                         color="primary"
+                        size="16"
                       >
                         mdi-check
                       </v-icon>
@@ -174,8 +174,8 @@
                   <v-list-item>
                     <template #prepend>
                       <v-icon
-                        size="16"
                         color="primary"
+                        size="16"
                       >
                         mdi-check
                       </v-icon>
@@ -186,28 +186,28 @@
               </v-card-text>
             </v-card>
           </v-col>
-          
+
           <v-col
             cols="12"
             md="6"
           >
             <v-card
-              variant="outlined"
               color="secondary"
+              variant="outlined"
             >
               <v-card-subtitle class="text-subtitle-2 font-weight-bold text-secondary">
                 🎯 Separation of Concerns
               </v-card-subtitle>
               <v-card-text>
                 <v-list
-                  density="compact"
                   class="text-body-2"
+                  density="compact"
                 >
                   <v-list-item>
                     <template #prepend>
                       <v-icon
-                        size="16"
                         color="secondary"
+                        size="16"
                       >
                         mdi-check
                       </v-icon>
@@ -217,8 +217,8 @@
                   <v-list-item>
                     <template #prepend>
                       <v-icon
-                        size="16"
                         color="secondary"
+                        size="16"
                       >
                         mdi-check
                       </v-icon>
@@ -228,8 +228,8 @@
                   <v-list-item>
                     <template #prepend>
                       <v-icon
-                        size="16"
                         color="secondary"
+                        size="16"
                       >
                         mdi-check
                       </v-icon>
@@ -244,8 +244,8 @@
 
         <!-- Code Examples -->
         <v-card
-          variant="outlined"
           class="mt-4"
+          variant="outlined"
         >
           <v-card-subtitle class="text-subtitle-2 font-weight-bold">
             📝 Implementation Code
@@ -289,7 +289,7 @@ const handleCreateProperty = (): void =&gt; {
   const propertyData = {
     owner_id: currentOwnerId.value  // Role-based data scoping
   };
-  
+
   uiStore.openModal('propertyModal', 'create', propertyData);
 };</code></pre>
               </v-window-item>
@@ -309,9 +309,9 @@ const handleCreateProperty = (): void =&gt; {
 
         <!-- Test Actions -->
         <v-card
-          variant="outlined"
           class="mt-4"
           color="success"
+          variant="outlined"
         >
           <v-card-subtitle class="text-subtitle-2 font-weight-bold text-success">
             🧪 Test the Implementation
@@ -338,9 +338,9 @@ const handleCreateProperty = (): void =&gt; {
             <v-expand-transition>
               <v-alert
                 v-if="showImplementationDetails"
+                class="mt-4"
                 type="info"
                 variant="tonal"
-                class="mt-4"
               >
                 <div class="text-subtitle-2 mb-2">
                   Implementation Benefits:
@@ -362,22 +362,22 @@ const handleCreateProperty = (): void =&gt; {
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+  import { ref } from 'vue'
 
-const activeTab = ref('sidebar');
-const showImplementationDetails = ref(false);
+  const activeTab = ref('sidebar')
+  const showImplementationDetails = ref(false)
 
-const testCreateProperty = () => {
-  // In real implementation, this would trigger the actual flow
-  console.log('🏠 Testing property creation flow...');
-  console.log('1. OwnerSidebar emits createProperty event');
-  console.log('2. HomeOwner receives event and calls handleCreateProperty');
-  console.log('3. PropertyModal opens with owner_id set');
-  console.log('✅ Role-based property creation flow complete!');
-  
-  // Show visual feedback
-  showImplementationDetails.value = true;
-};
+  function testCreateProperty () {
+    // In real implementation, this would trigger the actual flow
+    console.log('🏠 Testing property creation flow...')
+    console.log('1. OwnerSidebar emits createProperty event')
+    console.log('2. HomeOwner receives event and calls handleCreateProperty')
+    console.log('3. PropertyModal opens with owner_id set')
+    console.log('✅ Role-based property creation flow complete!')
+
+    // Show visual feedback
+    showImplementationDetails.value = true
+  }
 </script>
 
 <style scoped>
@@ -444,9 +444,9 @@ const testCreateProperty = () => {
     flex-direction: column;
     text-align: center;
   }
-  
+
   .step-content {
     text-align: center;
   }
 }
-</style> 
+</style>

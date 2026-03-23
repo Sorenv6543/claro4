@@ -1,7 +1,7 @@
 <template>
   <v-container
-    fluid
     class="performance-dashboard"
+    fluid
   >
     <!-- Performance Overview Header -->
     <v-row class="mb-4">
@@ -18,8 +18,8 @@
           <div class="d-flex align-center gap-3">
             <v-chip
               :color="performanceScore >= 90 ? 'success' : performanceScore >= 70 ? 'warning' : 'error'"
-              variant="elevated"
               size="large"
+              variant="elevated"
             >
               <v-icon start>
                 mdi-speedometer
@@ -47,10 +47,10 @@
         <v-alert
           v-for="alert in performanceAlerts"
           :key="alert.metric"
+          class="mb-2"
+          closable
           :type="alert.level === 'critical' ? 'error' : alert.level"
           variant="tonal"
-          closable
-          class="mb-2"
         >
           <template #title>
             <strong>{{ alert.message }}</strong>
@@ -89,19 +89,19 @@
                   {{ performanceScore }}%
                 </h3>
               </div>
-              <v-icon 
-                size="40" 
+              <v-icon
                 :color="performanceScore >= 90 ? 'success' : performanceScore >= 70 ? 'warning' : 'error'"
+                size="40"
               >
                 mdi-speedometer
               </v-icon>
             </div>
             <v-progress-linear
-              :model-value="performanceScore"
+              class="mt-3"
               :color="performanceScore >= 90 ? 'success' : performanceScore >= 70 ? 'warning' : 'error'"
               height="6"
+              :model-value="performanceScore"
               rounded
-              class="mt-3"
             />
           </v-card-text>
         </v-card>
@@ -131,8 +131,8 @@
                 </p>
               </div>
               <v-icon
-                size="40"
                 color="primary"
+                size="40"
               >
                 mdi-connection
               </v-icon>
@@ -174,8 +174,8 @@
                 </p>
               </div>
               <v-icon
-                size="40"
                 color="info"
+                size="40"
               >
                 mdi-memory
               </v-icon>
@@ -217,8 +217,8 @@
                 </p>
               </div>
               <v-icon
-                size="40"
                 color="warning"
+                size="40"
               >
                 mdi-package-variant
               </v-icon>
@@ -248,8 +248,8 @@
                 <div class="role-performance-section">
                   <h4 class="text-h6 mb-3 d-flex align-center">
                     <v-icon
-                      color="success"
                       class="mr-2"
+                      color="success"
                     >
                       mdi-home-account
                     </v-icon>
@@ -270,9 +270,9 @@
                     </div>
                     <div class="metric-item">
                       <span class="metric-label">Efficiency:</span>
-                      <v-chip 
-                        size="small" 
+                      <v-chip
                         :color="getOwnerEfficiency() >= 90 ? 'success' : 'warning'"
+                        size="small"
                       >
                         {{ getOwnerEfficiency() }}%
                       </v-chip>
@@ -289,8 +289,8 @@
                 <div class="role-performance-section">
                   <h4 class="text-h6 mb-3 d-flex align-center">
                     <v-icon
-                      color="primary"
                       class="mr-2"
+                      color="primary"
                     >
                       mdi-shield-account
                     </v-icon>
@@ -311,9 +311,9 @@
                     </div>
                     <div class="metric-item">
                       <span class="metric-label">Efficiency:</span>
-                      <v-chip 
-                        size="small" 
+                      <v-chip
                         :color="getAdminEfficiency() >= 85 ? 'success' : 'warning'"
+                        size="small"
                       >
                         {{ getAdminEfficiency() }}%
                       </v-chip>
@@ -330,8 +330,8 @@
                 <div class="role-performance-section">
                   <h4 class="text-h6 mb-3 d-flex align-center">
                     <v-icon
-                      color="info"
                       class="mr-2"
+                      color="info"
                     >
                       mdi-share-variant
                     </v-icon>
@@ -353,8 +353,8 @@
                     <div class="metric-item">
                       <span class="metric-label">Impact:</span>
                       <v-chip
-                        size="small"
                         color="success"
+                        size="small"
                       >
                         High
                       </v-chip>
@@ -401,25 +401,25 @@
                     </div>
                   </div>
                 </div>
-                
+
                 <div class="chart-content">
-                  <div 
+                  <div
                     v-for="(snapshot, index) in recentSnapshots"
                     :key="snapshot.timestamp"
                     class="chart-bar"
                     :style="{ left: `${(index / recentSnapshots.length) * 100}%` }"
                   >
-                    <div 
+                    <div
                       class="bar subscriptions"
                       :style="{ height: `${(snapshot.totalSubscriptions / 60) * 100}%` }"
                       :title="`Subscriptions: ${snapshot.totalSubscriptions}`"
                     />
-                    <div 
+                    <div
                       class="bar memory"
                       :style="{ height: `${(snapshot.memoryUsage / 150) * 100}%` }"
                       :title="`Memory: ${snapshot.memoryUsage.toFixed(1)}MB`"
                     />
-                    <div 
+                    <div
                       class="bar network"
                       :style="{ height: `${(snapshot.networkEfficiency / 500) * 100}%` }"
                       :title="`Network: ${snapshot.networkEfficiency.toFixed(0)}ms`"
@@ -446,16 +446,16 @@
           </v-card-title>
           <v-card-text>
             <div class="component-list">
-              <div 
+              <div
                 v-for="component in topComponents"
                 :key="component.componentName"
                 class="component-item"
               >
                 <div class="component-header">
                   <span class="component-name">{{ component.componentName }}</span>
-                  <v-chip 
-                    size="x-small" 
+                  <v-chip
                     :color="getComponentStatusColor(component.renderTime)"
+                    size="x-small"
                   >
                     {{ component.renderTime.toFixed(1) }}ms
                   </v-chip>
@@ -502,8 +502,8 @@
                 </div>
                 <div class="baseline-value">
                   <v-progress-circular
-                    :model-value="(subscriptionReduction / 67) * 100"
                     :color="subscriptionReduction >= 60 ? 'success' : 'warning'"
+                    :model-value="(subscriptionReduction / 67) * 100"
                     size="80"
                     width="8"
                   >
@@ -521,8 +521,8 @@
                 </div>
                 <div class="baseline-value">
                   <v-progress-circular
-                    :model-value="(memoryReduction / 60) * 100"
                     :color="memoryReduction >= 50 ? 'success' : 'warning'"
+                    :model-value="(memoryReduction / 60) * 100"
                     size="80"
                     width="8"
                   >
@@ -540,8 +540,8 @@
                 </div>
                 <div class="baseline-value">
                   <v-progress-circular
-                    :model-value="Math.max(0, 100 - ((buildTime - 15) / 10) * 100)"
                     :color="buildTime <= 18 ? 'success' : 'warning'"
+                    :model-value="Math.max(0, 100 - ((buildTime - 15) / 10) * 100)"
                     size="80"
                     width="8"
                   >
@@ -559,8 +559,8 @@
                 </div>
                 <div class="baseline-value">
                   <v-progress-circular
-                    model-value="95"
                     color="success"
+                    model-value="95"
                     size="80"
                     width="8"
                   >
@@ -577,184 +577,189 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
+  import { computed } from 'vue'
+  import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
 
-type TrendType = 'improving' | 'degrading' | 'stable';
+  type TrendType = 'improving' | 'degrading' | 'stable'
 
-// Performance monitoring
-const {
-  isEnabled,
-  currentMetrics,
-  componentPerformance,
-  rolePerformance,
-  performanceHistory,
-  performanceScore,
-  performanceAlerts,
-  performanceTrends,
-  enableMonitoring,
-  disableMonitoring,
-  PERFORMANCE_THRESHOLDS,
-  PERFORMANCE_BASELINES
-} = usePerformanceMonitor()
+  // Performance monitoring
+  const {
+    isEnabled,
+    currentMetrics,
+    componentPerformance,
+    rolePerformance,
+    performanceHistory,
+    performanceScore,
+    performanceAlerts,
+    performanceTrends,
+    enableMonitoring,
+    disableMonitoring,
+    PERFORMANCE_THRESHOLDS,
+    PERFORMANCE_BASELINES,
+  } = usePerformanceMonitor()
 
-// Computed values
-const currentSubscriptions = computed(() => {
-  const metric = currentMetrics.value.get('totalSubscriptions')
-  return metric?.value || 0
-})
+  // Computed values
+  const currentSubscriptions = computed(() => {
+    const metric = currentMetrics.value.get('totalSubscriptions')
+    return metric?.value || 0
+  })
 
-const currentMemory = computed(() => {
-  const metric = currentMetrics.value.get('memoryUsage')
-  return metric?.value || 0
-})
+  const currentMemory = computed(() => {
+    const metric = currentMetrics.value.get('memoryUsage')
+    return metric?.value || 0
+  })
 
-const bundleLoadTime = computed(() => {
-  const metric = currentMetrics.value.get('bundleLoadTime')
-  return (metric?.value || 0) / 1000 // Convert to seconds
-})
+  const bundleLoadTime = computed(() => {
+    const metric = currentMetrics.value.get('bundleLoadTime')
+    return (metric?.value || 0) / 1000 // Convert to seconds
+  })
 
-const subscriptionReduction = computed(() => {
-  const current = currentSubscriptions.value
-  const original = PERFORMANCE_BASELINES.originalSubscriptions
-  return Math.round(((original - current) / original) * 100)
-})
+  const subscriptionReduction = computed(() => {
+    const current = currentSubscriptions.value
+    const original = PERFORMANCE_BASELINES.originalSubscriptions
+    return Math.round(((original - current) / original) * 100)
+  })
 
-const memoryReduction = computed(() => {
-  // Estimated based on current efficiency
-  return Math.round(PERFORMANCE_BASELINES.memoryReduction * 100)
-})
+  const memoryReduction = computed(() => {
+    // Estimated based on current efficiency
+    return Math.round(PERFORMANCE_BASELINES.memoryReduction * 100)
+  })
 
-const buildTime = computed(() => 17.47) // Current achievement
+  const buildTime = computed(() => 17.47) // Current achievement
 
-const subscriptionTrend = computed<TrendType>(() => {
-  const trend = performanceTrends.value.subscriptions
-  return (trend || 'stable') as TrendType
-})
+  const subscriptionTrend = computed<TrendType>(() => {
+    const trend = performanceTrends.value.subscriptions
+    return (trend || 'stable') as TrendType
+  })
 
-const memoryTrend = computed<TrendType>(() => {
-  const trend = performanceTrends.value.memory
-  return (trend || 'stable') as TrendType
-})
+  const memoryTrend = computed<TrendType>(() => {
+    const trend = performanceTrends.value.memory
+    return (trend || 'stable') as TrendType
+  })
 
-const roleDistribution = computed(() => {
-  if (performanceHistory.value.length === 0) {
-    return { owner: 0, admin: 0, shared: 0 }
+  const roleDistribution = computed(() => {
+    if (performanceHistory.value.length === 0) {
+      return { owner: 0, admin: 0, shared: 0 }
+    }
+
+    const latest = performanceHistory.value.at(-1)
+    return latest!.roleDistribution
+  })
+
+  const recentSnapshots = computed(() => {
+    return performanceHistory.value.slice(-20) // Last 20 measurements
+  })
+
+  const topComponents = computed(() => {
+    return Array.from(componentPerformance.value.values())
+      .toSorted((a, b) => b.renderTime - a.renderTime)
+      .slice(0, 8)
+  })
+
+  // Status computed values
+  const subscriptionEfficiencyColor = computed(() =>
+    subscriptionReduction.value >= 60 ? 'text-success' : 'text-warning',
+  )
+
+  const memoryStatusColor = computed(() =>
+    currentMemory.value <= PERFORMANCE_THRESHOLDS.maxMemoryUsage ? 'text-success' : 'text-error',
+  )
+
+  const memoryStatus = computed(() =>
+    currentMemory.value <= PERFORMANCE_THRESHOLDS.maxMemoryUsage * 0.7
+      ? 'Excellent'
+      : (currentMemory.value <= PERFORMANCE_THRESHOLDS.maxMemoryUsage ? 'Good' : 'High'),
+  )
+
+  const bundleStatusColor = computed(() =>
+    bundleLoadTime.value <= 3 ? 'text-success' : 'text-warning',
+  )
+
+  const bundleStatus = computed(() =>
+    bundleLoadTime.value <= 2
+      ? 'Excellent'
+      : (bundleLoadTime.value <= 3 ? 'Good' : 'Slow'),
+  )
+
+  // Helper functions
+  function toggleMonitoring (): void {
+    if (isEnabled.value) {
+      disableMonitoring()
+    } else {
+      enableMonitoring()
+    }
   }
-  
-  const latest = performanceHistory.value[performanceHistory.value.length - 1]
-  return latest.roleDistribution
-})
 
-const recentSnapshots = computed(() => {
-  return performanceHistory.value.slice(-20) // Last 20 measurements
-})
-
-const topComponents = computed(() => {
-  return Array.from(componentPerformance.value.values())
-    .sort((a, b) => b.renderTime - a.renderTime)
-    .slice(0, 8)
-})
-
-// Status computed values
-const subscriptionEfficiencyColor = computed(() => 
-  subscriptionReduction.value >= 60 ? 'text-success' : 'text-warning'
-)
-
-const memoryStatusColor = computed(() => 
-  currentMemory.value <= PERFORMANCE_THRESHOLDS.maxMemoryUsage ? 'text-success' : 'text-error'
-)
-
-const memoryStatus = computed(() => 
-  currentMemory.value <= PERFORMANCE_THRESHOLDS.maxMemoryUsage * 0.7 ? 'Excellent' :
-  currentMemory.value <= PERFORMANCE_THRESHOLDS.maxMemoryUsage ? 'Good' : 'High'
-)
-
-const bundleStatusColor = computed(() => 
-  bundleLoadTime.value <= 3 ? 'text-success' : 'text-warning'
-)
-
-const bundleStatus = computed(() => 
-  bundleLoadTime.value <= 2 ? 'Excellent' :
-  bundleLoadTime.value <= 3 ? 'Good' : 'Slow'
-)
-
-// Helper functions
-function toggleMonitoring(): void {
-  if (isEnabled.value) {
-    disableMonitoring()
-  } else {
-    enableMonitoring()
+  function getScoreColor (score: number): string {
+    if (score >= 90) return 'text-success'
+    if (score >= 70) return 'text-warning'
+    return 'text-error'
   }
-}
 
-function getScoreColor(score: number): string {
-  if (score >= 90) return 'text-success'
-  if (score >= 70) return 'text-warning'
-  return 'text-error'
-}
-
-function getTrendIcon(trend: TrendType): string {
-  switch (trend) {
-    case 'improving':
-      return 'mdi-trending-up'
-    case 'degrading':
-      return 'mdi-trending-down'
-    default:
-      return 'mdi-trending-neutral'
+  function getTrendIcon (trend: TrendType): string {
+    switch (trend) {
+      case 'improving': {
+        return 'mdi-trending-up'
+      }
+      case 'degrading': {
+        return 'mdi-trending-down'
+      }
+      default: {
+        return 'mdi-trending-neutral'
+      }
+    }
   }
-}
 
-function getComponentStatusColor(renderTime: number): string {
-  if (renderTime <= 8) return 'success'
-  if (renderTime <= 16) return 'warning'
-  return 'error'
-}
+  function getComponentStatusColor (renderTime: number): string {
+    if (renderTime <= 8) return 'success'
+    if (renderTime <= 16) return 'warning'
+    return 'error'
+  }
 
-// Role-specific performance functions
-function getOwnerFilteringTime(): number {
-  const ownerData = rolePerformance.value.get('owner')
-  return ownerData?.dataFilteringTime || 0
-}
+  // Role-specific performance functions
+  function getOwnerFilteringTime (): number {
+    const ownerData = rolePerformance.value.get('owner')
+    return ownerData?.dataFilteringTime || 0
+  }
 
-function getOwnerCacheRate(): number {
-  const ownerData = rolePerformance.value.get('owner')
-  return Math.round((ownerData?.cacheHitRate || 0.8) * 100)
-}
+  function getOwnerCacheRate (): number {
+    const ownerData = rolePerformance.value.get('owner')
+    return Math.round((ownerData?.cacheHitRate || 0.8) * 100)
+  }
 
-function getOwnerEfficiency(): number {
-  const filterTime = getOwnerFilteringTime()
-  const cacheRate = getOwnerCacheRate()
-  return Math.round((100 - filterTime / 10) * (cacheRate / 100))
-}
+  function getOwnerEfficiency (): number {
+    const filterTime = getOwnerFilteringTime()
+    const cacheRate = getOwnerCacheRate()
+    return Math.round((100 - filterTime / 10) * (cacheRate / 100))
+  }
 
-function getAdminProcessingTime(): number {
-  const adminData = rolePerformance.value.get('admin')
-  return adminData?.dataFilteringTime || 0
-}
+  function getAdminProcessingTime (): number {
+    const adminData = rolePerformance.value.get('admin')
+    return adminData?.dataFilteringTime || 0
+  }
 
-function getAdminSystemLoad(): number {
-  // Estimate based on admin component count and processing
-  const adminComponents = roleDistribution.value.admin
-  return Math.min(100, adminComponents * 5)
-}
+  function getAdminSystemLoad (): number {
+    // Estimate based on admin component count and processing
+    const adminComponents = roleDistribution.value.admin
+    return Math.min(100, adminComponents * 5)
+  }
 
-function getAdminEfficiency(): number {
-  const processTime = getAdminProcessingTime()
-  const load = getAdminSystemLoad()
-  return Math.round(Math.max(0, 100 - (processTime / 20) - (load / 5)))
-}
+  function getAdminEfficiency (): number {
+    const processTime = getAdminProcessingTime()
+    const load = getAdminSystemLoad()
+    return Math.round(Math.max(0, 100 - (processTime / 20) - (load / 5)))
+  }
 
-function getSharedReuseRate(): number {
-  const total = roleDistribution.value.owner + roleDistribution.value.admin + roleDistribution.value.shared
-  const shared = roleDistribution.value.shared
-  return total > 0 ? Math.round((shared / total) * 100 * 2.5) : 85
-}
+  function getSharedReuseRate (): number {
+    const total = roleDistribution.value.owner + roleDistribution.value.admin + roleDistribution.value.shared
+    const shared = roleDistribution.value.shared
+    return total > 0 ? Math.round((shared / total) * 100 * 2.5) : 85
+  }
 
-function getSharedMemorySavings(): number {
-  const shared = roleDistribution.value.shared
-  return (shared * 0.5) // Estimate 0.5MB saved per shared component
-}
+  function getSharedMemorySavings (): number {
+    const shared = roleDistribution.value.shared
+    return (shared * 0.5) // Estimate 0.5MB saved per shared component
+  }
 </script>
 
 <style scoped>
@@ -953,15 +958,15 @@ function getSharedMemorySavings(): number {
     flex-direction: column;
     gap: 8px;
   }
-  
+
   .baseline-item {
     flex-direction: column;
     text-align: center;
     gap: 12px;
   }
-  
+
   .baseline-comparison {
     grid-template-columns: 1fr;
   }
 }
-</style> 
+</style>

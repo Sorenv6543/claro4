@@ -5,25 +5,25 @@ declare module 'vue-router' {
   interface RouteMeta {
     // Layout to use for this route
     layout?: 'default' | 'admin' | 'auth' | 'owner' | 'bare'
-    
+
     // Whether this route requires authentication
     requiresAuth?: boolean
-    
+
     // Specific role required to access this route
     role?: 'owner' | 'admin' | 'cleaner'
-    
+
     // Whether this route is public (accessible without auth)
     public?: boolean
-    
+
     // Custom title for the route (for breadcrumbs, page titles, etc.)
     title?: string
-    
+
     // Whether this route should be hidden from navigation
     hidden?: boolean
-    
+
     // Icon for navigation (if applicable)
     icon?: string
-    
+
     // Whether this route is for development/demo purposes
     demo?: boolean
   }
@@ -46,5 +46,3 @@ export interface NavigationError {
   code?: string
   redirectTo?: string
 }
-
-export {} 

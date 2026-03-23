@@ -41,9 +41,9 @@
                 <v-card-text class="pa-4">
                   <div class="d-flex align-center">
                     <v-icon
+                      class="me-3"
                       color="primary"
                       size="32"
-                      class="me-3"
                     >
                       mdi-account-group
                     </v-icon>
@@ -68,9 +68,9 @@
                 <v-card-text class="pa-4">
                   <div class="d-flex align-center">
                     <v-icon
+                      class="me-3"
                       color="success"
                       size="32"
-                      class="me-3"
                     >
                       mdi-shield-account
                     </v-icon>
@@ -95,9 +95,9 @@
                 <v-card-text class="pa-4">
                   <div class="d-flex align-center">
                     <v-icon
+                      class="me-3"
                       color="info"
                       size="32"
-                      class="me-3"
                     >
                       mdi-home-account
                     </v-icon>
@@ -122,9 +122,9 @@
                 <v-card-text class="pa-4">
                   <div class="d-flex align-center">
                     <v-icon
+                      class="me-3"
                       color="warning"
                       size="32"
-                      class="me-3"
                     >
                       mdi-broom
                     </v-icon>
@@ -147,12 +147,12 @@
       <!-- Error Alert -->
       <v-container
         v-if="error"
-        fluid
         class="py-2"
+        fluid
       >
         <v-alert
-          type="error"
           closable
+          type="error"
           @click:close="error = null"
         >
           {{ error }}
@@ -169,10 +169,10 @@
             >
               <v-text-field
                 v-model="searchQuery"
-                prepend-inner-icon="mdi-magnify"
-                label="Search users..."
-                density="compact"
                 clearable
+                density="compact"
+                label="Search users..."
+                prepend-inner-icon="mdi-magnify"
               />
             </v-col>
             <v-col
@@ -181,10 +181,10 @@
             >
               <v-select
                 v-model="roleFilter"
+                clearable
+                density="compact"
                 :items="roleOptions"
                 label="Role"
-                density="compact"
-                clearable
               />
             </v-col>
             <v-col
@@ -193,22 +193,22 @@
             >
               <v-select
                 v-model="statusFilter"
+                clearable
+                density="compact"
                 :items="statusOptions"
                 label="Status"
-                density="compact"
-                clearable
               />
             </v-col>
             <v-col
+              class="d-flex align-center gap-2"
               cols="12"
               md="4"
-              class="d-flex align-center gap-2"
             >
               <v-chip
                 v-if="filteredUsers.length !== allUsers.length"
                 color="primary"
-                variant="outlined"
                 size="small"
+                variant="outlined"
               >
                 {{ filteredUsers.length }} of {{ allUsers.length }} users
               </v-chip>
@@ -222,18 +222,18 @@
         <v-container fluid>
           <v-card>
             <v-data-table
+              class="users-table"
               :headers="tableHeaders"
               :items="filteredUsers"
               :loading="loading"
-              :search="searchQuery"
-              class="users-table"
               :mobile-breakpoint="0"
+              :search="searchQuery"
             >
               <template #[`item.avatar`]="{ item }">
                 <v-avatar
+                  class="ma-2"
                   :color="getRoleColor(item.role)"
                   :size="mobile ? 32 : 40"
-                  class="ma-2"
                 >
                   <span class="text-white font-weight-bold">
                     {{ getInitials(item.name) }}
@@ -329,226 +329,226 @@
     <!-- Add/Edit User Dialog -->
     <UserFormDialog
       v-model="userDialog"
-      :user="editingUser"
       :is-editing="!!editingUser"
       :loading="saving"
+      :user="editingUser"
       @submit="handleUserSubmit"
     />
 
     <!-- Delete Confirmation Dialog -->
     <ConfirmationDialog
-      :open="deleteDialog"
-      title="Delete User"
-      :message="`Are you sure you want to delete ${userToDelete?.name}? This action cannot be undone.`"
       confirm-text="Delete"
       dangerous
-      @confirm="handleDeleteConfirm"
+      :message="`Are you sure you want to delete ${userToDelete?.name}? This action cannot be undone.`"
+      :open="deleteDialog"
+      title="Delete User"
       @cancel="deleteDialog = false"
       @close="deleteDialog = false"
+      @confirm="handleDeleteConfirm"
     />
 
     <!-- Mobile FAB -->
     <v-btn
       v-if="mobile"
-      icon="mdi-account-plus"
-      color="primary"
-      size="large"
       class="fab-btn"
-      position="fixed"
+      color="primary"
+      icon="mdi-account-plus"
       location="bottom end"
+      position="fixed"
+      size="large"
       @click="openAddUser"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useDisplay } from 'vuetify'
-import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
-import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
-import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-import type { User, UserRole, UserFormData } from '@/types/user'
+  import type { User, UserFormData, UserRole } from '@/types/user'
+  import { computed, onMounted, ref } from 'vue'
+  import { useDisplay } from 'vuetify'
+  import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
 
-const { mobile } = useDisplay()
-const {
-  users: allUsers,
-  loading,
-  error,
-  fetchAllUsers,
-  createUser,
-  updateUser,
-  deleteUser: removeUser
-} = useAdminUserManagement()
+  const { mobile } = useDisplay()
+  const {
+    users: allUsers,
+    loading,
+    error,
+    fetchAllUsers,
+    createUser,
+    updateUser,
+    deleteUser: removeUser,
+  } = useAdminUserManagement()
 
-// Reactive state
-const searchQuery = ref('')
-const roleFilter = ref('')
-const statusFilter = ref('')
-const userDialog = ref(false)
-const editingUser = ref<User | null>(null)
-const saving = ref(false)
-const deleteDialog = ref(false)
-const userToDelete = ref<User | null>(null)
+  // Reactive state
+  const searchQuery = ref('')
+  const roleFilter = ref('')
+  const statusFilter = ref('')
+  const userDialog = ref(false)
+  const editingUser = ref<User | null>(null)
+  const saving = ref(false)
+  const deleteDialog = ref(false)
+  const userToDelete = ref<User | null>(null)
 
-// Filter options
-const roleOptions = [
-  { title: 'Admin', value: 'admin' },
-  { title: 'Property Owner', value: 'owner' },
-  { title: 'Cleaner', value: 'cleaner' }
-]
+  // Filter options
+  const roleOptions = [
+    { title: 'Admin', value: 'admin' },
+    { title: 'Property Owner', value: 'owner' },
+    { title: 'Cleaner', value: 'cleaner' },
+  ]
 
-const statusOptions = [
-  { title: 'Active', value: 'active' },
-  { title: 'Inactive', value: 'inactive' }
-]
+  const statusOptions = [
+    { title: 'Active', value: 'active' },
+    { title: 'Inactive', value: 'inactive' },
+  ]
 
-// Table headers
-const tableHeaders = computed(() => [
-  { title: '', key: 'avatar', sortable: false, width: mobile.value ? 60 : 80 },
-  { title: 'User', key: 'name', sortable: true },
-  { title: 'Role', key: 'role', sortable: true },
-  { title: 'Status', key: 'status', sortable: true },
-  { title: 'Last Activity', key: 'last_sign_in_at', sortable: true },
-  { title: 'Actions', key: 'actions', sortable: false, align: 'end' as const }
-])
+  // Table headers
+  const tableHeaders = computed(() => [
+    { title: '', key: 'avatar', sortable: false, width: mobile.value ? 60 : 80 },
+    { title: 'User', key: 'name', sortable: true },
+    { title: 'Role', key: 'role', sortable: true },
+    { title: 'Status', key: 'status', sortable: true },
+    { title: 'Last Activity', key: 'last_sign_in_at', sortable: true },
+    { title: 'Actions', key: 'actions', sortable: false, align: 'end' as const },
+  ])
 
-// Computed stats
-const totalUsers = computed(() => allUsers.value.length)
-const adminCount = computed(() => allUsers.value.filter((u: User) => u.role === 'admin').length)
-const ownerCount = computed(() => allUsers.value.filter((u: User) => u.role === 'owner').length)
-const cleanerCount = computed(() => allUsers.value.filter((u: User) => u.role === 'cleaner').length)
+  // Computed stats
+  const totalUsers = computed(() => allUsers.value.length)
+  const adminCount = computed(() => allUsers.value.filter((u: User) => u.role === 'admin').length)
+  const ownerCount = computed(() => allUsers.value.filter((u: User) => u.role === 'owner').length)
+  const cleanerCount = computed(() => allUsers.value.filter((u: User) => u.role === 'cleaner').length)
 
-const filteredUsers = computed(() => {
-  let users = [...allUsers.value]
+  const filteredUsers = computed(() => {
+    let users = [...allUsers.value]
 
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    users = users.filter((user: User) =>
-      user.name.toLowerCase().includes(query) ||
-      user.email.toLowerCase().includes(query)
-    )
-  }
-
-  if (roleFilter.value) {
-    users = users.filter((user: User) => user.role === roleFilter.value)
-  }
-
-  if (statusFilter.value) {
-    users = users.filter((user: User) => getStatusText(user).toLowerCase() === statusFilter.value)
-  }
-
-  return users
-})
-
-// Helpers
-const getInitials = (name: string): string => {
-  return name.split(' ').map(n => n[0]).join('').toUpperCase()
-}
-
-const getRoleColor = (role: UserRole): string => {
-  const colors: Record<UserRole, string> = {
-    admin: 'error',
-    owner: 'primary',
-    cleaner: 'success'
-  }
-  return colors[role] || 'grey'
-}
-
-const getStatusColor = (user: User): string => {
-  if (!user.created_at) return 'grey'
-  if (user.last_sign_in_at) return 'success'
-  return 'warning'
-}
-
-const getStatusText = (user: User): string => {
-  if (!user.created_at) return 'Pending'
-  if (user.last_sign_in_at) return 'Active'
-  return 'Inactive'
-}
-
-const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
-
-// Actions
-const openAddUser = () => {
-  editingUser.value = null
-  userDialog.value = true
-}
-
-const openEditUser = (user: User) => {
-  editingUser.value = user
-  userDialog.value = true
-}
-
-const handleUserSubmit = async (formData: UserFormData) => {
-  saving.value = true
-  try {
-    if (editingUser.value) {
-      const success = await updateUser(editingUser.value.id, {
-        name: formData.name,
-        role: formData.role,
-        company_name: formData.company_name,
-        access_level: formData.access_level as 'full' | 'limited',
-        skills: formData.skills,
-        max_daily_bookings: formData.max_daily_bookings,
-        timezone: formData.timezone,
-        language: formData.language,
-        notifications_enabled: formData.notifications_enabled
-      })
-      if (success) {
-        userDialog.value = false
-      }
-    } else {
-      const success = await createUser({
-        email: formData.email,
-        password: formData.password,
-        name: formData.name,
-        role: formData.role,
-        company_name: formData.company_name,
-        access_level: formData.access_level as 'full' | 'limited',
-        skills: formData.skills,
-        max_daily_bookings: formData.max_daily_bookings,
-        timezone: formData.timezone,
-        language: formData.language,
-        notifications_enabled: formData.notifications_enabled
-      })
-      if (success) {
-        userDialog.value = false
-      }
+    if (searchQuery.value) {
+      const query = searchQuery.value.toLowerCase()
+      users = users.filter((user: User) =>
+        user.name.toLowerCase().includes(query)
+        || user.email.toLowerCase().includes(query),
+      )
     }
-  } catch (err) {
-    console.error('Failed to save user:', err)
-  } finally {
-    saving.value = false
+
+    if (roleFilter.value) {
+      users = users.filter((user: User) => user.role === roleFilter.value)
+    }
+
+    if (statusFilter.value) {
+      users = users.filter((user: User) => getStatusText(user).toLowerCase() === statusFilter.value)
+    }
+
+    return users
+  })
+
+  // Helpers
+  function getInitials (name: string): string {
+    return name.split(' ').map(n => n[0]).join('').toUpperCase()
   }
-}
 
-const confirmDeleteUser = (user: User) => {
-  userToDelete.value = user
-  deleteDialog.value = true
-}
+  function getRoleColor (role: UserRole): string {
+    const colors: Record<UserRole, string> = {
+      admin: 'error',
+      owner: 'primary',
+      cleaner: 'success',
+    }
+    return colors[role] || 'grey'
+  }
 
-const handleDeleteConfirm = async () => {
-  if (!userToDelete.value) return
-  await removeUser(userToDelete.value.id)
-  deleteDialog.value = false
-  userToDelete.value = null
-}
+  function getStatusColor (user: User): string {
+    if (!user.created_at) return 'grey'
+    if (user.last_sign_in_at) return 'success'
+    return 'warning'
+  }
 
-const resetPassword = (user: User) => {
-  console.log('Reset password for:', user.name)
+  function getStatusText (user: User): string {
+    if (!user.created_at) return 'Pending'
+    if (user.last_sign_in_at) return 'Active'
+    return 'Inactive'
+  }
+
+  function formatDate (dateString: string): string {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    })
+  }
+
+  // Actions
+  function openAddUser () {
+    editingUser.value = null
+    userDialog.value = true
+  }
+
+  function openEditUser (user: User) {
+    editingUser.value = user
+    userDialog.value = true
+  }
+
+  async function handleUserSubmit (formData: UserFormData) {
+    saving.value = true
+    try {
+      if (editingUser.value) {
+        const success = await updateUser(editingUser.value.id, {
+          name: formData.name,
+          role: formData.role,
+          company_name: formData.company_name,
+          access_level: formData.access_level as 'full' | 'limited',
+          skills: formData.skills,
+          max_daily_bookings: formData.max_daily_bookings,
+          timezone: formData.timezone,
+          language: formData.language,
+          notifications_enabled: formData.notifications_enabled,
+        })
+        if (success) {
+          userDialog.value = false
+        }
+      } else {
+        const success = await createUser({
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          role: formData.role,
+          company_name: formData.company_name,
+          access_level: formData.access_level as 'full' | 'limited',
+          skills: formData.skills,
+          max_daily_bookings: formData.max_daily_bookings,
+          timezone: formData.timezone,
+          language: formData.language,
+          notifications_enabled: formData.notifications_enabled,
+        })
+        if (success) {
+          userDialog.value = false
+        }
+      }
+    } catch (error_) {
+      console.error('Failed to save user:', error_)
+    } finally {
+      saving.value = false
+    }
+  }
+
+  function confirmDeleteUser (user: User) {
+    userToDelete.value = user
+    deleteDialog.value = true
+  }
+
+  async function handleDeleteConfirm () {
+    if (!userToDelete.value) return
+    await removeUser(userToDelete.value.id)
+    deleteDialog.value = false
+    userToDelete.value = null
+  }
+
+  function resetPassword (user: User) {
+    console.log('Reset password for:', user.name)
   // TODO: Implement password reset flow
-}
+  }
 
-// Initialize
-onMounted(() => {
-  fetchAllUsers()
-})
+  // Initialize
+  onMounted(() => {
+    fetchAllUsers()
+  })
 </script>
 
 <style scoped>

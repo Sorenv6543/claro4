@@ -35,11 +35,11 @@
           >
             <v-text-field
               v-model="searchQuery"
-              prepend-inner-icon="mdi-magnify"
-              label="Search properties..."
-              variant="outlined"
-              density="compact"
               clearable
+              density="compact"
+              label="Search properties..."
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
             />
           </v-col>
           <v-col
@@ -48,11 +48,11 @@
           >
             <v-select
               v-model="statusFilter"
+              clearable
+              density="compact"
               :items="statusOptions"
               label="Status"
               variant="outlined"
-              density="compact"
-              clearable
             />
           </v-col>
           <v-col
@@ -61,11 +61,11 @@
           >
             <v-select
               v-model="tierFilter"
+              clearable
+              density="compact"
               :items="tierOptions"
               label="Pricing Tier"
               variant="outlined"
-              density="compact"
-              clearable
             />
           </v-col>
           <v-col
@@ -74,11 +74,11 @@
           >
             <v-select
               v-model="ownerFilter"
+              clearable
+              density="compact"
               :items="ownerOptions"
               label="Owner"
               variant="outlined"
-              density="compact"
-              clearable
             />
           </v-col>
           <v-col
@@ -88,19 +88,19 @@
             <div class="d-flex gap-2">
               <v-text-field
                 v-model="minDuration"
-                type="number"
-                label="Min Duration"
-                variant="outlined"
                 density="compact"
+                label="Min Duration"
                 suffix="min"
+                type="number"
+                variant="outlined"
               />
               <v-text-field
                 v-model="maxDuration"
-                type="number"
-                label="Max Duration"
-                variant="outlined"
                 density="compact"
+                label="Max Duration"
                 suffix="min"
+                type="number"
+                variant="outlined"
               />
             </div>
           </v-col>
@@ -117,8 +117,8 @@
           class="text-center py-8"
         >
           <v-icon
-            size="64"
             color="grey-lighten-1"
+            size="64"
           >
             mdi-home-search
           </v-icon>
@@ -129,15 +129,15 @@
             Try adjusting your filters or add a new property
           </p>
         </div>
-        
+
         <v-row v-else>
           <v-col
             v-for="property in filteredProperties"
             :key="property.id"
             cols="12"
-            sm="6"
-            md="4"
             lg="3"
+            md="4"
+            sm="6"
           >
             <v-card
               class="property-card"
@@ -161,7 +161,7 @@
                     {{ property.pricing_tier }}
                   </v-chip>
                 </div>
-                
+
                 <!-- Property Name -->
                 <h3 class="text-h6 font-weight-medium mb-2">
                   {{ formatPropertyAddress(property, 'short') }}
@@ -170,28 +170,28 @@
                 <!-- Address -->
                 <div class="text-body-2 text-medium-emphasis mb-2">
                   <v-icon
-                    size="16"
                     class="mr-1"
+                    size="16"
                   >
                     mdi-map-marker
                   </v-icon>
                   {{ formatPropertyAddress(property) }}
                 </div>
-                
+
                 <!-- Property Details -->
                 <div class="property-details mb-3">
                   <div class="d-flex justify-space-between text-body-2">
                     <span>
                       <v-icon
-                        size="16"
                         class="mr-1"
+                        size="16"
                       >mdi-bed</v-icon>
                       {{ property.bedrooms || 'N/A' }} bed
                     </span>
                     <span>
                       <v-icon
-                        size="16"
                         class="mr-1"
+                        size="16"
                       >mdi-shower</v-icon>
                       {{ property.bathrooms || 'N/A' }} bath
                     </span>
@@ -199,26 +199,26 @@
                   <div class="d-flex justify-space-between text-body-2 mt-1">
                     <span>
                       <v-icon
-                        size="16"
                         class="mr-1"
+                        size="16"
                       >mdi-clock</v-icon>
                       {{ property.cleaning_duration }}min
                     </span>
                     <span>
                       <v-icon
-                        size="16"
                         class="mr-1"
+                        size="16"
                       >mdi-resize</v-icon>
                       {{ property.square_feet || 'N/A' }} sqft
                     </span>
                   </div>
                 </div>
-                
+
                 <!-- Owner Info -->
                 <div class="text-caption text-medium-emphasis mb-3">
                   Owner: {{ getOwnerName(property.owner_id) }}
                 </div>
-                
+
                 <!-- Booking Stats -->
                 <div class="booking-stats">
                   <div class="d-flex justify-space-between text-body-2">
@@ -231,7 +231,7 @@
                   </div>
                 </div>
               </v-card-text>
-              
+
               <v-card-actions>
                 <v-btn
                   size="small"
@@ -297,8 +297,8 @@
           </p>
           <div class="text-center py-4">
             <v-icon
-              size="48"
               color="grey-lighten-1"
+              size="48"
             >
               mdi-form-select
             </v-icon>
@@ -325,176 +325,176 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts'
-import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
-import type { Property, PricingTier } from '@/types/property.ts'
-import { formatPropertyAddress } from '@/types/property'
-import type { Booking } from '@/types/booking.ts'
+  import type { Booking } from '@/types/booking.ts'
+  import type { PricingTier, Property } from '@/types/property.ts'
+  import { computed, ref } from 'vue'
+  import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
+  import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts'
+  import { formatPropertyAddress } from '@/types/property'
 
-// Composables
-const { allProperties, updateProperty } = useAdminProperties()
-const { allBookings } = useAdminBookings()
+  // Composables
+  const { allProperties, updateProperty } = useAdminProperties()
+  const { allBookings } = useAdminBookings()
 
-// Reactive state
-const searchQuery = ref('')
-const statusFilter = ref('')
-const tierFilter = ref('')
-const ownerFilter = ref('')
-const minDuration = ref('')
-const maxDuration = ref('')
+  // Reactive state
+  const searchQuery = ref('')
+  const statusFilter = ref('')
+  const tierFilter = ref('')
+  const ownerFilter = ref('')
+  const minDuration = ref('')
+  const maxDuration = ref('')
 
-// Dialog state
-const showPropertyDialog = ref(false)
-const editingProperty = ref<Property | null>(null)
+  // Dialog state
+  const showPropertyDialog = ref(false)
+  const editingProperty = ref<Property | null>(null)
 
-// Filter options
-const statusOptions = [
-  { title: 'Active', value: 'active' },
-  { title: 'Inactive', value: 'inactive' }
-]
+  // Filter options
+  const statusOptions = [
+    { title: 'Active', value: 'active' },
+    { title: 'Inactive', value: 'inactive' },
+  ]
 
-const tierOptions = [
-  { title: 'Basic', value: 'basic' },
-  { title: 'Standard', value: 'standard' },
-  { title: 'Premium', value: 'premium' },
-  { title: 'Luxury', value: 'luxury' }
-]
+  const tierOptions = [
+    { title: 'Basic', value: 'basic' },
+    { title: 'Standard', value: 'standard' },
+    { title: 'Premium', value: 'premium' },
+    { title: 'Luxury', value: 'luxury' },
+  ]
 
-// Computed properties
-const allPropertiesArray = computed<Property[]>(() => allProperties.value)
-const allBookingsArray = computed<Booking[]>(() => allBookings.value)
+  // Computed properties
+  const allPropertiesArray = computed<Property[]>(() => allProperties.value)
+  const allBookingsArray = computed<Booking[]>(() => allBookings.value)
 
-const ownerOptions = computed(() => {
-  const owners = new Set(allPropertiesArray.value.map(p => p.owner_id))
-  return Array.from(owners).map(ownerId => ({
-    title: getOwnerName(ownerId),
-    value: ownerId
-  }))
-})
+  const ownerOptions = computed(() => {
+    const owners = new Set(allPropertiesArray.value.map(p => p.owner_id))
+    return Array.from(owners).map(ownerId => ({
+      title: getOwnerName(ownerId),
+      value: ownerId,
+    }))
+  })
 
-const filteredProperties = computed((): Property[] => {
-  let properties = allPropertiesArray.value
+  const filteredProperties = computed((): Property[] => {
+    let properties = allPropertiesArray.value
 
-  // Search filter        
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    properties = properties.filter(property => 
-      formatPropertyAddress(property, 'short').toLowerCase().includes(query) ||
-      formatPropertyAddress(property).toLowerCase().includes(query) ||
-      getOwnerName(property.owner_id).toLowerCase().includes(query)
-    )
+    // Search filter
+    if (searchQuery.value) {
+      const query = searchQuery.value.toLowerCase()
+      properties = properties.filter(property =>
+        formatPropertyAddress(property, 'short').toLowerCase().includes(query)
+        || formatPropertyAddress(property).toLowerCase().includes(query)
+        || getOwnerName(property.owner_id).toLowerCase().includes(query),
+      )
+    }
+
+    // Status filter
+    if (statusFilter.value) {
+      const isActive = statusFilter.value === 'active'
+      properties = properties.filter(property => property.active === isActive)
+    }
+
+    // Tier filter
+    if (tierFilter.value) {
+      properties = properties.filter(property => property.pricing_tier === tierFilter.value)
+    }
+
+    // Owner filter
+    if (ownerFilter.value) {
+      properties = properties.filter(property => property.owner_id === ownerFilter.value)
+    }
+
+    // Duration filter
+    if (minDuration.value) {
+      const min = Number.parseInt(minDuration.value)
+      properties = properties.filter(property => property.cleaning_duration >= min)
+    }
+    if (maxDuration.value) {
+      const max = Number.parseInt(maxDuration.value)
+      properties = properties.filter(property => property.cleaning_duration <= max)
+    }
+
+    // Sort by name
+    return properties.toSorted((a, b) => formatPropertyAddress(a, 'short').localeCompare(formatPropertyAddress(b, 'short')))
+  })
+
+  // Helper methods
+  function getOwnerName (ownerId: string): string {
+    // In a real app, this would fetch owner data
+    return `Owner ${ownerId.slice(-4)}`
   }
 
-  // Status filter
-  if (statusFilter.value) {
-    const isActive = statusFilter.value === 'active'
-    properties = properties.filter(property => property.active === isActive)
+  function getTierColor (tier: PricingTier): string {
+    const colors: Record<PricingTier, string> = {
+      basic: 'grey',
+      standard: 'blue',
+      premium: 'purple',
+      luxury: 'amber',
+    }
+    return colors[tier]
   }
 
-  // Tier filter
-  if (tierFilter.value) {
-    properties = properties.filter(property => property.pricing_tier === tierFilter.value)
+  function getPropertyBookingCount (propertyId: string): number {
+    return allBookingsArray.value.filter(booking => booking.property_id === propertyId).length
   }
 
-  // Owner filter
-  if (ownerFilter.value) {
-    properties = properties.filter(property => property.owner_id === ownerFilter.value)
+  function getPropertyTurnCount (propertyId: string): number {
+    return allBookingsArray.value.filter(booking =>
+      booking.property_id === propertyId && booking.booking_type === 'turn',
+    ).length
   }
 
-  // Duration filter
-  if (minDuration.value) {
-    const min = parseInt(minDuration.value)
-    properties = properties.filter(property => property.cleaning_duration >= min)
-  }
-  if (maxDuration.value) {
-    const max = parseInt(maxDuration.value)
-    properties = properties.filter(property => property.cleaning_duration <= max)
+  // Dialog methods
+  function openCreatePropertyDialog () {
+    editingProperty.value = null
+    showPropertyDialog.value = true
   }
 
-  // Sort by name
-  return properties.sort((a, b) => formatPropertyAddress(a, 'short').localeCompare(formatPropertyAddress(b, 'short')))
-})
-
-// Helper methods
-const getOwnerName = (ownerId: string): string => {
-  // In a real app, this would fetch owner data
-  return `Owner ${ownerId.slice(-4)}`
-}
-
-const getTierColor = (tier: PricingTier): string => {
-  const colors: Record<PricingTier, string> = {
-    basic: 'grey',
-    standard: 'blue',
-    premium: 'purple',
-    luxury: 'amber'
-  }
-  return colors[tier]
-}
-
-const getPropertyBookingCount = (propertyId: string): number => {
-  return allBookingsArray.value.filter(booking => booking.property_id === propertyId).length
-}
-
-const getPropertyTurnCount = (propertyId: string): number => {
-  return allBookingsArray.value.filter(booking => 
-    booking.property_id === propertyId && booking.booking_type === 'turn'
-  ).length
-}
-
-// Dialog methods
-const openCreatePropertyDialog = () => {
-  editingProperty.value = null
-  showPropertyDialog.value = true
-}
-
-const openPropertyDetails = (property: Property) => {
-  console.log('Opening property details:', property.id)
+  function openPropertyDetails (property: Property) {
+    console.log('Opening property details:', property.id)
   // Navigate to property details or open details modal
-}
+  }
 
-const editProperty = (property: Property) => {
-  editingProperty.value = property
-  showPropertyDialog.value = true
-}
+  function editProperty (property: Property) {
+    editingProperty.value = property
+    showPropertyDialog.value = true
+  }
 
-const closePropertyDialog = () => {
-  showPropertyDialog.value = false
-  editingProperty.value = null
-}
+  function closePropertyDialog () {
+    showPropertyDialog.value = false
+    editingProperty.value = null
+  }
 
-const saveProperty = () => {
-  console.log('Saving property...')
-  // Implement property save logic
-  closePropertyDialog()
-}
+  function saveProperty () {
+    console.log('Saving property...')
+    // Implement property save logic
+    closePropertyDialog()
+  }
 
-// Property actions
-const viewBookings = (property: Property) => {
-  console.log('Viewing bookings for property:', property.id)
+  // Property actions
+  function viewBookings (property: Property) {
+    console.log('Viewing bookings for property:', property.id)
   // Navigate to bookings page with property filter
-}
-
-const togglePropertyStatus = async (property: Property) => {
-  try {
-    await updateProperty(property.id, { active: !property.active })
-    console.log('Property status updated successfully')
-  } catch (error) {
-    console.error('Failed to update property status:', error)
   }
-}
 
-const duplicateProperty = (property: Property) => {
-  console.log('Duplicating property:', property.id)
+  async function togglePropertyStatus (property: Property) {
+    try {
+      await updateProperty(property.id, { active: !property.active })
+      console.log('Property status updated successfully')
+    } catch (error) {
+      console.error('Failed to update property status:', error)
+    }
+  }
+
+  function duplicateProperty (property: Property) {
+    console.log('Duplicating property:', property.id)
   // Implement property duplication logic
-}
-
-const deleteProperty = async (property: Property) => {
-  if (confirm(`Are you sure you want to delete "${formatPropertyAddress(property, 'short')}"?`)) {
-    console.log('Deleting property:', property.id)
-    // Implement property deletion logic
   }
-}
+
+  async function deleteProperty (property: Property) {
+    if (confirm(`Are you sure you want to delete "${formatPropertyAddress(property, 'short')}"?`)) {
+      console.log('Deleting property:', property.id)
+    // Implement property deletion logic
+    }
+  }
 </script>
 
 <style scoped>
@@ -550,9 +550,9 @@ const deleteProperty = async (property: Property) => {
   .admin-properties-page {
     height: auto;
   }
-  
+
   .page-content {
     overflow-y: visible;
   }
 }
-</style> 
+</style>

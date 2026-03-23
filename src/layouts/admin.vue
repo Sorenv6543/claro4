@@ -4,28 +4,28 @@
     <!-- Admin Sidebar -->
     <AdminSidebar
       v-model="isSidebarOpen"
+      :active-cleanings-today="activeCleaningsToday"
       :bookings="bookings"
+      :current-date="currentDate"
+      :current-view="currentView"
+      :loading="loading"
       :properties="properties"
       :total-properties="totalProperties"
-      :active-cleanings-today="activeCleaningsToday"
       :urgent-turns-count="urgentTurnsCount"
-      :loading="loading"
-      :current-view="currentView"
-      :current-date="currentDate"
-      @navigate-to-booking="handleNavigateToBooking"
-      @navigate-to-date="handleNavigateToDate"
-      @filter-by-property="handleFilterByProperty"
+      @assign-cleaner="handleAssignCleaner"
       @create-booking="handleCreateBooking"
       @create-property="handleCreateProperty"
-      @assign-cleaner="handleAssignCleaner"
+      @emergency-response="handleEmergencyResponse"
+      @filter-by-property="handleFilterByProperty"
       @generate-reports="handleGenerateReports"
       @manage-system="handleManageSystem"
-      @emergency-response="handleEmergencyResponse"
+      @navigate-to-booking="handleNavigateToBooking"
+      @navigate-to-date="handleNavigateToDate"
       @toggle-sidebar="toggleSidebar"
     />
 
     <!-- Main Content Area -->
-    <div 
+    <div
       class="admin-main-content"
       :class="{ 'sidebar-open': isSidebarOpen && !mobile }"
     >
@@ -35,113 +35,115 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
-import { useDisplay } from 'vuetify';
-import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue';
+  import type { Booking, Property } from '@/types'
+  import { computed, onMounted, ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useDisplay } from 'vuetify'
 
-import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement';
-import { useBookingStore } from '@/stores/booking';
-import { usePropertyStore } from '@/stores/property';
-import type { Booking, Property } from '@/types';
+  import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue'
+  import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+  import { useBookingStore } from '@/stores/booking'
+  import { usePropertyStore } from '@/stores/property'
 
-// Composables
-const router = useRouter();
-const { mobile } = useDisplay();
-const bookingStore = useBookingStore();
-const propertyStore = usePropertyStore();
-const { users: _allUsers, fetchAllUsers } = useAdminUserManagement();
+  // Composables
+  const router = useRouter()
+  const { mobile } = useDisplay()
+  const bookingStore = useBookingStore()
+  const propertyStore = usePropertyStore()
+  const { users: _allUsers, fetchAllUsers } = useAdminUserManagement()
 
-// Initialize state
-const currentView = ref('month');
-const currentDate = ref(new Date());
-const isSidebarOpen = ref(true);
-const loading = ref<boolean>(false);
+  // Initialize state
+  const currentView = ref('month')
+  const currentDate = ref(new Date())
+  const isSidebarOpen = ref(true)
+  const loading = ref<boolean>(false)
 
-const bookings = ref<Booking[]>([]);
-const properties = ref<Property[]>([]);
+  const bookings = ref<Booking[]>([])
+  const properties = ref<Property[]>([])
 
-// Computed stats for sidebar
-const totalProperties = computed(() => propertyStore.properties.size);
+  // Computed stats for sidebar
+  const totalProperties = computed(() => propertyStore.properties.size)
 
-const activeCleaningsToday = computed(() => {
-  const today = new Date().toISOString().split('T')[0];
-  return Array.from(bookingStore.bookings.values())
-    .filter(booking => 
-      booking.checkout_date.startsWith(today) && 
-      booking.status === 'in_progress'
-    ).length;
-});
+  const activeCleaningsToday = computed(() => {
+    const today = new Date().toISOString().split('T')[0]
+    return Array.from(bookingStore.bookings.values())
+      .filter(booking =>
+        booking.checkout_date.startsWith(today)
+        && booking.status === 'in_progress',
+      )
+      .length
+  })
 
-const urgentTurnsCount = computed(() => {
-  const today = new Date().toISOString().split('T')[0];
-  return Array.from(bookingStore.bookings.values())
-    .filter(booking => 
-      booking.checkout_date.startsWith(today) && 
-      booking.booking_type === 'turn' && 
-      booking.status !== 'completed'
-    ).length;
-});
+  const urgentTurnsCount = computed(() => {
+    const today = new Date().toISOString().split('T')[0]
+    return Array.from(bookingStore.bookings.values())
+      .filter(booking =>
+        booking.checkout_date.startsWith(today)
+        && booking.booking_type === 'turn'
+        && booking.status !== 'completed',
+      )
+      .length
+  })
 
-// Navigation handlers
-const toggleSidebar = () => {
-  isSidebarOpen.value = !isSidebarOpen.value;
-};
-
-// Event handlers for sidebar
-const handleNavigateToBooking = (bookingId: string) => {
-  router.push(`/admin/bookings/${bookingId}`);
-};
-
-const handleNavigateToDate = (date: Date) => {
-  router.push(`/admin/schedule?date=${date.toISOString().split('T')[0]}`);
-};
-
-const handleFilterByProperty = (propertyId: string | null) => {
-  console.log('Filter by property:', propertyId);
-};
-
-const handleCreateBooking = () => {
-  router.push('/admin/bookings/create');
-};
-
-const handleCreateProperty = () => {
-  router.push('/admin/properties/create');
-};
-
-const handleAssignCleaner = (data: { bookingId: string, cleanerId?: string }) => {
-  console.log('Assign cleaner:', data);
-};
-
-const handleGenerateReports = () => {
-  router.push('/admin/reports');
-};
-
-const handleManageSystem = () => {
-  router.push('/admin/settings');
-};
-
-const handleEmergencyResponse = () => {
-  console.log('Emergency response triggered');
-};
-
-// Initialize data on mount
-onMounted(async () => {
-  console.log('🎛️ [AdminLayout] Loading admin layout data...');
-  loading.value = true;
-  try {
-    await Promise.all([
-      fetchAllUsers(),
-      bookingStore.fetchBookings(),
-      propertyStore.fetchProperties()
-    ]);
-    console.log('✅ [AdminLayout] Admin layout data loaded');
-  } catch (error) {
-    console.error('❌ [AdminLayout] Failed to fetch admin layout data:', error);
-  } finally {
-    loading.value = false;
+  // Navigation handlers
+  function toggleSidebar () {
+    isSidebarOpen.value = !isSidebarOpen.value
   }
-});
+
+  // Event handlers for sidebar
+  function handleNavigateToBooking (bookingId: string) {
+    router.push(`/admin/bookings/${bookingId}`)
+  }
+
+  function handleNavigateToDate (date: Date) {
+    router.push(`/admin/schedule?date=${date.toISOString().split('T')[0]}`)
+  }
+
+  function handleFilterByProperty (propertyId: string | null) {
+    console.log('Filter by property:', propertyId)
+  }
+
+  function handleCreateBooking () {
+    router.push('/admin/bookings/create')
+  }
+
+  function handleCreateProperty () {
+    router.push('/admin/properties/create')
+  }
+
+  function handleAssignCleaner (data: { bookingId: string, cleanerId?: string }) {
+    console.log('Assign cleaner:', data)
+  }
+
+  function handleGenerateReports () {
+    router.push('/admin/reports')
+  }
+
+  function handleManageSystem () {
+    router.push('/admin/settings')
+  }
+
+  function handleEmergencyResponse () {
+    console.log('Emergency response triggered')
+  }
+
+  // Initialize data on mount
+  onMounted(async () => {
+    console.log('🎛️ [AdminLayout] Loading admin layout data...')
+    loading.value = true
+    try {
+      await Promise.all([
+        fetchAllUsers(),
+        bookingStore.fetchBookings(),
+        propertyStore.fetchProperties(),
+      ])
+      console.log('✅ [AdminLayout] Admin layout data loaded')
+    } catch (error) {
+      console.error('❌ [AdminLayout] Failed to fetch admin layout data:', error)
+    } finally {
+      loading.value = false
+    }
+  })
 </script>
 
 <style scoped>
@@ -230,7 +232,7 @@ onMounted(async () => {
   .admin-main-content.sidebar-open {
     margin-left: 0; /* No push on mobile */
   }
-  
+
   .main-app-header.sidebar-open {
     margin-left: 0; /* No push on mobile */
   }

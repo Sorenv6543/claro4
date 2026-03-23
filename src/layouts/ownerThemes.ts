@@ -10,7 +10,7 @@ export interface ThemeSwatch {
 }
 
 export const THEMES: ThemeSwatch[] = [
-  { id: 'light',    label: 'Light',     primary: '#1976D2', background: '#F5F7FA', surface: '#FFFFFF' },
+  { id: 'light', label: 'Light', primary: '#1976D2', background: '#F5F7FA', surface: '#FFFFFF' },
   { id: 'darkTeal', label: 'Dark Teal', primary: '#26A69A', background: '#121212', surface: '#1E1E1E' },
 ]
 

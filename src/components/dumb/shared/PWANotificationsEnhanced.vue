@@ -18,8 +18,8 @@
       </v-banner-text>
       <template #actions>
         <v-btn
-          variant="text"
           size="small"
+          variant="text"
           @click="checkConnection"
         >
           Retry
@@ -45,9 +45,9 @@
       </v-banner-text>
       <template #actions>
         <v-btn
-          variant="text"
-          size="small"
           :loading="isProcessingSync"
+          size="small"
+          variant="text"
           @click="retrySync"
         >
           Retry
@@ -73,17 +73,17 @@
       </v-banner-text>
       <template #actions>
         <v-btn
-          variant="text"
           size="small"
+          variant="text"
           @click="dismissNotificationPrompt"
         >
           Not Now
         </v-btn>
         <v-btn
           color="white"
-          variant="elevated"
-          size="small"
           :loading="requestingPermission"
+          size="small"
+          variant="elevated"
           @click="requestNotifications"
         >
           Enable
@@ -109,17 +109,17 @@
       </v-banner-text>
       <template #actions>
         <v-btn
-          variant="text"
           size="small"
+          variant="text"
           @click="dismissInstallPrompt"
         >
           Not Now
         </v-btn>
         <v-btn
           color="white"
-          variant="elevated"
-          size="small"
           :loading="installing"
+          size="small"
+          variant="elevated"
           @click="handleInstall"
         >
           Install
@@ -145,17 +145,17 @@
       </v-banner-text>
       <template #actions>
         <v-btn
-          variant="text"
           size="small"
-          @click="$emit('dismissUpdate')"
+          variant="text"
+          @click="$emit('dismiss-update')"
         >
           Later
         </v-btn>
         <v-btn
           color="white"
-          variant="elevated"
-          size="small"
           :loading="updating"
+          size="small"
+          variant="elevated"
           @click="handleUpdate"
         >
           Update Now
@@ -166,9 +166,9 @@
     <!-- Success Notifications -->
     <v-snackbar
       v-model="showOfflineReadySnackbar"
-      timeout="4000"
       color="success"
       location="bottom"
+      timeout="4000"
     >
       App is ready to work offline!
       <template #actions>
@@ -183,9 +183,9 @@
 
     <v-snackbar
       v-model="showInstallSuccess"
-      timeout="4000"
       color="success"
       location="bottom"
+      timeout="4000"
     >
       {{ appName }} installed successfully!
       <template #actions>
@@ -200,9 +200,9 @@
 
     <v-snackbar
       v-model="showNotificationSuccess"
-      timeout="4000"
       color="success"
       location="bottom"
+      timeout="4000"
     >
       Notifications enabled! You'll receive alerts for urgent turns.
       <template #actions>
@@ -217,9 +217,9 @@
 
     <v-snackbar
       v-model="showSyncSuccess"
-      timeout="3000"
       color="success"
       location="bottom"
+      timeout="3000"
     >
       All changes synced successfully!
       <template #actions>
@@ -235,203 +235,203 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
-import { usePWA } from '@/composables/shared/usePWA'
-import { useAuth } from '@/composables/shared/useAuth'
+  import { computed, onMounted, ref, watch } from 'vue'
+  import { useAuth } from '@/composables/shared/useAuth'
+  import { usePWA } from '@/composables/shared/usePWA'
 
-// Emits
-interface Emits {
-  (e: 'dismissUpdate'): void
-}
-
-defineEmits<Emits>()
-
-// Composables
-const {
-  isOnline,
-  canInstall,
-  showUpdatePrompt,
-  showOfflineReady,
-  installPWA,
-  updatePWA,
-  pushNotifications,
-  backgroundSync
-} = usePWA()
-
-const { user } = useAuth()
-
-// Local state
-const hideInstallPrompt = ref(false)
-const hideNotificationPrompt = ref(false)
-const installing = ref(false)
-const updating = ref(false)
-const requestingPermission = ref(false)
-const showOfflineReadySnackbar = ref(false)
-const showInstallSuccess = ref(false)
-const showNotificationSuccess = ref(false)
-const showSyncSuccess = ref(false)
-
-// Computed properties
-const appName = computed(() => {
-  if (user.value?.role === 'owner') return 'CleanSync'
-  if (user.value?.role === 'admin') return 'CleanSync Pro'
-  return 'CleanSync'
-})
-
-const showNotificationPrompt = computed(() => {
-  return pushNotifications?.canRequestPermission?.value && 
-         !hideNotificationPrompt.value &&
-         !pushNotifications?.hasPermission?.value
-})
-
-const notificationPromptMessage = computed(() => {
-  if (user.value?.role === 'owner') {
-    return 'Get instant alerts for urgent turn cleanings and booking confirmations.'
+  // Emits
+  interface Emits {
+    (e: 'dismiss-update'): void
   }
-  return 'Receive system alerts for urgent turns and business-critical notifications.'
-})
 
-const installPromptMessage = computed(() => {
-  if (user.value?.role === 'owner') {
-    return 'Get faster access and work offline for property management.'
-  }
-  return 'Enhanced mobile oversight with offline capabilities for business management.'
-})
+  defineEmits<Emits>()
 
-const offlineMessage = computed(() => {
-  const pendingCount = backgroundSync?.queueLength?.value || 0
-  if (pendingCount > 0) {
-    return `${pendingCount} operations will sync when connection returns.`
-  }
-  return 'Some features may be limited until connection returns.'
-})
+  // Composables
+  const {
+    isOnline,
+    canInstall,
+    showUpdatePrompt,
+    showOfflineReady,
+    installPWA,
+    updatePWA,
+    pushNotifications,
+    backgroundSync,
+  } = usePWA()
 
-const hasPendingSync = computed(() => 
-  backgroundSync?.hasPendingOperations?.value && backgroundSync?.canProcess?.value
-)
+  const { user } = useAuth()
 
-const isProcessingSync = computed(() => backgroundSync?.isProcessing?.value || false)
+  // Local state
+  const hideInstallPrompt = ref(false)
+  const hideNotificationPrompt = ref(false)
+  const installing = ref(false)
+  const updating = ref(false)
+  const requestingPermission = ref(false)
+  const showOfflineReadySnackbar = ref(false)
+  const showInstallSuccess = ref(false)
+  const showNotificationSuccess = ref(false)
+  const showSyncSuccess = ref(false)
 
-const syncStatus = computed(() => backgroundSync?.getQueueStatus?.() || { operations: {}, total: 0 })
+  // Computed properties
+  const appName = computed(() => {
+    if (user.value?.role === 'owner') return 'CleanSync'
+    if (user.value?.role === 'admin') return 'CleanSync Pro'
+    return 'CleanSync'
+  })
 
-const syncStatusMessage = computed(() => {
-  const status = syncStatus.value
-  if (!status || !status.operations) {
-    return 'Syncing changes...'
-  }
-  
-  const operations = Object.entries(status.operations)
-    .map(([op, count]) => `${count} ${op.replace('_', ' ')}`)
-    .join(', ')
-  
-  return operations || 'Syncing changes...'
-})
+  const showNotificationPrompt = computed(() => {
+    return pushNotifications?.canRequestPermission?.value
+      && !hideNotificationPrompt.value
+      && !pushNotifications?.hasPermission?.value
+  })
 
-// Methods
-const checkConnection = () => {
-  window.dispatchEvent(new Event('online'))
-}
-
-const dismissInstallPrompt = () => {
-  hideInstallPrompt.value = true
-  localStorage.setItem('pwa-install-dismissed', Date.now().toString())
-}
-
-const dismissNotificationPrompt = () => {
-  hideNotificationPrompt.value = true
-  localStorage.setItem('pwa-notification-dismissed', Date.now().toString())
-}
-
-const handleInstall = async () => {
-  installing.value = true
-  try {
-    const success = await installPWA()
-    if (success) {
-      showInstallSuccess.value = true
+  const notificationPromptMessage = computed(() => {
+    if (user.value?.role === 'owner') {
+      return 'Get instant alerts for urgent turn cleanings and booking confirmations.'
     }
-  } catch (error) {
-    console.error('Installation failed:', error)
-  } finally {
-    installing.value = false
-  }
-}
+    return 'Receive system alerts for urgent turns and business-critical notifications.'
+  })
 
-const handleUpdate = async () => {
-  updating.value = true
-  try {
-    await updatePWA()
-  } catch (error) {
-    console.error('Update failed:', error)
-  } finally {
-    updating.value = false
-  }
-}
-
-const requestNotifications = async () => {
-  requestingPermission.value = true
-  try {
-    const granted = await pushNotifications?.requestPermission?.()
-    if (granted) {
-      showNotificationSuccess.value = true
-      hideNotificationPrompt.value = true
+  const installPromptMessage = computed(() => {
+    if (user.value?.role === 'owner') {
+      return 'Get faster access and work offline for property management.'
     }
-  } catch (error) {
-    console.error('Notification permission failed:', error)
-  } finally {
-    requestingPermission.value = false
-  }
-}
+    return 'Enhanced mobile oversight with offline capabilities for business management.'
+  })
 
-const retrySync = async () => {
-  try {
-    if (backgroundSync?.retryFailedOperations) {
-      await backgroundSync.retryFailedOperations()
+  const offlineMessage = computed(() => {
+    const pendingCount = backgroundSync?.queueLength?.value || 0
+    if (pendingCount > 0) {
+      return `${pendingCount} operations will sync when connection returns.`
     }
-  } catch (error) {
-    console.error('Sync retry failed:', error)
-  }
-}
+    return 'Some features may be limited until connection returns.'
+  })
 
-// Watchers
-watch(showOfflineReady, (newValue) => {
-  if (newValue) {
-    showOfflineReadySnackbar.value = true
-  }
-})
+  const hasPendingSync = computed(() =>
+    backgroundSync?.hasPendingOperations?.value && backgroundSync?.canProcess?.value,
+  )
 
-watch(() => backgroundSync?.queueLength?.value || 0, (newLength, oldLength) => {
-  // Show success when queue becomes empty (operations completed)
-  if (oldLength > 0 && newLength === 0 && isOnline.value) {
-    showSyncSuccess.value = true
-  }
-})
+  const isProcessingSync = computed(() => backgroundSync?.isProcessing?.value || false)
 
-// Check dismissal preferences
-const checkDismissalPreferences = () => {
-  const installDismissed = localStorage.getItem('pwa-install-dismissed')
-  const notificationDismissed = localStorage.getItem('pwa-notification-dismissed')
-  
-  if (installDismissed) {
-    const dismissedTime = parseInt(installDismissed)
-    const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000)
-    if (dismissedTime > oneWeekAgo) {
-      hideInstallPrompt.value = true
+  const syncStatus = computed(() => backgroundSync?.getQueueStatus?.() || { operations: {}, total: 0 })
+
+  const syncStatusMessage = computed(() => {
+    const status = syncStatus.value
+    if (!status || !status.operations) {
+      return 'Syncing changes...'
+    }
+
+    const operations = Object.entries(status.operations)
+      .map(([op, count]) => `${count} ${op.replace('_', ' ')}`)
+      .join(', ')
+
+    return operations || 'Syncing changes...'
+  })
+
+  // Methods
+  function checkConnection () {
+    window.dispatchEvent(new Event('online'))
+  }
+
+  function dismissInstallPrompt () {
+    hideInstallPrompt.value = true
+    localStorage.setItem('pwa-install-dismissed', Date.now().toString())
+  }
+
+  function dismissNotificationPrompt () {
+    hideNotificationPrompt.value = true
+    localStorage.setItem('pwa-notification-dismissed', Date.now().toString())
+  }
+
+  async function handleInstall () {
+    installing.value = true
+    try {
+      const success = await installPWA()
+      if (success) {
+        showInstallSuccess.value = true
+      }
+    } catch (error) {
+      console.error('Installation failed:', error)
+    } finally {
+      installing.value = false
     }
   }
 
-  if (notificationDismissed) {
-    const dismissedTime = parseInt(notificationDismissed)
-    const threeDaysAgo = Date.now() - (3 * 24 * 60 * 60 * 1000)
-    if (dismissedTime > threeDaysAgo) {
-      hideNotificationPrompt.value = true
+  async function handleUpdate () {
+    updating.value = true
+    try {
+      await updatePWA()
+    } catch (error) {
+      console.error('Update failed:', error)
+    } finally {
+      updating.value = false
     }
   }
-}
 
-// Initialize
-onMounted(() => {
-  checkDismissalPreferences()
-})
+  async function requestNotifications () {
+    requestingPermission.value = true
+    try {
+      const granted = await pushNotifications?.requestPermission?.()
+      if (granted) {
+        showNotificationSuccess.value = true
+        hideNotificationPrompt.value = true
+      }
+    } catch (error) {
+      console.error('Notification permission failed:', error)
+    } finally {
+      requestingPermission.value = false
+    }
+  }
+
+  async function retrySync () {
+    try {
+      if (backgroundSync?.retryFailedOperations) {
+        await backgroundSync.retryFailedOperations()
+      }
+    } catch (error) {
+      console.error('Sync retry failed:', error)
+    }
+  }
+
+  // Watchers
+  watch(showOfflineReady, newValue => {
+    if (newValue) {
+      showOfflineReadySnackbar.value = true
+    }
+  })
+
+  watch(() => backgroundSync?.queueLength?.value || 0, (newLength, oldLength) => {
+    // Show success when queue becomes empty (operations completed)
+    if (oldLength > 0 && newLength === 0 && isOnline.value) {
+      showSyncSuccess.value = true
+    }
+  })
+
+  // Check dismissal preferences
+  function checkDismissalPreferences () {
+    const installDismissed = localStorage.getItem('pwa-install-dismissed')
+    const notificationDismissed = localStorage.getItem('pwa-notification-dismissed')
+
+    if (installDismissed) {
+      const dismissedTime = Number.parseInt(installDismissed)
+      const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000)
+      if (dismissedTime > oneWeekAgo) {
+        hideInstallPrompt.value = true
+      }
+    }
+
+    if (notificationDismissed) {
+      const dismissedTime = Number.parseInt(notificationDismissed)
+      const threeDaysAgo = Date.now() - (3 * 24 * 60 * 60 * 1000)
+      if (dismissedTime > threeDaysAgo) {
+        hideNotificationPrompt.value = true
+      }
+    }
+  }
+
+  // Initialize
+  onMounted(() => {
+    checkDismissalPreferences()
+  })
 </script>
 
 <style scoped>
@@ -458,9 +458,9 @@ onMounted(() => {
   .v-banner .v-banner-text {
     padding-right: 0;
   }
-  
+
   .v-banner .v-btn {
     margin-left: 8px;
   }
 }
-</style> 
+</style>

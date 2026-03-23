@@ -1,16 +1,16 @@
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import supabase from '@/plugins/supabase'
 import type { Booking, BookingFormData } from '@/types/booking'
 import type { Property, PropertyFormData } from '@/types/property'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import supabase from '@/plugins/supabase'
 
 // Background sync operation types
-export type SyncOperation = 
-  | 'create_booking'
-  | 'update_booking'
-  | 'create_property'
-  | 'update_property'
-  | 'delete_booking'
-  | 'delete_property'
+export type SyncOperation
+  = | 'create_booking'
+    | 'update_booking'
+    | 'create_property'
+    | 'update_property'
+    | 'delete_booking'
+    | 'delete_property'
 
 export interface SyncQueueItem {
   id: string
@@ -32,12 +32,12 @@ export interface SyncResult {
 const SYNC_QUEUE_KEY = 'pwa-sync-queue'
 const MAX_RETRIES = 3
 
-export const useBackgroundSync = () => {
+export function useBackgroundSync () {
   // State
   const syncQueue = ref<SyncQueueItem[]>([])
   const isProcessing = ref(false)
   const lastSyncTime = ref<Date | null>(null)
-  
+
   // Online status management
   const isOnline = ref(navigator.onLine)
 
@@ -74,7 +74,7 @@ export const useBackgroundSync = () => {
     operation: SyncOperation,
     data: unknown,
     userId: string,
-    userRole: string
+    userRole: string,
   ): string => {
     const item: SyncQueueItem = {
       id: generateId(),
@@ -84,14 +84,14 @@ export const useBackgroundSync = () => {
       retryCount: 0,
       maxRetries: MAX_RETRIES,
       userId,
-      userRole
+      userRole,
     }
 
     syncQueue.value.push(item)
     saveQueue()
-    
+
     console.log(`Queued ${operation} operation:`, item)
-    
+
     // Try to process immediately if online
     if (canProcess.value) {
       processQueue()
@@ -112,7 +112,7 @@ export const useBackgroundSync = () => {
     const results: SyncResult[] = []
     const failedItems: SyncQueueItem[] = []
 
-    for (const item of [...syncQueue.value]) {
+    for (const item of syncQueue.value) {
       try {
         const result = await processItem(item)
         results.push(result)
@@ -156,26 +156,33 @@ export const useBackgroundSync = () => {
   const processItem = async (item: SyncQueueItem): Promise<SyncResult> => {
     try {
       switch (item.operation) {
-        case 'create_booking':
+        case 'create_booking': {
           await createBookingSync(item.data as BookingFormData)
           break
-        case 'update_booking':
+        }
+        case 'update_booking': {
           await updateBookingSync((item.data as { id: string }).id, item.data as Partial<Booking>)
           break
-        case 'create_property':
+        }
+        case 'create_property': {
           await createPropertySync(item.data as PropertyFormData)
           break
-        case 'update_property':
+        }
+        case 'update_property': {
           await updatePropertySync((item.data as { id: string }).id, item.data as Partial<Property>)
           break
-        case 'delete_booking':
+        }
+        case 'delete_booking': {
           await deleteBookingSync((item.data as { id: string }).id)
           break
-        case 'delete_property':
+        }
+        case 'delete_property': {
           await deletePropertySync((item.data as { id: string }).id)
           break
-        default:
+        }
+        default: {
           throw new Error(`Unknown sync operation: ${item.operation}`)
+        }
       }
 
       return { success: true, item }
@@ -183,7 +190,7 @@ export const useBackgroundSync = () => {
       return {
         success: false,
         item,
-        error: error instanceof Error ? error.message : 'Unknown error'
+        error: error instanceof Error ? error.message : 'Unknown error',
       }
     }
   }
@@ -191,30 +198,40 @@ export const useBackgroundSync = () => {
   // Sync operation implementations using Supabase
   const createBookingSync = async (data: BookingFormData): Promise<void> => {
     const { error } = await supabase.from('bookings').insert(data)
-    if (error) throw new Error(`Create booking failed: ${error.message}`)
+    if (error) {
+      throw new Error(`Create booking failed: ${error.message}`)
+    }
   }
 
   const updateBookingSync = async (id: string, data: Partial<Booking>): Promise<void> => {
     // Strip id from the update payload to avoid overwriting it
     const { id: _id, ...updates } = data as Partial<Booking> & { id?: string }
     const { error } = await supabase.from('bookings').update(updates).eq('id', id)
-    if (error) throw new Error(`Update booking failed: ${error.message}`)
+    if (error) {
+      throw new Error(`Update booking failed: ${error.message}`)
+    }
   }
 
   const createPropertySync = async (data: PropertyFormData): Promise<void> => {
     const { error } = await supabase.from('properties').insert(data)
-    if (error) throw new Error(`Create property failed: ${error.message}`)
+    if (error) {
+      throw new Error(`Create property failed: ${error.message}`)
+    }
   }
 
   const updatePropertySync = async (id: string, data: Partial<Property>): Promise<void> => {
     const { id: _id, ...updates } = data as Partial<Property> & { id?: string }
     const { error } = await supabase.from('properties').update(updates).eq('id', id)
-    if (error) throw new Error(`Update property failed: ${error.message}`)
+    if (error) {
+      throw new Error(`Update property failed: ${error.message}`)
+    }
   }
 
   const deleteBookingSync = async (id: string): Promise<void> => {
     const { error } = await supabase.from('bookings').delete().eq('id', id)
-    if (error) throw new Error(`Delete booking failed: ${error.message}`)
+    if (error) {
+      throw new Error(`Delete booking failed: ${error.message}`)
+    }
   }
 
   const deletePropertySync = async (id: string): Promise<void> => {
@@ -223,7 +240,9 @@ export const useBackgroundSync = () => {
       .from('properties')
       .update({ active: false, updated_at: new Date().toISOString() })
       .eq('id', id)
-    if (error) throw new Error(`Delete property failed: ${error.message}`)
+    if (error) {
+      throw new Error(`Delete property failed: ${error.message}`)
+    }
   }
 
   // Utility functions
@@ -243,12 +262,12 @@ export const useBackgroundSync = () => {
     const initialLength = syncQueue.value.length
     syncQueue.value = syncQueue.value.filter(item => item.id !== id)
     const removed = initialLength > syncQueue.value.length
-    
+
     if (removed) {
       saveQueue()
       console.log(`Removed operation ${id} from sync queue`)
     }
-    
+
     return removed
   }
 
@@ -263,7 +282,7 @@ export const useBackgroundSync = () => {
       total: queueLength.value,
       operations,
       isProcessing: isProcessing.value,
-      lastSync: lastSyncTime.value
+      lastSync: lastSyncTime.value,
     }
   }
 
@@ -318,8 +337,10 @@ export const useBackgroundSync = () => {
     }
 
     // Check every 30 seconds when online
-    if (autoSyncInterval) clearInterval(autoSyncInterval)
-    autoSyncInterval = setInterval(checkAndProcess, 30000)
+    if (autoSyncInterval) {
+      clearInterval(autoSyncInterval)
+    }
+    autoSyncInterval = setInterval(checkAndProcess, 30_000)
 
     // Process immediately when coming online
     if (autoSyncOnlineHandler) {
@@ -334,12 +355,12 @@ export const useBackgroundSync = () => {
     syncQueue: computed(() => syncQueue.value),
     isProcessing,
     lastSyncTime,
-    
+
     // Computed
     queueLength,
     hasPendingOperations,
     canProcess,
-    
+
     // Methods
     queueOperation,
     processQueue,
@@ -347,6 +368,6 @@ export const useBackgroundSync = () => {
     removeFromQueue,
     getQueueStatus,
     retryFailedOperations,
-    startAutoSync
+    startAutoSync,
   }
-} 
+}

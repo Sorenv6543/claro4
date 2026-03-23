@@ -65,7 +65,9 @@
       "mcp__chrome-devtools__list_network_requests",
       "Bash(sed 's/:.*//')",
       "Bash(git check-ignore:*)",
-      "Bash(bash \"C:\\\\Users\\\\Soren\\\\.claude\\\\plugins\\\\cache\\\\claude-plugins-official\\\\superpowers\\\\5.0.5\\\\skills\\\\brainstorming\\\\scripts\\\\start-server.sh\" --project-dir \"C:\\\\Users\\\\Soren\\\\claro4\")"
+      "Bash(bash \"C:\\\\Users\\\\Soren\\\\.claude\\\\plugins\\\\cache\\\\claude-plugins-official\\\\superpowers\\\\5.0.5\\\\skills\\\\brainstorming\\\\scripts\\\\start-server.sh\" --project-dir \"C:\\\\Users\\\\Soren\\\\claro4\")",
+      "Bash(pnpm lint:*)",
+      "Bash(bash scripts/start-server.sh --project-dir \"C:\\\\Users\\\\Soren\\\\claro4\")"
     ],
     "deny": []
   },
@@ -80,7 +82,7 @@
     "playwright@claude-plugins-official": true,
     "greptile@claude-plugins-official": true,
     "feature-dev@claude-code-plugins": true,
-    "hookify@claude-code-plugins": true,
+    "hookify@claude-code-plugins": false,
     "pr-review-toolkit@claude-code-plugins": true
   }
 }

@@ -1,57 +1,57 @@
-import { ref, reactive, computed } from 'vue';
+import { computed, reactive, ref } from 'vue'
 
 export interface ComponentEvent {
-  id: string;
-  timestamp: number;
-  sourceComponent: string;
-  targetComponent: string;
-  eventName: string;
-  payload: unknown;
-  direction: 'emit' | 'receive';
+  id: string
+  timestamp: number
+  sourceComponent: string
+  targetComponent: string
+  eventName: string
+  payload: unknown
+  direction: 'emit' | 'receive'
 }
 
 export interface EventFilter {
-  sourceComponent?: string;
-  targetComponent?: string;
-  eventName?: string;
-  direction?: 'emit' | 'receive';
+  sourceComponent?: string
+  targetComponent?: string
+  eventName?: string
+  direction?: 'emit' | 'receive'
 }
 
 /**
  * Composable for logging component events to trace component communication
  * Used for testing and debugging component communication flow
  */
-export function useComponentEventLogger() {
+export function useComponentEventLogger () {
   // State
-  const events = reactive<Map<string, ComponentEvent>>(new Map());
+  const events = reactive<Map<string, ComponentEvent>>(new Map())
   // Disable event logging by default to prevent console spam and potential performance issues
-  const enabled = ref(false);
-  const autoScroll = ref(true);
-  const filter = ref<EventFilter>({});
+  const enabled = ref(false)
+  const autoScroll = ref(true)
+  const filter = ref<EventFilter>({})
 
   // Getters
   const eventList = computed(() => {
-    const eventArray = Array.from(events.values());
-    
+    const eventArray = Array.from(events.values())
+
     // Apply filters if any
     return eventArray
       .filter(event => {
         if (filter.value.sourceComponent && event.sourceComponent !== filter.value.sourceComponent) {
-          return false;
+          return false
         }
         if (filter.value.targetComponent && event.targetComponent !== filter.value.targetComponent) {
-          return false;
+          return false
         }
         if (filter.value.eventName && event.eventName !== filter.value.eventName) {
-          return false;
+          return false
         }
         if (filter.value.direction && event.direction !== filter.value.direction) {
-          return false;
+          return false
         }
-        return true;
+        return true
       })
-      .sort((a, b) => a.timestamp - b.timestamp);
-  });
+      .toSorted((a, b) => a.timestamp - b.timestamp)
+  })
 
   // Methods
   const logEvent = (
@@ -59,13 +59,15 @@ export function useComponentEventLogger() {
     targetComponent: string,
     eventName: string,
     payload: unknown,
-    direction: 'emit' | 'receive'
+    direction: 'emit' | 'receive',
   ) => {
-    if (!enabled.value) return;
+    if (!enabled.value) {
+      return
+    }
 
-    const timestamp = Date.now();
-    const id = `${sourceComponent}-${targetComponent}-${eventName}-${timestamp}`;
-    
+    const timestamp = Date.now()
+    const id = `${sourceComponent}-${targetComponent}-${eventName}-${timestamp}`
+
     events.set(id, {
       id,
       timestamp,
@@ -73,35 +75,35 @@ export function useComponentEventLogger() {
       targetComponent,
       eventName,
       payload,
-      direction
-    });
+      direction,
+    })
 
     // For debugging during development - only log if explicitly enabled
     if (localStorage.getItem('debug_event_logger') === 'true') {
-      console.debug(`[Event Logger] ${sourceComponent} ${direction === 'emit' ? '→' : '←'} ${targetComponent}: ${eventName}`, payload);
+      console.debug(`[Event Logger] ${sourceComponent} ${direction === 'emit' ? '→' : '←'} ${targetComponent}: ${eventName}`, payload)
     }
-  };
+  }
 
   const clearEvents = () => {
-    events.clear();
-  };
+    events.clear()
+  }
 
   const setEnabled = (value: boolean) => {
-    enabled.value = value;
-    localStorage.setItem('debug_event_logger', value.toString());
-  };
+    enabled.value = value
+    localStorage.setItem('debug_event_logger', value.toString())
+  }
 
   const toggleEnabled = () => {
-    setEnabled(!enabled.value);
-  };
+    setEnabled(!enabled.value)
+  }
 
   const setFilter = (newFilter: EventFilter) => {
-    filter.value = newFilter;
-  };
+    filter.value = newFilter
+  }
 
   const clearFilter = () => {
-    filter.value = {};
-  };
+    filter.value = {}
+  }
 
   return {
     events,
@@ -114,11 +116,11 @@ export function useComponentEventLogger() {
     setEnabled,
     toggleEnabled,
     setFilter,
-    clearFilter
-  };
+    clearFilter,
+  }
 }
 
 // Create a singleton instance for global use
-const eventLogger = useComponentEventLogger();
+const eventLogger = useComponentEventLogger()
 
-export default eventLogger; 
+export default eventLogger

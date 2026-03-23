@@ -1,4 +1,4 @@
-import { defineConfig, devices } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test'
 
 /**
  * @see https://playwright.dev/docs/test-configuration
@@ -22,10 +22,10 @@ export default defineConfig({
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    
+
     /* Take screenshots on failure */
     screenshot: 'only-on-failure',
-    
+
     /* Capture video on failure */
     video: 'retain-on-failure',
   },
@@ -75,4 +75,4 @@ export default defineConfig({
   //   reuseExistingServer: true, // Always reuse existing server
   //   timeout: 30 * 1000, // Reduced timeout
   // },
-});
+})

@@ -20,10 +20,10 @@
 </template>
 
 <script setup lang="ts">
+  import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, Property } from '@/types'
-import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
-import type { EventResizeDoneArg } from '@fullcalendar/interaction'
-import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
+  import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when a calendar route is visited.
@@ -259,20 +259,6 @@ import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
   /* TODO: Adjust based on actual header/footer height */
   }
 
-  :deep(.fc-header-toolbar) {
-    flex-direction: column;
-    gap: 0.0em;
-  }
-
-  :deep(.fc-toolbar-chunk) {
-    display: flex;
-    justify-content: center;
-  }
-
-  :deep(.fc-button) {
-    font-size: 0.875rem;
-    padding: 0.0em 0.75em;
-  }
 }
 
 /* ================================================================ */
