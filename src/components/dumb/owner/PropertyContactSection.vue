@@ -5,7 +5,7 @@
     icon-color="info"
     :editing="editing"
     :loading="loading"
-    :save-disabled="!isDirty || !formValid"
+    :save-disabled="!isDirty"
     title="Contact & Instructions"
     @cancel="closeEdit"
     @edit="editing = true"

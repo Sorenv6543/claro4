@@ -350,7 +350,7 @@ These areas require careful modification - extend existing patterns rather than 
 
 - Strict TypeScript: `pnpm build` runs `vue-tsc --noEmit`; keep `src/types/` in sync with Supabase migrations
 - `src/pages/owner/properties/create.vue` and `edit.vue` exist as files but have **no router entries** — they are unreachable; property CRUD uses in-place modals on the Properties page
-- Property card color cycling (consistent across cards, sidebar, calendar): `const COLORS = ['#5c6bc0', '#43a047', '#8e24aa', '#f57c00']` — use `COLORS[index % COLORS.length]`
+- Property colors are user-selectable: `PROPERTY_COLORS` in `src/utils/constants.ts` (5 hex values: indigo, green, purple, orange, red). Each property stores its `color` field. New properties auto-cycle via `PROPERTY_COLORS[existingPropertyCount % PROPERTY_COLORS.length]` as the default.
 - Don't duplicate business rules in components - call helpers in `businessLogic.ts` (validateBooking, calculateBookingPriority, detectBookingConflicts)
 - Before finishing changes: run `pnpm test:run` and `pnpm build`
 - For auth/routing or subscription changes: also run `pnpm test:performance`
