@@ -274,6 +274,7 @@
     createMyProperty,
     updateMyProperty,
     deleteMyProperty,
+    error: propertyError,
   } = useOwnerProperties()
 
   const {
@@ -403,15 +404,23 @@
         await updateMyProperty(propertyModalData.value.id, propertyData as Partial<PropertyFormData>)
       }
       uiStore.closeModal('propertyModal')
-    } catch (error) {
-      console.error('Failed to save your property:', error)
+    } catch (err) {
+      const message = propertyError.value || (err instanceof Error ? err.message : 'Failed to save your property')
+      console.error('[OwnerProperties] Failed to save property:', err)
+      uiStore.addNotification('error', 'Save Failed', message)
     }
   }
 
   async function handlePropertyModalSkip (data: PropertyFormData): Promise<void> {
     const id = await createMyProperty(data)
-    uiStore.closeModal('propertyModal')
-    if (id) router.push(`/owner/properties/${id}`)
+    if (id) {
+      uiStore.closeModal('propertyModal')
+      router.push(`/owner/properties/${id}`)
+    } else {
+      const message = propertyError.value || 'Property creation failed'
+      console.error('[OwnerProperties] Property creation failed during skip:', propertyError.value)
+      uiStore.addNotification('error', 'Creation Failed', message)
+    }
   }
 
   async function handlePropertyModalDelete (propertyId: string): Promise<void> {
@@ -440,10 +449,18 @@
 
     if (data?.type === 'property' && data?.id) {
       try {
-        await deleteMyProperty(data.id as string)
-        uiStore.closeModal('propertyModal')
-      } catch (error) {
-        console.error('Failed to delete your property:', error)
+        const success = await deleteMyProperty(data.id as string)
+        if (success) {
+          uiStore.closeModal('propertyModal')
+        } else {
+          const message = propertyError.value || 'Failed to delete your property'
+          console.error('[OwnerProperties] Failed to delete property:', message)
+          uiStore.addNotification('error', 'Delete Failed', message)
+        }
+      } catch (err) {
+        const message = propertyError.value || (err instanceof Error ? err.message : 'Failed to delete your property')
+        console.error('[OwnerProperties] Failed to delete property:', err)
+        uiStore.addNotification('error', 'Delete Failed', message)
       }
     }
 

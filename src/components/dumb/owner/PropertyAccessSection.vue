@@ -5,7 +5,7 @@
     icon-color="warning"
     :editing="editing"
     :loading="loading"
-    :save-disabled="!isDirty || !formValid"
+    :save-disabled="!isDirty"
     title="Access & Parking"
     @cancel="closeEdit"
     @edit="editing = true"
