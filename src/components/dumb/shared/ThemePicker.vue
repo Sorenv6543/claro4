@@ -32,7 +32,7 @@
           <div class="text-subtitle-2 mb-2">
             Light Themes
           </div>
-          <v-row dense>
+          <v-row density="comfortable">
             <v-col
               v-for="themeOption in lightThemes"
               :key="themeOption.name"
@@ -68,7 +68,7 @@
           <div class="text-subtitle-2 mb-2 mt-4">
             Dark Themes
           </div>
-          <v-row dense>
+          <v-row density="comfortable">
             <v-col
               v-for="themeOption in darkThemes"
               :key="themeOption.name"

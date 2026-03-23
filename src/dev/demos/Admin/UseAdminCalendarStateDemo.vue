@@ -125,7 +125,7 @@
                     System Metrics
                   </v-card-title>
                   <v-card-text>
-                    <v-row dense>
+                    <v-row density="comfortable">
                       <v-col cols="6">
                         <v-chip
                           class="mb-1"
@@ -184,7 +184,7 @@
                 System Turn Alerts ({{ systemTurnAlerts.length }})
               </v-card-title>
               <v-card-text>
-                <v-row dense>
+                <v-row density="comfortable">
                   <v-col
                     v-for="alert in systemTurnAlerts.slice(0, 6)"
                     :key="alert.id"
@@ -227,7 +227,7 @@
                 Cleaner Schedules
               </v-card-title>
               <v-card-text>
-                <v-row dense>
+                <v-row density="comfortable">
                   <v-col
                     v-for="(bookings, cleanerId) in cleanerSchedules"
                     :key="cleanerId"
@@ -270,7 +270,7 @@
                 Admin Calendar Events ({{ adminCalendarEvents.length }})
               </v-card-title>
               <v-card-text>
-                <v-row dense>
+                <v-row density="comfortable">
                   <v-col
                     v-for="event in adminCalendarEvents.slice(0, 8)"
                     :key="event.id"
@@ -317,7 +317,7 @@
                 Advanced Filtering Test
               </v-card-title>
               <v-card-text>
-                <v-row dense>
+                <v-row density="comfortable">
                   <v-col
                     cols="12"
                     md="4"

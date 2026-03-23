@@ -36,7 +36,7 @@
     <!-- Edit mode -->
     <template #edit>
       <v-form v-model="formValid">
-      <v-row dense>
+      <v-row density="comfortable">
         <v-col cols="12" md="6">
           <v-text-field
             v-model="form.contact_name"

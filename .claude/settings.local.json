@@ -40,7 +40,8 @@
       "Bash(CLAUDE_PLUGIN_ROOT=\"/c/Users/Soren/.claude/plugins/cache/claude-plugins-official/hookify/61c0597779bd\" python3 \"/c/Users/Soren/.claude/plugins/cache/claude-plugins-official/hookify/61c0597779bd/hooks/userpromptsubmit.py\")",
       "Bash(grep -n \"propertyTypeItems\\\\|floorTypeItems\\\\|apartment\\\\|house\\\\|condo\\\\|townhouse\\\\|hardwood\\\\|carpet\" /c/Users/Soren/claro4/src/components/dumb/owner/*.vue)",
       "Bash(find /c/Users/Soren/claro4/src -name \"*.ts\" -type f -exec grep -l \"validation\\\\|Rule\\\\|validators\" {})",
-      "Bash(pnpm test:run)"
+      "Bash(pnpm test:run)",
+      "Skill(pr-review-toolkit:review-pr)"
     ]
   },
   "enableAllProjectMcpServers": true

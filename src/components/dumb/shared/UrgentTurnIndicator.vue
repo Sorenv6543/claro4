@@ -39,7 +39,7 @@
         v-if="showDetails"
         class="booking-details"
       >
-        <v-row dense>
+        <v-row density="comfortable">
           <v-col
             cols="12"
             md="6"
@@ -69,7 +69,7 @@
           </v-col>
         </v-row>
 
-        <v-row dense>
+        <v-row density="comfortable">
           <v-col
             cols="12"
             md="6"

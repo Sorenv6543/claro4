@@ -114,7 +114,7 @@
 
       <!-- Property Stats (if available) -->
       <div class="property-stats mt-3">
-        <v-row dense>
+        <v-row density="comfortable">
           <v-col cols="6">
             <div class="stat-item">
               <v-icon

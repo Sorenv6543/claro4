@@ -31,7 +31,7 @@
     <!-- Edit mode -->
     <template #edit>
       <v-form v-model="formValid">
-      <v-row dense>
+      <v-row density="comfortable">
         <v-col cols="12">
           <v-textarea
             v-model="form.access_info"

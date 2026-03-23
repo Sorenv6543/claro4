@@ -51,7 +51,7 @@
     <!-- Edit mode -->
     <template #edit>
       <v-form v-model="formValid">
-      <v-row dense>
+      <v-row density="comfortable">
         <v-col cols="12" md="8">
           <v-text-field
             v-model="form.address_street"

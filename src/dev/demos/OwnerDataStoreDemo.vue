@@ -81,7 +81,7 @@ Based on TASK-072 implementation
                 >
                   <v-card-title>Owner Stats</v-card-title>
                   <v-card-text>
-                    <v-row dense>
+                    <v-row density="comfortable">
                       <v-col cols="6">
                         <div class="text-h6">
                           {{ ownerData.stats.propertiesCount }}
