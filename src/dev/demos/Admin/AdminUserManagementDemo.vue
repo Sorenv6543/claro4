@@ -1,7 +1,7 @@
 <template>
   <v-container
-    fluid
     class="pa-6"
+    fluid
   >
     <!-- Page Header -->
     <div class="d-flex justify-space-between align-center mb-6">
@@ -15,9 +15,9 @@
       </div>
       <v-btn
         color="primary"
-        variant="elevated"
-        size="large"
         prepend-icon="mdi-account-plus"
+        size="large"
+        variant="elevated"
         @click="openCreateUserDialog"
       >
         Add User
@@ -30,8 +30,8 @@
         v-for="stat in stats"
         :key="stat.title"
         cols="12"
-        sm="6"
         md="3"
+        sm="6"
       >
         <v-card
           class="pa-4"
@@ -39,9 +39,9 @@
         >
           <div class="d-flex align-center">
             <v-avatar
+              class="me-3"
               :color="stat.color"
               size="48"
-              class="me-3"
             >
               <v-icon>{{ stat.icon }}</v-icon>
             </v-avatar>
@@ -77,12 +77,12 @@
           >
             <v-text-field
               v-model="search"
+              clearable
+              density="compact"
+              hide-details
               label="Search users..."
               prepend-inner-icon="mdi-magnify"
               variant="outlined"
-              density="compact"
-              clearable
-              hide-details
             />
           </v-col>
           <v-col
@@ -91,12 +91,12 @@
           >
             <v-select
               v-model="roleFilter"
+              clearable
+              density="compact"
+              hide-details
               :items="roleOptions"
               label="Filter by Role"
               variant="outlined"
-              density="compact"
-              clearable
-              hide-details
             />
           </v-col>
           <v-col
@@ -105,12 +105,12 @@
           >
             <v-select
               v-model="statusFilter"
+              clearable
+              density="compact"
+              hide-details
               :items="statusOptions"
               label="Filter by Status"
               variant="outlined"
-              density="compact"
-              clearable
-              hide-details
             />
           </v-col>
           <v-col
@@ -118,10 +118,10 @@
             md="2"
           >
             <v-btn
-              color="primary"
-              variant="outlined"
-              size="large"
               block
+              color="primary"
+              size="large"
+              variant="outlined"
               @click="clearFilters"
             >
               Clear Filters
@@ -140,21 +140,21 @@
         System Users
       </v-card-title>
       <v-data-table
-        v-model:items-per-page="itemsPerPage"
         v-model="selected"
+        v-model:items-per-page="itemsPerPage"
         :headers="headers"
+        item-value="id"
         :items="filteredUsers"
         :loading="loading"
         :search="search"
-        item-value="id"
         show-select
       >
         <template #user="{ item }">
           <div class="d-flex align-center py-2">
             <v-avatar
+              class="me-3"
               :color="getRoleColor(item.role)"
               size="40"
-              class="me-3"
             >
               <span class="text-white font-weight-bold">
                 {{ item.name.charAt(0).toUpperCase() }}
@@ -173,17 +173,17 @@
         <template #role="{ item }">
           <v-chip
             :color="getRoleColor(item.role)"
+            size="small"
             :text="item.role?.toUpperCase() || 'Unknown'"
             variant="tonal"
-            size="small"
           />
         </template>
         <template #status="{ item }">
           <v-chip
             :color="getStatusColor(item.status)"
+            size="small"
             :text="getStatusText(item.status)"
             variant="tonal"
-            size="small"
           />
         </template>
         <template #company_name="{ item }">
@@ -206,10 +206,10 @@
               <template #activator="{ props }">
                 <v-btn
                   v-bind="props"
+                  color="primary"
                   icon="mdi-pencil"
                   size="small"
                   variant="text"
-                  color="primary"
                   @click="editUser(item)"
                 />
               </template>
@@ -218,10 +218,10 @@
               <template #activator="{ props }">
                 <v-btn
                   v-bind="props"
+                  color="warning"
                   icon="mdi-lock-reset"
                   size="small"
                   variant="text"
-                  color="warning"
                   @click="resetUserPassword(item)"
                 />
               </template>
@@ -230,11 +230,11 @@
               <template #activator="{ props }">
                 <v-btn
                   v-bind="props"
+                  color="error"
+                  :disabled="item.id === currentUser?.id"
                   icon="mdi-delete"
                   size="small"
                   variant="text"
-                  color="error"
-                  :disabled="item.id === currentUser?.id"
                   @click="deleteUser(item)"
                 />
               </template>
@@ -265,23 +265,23 @@
             </div>
             <div class="d-flex gap-2">
               <v-btn
-                variant="outlined"
                 prepend-icon="mdi-email"
+                variant="outlined"
                 @click="sendBulkEmail"
               >
                 Send Email
               </v-btn>
               <v-btn
-                variant="outlined"
                 prepend-icon="mdi-account-edit"
+                variant="outlined"
                 @click="bulkRoleChange"
               >
                 Change Role
               </v-btn>
               <v-btn
-                variant="outlined"
                 color="error"
                 prepend-icon="mdi-delete"
+                variant="outlined"
                 @click="bulkDelete"
               >
                 Delete Selected
@@ -295,17 +295,17 @@
     <!-- Create/Edit User Dialog -->
     <UserFormDialog
       v-model="userDialog"
-      :user="editingUser"
       :is-editing="isEditing"
+      :user="editingUser"
       @saved="handleUserSaved"
     />
     <!-- Delete Confirmation Dialog -->
     <ConfirmationDialog
       v-model="deleteDialog"
-      :title="deleteDialogTitle"
-      :message="deleteDialogMessage"
-      confirm-text="Delete"
       confirm-color="error"
+      confirm-text="Delete"
+      :message="deleteDialogMessage"
+      :title="deleteDialogTitle"
       @confirm="handleDeleteConfirm"
     />
     <!-- Bulk Actions Dialogs -->
@@ -333,181 +333,181 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
-import { useAuthStore } from '@/stores/auth'
-import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
-import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-import BulkRoleChangeDialog from '@/components/dumb/admin/BulkRoleChangeDialog.vue'
-import type { User, UserRole } from '@/types'
+  import type { User, UserRole } from '@/types'
+  import { computed, onMounted, ref } from 'vue'
+  import BulkRoleChangeDialog from '@/components/dumb/admin/BulkRoleChangeDialog.vue'
+  import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+  import { useAuthStore } from '@/stores/auth'
 
-// Composables
-const authStore = useAuthStore()
-const {
-  users,
-  loading,
-  fetchAllUsers,
-  createUser: _createUser,
-  updateUser: _updateUser,
-  deleteUser: deleteUserApi,
-  bulkChangeRoles: _bulkChangeRoles,
-  resetUserPassword: resetUserPasswordApi
-} = useAdminUserManagement()
+  // Composables
+  const authStore = useAuthStore()
+  const {
+    users,
+    loading,
+    fetchAllUsers,
+    createUser: _createUser,
+    updateUser: _updateUser,
+    deleteUser: deleteUserApi,
+    bulkChangeRoles: _bulkChangeRoles,
+    resetUserPassword: resetUserPasswordApi,
+  } = useAdminUserManagement()
 
-// Data
-const search = ref('')
-const roleFilter = ref<UserRole | null>(null)
-const statusFilter = ref<string | null>(null)
-const selected = ref<User[]>([])
-const itemsPerPage = ref(25)
+  // Data
+  const search = ref('')
+  const roleFilter = ref<UserRole | null>(null)
+  const statusFilter = ref<string | null>(null)
+  const selected = ref<User[]>([])
+  const itemsPerPage = ref(25)
 
-// Dialog states
-const userDialog = ref(false)
-const deleteDialog = ref(false)
-const bulkRoleDialog = ref(false)
-const editingUser = ref<User | null>(null)
-const isEditing = ref(false)
-const userToDelete = ref<User | null>(null)
+  // Dialog states
+  const userDialog = ref(false)
+  const deleteDialog = ref(false)
+  const bulkRoleDialog = ref(false)
+  const editingUser = ref<User | null>(null)
+  const isEditing = ref(false)
+  const userToDelete = ref<User | null>(null)
 
-// Snackbar
-const snackbar = ref({ show: false, message: '', color: 'success', timeout: 3500 })
+  // Snackbar
+  const snackbar = ref({ show: false, message: '', color: 'success', timeout: 3500 })
 
-// Current user
-const currentUser = computed(() => authStore.user)
+  // Current user
+  const currentUser = computed(() => authStore.user)
 
-// Options
-const roleOptions = [
-  { title: 'Admin', value: 'admin' },
-  { title: 'Owner', value: 'owner' },
-  { title: 'Cleaner', value: 'cleaner' }
-]
-const statusOptions = [
-  { title: 'Active', value: 'active' },
-  { title: 'Inactive', value: 'inactive' },
-  { title: 'Pending', value: 'pending' }
-]
+  // Options
+  const roleOptions = [
+    { title: 'Admin', value: 'admin' },
+    { title: 'Owner', value: 'owner' },
+    { title: 'Cleaner', value: 'cleaner' },
+  ]
+  const statusOptions = [
+    { title: 'Active', value: 'active' },
+    { title: 'Inactive', value: 'inactive' },
+    { title: 'Pending', value: 'pending' },
+  ]
 
-// Data table headers
-const headers = [
-  { title: 'User', key: 'user', sortable: false },
-  { title: 'Role', key: 'role', width: '120px' },
-  { title: 'Company', key: 'company_name', width: '150px' },
-  { title: 'Status', key: 'status', width: '100px' },
-  { title: 'Last Activity', key: 'last_sign_in', width: '140px' },
-  { title: 'Actions', key: 'actions', sortable: false, width: '140px' }
-]
+  // Data table headers
+  const headers = [
+    { title: 'User', key: 'user', sortable: false },
+    { title: 'Role', key: 'role', width: '120px' },
+    { title: 'Company', key: 'company_name', width: '150px' },
+    { title: 'Status', key: 'status', width: '100px' },
+    { title: 'Last Activity', key: 'last_sign_in', width: '140px' },
+    { title: 'Actions', key: 'actions', sortable: false, width: '140px' },
+  ]
 
-// Stats
-const stats = computed(() => [
-  { title: 'Total Users', value: users.value.length, icon: 'mdi-account-group', color: 'primary' },
-  { title: 'Admins', value: users.value.filter(u => u.role === 'admin').length, icon: 'mdi-shield-account', color: 'red' },
-  { title: 'Owners', value: users.value.filter(u => u.role === 'owner').length, icon: 'mdi-home-account', color: 'info' },
-  { title: 'Cleaners', value: users.value.filter(u => u.role === 'cleaner').length, icon: 'mdi-broom', color: 'success' }
-])
+  // Stats
+  const stats = computed(() => [
+    { title: 'Total Users', value: users.value.length, icon: 'mdi-account-group', color: 'primary' },
+    { title: 'Admins', value: users.value.filter(u => u.role === 'admin').length, icon: 'mdi-shield-account', color: 'red' },
+    { title: 'Owners', value: users.value.filter(u => u.role === 'owner').length, icon: 'mdi-home-account', color: 'info' },
+    { title: 'Cleaners', value: users.value.filter(u => u.role === 'cleaner').length, icon: 'mdi-broom', color: 'success' },
+  ])
 
-// Filtering
-const filteredUsers = computed(() => {
-  let result = users.value
-  if (roleFilter.value) {
-    result = result.filter(user => user.role === roleFilter.value)
+  // Filtering
+  const filteredUsers = computed(() => {
+    let result = users.value
+    if (roleFilter.value) {
+      result = result.filter(user => user.role === roleFilter.value)
+    }
+    if (statusFilter.value) {
+      result = result.filter(user => getStatusText(user).toLowerCase() === statusFilter.value)
+    }
+    if (search.value) {
+      const s = search.value.toLowerCase()
+      result = result.filter(user => user.name.toLowerCase().includes(s) || user.email.toLowerCase().includes(s))
+    }
+    return result
+  })
+
+  const deleteDialogTitle = computed(() => userToDelete.value ? `Delete ${userToDelete.value.name}?` : 'Delete User?')
+  const deleteDialogMessage = computed(() => userToDelete.value ? `Are you sure you want to delete ${userToDelete.value.name}? This action cannot be undone.` : 'Are you sure you want to delete this user? This action cannot be undone.')
+
+  // Methods
+  function openCreateUserDialog () {
+    editingUser.value = null
+    isEditing.value = false
+    userDialog.value = true
   }
-  if (statusFilter.value) {
-    result = result.filter(user => getStatusText(user).toLowerCase() === statusFilter.value)
+  function editUser (user: User) {
+    editingUser.value = { ...user }
+    isEditing.value = true
+    userDialog.value = true
   }
-  if (search.value) {
-    const s = search.value.toLowerCase()
-    result = result.filter(user => user.name.toLowerCase().includes(s) || user.email.toLowerCase().includes(s))
+  function deleteUser (user: User) {
+    userToDelete.value = user
+    deleteDialog.value = true
   }
-  return result
-})
+  async function handleDeleteConfirm () {
+    if (!userToDelete.value) return
+    const ok = await deleteUserApi(userToDelete.value.id)
+    if (ok) {
+      showSnackbar(`${userToDelete.value.name} deleted`, 'success')
+    } else {
+      showSnackbar('Failed to delete user', 'error')
+    }
+    deleteDialog.value = false
+    userToDelete.value = null
+  }
+  function handleUserSaved () {
+    userDialog.value = false
+    editingUser.value = null
+    showSnackbar('User saved', 'success')
+  }
+  function handleBulkRoleSaved () {
+    bulkRoleDialog.value = false
+    selected.value = []
+    showSnackbar('Roles updated', 'success')
+  }
+  function clearFilters () {
+    search.value = ''
+    roleFilter.value = null
+    statusFilter.value = null
+  }
+  function sendBulkEmail () {
+    showSnackbar('Bulk email sent (demo)', 'info')
+  }
+  function bulkRoleChange () {
+    bulkRoleDialog.value = true
+  }
+  function bulkDelete () {
+    showSnackbar('Bulk delete not implemented in demo', 'warning')
+  }
+  function getRoleColor (role: UserRole) {
+    const colors = { admin: 'red', owner: 'primary', cleaner: 'success' }
+    return colors[role] || 'grey'
+  }
+  function getStatusColor (user: User) {
+    if (!user.created_at) return 'grey'
+    if (user.last_sign_in_at) return 'success'
+    return 'warning'
+  }
+  function getStatusText (user: User) {
+    if (!user.created_at) return 'Pending'
+    if (user.last_sign_in_at) return 'Active'
+    return 'Inactive'
+  }
+  function formatDate (dateString: string) {
+    return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+  function showSnackbar (message: string, color = 'success') {
+    snackbar.value.message = message
+    snackbar.value.color = color
+    snackbar.value.show = true
+  }
+  async function resetUserPassword (user: User) {
+    const ok = await resetUserPasswordApi(user.email)
+    if (ok) {
+      showSnackbar(`Password reset email sent to ${user.email}`, 'success')
+    } else {
+      showSnackbar('Failed to send password reset email', 'error')
+    }
+  }
 
-const deleteDialogTitle = computed(() => userToDelete.value ? `Delete ${userToDelete.value.name}?` : 'Delete User?')
-const deleteDialogMessage = computed(() => userToDelete.value ? `Are you sure you want to delete ${userToDelete.value.name}? This action cannot be undone.` : 'Are you sure you want to delete this user? This action cannot be undone.')
-
-// Methods
-function openCreateUserDialog() {
-  editingUser.value = null
-  isEditing.value = false
-  userDialog.value = true
-}
-function editUser(user: User) {
-  editingUser.value = { ...user }
-  isEditing.value = true
-  userDialog.value = true
-}
-function deleteUser(user: User) {
-  userToDelete.value = user
-  deleteDialog.value = true
-}
-async function handleDeleteConfirm() {
-  if (!userToDelete.value) return
-  const ok = await deleteUserApi(userToDelete.value.id)
-  if (ok) {
-    showSnackbar(`${userToDelete.value.name} deleted`, 'success')
-  } else {
-    showSnackbar('Failed to delete user', 'error')
-  }
-  deleteDialog.value = false
-  userToDelete.value = null
-}
-function handleUserSaved() {
-  userDialog.value = false
-  editingUser.value = null
-  showSnackbar('User saved', 'success')
-}
-function handleBulkRoleSaved() {
-  bulkRoleDialog.value = false
-  selected.value = []
-  showSnackbar('Roles updated', 'success')
-}
-function clearFilters() {
-  search.value = ''
-  roleFilter.value = null
-  statusFilter.value = null
-}
-function sendBulkEmail() {
-  showSnackbar('Bulk email sent (demo)', 'info')
-}
-function bulkRoleChange() {
-  bulkRoleDialog.value = true
-}
-function bulkDelete() {
-  showSnackbar('Bulk delete not implemented in demo', 'warning')
-}
-function getRoleColor(role: UserRole) {
-  const colors = { admin: 'red', owner: 'primary', cleaner: 'success' }
-  return colors[role] || 'grey'
-}
-function getStatusColor(user: User) {
-  if (!user.created_at) return 'grey'
-  if (user.last_sign_in_at) return 'success'
-  return 'warning'
-}
-function getStatusText(user: User) {
-  if (!user.created_at) return 'Pending'
-  if (user.last_sign_in_at) return 'Active'
-  return 'Inactive'
-}
-function formatDate(dateString: string) {
-  return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-}
-function showSnackbar(message: string, color: string = 'success') {
-  snackbar.value.message = message
-  snackbar.value.color = color
-  snackbar.value.show = true
-}
-async function resetUserPassword(user: User) {
-  const ok = await resetUserPasswordApi(user.email)
-  if (ok) {
-    showSnackbar(`Password reset email sent to ${user.email}`, 'success')
-  } else {
-    showSnackbar('Failed to send password reset email', 'error')
-  }
-}
-
-onMounted(() => {
-  fetchAllUsers()
-})
+  onMounted(() => {
+    fetchAllUsers()
+  })
 </script>
 
 <style scoped>
@@ -520,4 +520,4 @@ onMounted(() => {
 .text-medium-emphasis {
   opacity: 0.7;
 }
-</style> 
+</style>

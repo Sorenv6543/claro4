@@ -4,9 +4,9 @@
     <!-- Simple app bar for auth pages -->
     <v-app-bar
       color="primary"
-      theme="dark"
       elevation="1"
       height="64"
+      theme="dark"
     >
       <v-toolbar-title>
         Claro Scheduler
@@ -16,9 +16,9 @@
 
       <!-- Optional help or contact link -->
       <v-btn
-        variant="text"
         color="white"
         href="mailto:support@example.com"
+        variant="text"
       >
         <v-icon start>
           mdi-help-circle
@@ -31,8 +31,8 @@
     <!-- Main content area for auth forms -->
     <v-main class="auth-main">
       <v-container
-        fluid
         class="pa-0 d-flex align-center justify-center"
+        fluid
         style="min-height: 100%"
       >
         <v-row
@@ -40,12 +40,12 @@
           justify="center"
         >
           <v-col
-            cols="12"
-            sm="8"
-            md="6"
-            lg="4"
-            xl="4"
             class="pa-4"
+            cols="12"
+            lg="4"
+            md="6"
+            sm="8"
+            xl="4"
           >
             <!-- Auth forms will be rendered here -->
             <router-view />
@@ -56,8 +56,8 @@
 
     <!-- Footer with basic info -->
     <v-footer
-      color="transparent"
       class="justify-center"
+      color="transparent"
       height="auto"
     >
       <div class="text-center">
@@ -73,10 +73,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+  import { computed } from 'vue'
 
-// Get current year for footer
-const currentYear = computed(() => new Date().getFullYear());
+  // Get current year for footer
+  const currentYear = computed(() => new Date().getFullYear())
 </script>
 
 <style scoped>

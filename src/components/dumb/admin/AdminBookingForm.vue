@@ -11,9 +11,9 @@
         {{ formTitle }}
         <v-chip
           v-if="form.booking_type === 'turn'"
+          class="ml-2"
           color="error"
           size="small"
-          class="ml-2"
           variant="elevated"
         >
           <v-icon start>
@@ -23,24 +23,24 @@
         </v-chip>
         <v-chip
           v-if="form.priority === 'high'"
+          class="ml-2"
           color="warning"
           size="small"
-          class="ml-2"
         >
           HIGH PRIORITY
         </v-chip>
         <v-spacer />
         <v-chip
           :color="getStatusColor((form.status as string) || 'pending')"
-          variant="tonal"
           size="small"
+          variant="tonal"
         >
           {{ ((form.status as string) || 'pending').toUpperCase() }}
         </v-chip>
       </v-card-title>
-      
+
       <v-divider />
-      
+
       <v-card-text class="pa-0">
         <v-form
           ref="formRef"
@@ -56,16 +56,16 @@
               >
                 <v-select
                   v-model="form.property_id"
-                  :items="propertiesArray"
-                  item-title="displayAddress"
-                  item-value="id"
-                  label="Property"
-                  :rules="propertyRules"
-                  required
-                  variant="outlined"
                   :disabled="loading"
                   :error-messages="errors.get('property_id')"
+                  item-title="displayAddress"
+                  item-value="id"
+                  :items="propertiesArray"
+                  label="Property"
                   prepend-inner-icon="mdi-home"
+                  required
+                  :rules="propertyRules"
+                  variant="outlined"
                 >
                   <template #item="{ props: itemProps, item }">
                     <v-list-item v-bind="itemProps">
@@ -84,19 +84,19 @@
                   </template>
                 </v-select>
               </v-col>
-              
+
               <v-col
                 cols="12"
                 md="4"
               >
                 <v-select
                   v-model="form.status"
-                  :items="statusOptions"
-                  label="Booking Status"
-                  variant="outlined"
                   :disabled="loading"
                   :error-messages="errors.get('status')"
+                  :items="statusOptions"
+                  label="Booking Status"
                   prepend-inner-icon="mdi-clipboard-list"
+                  variant="outlined"
                 >
                   <template #item="{ props: itemProps, item }">
                     <v-list-item v-bind="itemProps">
@@ -112,7 +112,7 @@
                 </v-select>
               </v-col>
             </v-row>
-            
+
             <!-- Dates -->
             <v-row>
               <v-col
@@ -121,12 +121,12 @@
               >
                 <DatePickerField
                   v-model="form.checkin_date"
-                  label="Checkin Date"
-                  :min="todayIso"
-                  hint="When new guests arrive"
-                  :rules="dateRules"
                   :disabled="loading"
                   :error-messages="errors.get('checkin_date')"
+                  hint="When new guests arrive"
+                  label="Checkin Date"
+                  :min="todayIso"
+                  :rules="dateRules"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
@@ -137,12 +137,12 @@
               >
                 <DatePickerField
                   v-model="form.checkout_date"
-                  label="Checkout Date"
-                  :min="todayIso"
-                  hint="When guests depart"
-                  :rules="dateRules"
                   :disabled="loading"
                   :error-messages="errors.get('checkout_date')"
+                  hint="When guests depart"
+                  label="Checkout Date"
+                  :min="todayIso"
+                  :rules="dateRules"
                   @update:model-value="updateBookingType"
                 />
               </v-col>
@@ -156,11 +156,11 @@
               >
                 <TimePickerField
                   v-model="form.checkin_time"
-                  label="Checkin Time"
-                  hint="When new guests arrive"
-                  :rules="timeRules"
                   :disabled="loading"
                   :error-messages="errors.get('checkin_time')"
+                  hint="When new guests arrive"
+                  label="Checkin Time"
+                  :rules="timeRules"
                 />
               </v-col>
 
@@ -170,21 +170,21 @@
               >
                 <TimePickerField
                   v-model="form.checkout_time"
-                  label="Checkout Time"
-                  hint="When guests depart"
-                  :rules="timeRules"
                   :disabled="loading"
                   :error-messages="errors.get('checkout_time')"
+                  hint="When guests depart"
+                  label="Checkout Time"
+                  :rules="timeRules"
                 />
               </v-col>
             </v-row>
-            
+
             <!-- Cleaner Assignment Section -->
             <v-row>
               <v-col cols="12">
                 <v-card
-                  variant="outlined"
                   class="mb-4"
+                  variant="outlined"
                 >
                   <v-card-title class="text-subtitle-1 py-2">
                     <v-icon class="mr-2">
@@ -201,15 +201,15 @@
                       >
                         <v-select
                           v-model="form.assigned_cleaner_id"
-                          :items="availableCleaners"
-                          item-title="name"
-                          item-value="id"
-                          label="Assigned Cleaner"
-                          variant="outlined"
+                          clearable
                           :disabled="loading"
                           :error-messages="errors.get('assigned_cleaner_id')"
-                          clearable
+                          item-title="name"
+                          item-value="id"
+                          :items="availableCleaners"
+                          label="Assigned Cleaner"
                           prepend-inner-icon="mdi-account"
+                          variant="outlined"
                         >
                           <template #item="{ props: itemProps, item }">
                             <v-list-item v-bind="itemProps">
@@ -237,15 +237,15 @@
                           </template>
                         </v-select>
                       </v-col>
-                      
+
                       <v-col
                         cols="12"
                         md="6"
                       >
                         <v-btn
-                          variant="outlined"
                           color="primary"
                           :disabled="!form.property_id || !form.checkout_date"
+                          variant="outlined"
                           @click="openCleanerAssignmentModal"
                         >
                           <v-icon start>
@@ -255,14 +255,14 @@
                         </v-btn>
                       </v-col>
                     </v-row>
-                    
+
                     <!-- Cleaner Details -->
                     <v-row v-if="selectedCleaner">
                       <v-col cols="12">
                         <v-alert
+                          class="mt-2"
                           type="info"
                           variant="tonal"
-                          class="mt-2"
                         >
                           <template #title>
                             Cleaner: {{ selectedCleaner.name }}
@@ -274,13 +274,13 @@
                             <strong>Today's Bookings:</strong> {{ getCleanerTodayBookings(selectedCleaner.id) }}/{{ selectedCleaner.max_daily_bookings }}
                           </p>
                           <p class="mb-0">
-                            <strong>Performance Rating:</strong> 
+                            <strong>Performance Rating:</strong>
                             <v-rating
+                              class="d-inline-flex ml-2"
+                              density="compact"
                               :model-value="getCleanerRating(selectedCleaner.id)"
                               readonly
                               size="small"
-                              density="compact"
-                              class="d-inline-flex ml-2"
                             />
                           </p>
                         </v-alert>
@@ -290,7 +290,7 @@
                 </v-card>
               </v-col>
             </v-row>
-            
+
             <!-- Booking Details -->
             <v-row>
               <v-col
@@ -299,31 +299,31 @@
               >
                 <v-text-field
                   v-model.number="form.guest_count"
-                  label="Guest Count"
-                  type="number"
-                  min="1"
-                  max="20"
-                  variant="outlined"
                   :disabled="loading"
                   :error-messages="errors.get('guest_count')"
                   hint="Affects cleaning duration estimate"
+                  label="Guest Count"
+                  max="20"
+                  min="1"
                   persistent-hint
                   prepend-inner-icon="mdi-account-group"
+                  type="number"
+                  variant="outlined"
                 />
               </v-col>
-              
+
               <v-col
                 cols="12"
                 sm="6"
               >
                 <v-select
                   v-model="form.priority"
-                  :items="priorityOptions"
-                  label="Priority Level"
-                  variant="outlined"
                   :disabled="loading"
                   :error-messages="errors.get('priority')"
+                  :items="priorityOptions"
+                  label="Priority Level"
                   prepend-inner-icon="mdi-flag"
+                  variant="outlined"
                 >
                   <template #item="{ props: itemProps, item }">
                     <v-list-item v-bind="itemProps">
@@ -337,33 +337,33 @@
                 </v-select>
               </v-col>
             </v-row>
-            
+
             <!-- Notes and Instructions -->
             <v-row>
               <v-col cols="12">
                 <v-textarea
                   v-model="form.notes"
-                  label="Cleaning Instructions & Notes"
-                  variant="outlined"
+                  :counter="500"
                   :disabled="loading"
                   :error-messages="errors.get('notes')"
                   hint="Special requirements, client preferences, or operational notes"
+                  label="Cleaning Instructions & Notes"
                   persistent-hint
-                  :counter="500"
-                  rows="3"
                   prepend-inner-icon="mdi-note-text"
+                  rows="3"
+                  variant="outlined"
                 />
               </v-col>
             </v-row>
-            
+
             <!-- Business Impact Alerts -->
             <v-row v-if="showBusinessImpactAlert">
               <v-col cols="12">
                 <v-alert
+                  class="mb-0"
+                  :title="businessImpactAlert.title"
                   :type="businessImpactAlert.type"
                   variant="tonal"
-                  :title="businessImpactAlert.title"
-                  class="mb-0"
                 >
                   <p
                     v-for="message in businessImpactAlert.messages"
@@ -375,40 +375,40 @@
                 </v-alert>
               </v-col>
             </v-row>
-            
+
             <!-- Validation Errors -->
             <v-row v-if="showDateError">
               <v-col cols="12">
                 <v-alert
+                  class="mb-0"
+                  text="Invalid date configuration detected. Please review checkout/checkin times."
+                  title="Scheduling Conflict"
                   type="error"
                   variant="tonal"
-                  title="Scheduling Conflict"
-                  text="Invalid date configuration detected. Please review checkout/checkin times."
-                  class="mb-0"
                 />
               </v-col>
             </v-row>
           </v-container>
         </v-form>
       </v-card-text>
-      
+
       <v-divider />
-      
+
       <v-card-actions class="pa-4">
         <v-btn
           color="grey-darken-1"
-          variant="text"
           :disabled="loading"
+          variant="text"
           @click="handleClose"
         >
           Cancel
         </v-btn>
-        
+
         <v-btn
           v-if="mode === 'edit'"
           color="error"
-          variant="outlined"
           :disabled="loading"
+          variant="outlined"
           @click="handleDelete"
         >
           <v-icon start>
@@ -416,14 +416,14 @@
           </v-icon>
           Delete
         </v-btn>
-        
+
         <v-spacer />
-        
+
         <v-btn
           v-if="mode === 'edit' && form.status !== 'completed'"
           color="success"
-          variant="tonal"
           :disabled="loading || !form.assigned_cleaner_id"
+          variant="tonal"
           @click="handleMarkComplete"
         >
           <v-icon start>
@@ -431,12 +431,12 @@
           </v-icon>
           Mark Complete
         </v-btn>
-        
+
         <v-btn
           color="primary"
-          variant="elevated"
-          :loading="loading"
           :disabled="!formValid"
+          :loading="loading"
+          variant="elevated"
           @click="handleSubmit"
         >
           <v-icon start>
@@ -450,373 +450,372 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, nextTick } from 'vue'
-import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
-import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
-import type { Property } from '@/types/property'
-import { formatPropertyAddress } from '@/types/property'
-import type { Booking, BookingFormData } from '@/types/booking'
-import type { Cleaner } from '@/types/user'
+  import type { Booking, BookingFormData } from '@/types/booking'
+  import type { Property } from '@/types/property'
+  import type { Cleaner } from '@/types/user'
+  import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
+  import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
+  import { computed, nextTick, ref, watch } from 'vue'
+  import { formatPropertyAddress } from '@/types/property'
 
-// Props
-interface Props {
-  modelValue: boolean
-  mode: 'create' | 'edit'
-  booking?: Booking | null
-  properties: Property[]
-  cleaners: Cleaner[]
-  loading?: boolean
-  errors?: Map<string, string[]>
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  booking: null,
-  loading: false,
-  errors: () => new Map()
-})
-
-// Emits
-interface Emits {
-  'update:modelValue': [value: boolean]
-  'submit': [data: BookingFormData]
-  'delete': [id: string]
-  'mark-complete': [id: string]
-  'assign-cleaner': [bookingId: string, cleanerId: string]
-  'open-cleaner-modal': [booking: Partial<BookingFormData>]
-}
-
-const emit = defineEmits<Emits>()
-
-// Form state
-const formRef = ref()
-const formValid = ref(false)
-
-// Date picker state
-const _now = new Date()
-const todayIso = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, '0')}-${String(_now.getDate()).padStart(2, '0')}`
-
-// Default form data
-const defaultForm: BookingFormData = {
-  owner_id: '', // Required field for admin forms
-  property_id: '',
-  checkout_date: '',
-  checkin_date: '',
-  checkin_time: '15:00',
-  checkout_time: '11:00',
-  booking_type: 'standard',
-  guest_count: undefined,
-  notes: '',
-  status: 'pending',
-  assigned_cleaner_id: '',
-  priority: 'normal'
-}
-
-const form = ref<BookingFormData>({ ...defaultForm })
-
-// Computed properties
-const isOpen = computed({
-  get: () => props.modelValue,
-  set: (value) => emit('update:modelValue', value)
-})
-
-const propertyName = computed(() => {
-  if (!props.booking?.property_id) return 'Unknown Property'
-  const property = props.properties.find(p => p.id === props.booking?.property_id)
-  return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
-})
-
-const formTitle = computed(() => {
-  if (props.mode === 'create') {
-    return 'Schedule New Cleaning'
+  // Props
+  interface Props {
+    modelValue: boolean
+    mode: 'create' | 'edit'
+    booking?: Booking | null
+    properties: Property[]
+    cleaners: Cleaner[]
+    loading?: boolean
+    errors?: Map<string, string[]>
   }
-  return `Edit Booking "${propertyName.value}"`
-})
 
-const submitButtonText = computed(() => {
-  return props.mode === 'create' ? 'Schedule Cleaning' : 'Update Booking'
-})
-
-const propertiesArray = computed(() => {
-  return Array.from(props.properties).map(property => ({
-    ...property,
-    displayAddress: formatPropertyAddress(property, 'short'),
-    fullAddress: formatPropertyAddress(property),
-  }))
-})
-
-const availableCleaners = computed(() => {
-  return props.cleaners.filter(() => {
-    // Filter based on availability and skills if needed
-    return true // Simplified for now
+  const props = withDefaults(defineProps<Props>(), {
+    booking: null,
+    loading: false,
+    errors: () => new Map(),
   })
-})
 
-const selectedCleaner = computed(() => {
-  if (!form.value.assigned_cleaner_id) return null
-  return props.cleaners.find(c => c.id === form.value.assigned_cleaner_id)
-})
-
-const statusOptions = [
-  { title: 'Pending', value: 'pending' },
-  { title: 'Scheduled', value: 'scheduled' },
-  { title: 'In Progress', value: 'in_progress' },
-  { title: 'Completed', value: 'completed' },
-  { title: 'Cancelled', value: 'cancelled' }
-]
-
-const priorityOptions = [
-  { title: 'Low', value: 'low' },
-  { title: 'Normal', value: 'normal' },
-  { title: 'High', value: 'high' },
-  { title: 'Urgent', value: 'urgent' }
-]
-
-// Commented out unused computed - was causing TS warning
-// const showSameDayAlert = computed(() => {
-//   if (!form.value.checkout_date || !form.value.checkin_date) return false
-//   const checkoutDate = new Date(form.value.checkout_date).toDateString()
-//   const checkinDate = new Date(form.value.checkin_date).toDateString()
-//   return checkoutDate === checkinDate
-// })
-
-const showDateError = computed(() => {
-  if (!form.value.checkout_date || !form.value.checkin_date) return false
-  return new Date(form.value.checkout_date as string) < new Date(form.value.checkin_date as string)
-})
-
-const showBusinessImpactAlert = computed(() => {
-  return businessImpactAlert.value.messages.length > 0
-})
-
-const businessImpactAlert = computed(() => {
-  const alert = {
-    type: 'info' as 'info' | 'warning' | 'error',
-    title: '',
-    messages: [] as string[]
+  // Emits
+  interface Emits {
+    'update:modelValue': [value: boolean]
+    'submit': [data: BookingFormData]
+    'delete': [id: string]
+    'mark-complete': [id: string]
+    'assign-cleaner': [bookingId: string, cleanerId: string]
+    'open-cleaner-modal': [booking: Partial<BookingFormData>]
   }
 
-  if (form.value.booking_type === 'turn') {
-    alert.type = 'warning'
-    alert.title = 'High Business Impact'
-    alert.messages.push('Same-day turnovers require immediate attention')
-    alert.messages.push('Client satisfaction and revenue directly affected')
+  const emit = defineEmits<Emits>()
+
+  // Form state
+  const formRef = ref()
+  const formValid = ref(false)
+
+  // Date picker state
+  const _now = new Date()
+  const todayIso = `${_now.getFullYear()}-${String(_now.getMonth() + 1).padStart(2, '0')}-${String(_now.getDate()).padStart(2, '0')}`
+
+  // Default form data
+  const defaultForm: BookingFormData = {
+    owner_id: '', // Required field for admin forms
+    property_id: '',
+    checkout_date: '',
+    checkin_date: '',
+    checkin_time: '15:00',
+    checkout_time: '11:00',
+    booking_type: 'standard',
+    guest_count: undefined,
+    notes: '',
+    status: 'pending',
+    assigned_cleaner_id: '',
+    priority: 'normal',
   }
 
-  if (form.value.priority === 'urgent' && !form.value.assigned_cleaner_id) {
-    alert.type = 'error'
-    alert.title = 'Critical: Urgent Booking Unassigned'
-    alert.messages.push('Urgent bookings must have assigned cleaners')
-  }
+  const form = ref<BookingFormData>({ ...defaultForm })
 
-  return alert
-})
+  // Computed properties
+  const isOpen = computed({
+    get: () => props.modelValue,
+    set: value => emit('update:modelValue', value),
+  })
 
-// Validation rules
-const propertyRules = [
-  (v: string) => !!v || 'Property selection is required'
-]
+  const propertyName = computed(() => {
+    if (!props.booking?.property_id) return 'Unknown Property'
+    const property = props.properties.find(p => p.id === props.booking?.property_id)
+    return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
+  })
 
-const dateRules = [
-  (v: string) => !!v || 'Date is required',
-  (v: string) => {
-    if (!v) return true
-
-    // Parse date as local date to avoid timezone issues
-    const [year, month, day] = v.split('-').map(Number)
-    const selectedDate = new Date(year, month - 1, day) // month is 0-indexed
-    const today = new Date()
-
-    // Set both dates to midnight for fair comparison (date only, no time)
-    const selectedDateOnly = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate())
-    const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-
-    return selectedDateOnly >= todayOnly || 'Date cannot be in the past'
-  }
-]
-
-const timeRules = [
-  (v: string) => !!v || 'Time is required',
-  (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) || 'Invalid time format'
-]
-
-// Methods
-const updateBookingType = () => {
-  if (!form.value.checkout_date || !form.value.checkin_date) return
-
-  // Parse dates as local dates to avoid timezone issues
-  const parseDateString = (dateStr: string) => {
-    if (!dateStr) return null
-    const [year, month, day] = dateStr.split('-').map(Number)
-    return new Date(year, month - 1, day).toDateString()
-  }
-
-  const checkoutDate = parseDateString(form.value.checkout_date as string)
-  const checkinDate = parseDateString(form.value.checkin_date as string)
-
-  if (checkoutDate === checkinDate) {
-    form.value.booking_type = 'turn'
-    form.value.priority = 'urgent'
-  } else {
-    form.value.booking_type = 'standard'
-    if (form.value.priority === 'urgent') {
-      form.value.priority = 'normal'
+  const formTitle = computed(() => {
+    if (props.mode === 'create') {
+      return 'Schedule New Cleaning'
     }
-  }
-}
+    return `Edit Booking "${propertyName.value}"`
+  })
 
-const getStatusColor = (status: string) => {
-  const colors = {
-    pending: 'orange',
-    scheduled: 'blue',
-    in_progress: 'purple',
-    completed: 'green',
-    cancelled: 'red'
-  }
-  return colors[status as keyof typeof colors] || 'grey'
-}
+  const submitButtonText = computed(() => {
+    return props.mode === 'create' ? 'Schedule Cleaning' : 'Update Booking'
+  })
 
-const getPriorityColor = (priority: string) => {
-  const colors = {
-    standard: 'grey',
-    high: 'orange',
-    urgent: 'red'
-  }
-  return colors[priority as keyof typeof colors] || 'grey'
-}
+  const propertiesArray = computed(() => {
+    return Array.from(props.properties).map(property => ({
+      ...property,
+      displayAddress: formatPropertyAddress(property, 'short'),
+      fullAddress: formatPropertyAddress(property),
+    }))
+  })
 
-const getPriorityIcon = (priority: string) => {
-  const icons = {
-    standard: 'mdi-flag',
-    high: 'mdi-flag-triangle',
-    urgent: 'mdi-alert'
-  }
-  return icons[priority as keyof typeof icons] || 'mdi-flag'
-}
-
-const getPropertyOwnerName = (ownerId: string) => {
-  // This would typically come from a users store or prop
-  return `Owner ${ownerId.slice(-4)}`
-}
-
-const getCleanerAvailabilityColor = (cleaner: Cleaner) => {
-  // Simplified availability check
-  const todayBookings = getCleanerTodayBookings(cleaner.id)
-  if (todayBookings >= cleaner.max_daily_bookings) return 'red'
-  if (todayBookings >= cleaner.max_daily_bookings * 0.8) return 'orange'
-  return 'green'
-}
-
-const getCleanerAvailabilityText = (cleaner: Cleaner) => {
-  const todayBookings = getCleanerTodayBookings(cleaner.id)
-  if (todayBookings >= cleaner.max_daily_bookings) return 'Unavailable'
-  if (todayBookings >= cleaner.max_daily_bookings * 0.8) return 'Limited'
-  return 'Available'
-}
-
-const getCleanerSubtitle = (cleaner: Cleaner) => {
-  return `${cleaner.skills.slice(0, 2).join(', ')} • ${getCleanerTodayBookings(cleaner.id)}/${cleaner.max_daily_bookings} bookings`
-}
-
-const getCleanerTodayBookings = (cleanerId: string) => {
-  // This would typically come from bookings store
-  console.debug('Getting bookings for cleaner:', cleanerId)
-  return Math.floor(Math.random() * 5) // Mock data
-}
-
-const getCleanerRating = (cleanerId: string) => {
-  // This would typically come from performance data
-  console.debug('Getting rating for cleaner:', cleanerId)
-  return 4 + Math.random() // Mock rating between 4-5
-}
-
-const openCleanerAssignmentModal = () => {
-  emit('open-cleaner-modal', form.value)
-}
-
-const handleSubmit = async () => {
-  if (!formRef.value) return
-
-  const { valid } = await formRef.value.validate()
-  if (!valid) return
-
-  // Clean form data - convert empty strings to undefined for UUID fields
-  const cleanFormData: BookingFormData = {
-    ...form.value,
-    assigned_cleaner_id: form.value.assigned_cleaner_id || undefined,
-    owner_id: form.value.owner_id || '',
-    property_id: form.value.property_id || '',
-  }
-
-  emit('submit', cleanFormData)
-}
-
-const handleClose = () => {
-  isOpen.value = false
-}
-
-const handleDelete = () => {
-  if (props.booking?.id) {
-    emit('delete', props.booking.id)
-  }
-}
-
-const handleMarkComplete = () => {
-  if (props.booking?.id) {
-    emit('mark-complete', props.booking.id)
-  }
-}
-
-// Watch for booking changes
-watch(() => props.booking, (newBooking) => {
-  if (newBooking) {
-    // Format dates for HTML date input (YYYY-MM-DD) without timezone conversion
-    const formatDateForInput = (dateString: string) => {
-      if (!dateString) return ''
-      
-      // If it's already in YYYY-MM-DD format, return it directly
-      if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
-        return dateString
-      }
-      
-      // Parse date as local date to avoid timezone conversion issues
-      const date = new Date(dateString)
-      
-      // Handle timezone conversion by using local date methods
-      const year = date.getFullYear()
-      const month = String(date.getMonth() + 1).padStart(2, '0')
-      const day = String(date.getDate()).padStart(2, '0')
-      
-      return `${year}-${month}-${day}`
-    }
-    
-    form.value = {
-      owner_id: newBooking.owner_id,
-      property_id: newBooking.property_id,
-      checkin_date: formatDateForInput(newBooking.checkin_date),
-      checkout_date: formatDateForInput(newBooking.checkout_date),
-      checkin_time: newBooking.checkin_time || '15:00',
-      checkout_time: newBooking.checkout_time || '11:00',
-      booking_type: newBooking.booking_type,
-      guest_count: newBooking.guest_count,
-      notes: newBooking.notes || '',
-      status: newBooking.status,
-      assigned_cleaner_id: newBooking.assigned_cleaner_id || '',
-      priority: newBooking.priority || 'normal'
-    }
-  } else {
-    form.value = { ...defaultForm }
-  }
-}, { immediate: true })
-
-// Watch for modal close
-watch(isOpen, (newValue) => {
-  if (!newValue) {
-    nextTick(() => {
-      form.value = { ...defaultForm }
-      formRef.value?.resetValidation()
+  const availableCleaners = computed(() => {
+    return props.cleaners.filter(() => {
+      // Filter based on availability and skills if needed
+      return true // Simplified for now
     })
+  })
+
+  const selectedCleaner = computed(() => {
+    if (!form.value.assigned_cleaner_id) return null
+    return props.cleaners.find(c => c.id === form.value.assigned_cleaner_id)
+  })
+
+  const statusOptions = [
+    { title: 'Pending', value: 'pending' },
+    { title: 'Scheduled', value: 'scheduled' },
+    { title: 'In Progress', value: 'in_progress' },
+    { title: 'Completed', value: 'completed' },
+    { title: 'Cancelled', value: 'cancelled' },
+  ]
+
+  const priorityOptions = [
+    { title: 'Low', value: 'low' },
+    { title: 'Normal', value: 'normal' },
+    { title: 'High', value: 'high' },
+    { title: 'Urgent', value: 'urgent' },
+  ]
+
+  // Commented out unused computed - was causing TS warning
+  // const showSameDayAlert = computed(() => {
+  //   if (!form.value.checkout_date || !form.value.checkin_date) return false
+  //   const checkoutDate = new Date(form.value.checkout_date).toDateString()
+  //   const checkinDate = new Date(form.value.checkin_date).toDateString()
+  //   return checkoutDate === checkinDate
+  // })
+
+  const showDateError = computed(() => {
+    if (!form.value.checkout_date || !form.value.checkin_date) return false
+    return new Date(form.value.checkout_date as string) < new Date(form.value.checkin_date as string)
+  })
+
+  const showBusinessImpactAlert = computed(() => {
+    return businessImpactAlert.value.messages.length > 0
+  })
+
+  const businessImpactAlert = computed(() => {
+    const alert = {
+      type: 'info' as 'info' | 'warning' | 'error',
+      title: '',
+      messages: [] as string[],
+    }
+
+    if (form.value.booking_type === 'turn') {
+      alert.type = 'warning'
+      alert.title = 'High Business Impact'
+      alert.messages.push('Same-day turnovers require immediate attention', 'Client satisfaction and revenue directly affected')
+    }
+
+    if (form.value.priority === 'urgent' && !form.value.assigned_cleaner_id) {
+      alert.type = 'error'
+      alert.title = 'Critical: Urgent Booking Unassigned'
+      alert.messages.push('Urgent bookings must have assigned cleaners')
+    }
+
+    return alert
+  })
+
+  // Validation rules
+  const propertyRules = [
+    (v: string) => !!v || 'Property selection is required',
+  ]
+
+  const dateRules = [
+    (v: string) => !!v || 'Date is required',
+    (v: string) => {
+      if (!v) return true
+
+      // Parse date as local date to avoid timezone issues
+      const [year, month, day] = v.split('-').map(Number)
+      const selectedDate = new Date(year, month - 1, day) // month is 0-indexed
+      const today = new Date()
+
+      // Set both dates to midnight for fair comparison (date only, no time)
+      const selectedDateOnly = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), selectedDate.getDate())
+      const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+
+      return selectedDateOnly >= todayOnly || 'Date cannot be in the past'
+    },
+  ]
+
+  const timeRules = [
+    (v: string) => !!v || 'Time is required',
+    (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) || 'Invalid time format',
+  ]
+
+  // Methods
+  function updateBookingType () {
+    if (!form.value.checkout_date || !form.value.checkin_date) return
+
+    // Parse dates as local dates to avoid timezone issues
+    const parseDateString = (dateStr: string) => {
+      if (!dateStr) return null
+      const [year, month, day] = dateStr.split('-').map(Number)
+      return new Date(year, month - 1, day).toDateString()
+    }
+
+    const checkoutDate = parseDateString(form.value.checkout_date as string)
+    const checkinDate = parseDateString(form.value.checkin_date as string)
+
+    if (checkoutDate === checkinDate) {
+      form.value.booking_type = 'turn'
+      form.value.priority = 'urgent'
+    } else {
+      form.value.booking_type = 'standard'
+      if (form.value.priority === 'urgent') {
+        form.value.priority = 'normal'
+      }
+    }
   }
-})
+
+  function getStatusColor (status: string) {
+    const colors = {
+      pending: 'orange',
+      scheduled: 'blue',
+      in_progress: 'purple',
+      completed: 'green',
+      cancelled: 'red',
+    }
+    return colors[status as keyof typeof colors] || 'grey'
+  }
+
+  function getPriorityColor (priority: string) {
+    const colors = {
+      standard: 'grey',
+      high: 'orange',
+      urgent: 'red',
+    }
+    return colors[priority as keyof typeof colors] || 'grey'
+  }
+
+  function getPriorityIcon (priority: string) {
+    const icons = {
+      standard: 'mdi-flag',
+      high: 'mdi-flag-triangle',
+      urgent: 'mdi-alert',
+    }
+    return icons[priority as keyof typeof icons] || 'mdi-flag'
+  }
+
+  function getPropertyOwnerName (ownerId: string) {
+    // This would typically come from a users store or prop
+    return `Owner ${ownerId.slice(-4)}`
+  }
+
+  function getCleanerAvailabilityColor (cleaner: Cleaner) {
+    // Simplified availability check
+    const todayBookings = getCleanerTodayBookings(cleaner.id)
+    if (todayBookings >= cleaner.max_daily_bookings) return 'red'
+    if (todayBookings >= cleaner.max_daily_bookings * 0.8) return 'orange'
+    return 'green'
+  }
+
+  function getCleanerAvailabilityText (cleaner: Cleaner) {
+    const todayBookings = getCleanerTodayBookings(cleaner.id)
+    if (todayBookings >= cleaner.max_daily_bookings) return 'Unavailable'
+    if (todayBookings >= cleaner.max_daily_bookings * 0.8) return 'Limited'
+    return 'Available'
+  }
+
+  function getCleanerSubtitle (cleaner: Cleaner) {
+    return `${cleaner.skills.slice(0, 2).join(', ')} • ${getCleanerTodayBookings(cleaner.id)}/${cleaner.max_daily_bookings} bookings`
+  }
+
+  function getCleanerTodayBookings (cleanerId: string) {
+    // This would typically come from bookings store
+    console.debug('Getting bookings for cleaner:', cleanerId)
+    return Math.floor(Math.random() * 5) // Mock data
+  }
+
+  function getCleanerRating (cleanerId: string) {
+    // This would typically come from performance data
+    console.debug('Getting rating for cleaner:', cleanerId)
+    return 4 + Math.random() // Mock rating between 4-5
+  }
+
+  function openCleanerAssignmentModal () {
+    emit('open-cleaner-modal', form.value)
+  }
+
+  async function handleSubmit () {
+    if (!formRef.value) return
+
+    const { valid } = await formRef.value.validate()
+    if (!valid) return
+
+    // Clean form data - convert empty strings to undefined for UUID fields
+    const cleanFormData: BookingFormData = {
+      ...form.value,
+      assigned_cleaner_id: form.value.assigned_cleaner_id || undefined,
+      owner_id: form.value.owner_id || '',
+      property_id: form.value.property_id || '',
+    }
+
+    emit('submit', cleanFormData)
+  }
+
+  function handleClose () {
+    isOpen.value = false
+  }
+
+  function handleDelete () {
+    if (props.booking?.id) {
+      emit('delete', props.booking.id)
+    }
+  }
+
+  function handleMarkComplete () {
+    if (props.booking?.id) {
+      emit('mark-complete', props.booking.id)
+    }
+  }
+
+  // Watch for booking changes
+  watch(() => props.booking, newBooking => {
+    if (newBooking) {
+      // Format dates for HTML date input (YYYY-MM-DD) without timezone conversion
+      const formatDateForInput = (dateString: string) => {
+        if (!dateString) return ''
+
+        // If it's already in YYYY-MM-DD format, return it directly
+        if (/^\d{4}-\d{2}-\d{2}$/.test(dateString)) {
+          return dateString
+        }
+
+        // Parse date as local date to avoid timezone conversion issues
+        const date = new Date(dateString)
+
+        // Handle timezone conversion by using local date methods
+        const year = date.getFullYear()
+        const month = String(date.getMonth() + 1).padStart(2, '0')
+        const day = String(date.getDate()).padStart(2, '0')
+
+        return `${year}-${month}-${day}`
+      }
+
+      form.value = {
+        owner_id: newBooking.owner_id,
+        property_id: newBooking.property_id,
+        checkin_date: formatDateForInput(newBooking.checkin_date),
+        checkout_date: formatDateForInput(newBooking.checkout_date),
+        checkin_time: newBooking.checkin_time || '15:00',
+        checkout_time: newBooking.checkout_time || '11:00',
+        booking_type: newBooking.booking_type,
+        guest_count: newBooking.guest_count,
+        notes: newBooking.notes || '',
+        status: newBooking.status,
+        assigned_cleaner_id: newBooking.assigned_cleaner_id || '',
+        priority: newBooking.priority || 'normal',
+      }
+    } else {
+      form.value = { ...defaultForm }
+    }
+  }, { immediate: true })
+
+  // Watch for modal close
+  watch(isOpen, newValue => {
+    if (!newValue) {
+      nextTick(() => {
+        form.value = { ...defaultForm }
+        formRef.value?.resetValidation()
+      })
+    }
+  })
 </script>
 
 <style scoped>

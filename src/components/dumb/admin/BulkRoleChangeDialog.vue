@@ -1,15 +1,15 @@
 <template>
   <v-dialog
-    :model-value="modelValue"
     max-width="600px"
+    :model-value="modelValue"
     persistent
     @update:model-value="updateModelValue"
   >
     <v-card>
       <v-card-title class="d-flex align-center pa-6 pb-4">
         <v-icon
-          icon="mdi-account-edit"
           class="me-3"
+          icon="mdi-account-edit"
         />
         <span class="text-h5 font-weight-bold">
           Bulk Role Change
@@ -17,8 +17,8 @@
         <v-spacer />
         <v-btn
           icon="mdi-close"
-          variant="text"
           size="small"
+          variant="text"
           @click="closeDialog"
         />
       </v-card-title>
@@ -30,17 +30,17 @@
         <div class="mb-6">
           <h3 class="text-h6 font-weight-medium mb-4 text-primary">
             <v-icon
-              icon="mdi-account-multiple"
               class="me-2"
+              icon="mdi-account-multiple"
             />
             Selected Users ({{ selectedUsers.length }})
           </h3>
-          
+
           <v-card
-            variant="outlined"
             class="pa-4"
             max-height="200"
             style="overflow-y: auto;"
+            variant="outlined"
           >
             <div
               v-if="selectedUsers.length === 0"
@@ -48,7 +48,7 @@
             >
               No users selected
             </div>
-            
+
             <div v-else>
               <div
                 v-for="user in selectedUsers"
@@ -57,15 +57,15 @@
                 :class="{ 'border-b': selectedUsers.indexOf(user) < selectedUsers.length - 1 }"
               >
                 <v-avatar
+                  class="me-3"
                   :color="getRoleColor(user.role)"
                   size="32"
-                  class="me-3"
                 >
                   <span class="text-white text-caption font-weight-bold">
                     {{ user.name.charAt(0).toUpperCase() }}
                   </span>
                 </v-avatar>
-                
+
                 <div class="grow">
                   <p class="font-weight-medium mb-1">
                     {{ user.name }}
@@ -74,12 +74,12 @@
                     {{ user.email }}
                   </p>
                 </div>
-                
+
                 <v-chip
                   :color="getRoleColor(user.role)"
+                  size="small"
                   :text="user.role.toUpperCase()"
                   variant="tonal"
-                  size="small"
                 />
               </div>
             </div>
@@ -90,27 +90,27 @@
         <div class="mb-6">
           <h3 class="text-h6 font-weight-medium mb-4 text-primary">
             <v-icon
-              icon="mdi-shield-account"
               class="me-2"
+              icon="mdi-shield-account"
             />
             New Role Assignment
           </h3>
-          
+
           <v-select
             v-model="newRole"
+            density="comfortable"
             :items="roleOptions"
             label="Select New Role *"
-            variant="outlined"
-            density="comfortable"
-            :rules="[rules.required]"
             prepend-inner-icon="mdi-account-group"
+            :rules="[rules.required]"
+            variant="outlined"
           >
             <template #item="{ props: itemProps, item }">
               <v-list-item v-bind="itemProps">
                 <template #prepend>
                   <v-icon
-                    :icon="item.icon"
                     :color="item.color"
+                    :icon="item.icon"
                   />
                 </template>
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
@@ -127,28 +127,28 @@
         >
           <h3 class="text-h6 font-weight-medium mb-4 text-warning">
             <v-icon
-              icon="mdi-alert-circle"
               class="me-2"
+              icon="mdi-alert-circle"
             />
             Impact Summary
           </h3>
-          
+
           <v-alert
+            class="mb-4"
             type="warning"
             variant="tonal"
-            class="mb-4"
           >
             <div class="font-weight-medium mb-2">
               This action will change the role for {{ selectedUsers.length }} user{{ selectedUsers.length > 1 ? 's' : '' }}:
             </div>
-            
+
             <ul class="ml-4">
               <li
                 v-for="change in roleChanges"
                 :key="change.from"
               >
-                {{ change.count }} user{{ change.count > 1 ? 's' : '' }} from 
-                <strong>{{ change.from.toUpperCase() }}</strong> to 
+                {{ change.count }} user{{ change.count > 1 ? 's' : '' }} from
+                <strong>{{ change.from.toUpperCase() }}</strong> to
                 <strong>{{ newRole.toUpperCase() }}</strong>
               </li>
             </ul>
@@ -157,25 +157,25 @@
           <!-- Warning for Admin Changes -->
           <v-alert
             v-if="newRole === 'admin' || hasAdminInSelection"
+            class="mb-4"
             type="error"
             variant="tonal"
-            class="mb-4"
           >
             <div class="font-weight-medium mb-2">
               <v-icon
-                icon="mdi-shield-alert"
                 class="me-2"
+                icon="mdi-shield-alert"
               />
               Administrative Access Warning
             </div>
-            
+
             <div v-if="newRole === 'admin'">
-              You are granting administrative access to {{ selectedUsers.length }} user{{ selectedUsers.length > 1 ? 's' : '' }}. 
+              You are granting administrative access to {{ selectedUsers.length }} user{{ selectedUsers.length > 1 ? 's' : '' }}.
               Admin users have full system access and can manage all users and data.
             </div>
-            
+
             <div v-if="hasAdminInSelection && newRole !== 'admin'">
-              You are removing administrative access from {{ adminUsersInSelection.length }} user{{ adminUsersInSelection.length > 1 ? 's' : '' }}. 
+              You are removing administrative access from {{ adminUsersInSelection.length }} user{{ adminUsersInSelection.length > 1 ? 's' : '' }}.
               This will restrict their access to system management features.
             </div>
           </v-alert>
@@ -202,20 +202,20 @@
       <v-card-actions class="pa-6 pt-4">
         <v-spacer />
         <v-btn
-          variant="outlined"
-          size="large"
           :disabled="loading"
+          size="large"
+          variant="outlined"
           @click="closeDialog"
         >
           Cancel
         </v-btn>
-        
+
         <v-btn
           color="primary"
-          variant="elevated"
-          size="large"
-          :loading="loading"
           :disabled="!canProceed"
+          :loading="loading"
+          size="large"
+          variant="elevated"
           @click="handleSubmit"
         >
           Change Roles
@@ -226,169 +226,169 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import { useAuthStore } from '@/stores/auth'
-import { useAdminErrorHandler } from '@/composables/admin/useAdminErrorHandler'
-import type { User, UserRole } from '@/types'
+  import type { User, UserRole } from '@/types'
+  import { computed, ref, watch } from 'vue'
+  import { useAdminErrorHandler } from '@/composables/admin/useAdminErrorHandler'
+  import { useAuthStore } from '@/stores/auth'
 
-// Props and Emits
-interface Props {
-  modelValue: boolean
-  selectedUsers: User[]
-}
-
-const props = defineProps<Props>()
-
-const emit = defineEmits<{
-  'update:modelValue': [value: boolean]
-  saved: []
-}>()
-
-// Composables
-const authStore = useAuthStore()
-const { handleError } = useAdminErrorHandler()
-
-// Form state
-const loading = ref(false)
-const newRole = ref<UserRole | null>(null)
-const confirmChange = ref(false)
-
-// Options
-const roleOptions = [
-  {
-    title: 'Property Owner',
-    value: 'owner',
-    description: 'Manages properties and bookings',
-    icon: 'mdi-home-account',
-    color: 'primary'
-  },
-  {
-    title: 'Administrator',
-    value: 'admin',
-    description: 'Full system access and user management',
-    icon: 'mdi-shield-account',
-    color: 'red'
-  },
-  {
-    title: 'Cleaner',
-    value: 'cleaner',
-    description: 'Performs cleaning services',
-    icon: 'mdi-broom',
-    color: 'success'
+  // Props and Emits
+  interface Props {
+    modelValue: boolean
+    selectedUsers: User[]
   }
-]
 
-// Validation rules
-const rules = {
-  required: (value: unknown) => !!value || 'This field is required'
-}
+  const props = defineProps<Props>()
 
-// Computed properties
-const updateModelValue = (value: boolean) => {
-  emit('update:modelValue', value)
-}
+  const emit = defineEmits<{
+    'update:modelValue': [value: boolean]
+    'saved': []
+  }>()
 
-const roleChanges = computed(() => {
-  if (!newRole.value) return []
-  
-  const changes = new Map<UserRole, number>()
-  
-  props.selectedUsers.forEach(user => {
-    if (user.role !== newRole.value) {
-      changes.set(user.role, (changes.get(user.role) || 0) + 1)
+  // Composables
+  const authStore = useAuthStore()
+  const { handleError } = useAdminErrorHandler()
+
+  // Form state
+  const loading = ref(false)
+  const newRole = ref<UserRole | null>(null)
+  const confirmChange = ref(false)
+
+  // Options
+  const roleOptions = [
+    {
+      title: 'Property Owner',
+      value: 'owner',
+      description: 'Manages properties and bookings',
+      icon: 'mdi-home-account',
+      color: 'primary',
+    },
+    {
+      title: 'Administrator',
+      value: 'admin',
+      description: 'Full system access and user management',
+      icon: 'mdi-shield-account',
+      color: 'red',
+    },
+    {
+      title: 'Cleaner',
+      value: 'cleaner',
+      description: 'Performs cleaning services',
+      icon: 'mdi-broom',
+      color: 'success',
+    },
+  ]
+
+  // Validation rules
+  const rules = {
+    required: (value: unknown) => !!value || 'This field is required',
+  }
+
+  // Computed properties
+  function updateModelValue (value: boolean) {
+    emit('update:modelValue', value)
+  }
+
+  const roleChanges = computed(() => {
+    if (!newRole.value) return []
+
+    const changes = new Map<UserRole, number>()
+
+    for (const user of props.selectedUsers) {
+      if (user.role !== newRole.value) {
+        changes.set(user.role, (changes.get(user.role) || 0) + 1)
+      }
     }
+
+    return Array.from(changes.entries()).map(([from, count]) => ({
+      from,
+      count,
+    }))
   })
-  
-  return Array.from(changes.entries()).map(([from, count]) => ({
-    from,
-    count
-  }))
-})
 
-const hasAdminInSelection = computed(() => {
-  return props.selectedUsers.some(user => user.role === 'admin')
-})
+  const hasAdminInSelection = computed(() => {
+    return props.selectedUsers.some(user => user.role === 'admin')
+  })
 
-const adminUsersInSelection = computed(() => {
-  return props.selectedUsers.filter(user => user.role === 'admin')
-})
+  const adminUsersInSelection = computed(() => {
+    return props.selectedUsers.filter(user => user.role === 'admin')
+  })
 
-const canProceed = computed(() => {
-  return newRole.value && confirmChange.value && props.selectedUsers.length > 0
-})
+  const canProceed = computed(() => {
+    return newRole.value && confirmChange.value && props.selectedUsers.length > 0
+  })
 
-// Methods
-function closeDialog() {
-  updateModelValue(false)
-  resetForm()
-}
-
-function resetForm() {
-  newRole.value = null
-  confirmChange.value = false
-}
-
-function getRoleColor(role: UserRole) {
-  const colors = {
-    admin: 'red',
-    owner: 'primary',
-    cleaner: 'success'
-  }
-  return colors[role] || 'grey'
-}
-
-async function handleSubmit() {
-  if (!newRole.value) return
-
-  try {
-    loading.value = true
-    
-    // Filter out users who already have the target role
-    const usersToUpdate = props.selectedUsers.filter(user => user.role !== newRole.value)
-    
-    if (usersToUpdate.length === 0) {
-      // Show message that no changes are needed
-      console.log('No users need role changes')
-      closeDialog()
-      return
-    }
-
-    // Update each user's role
-    const updatePromises = usersToUpdate.map(user =>
-      authStore.changeUserRole(user.id, newRole.value!)
-    )
-    
-    const results = await Promise.allSettled(updatePromises)
-    
-    // Check for failures
-    const failures = results.filter(result => result.status === 'rejected')
-    
-    if (failures.length > 0) {
-      console.error('Some role updates failed:', failures)
-      // Still emit saved to refresh the list, but show partial success message
-    }
-    
-    const successCount = usersToUpdate.length - failures.length
-    console.log(`Successfully updated ${successCount} out of ${usersToUpdate.length} users`)
-    
-    emit('saved')
-    closeDialog()
-  } catch (error) {
-    handleError(error, {
-      operation: 'bulk_role_change',
-      component: 'BulkRoleChangeDialog'
-    })
-  } finally {
-    loading.value = false
-  }
-}
-
-// Watchers
-watch(() => props.modelValue, (newValue) => {
-  if (!newValue) {
+  // Methods
+  function closeDialog () {
+    updateModelValue(false)
     resetForm()
   }
-})
+
+  function resetForm () {
+    newRole.value = null
+    confirmChange.value = false
+  }
+
+  function getRoleColor (role: UserRole) {
+    const colors = {
+      admin: 'red',
+      owner: 'primary',
+      cleaner: 'success',
+    }
+    return colors[role] || 'grey'
+  }
+
+  async function handleSubmit () {
+    if (!newRole.value) return
+
+    try {
+      loading.value = true
+
+      // Filter out users who already have the target role
+      const usersToUpdate = props.selectedUsers.filter(user => user.role !== newRole.value)
+
+      if (usersToUpdate.length === 0) {
+        // Show message that no changes are needed
+        console.log('No users need role changes')
+        closeDialog()
+        return
+      }
+
+      // Update each user's role
+      const updatePromises = usersToUpdate.map(user =>
+        authStore.changeUserRole(user.id, newRole.value!),
+      )
+
+      const results = await Promise.allSettled(updatePromises)
+
+      // Check for failures
+      const failures = results.filter(result => result.status === 'rejected')
+
+      if (failures.length > 0) {
+        console.error('Some role updates failed:', failures)
+      // Still emit saved to refresh the list, but show partial success message
+      }
+
+      const successCount = usersToUpdate.length - failures.length
+      console.log(`Successfully updated ${successCount} out of ${usersToUpdate.length} users`)
+
+      emit('saved')
+      closeDialog()
+    } catch (error) {
+      handleError(error, {
+        operation: 'bulk_role_change',
+        component: 'BulkRoleChangeDialog',
+      })
+    } finally {
+      loading.value = false
+    }
+  }
+
+  // Watchers
+  watch(() => props.modelValue, newValue => {
+    if (!newValue) {
+      resetForm()
+    }
+  })
 </script>
 
 <style scoped>
@@ -411,4 +411,4 @@ watch(() => props.modelValue, (newValue) => {
 :deep(.v-input__details) {
   margin-top: 4px;
 }
-</style> 
+</style>

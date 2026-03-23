@@ -40,7 +40,6 @@
               </v-col>
             </v-row>
 
-            
             <!-- Dates -->
             <v-row>
               <v-col
@@ -105,15 +104,15 @@
             <v-row>
               <v-col cols="12">
                 <v-card
+                  class="turn-toggle-card"
                   :color="addTurn ? 'primary' : undefined"
                   :variant="addTurn ? 'tonal' : 'outlined'"
-                  class="turn-toggle-card"
                   @click="addTurn = !addTurn"
                 >
                   <v-card-text class="d-flex align-center pa-3">
                     <v-icon
-                      :color="addTurn ? 'primary' : 'medium-emphasis'"
                       class="mr-3"
+                      :color="addTurn ? 'primary' : 'medium-emphasis'"
                       size="24"
                     >
                       mdi-swap-horizontal
@@ -127,10 +126,10 @@
                       </div>
                     </div>
                     <v-switch
-                      :model-value="addTurn"
                       color="primary"
                       density="compact"
                       hide-details
+                      :model-value="addTurn"
                       @click.stop
                       @update:model-value="addTurn = $event ?? false"
                     />
@@ -363,11 +362,11 @@
 <script setup lang="ts">
   import type { VForm } from 'vuetify/components'
   import type { Booking, BookingFormData, BookingStatus, BookingType, Property } from '@/types'
-  import { formatPropertyAddress } from '@/types/property'
   import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
   import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
   import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
   import { usePropertyStore } from '@/stores/property'
+  import { formatPropertyAddress } from '@/types/property'
 
   // PROPS & EMITS
   interface Props {
@@ -495,7 +494,7 @@
     (v: string) => !!v || 'Date is required',
     (v: string) => {
       const date = new Date(v)
-      return !isNaN(date.getTime()) || 'Invalid date format'
+      return !Number.isNaN(date.getTime()) || 'Invalid date format'
     },
   ]
 
@@ -514,7 +513,7 @@
   })
 
   // When turn is toggled on, initialize from current checkout values
-  watch(addTurn, (enabled) => {
+  watch(addTurn, enabled => {
     if (enabled) {
       turnForm.start_date = (form.checkout_date as string) || ''
       turnForm.start_time = (form.checkout_time as string) || '11:00'
@@ -618,7 +617,7 @@
     const checkoutDate = new Date(String(form.checkout_date || ''))
     const checkinDate = new Date(String(form.checkin_date || ''))
 
-    if (isNaN(checkoutDate.getTime()) || isNaN(checkinDate.getTime())) {
+    if (Number.isNaN(checkoutDate.getTime()) || Number.isNaN(checkinDate.getTime())) {
       errors.value.set('checkout_date', 'Invalid date format')
       errors.value.set('checkin_date', 'Invalid date format')
       return false
@@ -755,7 +754,7 @@
 
     try {
       const date = new Date(dateStr)
-      if (isNaN(date.getTime())) {
+      if (Number.isNaN(date.getTime())) {
         console.warn('Invalid date:', dateStr)
         return ''
       }

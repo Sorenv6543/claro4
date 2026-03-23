@@ -1,7 +1,7 @@
 <template>
   <v-container
-    fluid
     class="pa-4"
+    fluid
   >
     <v-row>
       <v-col cols="12">
@@ -49,8 +49,8 @@
                 sm="3"
               >
                 <v-card
-                  variant="outlined"
                   class="text-center pa-2"
+                  variant="outlined"
                 >
                   <div class="text-h4 text-primary">
                     {{ calendarStats.totalProperties }}
@@ -65,8 +65,8 @@
                 sm="3"
               >
                 <v-card
-                  variant="outlined"
                   class="text-center pa-2"
+                  variant="outlined"
                 >
                   <div class="text-h4 text-info">
                     {{ calendarStats.totalBookings }}
@@ -81,8 +81,8 @@
                 sm="3"
               >
                 <v-card
-                  variant="outlined"
                   class="text-center pa-2"
+                  variant="outlined"
                 >
                   <div class="text-h4 text-error">
                     {{ calendarStats.urgentTurns }}
@@ -97,8 +97,8 @@
                 sm="3"
               >
                 <v-card
-                  variant="outlined"
                   class="text-center pa-2"
+                  variant="outlined"
                 >
                   <div class="text-h4 text-warning">
                     {{ calendarStats.upcomingCleanings }}
@@ -141,8 +141,8 @@
               class="text-center text-medium-emphasis py-4"
             >
               <v-icon
-                size="48"
                 color="success"
+                size="48"
               >
                 mdi-check-circle
               </v-icon>
@@ -204,11 +204,11 @@
               >
                 <v-select
                   v-model="selectedPropertyFilter"
-                  :items="propertyFilterOptions"
+                  clearable
                   item-title="name"
                   item-value="id"
+                  :items="propertyFilterOptions"
                   label="Filter by Property"
-                  clearable
                   prepend-icon="mdi-home"
                   @update:model-value="handlePropertyFilterChange"
                 >
@@ -231,8 +231,8 @@
               >
                 <v-btn
                   color="primary"
-                  variant="outlined"
                   :disabled="!selectedPropertyFilter"
+                  variant="outlined"
                   @click="clearOwnerPropertyFilters"
                 >
                   <v-icon class="mr-2">
@@ -270,8 +270,8 @@
               class="text-center text-medium-emphasis py-8"
             >
               <v-icon
-                size="64"
                 color="info"
+                size="64"
               >
                 mdi-calendar-blank
               </v-icon>
@@ -287,13 +287,13 @@
                 v-for="event in myCalendarEvents.slice(0, 6)"
                 :key="event.id"
                 cols="12"
-                sm="6"
                 md="4"
+                sm="6"
               >
                 <v-card
-                  variant="outlined"
-                  :color="event.backgroundColor"
                   class="mb-2"
+                  :color="event.backgroundColor"
+                  variant="outlined"
                   @click="simulateEventClick(event)"
                 >
                   <v-card-text class="pa-3">
@@ -308,8 +308,8 @@
                     </div>
                     <div class="text-white text-caption mb-1">
                       <v-icon
-                        size="small"
                         class="mr-1"
+                        size="small"
                       >
                         mdi-home
                       </v-icon>
@@ -317,8 +317,8 @@
                     </div>
                     <div class="text-white text-caption mb-1">
                       <v-icon
-                        size="small"
                         class="mr-1"
+                        size="small"
                       >
                         mdi-calendar
                       </v-icon>
@@ -326,8 +326,8 @@
                     </div>
                     <div class="text-white text-caption">
                       <v-icon
-                        size="small"
                         class="mr-1"
+                        size="small"
                       >
                         mdi-information
                       </v-icon>
@@ -339,9 +339,9 @@
             </v-row>
             <v-btn
               v-if="myCalendarEvents.length > 6"
+              class="mt-2"
               color="primary"
               variant="text"
-              class="mt-2"
               @click="showAllEvents = !showAllEvents"
             >
               {{ showAllEvents ? 'Show Less' : `Show All ${myCalendarEvents.length} Events` }}
@@ -366,9 +366,9 @@
           </v-card-title>
           <v-card-text>
             <v-btn
+              class="mb-2 mr-2"
               color="primary"
               variant="outlined"
-              class="mb-2 mr-2"
               @click="testDateSelect"
             >
               <v-icon class="mr-2">
@@ -377,9 +377,9 @@
               Test Date Select
             </v-btn>
             <v-btn
+              class="mb-2 mr-2"
               color="secondary"
               variant="outlined"
-              class="mb-2 mr-2"
               @click="testEventClick"
             >
               <v-icon class="mr-2">
@@ -388,9 +388,9 @@
               Test Event Click
             </v-btn>
             <v-btn
+              class="mb-2 mr-2"
               color="info"
               variant="outlined"
-              class="mb-2 mr-2"
               @click="testValidateAccess"
             >
               <v-icon class="mr-2">
@@ -399,9 +399,9 @@
               Test Access Validation
             </v-btn>
             <v-btn
+              class="mb-2"
               color="warning"
               variant="outlined"
-              class="mb-2"
               @click="generateSampleData"
             >
               <v-icon class="mr-2">
@@ -428,20 +428,20 @@
           <v-card-text>
             <v-alert
               v-if="ownerError"
-              type="error"
-              variant="outlined"
               class="mb-2"
               closable
+              type="error"
+              variant="outlined"
               @click:close="ownerError = null"
             >
               {{ ownerError }}
             </v-alert>
             <v-alert
               v-if="ownerSuccess"
-              type="success"
-              variant="outlined"
               class="mb-2"
               closable
+              type="success"
+              variant="outlined"
               @click:close="ownerSuccess = null"
             >
               {{ ownerSuccess }}
@@ -501,216 +501,221 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState';
-import { useOwnerBookings } from '@/composables/owner/useOwnerBookings';
-import { useAuthStore } from '@/stores/auth';
-import { usePropertyStore } from '@/stores/property';
-import { useBookingStore } from '@/stores/booking';
+  import { computed, onMounted, ref } from 'vue'
+  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
+  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
+  import { useAuthStore } from '@/stores/auth'
+  import { useBookingStore } from '@/stores/booking'
+  import { usePropertyStore } from '@/stores/property'
 
-// Get composables and stores
-const ownerCalendarState = useOwnerCalendarState();
-const _ownerBookings = useOwnerBookings();
-const authStore = useAuthStore();
-const propertyStore = usePropertyStore();
-const bookingStore = useBookingStore();
+  // Get composables and stores
+  const ownerCalendarState = useOwnerCalendarState()
+  const _ownerBookings = useOwnerBookings()
+  const authStore = useAuthStore()
+  const propertyStore = usePropertyStore()
+  const bookingStore = useBookingStore()
 
-// Destructure owner calendar state
-const {
+  // Destructure owner calendar state
+  const {
+    // Computed properties
+    myCalendarEvents,
+    myTurnAlerts,
+    myPropertyOptions,
+    ownerCalendarTitle,
+
+    // Functions
+    getOwnerCalendarEvents: _getOwnerCalendarEvents,
+    handleOwnerDateSelect,
+    handleOwnerEventClick,
+    getOwnerTurnAlerts: _getOwnerTurnAlerts,
+    filterByOwnerProperty,
+    clearOwnerPropertyFilters,
+    validateOwnerBookingAccess,
+    getOwnerCalendarStats,
+
+    // State
+    ownerError,
+    ownerLoading: _ownerLoading,
+    ownerSuccess,
+
+    // Base calendar state
+    currentView,
+    currentDate,
+    selectedPropertyIds,
+    showTurnBookings,
+    showStandardBookings,
+  } = ownerCalendarState
+
+  // Demo-specific state
+  const selectedPropertyFilter = ref<string | null>(null)
+  const showAllEvents = ref(false)
+
   // Computed properties
-  myCalendarEvents,
-  myTurnAlerts,
-  myPropertyOptions,
-  ownerCalendarTitle,
-  
-  // Functions
-  getOwnerCalendarEvents: _getOwnerCalendarEvents,
-  handleOwnerDateSelect,
-  handleOwnerEventClick,
-  getOwnerTurnAlerts: _getOwnerTurnAlerts,
-  filterByOwnerProperty,
-  clearOwnerPropertyFilters,
-  validateOwnerBookingAccess,
-  getOwnerCalendarStats,
-  
-  // State
-  ownerError,
-  ownerLoading: _ownerLoading,
-  ownerSuccess,
-  
-  // Base calendar state
-  currentView,
-  currentDate,
-  selectedPropertyIds,
-  showTurnBookings,
-  showStandardBookings
-} = ownerCalendarState;
+  const currentUser = computed(() => authStore.user)
+  const calendarStats = computed(() => getOwnerCalendarStats())
 
-// Demo-specific state
-const selectedPropertyFilter = ref<string | null>(null);
-const showAllEvents = ref(false);
+  const propertyFilterOptions = computed(() => [
+    { id: 'all', name: 'All Properties', address: 'Show all properties', active: true },
+    ...myPropertyOptions.value,
+  ])
 
-// Computed properties
-const currentUser = computed(() => authStore.user);
-const calendarStats = computed(() => getOwnerCalendarStats());
-
-const propertyFilterOptions = computed(() => [
-  { id: 'all', name: 'All Properties', address: 'Show all properties', active: true },
-  ...myPropertyOptions.value
-]);
-
-// Methods
-function handlePropertyFilterChange(propertyId: string | null) {
-  if (!propertyId || propertyId === 'all') {
-    clearOwnerPropertyFilters();
-    selectedPropertyFilter.value = null;
-  } else {
-    filterByOwnerProperty(propertyId);
-  }
-}
-
-function simulateEventClick(event: any) {
-  const mockClickInfo = {
-    event: {
-      id: event.id,
-      title: event.title,
-      extendedProps: event.extendedProps
+  // Methods
+  function handlePropertyFilterChange (propertyId: string | null) {
+    if (!propertyId || propertyId === 'all') {
+      clearOwnerPropertyFilters()
+      selectedPropertyFilter.value = null
+    } else {
+      filterByOwnerProperty(propertyId)
     }
-  };
-  handleOwnerEventClick(mockClickInfo);
-}
-
-function testDateSelect() {
-  const mockSelectInfo = {
-    startStr: new Date().toISOString().split('T')[0],
-    endStr: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-  };
-  handleOwnerDateSelect(mockSelectInfo);
-}
-
-function testEventClick() {
-  if (myCalendarEvents.value.length > 0) {
-    simulateEventClick(myCalendarEvents.value[0]);
-  } else {
-    ownerError.value = 'No events available to test with';
-  }
-}
-
-function testValidateAccess() {
-  if (myCalendarEvents.value.length > 0) {
-    const bookingId = myCalendarEvents.value[0].id;
-    const hasAccess = validateOwnerBookingAccess(bookingId);
-    ownerSuccess.value = `Access validation for booking ${bookingId}: ${hasAccess ? 'ALLOWED' : 'DENIED'}`;
-  } else {
-    ownerError.value = 'No bookings available to test access validation';
-  }
-}
-
-function generateSampleData() {
-  // Generate sample properties for current user
-  const userId = authStore.user?.id;
-  if (!userId) {
-    ownerError.value = 'Please log in to generate sample data';
-    return;
   }
 
-  // Add sample properties
-  const sampleProperties = [
-    {
-      id: `prop-${Date.now()}-1`,
-      owner_id: userId,
-      name: 'Sunset Villa',
-      address: '123 Ocean Drive, Miami, FL',
-      cleaning_duration: 120,
-      pricing_tier: 'premium' as const,
-      active: true,
-      special_instructions: 'Pool cleaning required',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: `prop-${Date.now()}-2`,
-      owner_id: userId,
-      name: 'Downtown Loft',
-      address: '456 Main Street, Austin, TX',
-      cleaning_duration: 90,
-      pricing_tier: 'basic' as const,
-      active: true,
-      special_instructions: 'High-rise building, use service elevator',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+  function simulateEventClick (event: any) {
+    const mockClickInfo = {
+      event: {
+        id: event.id,
+        title: event.title,
+        extendedProps: event.extendedProps,
+      },
     }
-  ];
+    handleOwnerEventClick(mockClickInfo)
+  }
 
-  sampleProperties.forEach(property => {
-    propertyStore.addProperty(property);
-  });
-
-  // Add sample bookings
-  const sampleBookings = [
-    {
-      id: `booking-${Date.now()}-1`,
-      property_id: sampleProperties[0].id,
-      owner_id: userId,
-      checkout_date: new Date().toISOString(),
-      checkin_date: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours later
-      booking_type: 'turn' as const,
-      status: 'pending' as const,
-      guest_count: 4,
-      notes: 'Same-day turn - urgent cleaning needed',
-      priority: 'urgent' as const,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
-    },
-    {
-      id: `booking-${Date.now()}-2`,
-      property_id: sampleProperties[1].id,
-      owner_id: userId,
-      checkout_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
-      checkin_date: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // Day after tomorrow
-      booking_type: 'standard' as const,
-      status: 'scheduled' as const,
-      guest_count: 2,
-      notes: 'Standard cleaning between guests',
-              priority: 'normal' as const,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+  function testDateSelect () {
+    const mockSelectInfo = {
+      startStr: new Date().toISOString().split('T')[0],
+      endStr: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     }
-  ];
-
-  sampleBookings.forEach(booking => {
-    bookingStore.addBooking(booking);
-  });
-
-  ownerSuccess.value = `Generated ${sampleProperties.length} properties and ${sampleBookings.length} bookings for testing`;
-}
-
-function getUrgencyColor(urgency: string): string {
-  switch (urgency) {
-    case 'critical': return 'error';
-    case 'high': return 'warning';
-    case 'medium': return 'info';
-    case 'low': return 'success';
-    default: return 'grey';
+    handleOwnerDateSelect(mockSelectInfo)
   }
-}
 
-function formatEventDate(dateStr: string): string {
-  return new Date(dateStr).toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit'
-  });
-}
-
-// Initialize demo
-onMounted(() => {
-  // Ensure user is logged in for demo
-  if (!authStore.user) {
-    authStore.login('owner@example.com', 'password');
+  function testEventClick () {
+    if (myCalendarEvents.value.length > 0) {
+      simulateEventClick(myCalendarEvents.value[0])
+    } else {
+      ownerError.value = 'No events available to test with'
+    }
   }
-});
+
+  function testValidateAccess () {
+    if (myCalendarEvents.value.length > 0) {
+      const bookingId = myCalendarEvents.value[0].id
+      const hasAccess = validateOwnerBookingAccess(bookingId)
+      ownerSuccess.value = `Access validation for booking ${bookingId}: ${hasAccess ? 'ALLOWED' : 'DENIED'}`
+    } else {
+      ownerError.value = 'No bookings available to test access validation'
+    }
+  }
+
+  function generateSampleData () {
+    // Generate sample properties for current user
+    const userId = authStore.user?.id
+    if (!userId) {
+      ownerError.value = 'Please log in to generate sample data'
+      return
+    }
+
+    // Add sample properties
+    const sampleProperties = [
+      {
+        id: `prop-${Date.now()}-1`,
+        owner_id: userId,
+        name: 'Sunset Villa',
+        address: '123 Ocean Drive, Miami, FL',
+        cleaning_duration: 120,
+        pricing_tier: 'premium' as const,
+        active: true,
+        special_instructions: 'Pool cleaning required',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: `prop-${Date.now()}-2`,
+        owner_id: userId,
+        name: 'Downtown Loft',
+        address: '456 Main Street, Austin, TX',
+        cleaning_duration: 90,
+        pricing_tier: 'basic' as const,
+        active: true,
+        special_instructions: 'High-rise building, use service elevator',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ]
+
+    for (const property of sampleProperties) {
+      propertyStore.addProperty(property)
+    }
+
+    // Add sample bookings
+    const sampleBookings = [
+      {
+        id: `booking-${Date.now()}-1`,
+        property_id: sampleProperties[0].id,
+        owner_id: userId,
+        checkout_date: new Date().toISOString(),
+        checkin_date: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(), // 4 hours later
+        booking_type: 'turn' as const,
+        status: 'pending' as const,
+        guest_count: 4,
+        notes: 'Same-day turn - urgent cleaning needed',
+        priority: 'urgent' as const,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+      {
+        id: `booking-${Date.now()}-2`,
+        property_id: sampleProperties[1].id,
+        owner_id: userId,
+        checkout_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
+        checkin_date: new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString(), // Day after tomorrow
+        booking_type: 'standard' as const,
+        status: 'scheduled' as const,
+        guest_count: 2,
+        notes: 'Standard cleaning between guests',
+        priority: 'normal' as const,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      },
+    ]
+
+    for (const booking of sampleBookings) {
+      bookingStore.addBooking(booking)
+    }
+
+    ownerSuccess.value = `Generated ${sampleProperties.length} properties and ${sampleBookings.length} bookings for testing`
+  }
+
+  function getUrgencyColor (urgency: string): string {
+    switch (urgency) {
+      case 'critical': { return 'error'
+      }
+      case 'high': { return 'warning'
+      }
+      case 'medium': { return 'info'
+      }
+      case 'low': { return 'success'
+      }
+      default: { return 'grey'
+      }
+    }
+  }
+
+  function formatEventDate (dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    })
+  }
+
+  // Initialize demo
+  onMounted(() => {
+    // Ensure user is logged in for demo
+    if (!authStore.user) {
+      authStore.login('owner@example.com', 'password')
+    }
+  })
 </script>
 
 <style scoped>
@@ -730,4 +735,4 @@ pre {
   max-height: 200px;
   overflow-y: auto;
 }
-</style> 
+</style>

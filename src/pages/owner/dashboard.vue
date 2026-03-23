@@ -1,4 +1,4 @@
-<template> 
+<template>
   <div class="owner-dashboard">
     <HomeOwner />
   </div>

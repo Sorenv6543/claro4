@@ -4,102 +4,102 @@
  */
 
 export interface ViewportDimensions {
-  height: number;
-  width: number;
-  availableHeight: number;
-  safeAreaTop: number;
-  safeAreaBottom: number;
+  height: number
+  width: number
+  availableHeight: number
+  safeAreaTop: number
+  safeAreaBottom: number
 }
 
 /**
  * Get current viewport dimensions with safe area calculations
  */
-export function getViewportDimensions(): ViewportDimensions {
-  const height = window.innerHeight;
-  const width = window.innerWidth;
-  
+export function getViewportDimensions (): ViewportDimensions {
+  const height = window.innerHeight
+  const width = window.innerWidth
+
   // Get safe area insets from CSS environment variables
-  const safeAreaTop = parseInt(
+  const safeAreaTop = Number.parseInt(
     getComputedStyle(document.documentElement)
-      .getPropertyValue('--safe-area-inset-top') || '0'
-  );
-  
-  const safeAreaBottom = parseInt(
+      .getPropertyValue('--safe-area-inset-top') || '0',
+  )
+
+  const safeAreaBottom = Number.parseInt(
     getComputedStyle(document.documentElement)
-      .getPropertyValue('--safe-area-inset-bottom') || '0'
-  );
-  
-  const availableHeight = height - safeAreaTop - safeAreaBottom;
-  
+      .getPropertyValue('--safe-area-inset-bottom') || '0',
+  )
+
+  const availableHeight = height - safeAreaTop - safeAreaBottom
+
   return {
     height,
     width,
     availableHeight,
     safeAreaTop,
-    safeAreaBottom
-  };
+    safeAreaBottom,
+  }
 }
 
 /**
  * Calculate calendar height for mobile viewport
  */
-export function calculateCalendarHeight(): string {
-  const { availableHeight, width } = getViewportDimensions();
-  const appBarHeight = 56;
-  const headerHeight = 60;
-  const paddingBuffer = 20;
-  
+export function calculateCalendarHeight (): string {
+  const { availableHeight, width } = getViewportDimensions()
+  const appBarHeight = 56
+  const headerHeight = 60
+  const paddingBuffer = 20
+
   // Mobile-specific calculation
   if (width <= 959) {
-    const calculatedHeight = availableHeight - appBarHeight - headerHeight - paddingBuffer;
-    const minHeight = 400; // Minimum height for usability
-    const maxHeight = availableHeight - 100; // Maximum to prevent overflow
-    
-    const finalHeight = Math.max(minHeight, Math.min(calculatedHeight, maxHeight));
-    return `${finalHeight}px`;
+    const calculatedHeight = availableHeight - appBarHeight - headerHeight - paddingBuffer
+    const minHeight = 400 // Minimum height for usability
+    const maxHeight = availableHeight - 100 // Maximum to prevent overflow
+
+    const finalHeight = Math.max(minHeight, Math.min(calculatedHeight, maxHeight))
+    return `${finalHeight}px`
   }
-  
+
   // Desktop fallback
-  return '100%';
+  return '100%'
 }
 
 /**
  * Handle viewport resize events for mobile
  */
-export function handleViewportResize(callback: () => void): () => void {
-  let resizeTimeout: number;
-  
+export function handleViewportResize (callback: () => void): () => void {
+  let resizeTimeout: number
+
   const handleResize = () => {
-    clearTimeout(resizeTimeout);
+    clearTimeout(resizeTimeout)
     resizeTimeout = window.setTimeout(() => {
-      callback();
-    }, 100); // Debounce resize events
-  };
-  
-  window.addEventListener('resize', handleResize);
-  window.addEventListener('orientationchange', handleResize);
-  
+      callback()
+    }, 100) // Debounce resize events
+  }
+
+  window.addEventListener('resize', handleResize)
+  window.addEventListener('orientationchange', handleResize)
+
   // Return cleanup function
   return () => {
-    window.removeEventListener('resize', handleResize);
-    window.removeEventListener('orientationchange', handleResize);
-    clearTimeout(resizeTimeout);
-  };
+    window.removeEventListener('resize', handleResize)
+    window.removeEventListener('orientationchange', handleResize)
+    clearTimeout(resizeTimeout)
+  }
 }
 
 /**
  * Check if device is mobile
  */
-export function isMobile(): boolean {
-  return window.innerWidth <= 959;
+export function isMobile (): boolean {
+  return window.innerWidth <= 959
 }
 
 /**
  * Get optimized calendar options for mobile
  */
-export function getMobileCalendarOptions() {
-  const { width } = getViewportDimensions();
-  
+export function getMobileCalendarOptions () {
+  const { width } = getViewportDimensions()
+
   if (width <= 599) {
     // Mobile phone - show 2 bookings before +more link for better UX
     return {
@@ -111,8 +111,8 @@ export function getMobileCalendarOptions() {
       aspectRatio: undefined,
       expandRows: true,
       eventMinHeight: 20,
-      dayHeaderFormat: { weekday: 'narrow' }
-    };
+      dayHeaderFormat: { weekday: 'narrow' },
+    }
   } else if (width <= 959) {
     // Tablet - show 3 bookings before +more link
     return {
@@ -124,10 +124,10 @@ export function getMobileCalendarOptions() {
       aspectRatio: undefined,
       expandRows: true,
       eventMinHeight: 24,
-      dayHeaderFormat: { weekday: 'short' }
-    };
+      dayHeaderFormat: { weekday: 'short' },
+    }
   }
-  
+
   // Desktop fallback - show 5 bookings before +more link
   return {
     height: '100%',
@@ -138,6 +138,6 @@ export function getMobileCalendarOptions() {
     aspectRatio: undefined,
     expandRows: true,
     eventMinHeight: 22,
-    dayHeaderFormat: { weekday: 'short' }
-  };
+    dayHeaderFormat: { weekday: 'short' },
+  }
 }

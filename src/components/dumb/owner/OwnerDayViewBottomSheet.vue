@@ -1,10 +1,10 @@
 <template>
   <v-bottom-sheet
     v-model="internalVisible"
-    :inset="useDisplay().mdAndUp.value"
-    :persistent="false"
-    max-width="600px"
     class="owner-day-view-sheet"
+    :inset="useDisplay().mdAndUp.value"
+    max-width="600px"
+    :persistent="false"
   >
     <v-card class="day-view-card">
       <!-- Header -->
@@ -19,10 +19,10 @@
             </p>
           </div>
           <v-btn
-            icon="mdi-close"
-            variant="text"
-            size="small"
             class="close-button"
+            icon="mdi-close"
+            size="small"
+            variant="text"
             @click="closeSheet"
           />
         </div>
@@ -36,9 +36,9 @@
         <div
           ref="bookingsListRef"
           class="bookings-list"
-          @touchstart="handleTouchStart"
-          @touchmove="handleTouchMove"
           @touchend="handleTouchEnd"
+          @touchmove="handleTouchMove"
+          @touchstart="handleTouchStart"
         >
           <div
             v-for="(booking, index) in bookings"
@@ -55,18 +55,18 @@
               <div class="property-info">
                 <h4 class="property-name">
                   <v-icon
-                    size="small"
                     class="property-icon"
+                    size="small"
                   >
                     mdi-home
                   </v-icon>
                   {{ getPropertyName(booking.property_id || '') }}
                   <v-chip
                     v-if="booking.booking_type === 'turn'"
-                    size="x-small"
-                    color="error"
-                    variant="elevated"
                     class="turn-chip"
+                    color="error"
+                    size="x-small"
+                    variant="elevated"
                   >
                     TURN
                   </v-chip>
@@ -93,8 +93,8 @@
                 class="detail-row"
               >
                 <v-icon
-                  size="small"
                   class="detail-icon"
+                  size="small"
                 >
                   mdi-account-multiple
                 </v-icon>
@@ -102,8 +102,8 @@
               </div>
               <div class="detail-row">
                 <v-icon
-                  size="small"
                   class="detail-icon"
+                  size="small"
                 >
                   mdi-circle-medium
                 </v-icon>
@@ -114,8 +114,8 @@
                 class="detail-row notes-row"
               >
                 <v-icon
-                  size="small"
                   class="detail-icon"
+                  size="small"
                 >
                   mdi-note-text
                 </v-icon>
@@ -126,30 +126,30 @@
             <!-- Actions -->
             <div class="booking-actions">
               <v-btn
-                variant="text"
-                size="small"
-                prepend-icon="mdi-eye"
                 class="action-btn"
+                prepend-icon="mdi-eye"
+                size="small"
+                variant="text"
                 @click="viewBooking(booking)"
               >
                 View
               </v-btn>
               <v-btn
-                variant="text"
-                size="small"
-                prepend-icon="mdi-pencil"
                 class="action-btn"
+                prepend-icon="mdi-pencil"
+                size="small"
+                variant="text"
                 @click="editBooking(booking)"
               >
                 Edit
               </v-btn>
               <v-btn
                 v-if="booking.status !== 'completed'"
-                variant="text"
-                size="small"
-                prepend-icon="mdi-check"
-                color="success"
                 class="action-btn"
+                color="success"
+                prepend-icon="mdi-check"
+                size="small"
+                variant="text"
                 @click="markComplete(booking)"
               >
                 Complete
@@ -169,8 +169,8 @@
             class="empty-state"
           >
             <v-icon
-              size="64"
               color="grey-lighten-1"
+              size="64"
             >
               mdi-calendar-blank
             </v-icon>
@@ -181,11 +181,11 @@
               Get started by adding your first booking
             </p>
             <v-btn
-              variant="elevated"
+              class="empty-state-btn"
               color="primary"
               prepend-icon="mdi-plus"
-              class="empty-state-btn"
               size="large"
+              variant="elevated"
               @click="addBooking"
             >
               Add Booking for {{ formattedDate }}
@@ -200,11 +200,11 @@
         class="day-view-footer"
       >
         <v-btn
-          variant="elevated"
+          block
+          class="add-booking-btn"
           color="primary"
           prepend-icon="mdi-plus"
-          class="add-booking-btn"
-          block
+          variant="elevated"
           @click="addBooking"
         >
           Add Another Booking
@@ -215,152 +215,155 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch, nextTick } from 'vue';
-import { useDisplay } from 'vuetify';
-import type { Booking, Property } from '@/types';
-import { formatPropertyAddress } from '@/types/property';
+  import type { Booking, Property } from '@/types'
+  import { computed, nextTick, ref, watch } from 'vue'
+  import { useDisplay } from 'vuetify'
+  import { formatPropertyAddress } from '@/types/property'
 
-interface Props {
-  visible: boolean;
-  date: Date | null;
-  bookings: Booking[];
-  properties: Property[];
-}
-
-interface Emits {
-  (e: 'update:visible', value: boolean): void;
-  (e: 'view-booking', booking: Booking): void;
-  (e: 'edit-booking', booking: Booking): void;
-  (e: 'complete-booking', booking: Booking): void;
-  (e: 'add-booking', date: Date): void;
-}
-
-const props = defineProps<Props>();
-const emit = defineEmits<Emits>();
-
-// Reactive state
-const internalVisible = computed({
-  get: () => props.visible,
-  set: (value: boolean) => emit('update:visible', value)
-});
-
-const bookingsListRef = ref<HTMLElement>();
-
-// Touch gesture handling
-const touchStartY = ref(0);
-const touchStartX = ref(0);
-const isDragging = ref(false);
-
-// Computed properties
-const formattedDate = computed(() => {
-  if (!props.date) return '';
-  return props.date.toLocaleDateString('en-US', {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-});
-
-// Helper functions
-const getPropertyName = (propertyId: string): string => {
-  if (!propertyId) return 'Unknown Property';
-  const property = props.properties.find(p => p.id === propertyId);
-  return property ? formatPropertyAddress(property, 'short') : 'Unknown Property';
-};
-
-const formatBookingTime = (dateString: string): string => {
-  if (!dateString) return 'N/A';
-  
-  const date = new Date(dateString);
-  if (isNaN(date.getTime())) return 'Invalid Date';
-  
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric'
-  });
-};
-
-const getPriorityColor = (priority: string): string => {
-  switch (priority) {
-    case 'urgent': return 'error';
-    case 'high': return 'warning';
-    case 'normal': return 'primary';
-    case 'low': return 'success';
-    default: return 'grey';
+  interface Props {
+    visible: boolean
+    date: Date | null
+    bookings: Booking[]
+    properties: Property[]
   }
-};
 
-// Event handlers
-const closeSheet = (): void => {
-  internalVisible.value = false;
-};
-
-const viewBooking = (booking: Booking): void => {
-  emit('view-booking', booking);
-};
-
-const editBooking = (booking: Booking): void => {
-  emit('edit-booking', booking);
-};
-
-const markComplete = (booking: Booking): void => {
-  emit('complete-booking', booking);
-};
-
-const addBooking = (): void => {
-  if (props.date) {
-    emit('add-booking', props.date);
+  interface Emits {
+    (e: 'update:visible', value: boolean): void
+    (e: 'view-booking' | 'edit-booking' | 'complete-booking', booking: Booking): void
+    (e: 'add-booking', date: Date): void
   }
-};
 
-// Touch gesture handlers for swipe navigation
-const handleTouchStart = (event: TouchEvent): void => {
-  if (event.touches.length === 1) {
-    touchStartY.value = event.touches[0].clientY;
-    touchStartX.value = event.touches[0].clientX;
-    isDragging.value = false;
+  const props = defineProps<Props>()
+  const emit = defineEmits<Emits>()
+
+  // Reactive state
+  const internalVisible = computed({
+    get: () => props.visible,
+    set: (value: boolean) => emit('update:visible', value),
+  })
+
+  const bookingsListRef = ref<HTMLElement>()
+
+  // Touch gesture handling
+  const touchStartY = ref(0)
+  const touchStartX = ref(0)
+  const isDragging = ref(false)
+
+  // Computed properties
+  const formattedDate = computed(() => {
+    if (!props.date) return ''
+    return props.date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  })
+
+  // Helper functions
+  function getPropertyName (propertyId: string): string {
+    if (!propertyId) return 'Unknown Property'
+    const property = props.properties.find(p => p.id === propertyId)
+    return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
   }
-};
 
-const handleTouchMove = (event: TouchEvent): void => {
-  if (event.touches.length === 1) {
-    const deltaY = Math.abs(event.touches[0].clientY - touchStartY.value);
-    const deltaX = Math.abs(event.touches[0].clientX - touchStartX.value);
-    
-    // Determine if this is a vertical or horizontal swipe
-    if (deltaY > 10 || deltaX > 10) {
-      isDragging.value = true;
+  function formatBookingTime (dateString: string): string {
+    if (!dateString) return 'N/A'
+
+    const date = new Date(dateString)
+    if (Number.isNaN(date.getTime())) return 'Invalid Date'
+
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+    })
+  }
+
+  function getPriorityColor (priority: string): string {
+    switch (priority) {
+      case 'urgent': { return 'error'
+      }
+      case 'high': { return 'warning'
+      }
+      case 'normal': { return 'primary'
+      }
+      case 'low': { return 'success'
+      }
+      default: { return 'grey'
+      }
     }
   }
-};
 
-const handleTouchEnd = (event: TouchEvent): void => {
-  if (isDragging.value && event.changedTouches.length === 1) {
-    const endY = event.changedTouches[0].clientY;
-    const endX = event.changedTouches[0].clientX;
-    const deltaY = endY - touchStartY.value;
-    const deltaX = endX - touchStartX.value;
-    
-    // Check for swipe down to close (only if swiping down significantly)
-    if (deltaY > 100 && Math.abs(deltaX) < 50) {
-      closeSheet();
+  // Event handlers
+  function closeSheet (): void {
+    internalVisible.value = false
+  }
+
+  function viewBooking (booking: Booking): void {
+    emit('view-booking', booking)
+  }
+
+  function editBooking (booking: Booking): void {
+    emit('edit-booking', booking)
+  }
+
+  function markComplete (booking: Booking): void {
+    emit('complete-booking', booking)
+  }
+
+  function addBooking (): void {
+    if (props.date) {
+      emit('add-booking', props.date)
     }
   }
-  
-  isDragging.value = false;
-};
 
-// Watch for visibility changes to handle focus
-watch(internalVisible, async (newVisible) => {
-  if (newVisible) {
-    await nextTick();
-    // Auto-focus on the sheet for accessibility
-    if (bookingsListRef.value) {
-      bookingsListRef.value.focus();
+  // Touch gesture handlers for swipe navigation
+  function handleTouchStart (event: TouchEvent): void {
+    if (event.touches.length === 1) {
+      touchStartY.value = event.touches[0].clientY
+      touchStartX.value = event.touches[0].clientX
+      isDragging.value = false
     }
   }
-});
+
+  function handleTouchMove (event: TouchEvent): void {
+    if (event.touches.length === 1) {
+      const deltaY = Math.abs(event.touches[0].clientY - touchStartY.value)
+      const deltaX = Math.abs(event.touches[0].clientX - touchStartX.value)
+
+      // Determine if this is a vertical or horizontal swipe
+      if (deltaY > 10 || deltaX > 10) {
+        isDragging.value = true
+      }
+    }
+  }
+
+  function handleTouchEnd (event: TouchEvent): void {
+    if (isDragging.value && event.changedTouches.length === 1) {
+      const endY = event.changedTouches[0].clientY
+      const endX = event.changedTouches[0].clientX
+      const deltaY = endY - touchStartY.value
+      const deltaX = endX - touchStartX.value
+
+      // Check for swipe down to close (only if swiping down significantly)
+      if (deltaY > 100 && Math.abs(deltaX) < 50) {
+        closeSheet()
+      }
+    }
+
+    isDragging.value = false
+  }
+
+  // Watch for visibility changes to handle focus
+  watch(internalVisible, async newVisible => {
+    if (newVisible) {
+      await nextTick()
+      // Auto-focus on the sheet for accessibility
+      if (bookingsListRef.value) {
+        bookingsListRef.value.focus()
+      }
+    }
+  })
 </script>
 
 <style scoped>
@@ -580,13 +583,13 @@ watch(internalVisible, async (newVisible) => {
 }
 
 @keyframes pulse-urgent {
-  0% { 
+  0% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0.3);
   }
-  70% { 
+  70% {
     box-shadow: 0 0 0 8px rgba(var(--v-theme-error), 0);
   }
-  100% { 
+  100% {
     box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0);
   }
 }
@@ -596,24 +599,24 @@ watch(internalVisible, async (newVisible) => {
   .day-view-card {
     max-height: 70vh;
   }
-  
+
   .date-title {
     font-size: 1.125rem;
   }
-  
+
   .booking-item {
     padding: 12px;
     margin-bottom: 16px;
   }
-  
+
   .property-name {
     font-size: 0.9rem;
   }
-  
+
   .booking-actions {
     gap: 4px;
   }
-  
+
   .action-btn {
     padding: 0 8px;
     font-size: 0.8rem;

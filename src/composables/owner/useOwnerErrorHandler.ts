@@ -3,279 +3,279 @@
  * Provides simple, user-friendly error handling for property owners
  */
 
-import { useErrorHandler } from '@/composables/shared/useErrorHandler';
-import { useLoadingState } from '@/composables/shared/useLoadingState';
-import { useUIStore } from '@/stores/ui';
-import type { ErrorContext } from '@/types';
+import type { ErrorContext } from '@/types'
+import { useErrorHandler } from '@/composables/shared/useErrorHandler'
+import { useLoadingState } from '@/composables/shared/useLoadingState'
+import { useUIStore } from '@/stores/ui'
 
 /**
  * Owner-specific error handler
  * Provides simple, encouraging error messages for property owners
  */
-export function useOwnerErrorHandler() {
-  const { handleError, handleApiError, handleValidationError, handleBusinessError } = useErrorHandler();
-  const { stopLoading } = useLoadingState();
-  const uiStore = useUIStore();
-  
+export function useOwnerErrorHandler () {
+  const { handleError, handleApiError, handleValidationError, handleBusinessError } = useErrorHandler()
+  const { stopLoading } = useLoadingState()
+  const uiStore = useUIStore()
+
   /**
    * Handle property-related errors for owners
    */
-  async function handlePropertyError(
+  async function handlePropertyError (
     error: any,
     operation: 'create' | 'update' | 'delete' | 'fetch',
-    propertyId?: string
+    propertyId?: string,
   ): Promise<string> {
     const context: Partial<ErrorContext> = {
       operation: `property_${operation}`,
       component: 'property',
-      affectedResources: propertyId ? [propertyId] : undefined
-    };
-    
+      affectedResources: propertyId ? [propertyId] : undefined,
+    }
+
     // Stop any loading states
-    stopLoading(`property-${operation}`);
-    
+    stopLoading(`property-${operation}`)
+
     // Handle specific property errors with owner-friendly messages
     if (error?.code === 'PROPERTY_NOT_FOUND') {
       return handleError(
         { message: 'Property not found', code: 'PROPERTY_NOT_FOUND' },
         context,
-        { 
-          showToUser: true, 
+        {
+          showToUser: true,
           autoRetry: false,
-          maxRetries: 0
-        }
-      );
+          maxRetries: 0,
+        },
+      )
     }
-    
+
     if (error?.code === 'PROPERTY_LIMIT_EXCEEDED') {
       return handleError(
         { message: 'Property limit exceeded', code: 'PROPERTY_LIMIT_EXCEEDED' },
         context,
-        { 
-          showToUser: true, 
+        {
+          showToUser: true,
           autoRetry: false,
-          maxRetries: 0
-        }
-      );
+          maxRetries: 0,
+        },
+      )
     }
-    
+
     // Default property error handling
     return handleError(error, context, {
       showToUser: true,
       autoRetry: operation === 'fetch', // Only retry fetch operations
-      maxRetries: operation === 'fetch' ? 2 : 0
-    });
+      maxRetries: operation === 'fetch' ? 2 : 0,
+    })
   }
-  
+
   /**
    * Handle booking-related errors for owners
    */
-  async function handleBookingError(
+  async function handleBookingError (
     error: any,
     operation: 'create' | 'update' | 'delete' | 'fetch',
-    bookingId?: string
+    bookingId?: string,
   ): Promise<string> {
     const context: Partial<ErrorContext> = {
       operation: `booking_${operation}`,
       component: 'booking',
-      affectedResources: bookingId ? [bookingId] : undefined
-    };
-    
+      affectedResources: bookingId ? [bookingId] : undefined,
+    }
+
     // Stop any loading states
-    stopLoading(`booking-${operation}`);
-    
+    stopLoading(`booking-${operation}`)
+
     // Handle specific booking errors
     if (error?.code === 'BOOKING_CONFLICT') {
       uiStore.addNotification(
         'warning',
         'Booking Conflict',
         'This time slot conflicts with another booking. Please choose different dates.',
-        false
-      );
-      
+        false,
+      )
+
       return handleError(error, context, {
         showToUser: false, // We already showed a custom notification
-        autoRetry: false
-      });
+        autoRetry: false,
+      })
     }
-    
+
     if (error?.code === 'TURN_BOOKING_INVALID') {
       uiStore.addNotification(
         'info',
         'Turn Booking Help',
         'Turn bookings require checkout and checkin on the same day. Need help? Contact support.',
-        false
-      );
-      
+        false,
+      )
+
       return handleError(error, context, {
         showToUser: false,
-        autoRetry: false
-      });
+        autoRetry: false,
+      })
     }
-    
+
     // Default booking error handling
     return handleError(error, context, {
       showToUser: true,
       autoRetry: operation === 'fetch',
-      maxRetries: operation === 'fetch' ? 2 : 0
-    });
+      maxRetries: operation === 'fetch' ? 2 : 0,
+    })
   }
-  
+
   /**
    * Handle form validation errors for owners
    */
-  async function handleFormError(
+  async function handleFormError (
     validationErrors: any[],
-    formType: 'property' | 'booking' | 'profile'
+    formType: 'property' | 'booking' | 'profile',
   ): Promise<string> {
     const context: Partial<ErrorContext> = {
       operation: `form_validation`,
-      component: formType
-    };
-    
+      component: formType,
+    }
+
     // Show encouraging message for validation errors
-    const errorCount = validationErrors.length;
-    const title = errorCount === 1 ? 'Please Check Your Input' : 'Please Check Your Inputs';
-    const message = errorCount === 1 
+    const errorCount = validationErrors.length
+    const title = errorCount === 1 ? 'Please Check Your Input' : 'Please Check Your Inputs'
+    const message = errorCount === 1
       ? 'There\'s one field that needs your attention.'
-      : `There are ${errorCount} fields that need your attention.`;
-    
-    uiStore.addNotification('warning', title, message, true);
-    
-    return handleValidationError(validationErrors, context);
+      : `There are ${errorCount} fields that need your attention.`
+
+    uiStore.addNotification('warning', title, message, true)
+
+    return handleValidationError(validationErrors, context)
   }
-  
+
   /**
    * Handle authentication errors for owners
    */
-  async function handleAuthError(
+  async function handleAuthError (
     error: any,
-    operation: 'login' | 'logout' | 'register' | 'reset_password'
+    operation: 'login' | 'logout' | 'register' | 'reset_password',
   ): Promise<string> {
     const context: Partial<ErrorContext> = {
       operation: `auth_${operation}`,
-      component: 'auth'
-    };
-    
+      component: 'auth',
+    }
+
     // Stop auth loading
-    stopLoading('auth');
-    
+    stopLoading('auth')
+
     // Handle specific auth errors with helpful messages
     if (error?.code === 'INVALID_CREDENTIALS') {
       uiStore.addNotification(
         'error',
         'Login Failed',
         'Invalid email or password. Please double-check and try again.',
-        false
-      );
-      
+        false,
+      )
+
       return handleError(error, context, {
         showToUser: false,
-        autoRetry: false
-      });
+        autoRetry: false,
+      })
     }
-    
+
     if (error?.code === 'ACCOUNT_LOCKED') {
       uiStore.addNotification(
         'warning',
         'Account Locked',
         'Your account has been temporarily locked for security. Please contact support.',
-        false
-      );
-      
+        false,
+      )
+
       return handleError(error, context, {
         showToUser: false,
-        autoRetry: false
-      });
+        autoRetry: false,
+      })
     }
-    
+
     if (error?.code === 'EMAIL_NOT_VERIFIED') {
       uiStore.addNotification(
         'info',
         'Email Verification Required',
         'Please check your email and click the verification link before logging in.',
-        false
-      );
-      
+        false,
+      )
+
       return handleError(error, context, {
         showToUser: false,
-        autoRetry: false
-      });
+        autoRetry: false,
+      })
     }
-    
+
     // Default auth error handling
     return handleError(error, context, {
       showToUser: true,
-      autoRetry: false
-    });
+      autoRetry: false,
+    })
   }
-  
+
   /**
    * Handle calendar-related errors for owners
    */
-  async function handleCalendarError(
+  async function handleCalendarError (
     error: any,
-    operation: 'load' | 'navigate' | 'filter'
+    operation: 'load' | 'navigate' | 'filter',
   ): Promise<string> {
     const context: Partial<ErrorContext> = {
       operation: `calendar_${operation}`,
-      component: 'calendar'
-    };
-    
+      component: 'calendar',
+    }
+
     // Stop calendar loading
-    stopLoading('calendar');
-    
+    stopLoading('calendar')
+
     // Calendar errors are usually not critical for owners
     if (operation === 'load') {
       uiStore.addNotification(
         'warning',
         'Calendar Loading Issue',
         'Having trouble loading your calendar. Please refresh the page.',
-        true
-      );
+        true,
+      )
     }
-    
+
     return handleError(error, context, {
       showToUser: operation !== 'load', // Don't double-notify for load errors
       autoRetry: true,
-      maxRetries: 2
-    });
+      maxRetries: 2,
+    })
   }
-  
+
   /**
    * Handle network errors with owner-friendly messages
    */
-  async function handleNetworkError(
+  async function handleNetworkError (
     error: any,
-    operation: string
+    operation: string,
   ): Promise<string> {
     const context: Partial<ErrorContext> = {
       operation: `network_${operation}`,
-      component: 'network'
-    };
-    
+      component: 'network',
+    }
+
     // Show helpful network error message
     uiStore.addNotification(
       'error',
       'Connection Issue',
       'Unable to connect. Please check your internet connection and try again.',
-      false
-    );
-    
+      false,
+    )
+
     return handleError(error, context, {
       showToUser: false, // We already showed a custom notification
       autoRetry: true,
       maxRetries: 3,
-      retryDelay: 2000
-    });
+      retryDelay: 2000,
+    })
   }
-  
+
   /**
    * Show success message for owners
    */
-  function showSuccessMessage(
+  function showSuccessMessage (
     operation: string,
-    details?: string
+    details?: string,
   ): void {
     const messages = {
       property_created: 'Property added successfully!',
@@ -285,50 +285,50 @@ export function useOwnerErrorHandler() {
       booking_updated: 'Booking updated successfully!',
       booking_deleted: 'Booking cancelled successfully!',
       profile_updated: 'Profile updated successfully!',
-      password_changed: 'Password changed successfully!'
-    };
-    
-    const message = messages[operation as keyof typeof messages] || 'Operation completed successfully!';
-    const fullMessage = details ? `${message} ${details}` : message;
-    
-    uiStore.addNotification('success', 'Success', fullMessage, true);
+      password_changed: 'Password changed successfully!',
+    }
+
+    const message = messages[operation as keyof typeof messages] || 'Operation completed successfully!'
+    const fullMessage = details ? `${message} ${details}` : message
+
+    uiStore.addNotification('success', 'Success', fullMessage, true)
   }
-  
+
   /**
    * Show helpful tip for owners
    */
-  function showHelpfulTip(
+  function showHelpfulTip (
     category: 'booking' | 'property' | 'calendar' | 'general',
-    tip: string
+    tip: string,
   ): void {
     const titles = {
       booking: 'Booking Tip',
       property: 'Property Tip',
       calendar: 'Calendar Tip',
-      general: 'Helpful Tip'
-    };
-    
-    uiStore.addNotification('info', titles[category], tip, true);
+      general: 'Helpful Tip',
+    }
+
+    uiStore.addNotification('info', titles[category], tip, true)
   }
-  
+
   /**
    * Clear all owner-specific errors
    */
-  function clearOwnerErrors(): void {
+  function clearOwnerErrors (): void {
     // Clear loading states for owner operations
-    stopLoading('property-create');
-    stopLoading('property-update');
-    stopLoading('property-delete');
-    stopLoading('booking-create');
-    stopLoading('booking-update');
-    stopLoading('booking-delete');
-    stopLoading('calendar');
-    stopLoading('auth');
-    
+    stopLoading('property-create')
+    stopLoading('property-update')
+    stopLoading('property-delete')
+    stopLoading('booking-create')
+    stopLoading('booking-update')
+    stopLoading('booking-delete')
+    stopLoading('calendar')
+    stopLoading('auth')
+
     // Clear notifications
-    uiStore.clearNotifications();
+    uiStore.clearNotifications()
   }
-  
+
   return {
     // Error handlers
     handlePropertyError,
@@ -337,16 +337,16 @@ export function useOwnerErrorHandler() {
     handleAuthError,
     handleCalendarError,
     handleNetworkError,
-    
+
     // Success and help
     showSuccessMessage,
     showHelpfulTip,
     clearOwnerErrors,
-    
+
     // Re-export shared handlers for convenience
     handleError,
     handleApiError,
     handleValidationError,
-    handleBusinessError
-  };
-} 
+    handleBusinessError,
+  }
+}

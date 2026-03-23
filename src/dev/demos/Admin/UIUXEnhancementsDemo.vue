@@ -1,7 +1,7 @@
 <template>
   <v-container
-    fluid
     class="ui-demo-page"
+    fluid
   >
     <div class="demo-header">
       <h1 class="demo-title">
@@ -16,31 +16,31 @@
     <section class="demo-section">
       <h2 class="section-title">
         <v-icon
-          icon="mdi-card-bulleted"
           class="mr-2"
+          icon="mdi-card-bulleted"
         />
         Enhanced Property Cards
       </h2>
       <p class="section-description">
         Improved visual hierarchy, hover interactions, and contextual quick actions.
       </p>
-      
+
       <v-row>
         <v-col
           v-for="property in sampleProperties"
           :key="property.id"
           cols="12"
-          md="6"
           lg="4"
+          md="6"
         >
           <PropertyCard
+            :last-cleaned="getRandomDate()"
             :property="property"
             :recent-bookings-count="Math.floor(Math.random() * 10)"
-            :last-cleaned="getRandomDate()"
-            @view="handlePropertyView"
+            @delete="handlePropertyDelete"
             @edit="handlePropertyEdit"
             @quick-booking="handleQuickBooking"
-            @delete="handlePropertyDelete"
+            @view="handlePropertyView"
           />
         </v-col>
       </v-row>
@@ -50,27 +50,27 @@
     <section class="demo-section">
       <h2 class="section-title">
         <v-icon
-          icon="mdi-bell-ring"
           class="mr-2"
+          icon="mdi-bell-ring"
         />
         Enhanced Toast Notifications
       </h2>
       <p class="section-description">
         Priority-based styling, interactive actions, and better user feedback.
       </p>
-      
+
       <div class="demo-controls">
         <v-btn
           v-for="toastType in toastTypes"
           :key="toastType.type"
+          class="ma-2"
           :color="toastType.color"
           variant="outlined"
-          class="ma-2"
           @click="showToast(toastType)"
         >
           <v-icon
-            :icon="toastType.icon"
             class="mr-2"
+            :icon="toastType.icon"
           />
           {{ toastType.label }}
         </v-btn>
@@ -82,8 +82,8 @@
           v-for="notification in activeNotifications"
           :key="notification.id"
           :notification="notification"
-          @close="removeNotification"
           @action-click="handleToastAction"
+          @close="removeNotification"
         />
       </div>
     </section>
@@ -92,22 +92,22 @@
     <section class="demo-section">
       <h2 class="section-title">
         <v-icon
-          icon="mdi-loading"
           class="mr-2"
+          icon="mdi-loading"
         />
         Enhanced Skeleton Loaders
       </h2>
       <p class="section-description">
         Multiple skeleton patterns with smooth animations and responsive design.
       </p>
-      
+
       <v-row>
         <v-col
           v-for="skeleton in skeletonTypes"
           :key="skeleton.type"
           cols="12"
-          md="6"
           lg="4"
+          md="6"
         >
           <v-card class="mb-4">
             <v-card-title class="text-h6">
@@ -115,21 +115,21 @@
             </v-card-title>
             <v-card-text>
               <SkeletonLoader
-                :type="skeleton.type"
-                :variant="selectedSkeletonVariant"
                 :animated="skeletonAnimated"
                 :show-progress="skeleton.showProgress"
+                :type="skeleton.type"
+                :variant="selectedSkeletonVariant"
               />
             </v-card-text>
           </v-card>
         </v-col>
       </v-row>
-      
+
       <div class="demo-controls">
         <v-btn-toggle
           v-model="selectedSkeletonVariant"
-          mandatory
           class="ma-2"
+          mandatory
         >
           <v-btn value="shimmer">
             Shimmer
@@ -144,11 +144,11 @@
             Static
           </v-btn>
         </v-btn-toggle>
-        
+
         <v-switch
           v-model="skeletonAnimated"
-          label="Animated"
           class="ma-2"
+          label="Animated"
         />
       </div>
     </section>
@@ -157,36 +157,36 @@
     <section class="demo-section">
       <h2 class="section-title">
         <v-icon
-          icon="mdi-plus-circle"
           class="mr-2"
+          icon="mdi-plus-circle"
         />
         Quick Actions FAB
       </h2>
       <p class="section-description">
         Expandable floating action button with contextual quick actions.
       </p>
-      
+
       <div class="fab-demo-area">
         <p class="text-center text-medium-emphasis">
           The floating action button is positioned in the bottom-right corner.
           <br>
           Click it to see the expandable quick actions menu.
         </p>
-        
+
         <QuickActionsFab
           :actions="quickActions"
-          :show-pulse="fabPulse"
-          main-icon="mdi-plus"
           main-color="primary"
+          main-icon="mdi-plus"
+          :show-pulse="fabPulse"
           @action-click="handleQuickAction"
           @menu-toggle="handleFabToggle"
         />
-        
+
         <div class="demo-controls mt-4">
           <v-switch
             v-model="fabPulse"
-            label="Pulse Animation"
             class="ma-2"
+            label="Pulse Animation"
           />
         </div>
       </div>
@@ -196,15 +196,15 @@
     <section class="demo-section">
       <h2 class="section-title">
         <v-icon
-          icon="mdi-navigation"
           class="mr-2"
+          icon="mdi-navigation"
         />
         Mobile Bottom Navigation
       </h2>
       <p class="section-description">
         Enhanced mobile navigation with badges, animations, and role-based items.
       </p>
-      
+
       <div class="mobile-nav-demo">
         <div class="mobile-preview">
           <div class="mobile-content">
@@ -213,7 +213,7 @@
               Switch between Owner and Admin roles to see different navigation items.
               Navigation items have contextual badges and animations.
             </p>
-            
+
             <v-radio-group
               v-model="selectedRole"
               inline
@@ -228,22 +228,22 @@
               />
             </v-radio-group>
           </div>
-          
+
           <MobileBottomNav
-            :items="mobileNavItems"
-            :user-role="selectedRole"
             :auto-hide="false"
+            :items="mobileNavItems"
             :show-quick-action-hint="showNavHint"
-            @navigate="handleMobileNavigation"
+            :user-role="selectedRole"
             @item-click="handleNavItemClick"
+            @navigate="handleMobileNavigation"
           />
         </div>
-        
+
         <div class="demo-controls mt-4">
           <v-switch
             v-model="showNavHint"
-            label="Show Quick Action Hint"
             class="ma-2"
+            label="Show Quick Action Hint"
           />
         </div>
       </div>
@@ -253,15 +253,15 @@
     <section class="demo-section">
       <h2 class="section-title">
         <v-icon
-          icon="mdi-speedometer"
           class="mr-2"
+          icon="mdi-speedometer"
         />
         UI Performance Metrics
       </h2>
       <p class="section-description">
         Real-time performance monitoring and optimization insights.
       </p>
-      
+
       <v-row>
         <v-col
           cols="12"
@@ -329,308 +329,308 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
-import PropertyCard from '@/components/dumb/shared/PropertyCard.vue';
-import EnhancedToast, { type ToastNotification, type ToastAction } from '@/components/dumb/shared/EnhancedToast.vue';
-import SkeletonLoader from '@/components/dumb/shared/SkeletonLoader.vue';
-import QuickActionsFab, { type QuickAction } from '@/components/dumb/shared/QuickActionsFab.vue';
-import MobileBottomNav, { type NavItem } from '@/components/dumb/shared/MobileBottomNav.vue';
-import type { Property } from '@/types';
+  import type { Property } from '@/types'
+  import { onMounted, onUnmounted, ref } from 'vue'
+  import EnhancedToast, { type ToastAction, type ToastNotification } from '@/components/dumb/shared/EnhancedToast.vue'
+  import MobileBottomNav, { type NavItem } from '@/components/dumb/shared/MobileBottomNav.vue'
+  import PropertyCard from '@/components/dumb/shared/PropertyCard.vue'
+  import QuickActionsFab, { type QuickAction } from '@/components/dumb/shared/QuickActionsFab.vue'
+  import SkeletonLoader from '@/components/dumb/shared/SkeletonLoader.vue'
 
-// Sample data
-const sampleProperties = ref<Property[]>([
-  {
-    id: '1',
-    name: 'Luxury Downtown Apartment',
-    address: '123 Main Street, Downtown',
-    pricing_tier: 'luxury',
-    cleaning_duration: 180,
-    special_instructions: 'Please use eco-friendly cleaning products only. Pay special attention to hardwood floors.',
-    active: true,
-    owner_id: 'owner1'
-  },
-  {
-    id: '2',
-    name: 'Cozy Studio Loft',
-    address: '456 Oak Avenue, Arts District',
-    pricing_tier: 'standard',
-    cleaning_duration: 90,
-    special_instructions: undefined,
-    active: true,
-    owner_id: 'owner2'
-  },
-  {
-    id: '3',
-    name: 'Family Beach House',
-    address: '789 Coastal Drive, Beachfront',
-    pricing_tier: 'premium',
-    cleaning_duration: 240,
-    special_instructions: 'Sandy floors require extra attention. Check for beach equipment storage.',
-    active: false,
-    owner_id: 'owner3'
-  }
-]);
-
-// Toast notifications
-const activeNotifications = ref<ToastNotification[]>([]);
-const notificationCounter = ref(0);
-
-const toastTypes = [
-  {
-    type: 'success' as const,
-    label: 'Success',
-    color: 'success',
-    icon: 'mdi-check-circle'
-  },
-  {
-    type: 'warning' as const,
-    label: 'Warning',
-    color: 'warning',
-    icon: 'mdi-alert'
-  },
-  {
-    type: 'error' as const,
-    label: 'Error',
-    color: 'error',
-    icon: 'mdi-alert-circle'
-  },
-  {
-    type: 'info' as const,
-    label: 'Info',
-    color: 'info',
-    icon: 'mdi-information'
-  }
-];
-
-// Skeleton loaders
-const selectedSkeletonVariant = ref<'wave' | 'pulse' | 'shimmer' | 'static'>('shimmer');
-const skeletonAnimated = ref(true);
-
-const skeletonTypes = [
-  { type: 'card' as const, label: 'Property Card', showProgress: false },
-  { type: 'list-item' as const, label: 'List Item', showProgress: false },
-  { type: 'dashboard-widget' as const, label: 'Dashboard Widget', showProgress: true },
-  { type: 'calendar-event' as const, label: 'Calendar Event', showProgress: false },
-  { type: 'form-field' as const, label: 'Form Field', showProgress: false },
-  { type: 'nav-menu' as const, label: 'Navigation Menu', showProgress: false }
-];
-
-// Quick Actions FAB
-const fabPulse = ref(true);
-
-const quickActions = ref<QuickAction[]>([
-  {
-    id: 'add-property',
-    icon: 'mdi-home-plus',
-    tooltip: 'Add New Property',
-    color: 'primary',
-    priority: 4,
-    action: () => console.log('Add property')
-  },
-  {
-    id: 'quick-booking',
-    icon: 'mdi-calendar-plus',
-    tooltip: 'Quick Booking',
-    color: 'success',
-    priority: 3,
-    action: () => console.log('Quick booking')
-  },
-  {
-    id: 'urgent-alert',
-    icon: 'mdi-alert',
-    tooltip: 'Urgent Alerts',
-    color: 'error',
-    priority: 2,
-    condition: () => true,
-    action: () => console.log('View alerts')
-  },
-  {
-    id: 'settings',
-    icon: 'mdi-cog',
-    tooltip: 'Settings',
-    color: 'secondary',
-    priority: 1,
-    action: () => console.log('Open settings')
-  }
-]);
-
-// Mobile Bottom Navigation
-const selectedRole = ref<'owner' | 'admin'>('owner');
-const showNavHint = ref(true);
-
-const mobileNavItems = ref<NavItem[]>([
-  {
-    id: 'dashboard',
-    value: 'dashboard',
-    label: 'Dashboard',
-    icon: 'mdi-view-dashboard',
-    route: '/dashboard',
-    role: 'shared'
-  },
-  {
-    id: 'properties',
-    value: 'properties',
-    label: 'Properties',
-    icon: 'mdi-home-group',
-    route: '/properties',
-    badge: { count: 3, color: 'primary' },
-    role: 'shared'
-  },
-  {
-    id: 'bookings',
-    value: 'bookings',
-    label: 'Bookings',
-    icon: 'mdi-calendar-check',
-    route: '/bookings',
-    badge: { count: 12, color: 'success', pulse: true },
-    role: 'shared'
-  },
-  {
-    id: 'cleaners',
-    value: 'cleaners',
-    label: 'Cleaners',
-    icon: 'mdi-account-group',
-    route: '/cleaners',
-    badge: { count: 2, color: 'warning', urgent: true },
-    role: 'admin'
-  },
-  {
-    id: 'analytics',
-    value: 'analytics',
-    label: 'Analytics',
-    icon: 'mdi-chart-line',
-    route: '/analytics',
-    role: 'admin'
-  },
-  {
-    id: 'profile',
-    value: 'profile',
-    label: 'Profile',
-    icon: 'mdi-account',
-    route: '/profile',
-    role: 'shared'
-  }
-]);
-
-// Performance metrics
-const renderTime = ref(15);
-const animationFps = ref(60);
-const memoryUsage = ref(24);
-const interactionScore = ref(95);
-
-// Methods
-const getRandomDate = () => {
-  const start = new Date(2024, 0, 1);
-  const end = new Date();
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-};
-
-const showToast = (toastType: typeof toastTypes[0]) => {
-  const id = `toast-${++notificationCounter.value}`;
-  
-  const sampleActions: ToastAction[] = [
+  // Sample data
+  const sampleProperties = ref<Property[]>([
     {
-      id: 'view',
-      label: 'View',
-      icon: 'mdi-eye',
-      action: () => console.log('View action')
+      id: '1',
+      name: 'Luxury Downtown Apartment',
+      address: '123 Main Street, Downtown',
+      pricing_tier: 'luxury',
+      cleaning_duration: 180,
+      special_instructions: 'Please use eco-friendly cleaning products only. Pay special attention to hardwood floors.',
+      active: true,
+      owner_id: 'owner1',
     },
     {
-      id: 'dismiss',
-      label: 'Dismiss',
-      variant: 'outlined',
-      action: () => removeNotification(id)
+      id: '2',
+      name: 'Cozy Studio Loft',
+      address: '456 Oak Avenue, Arts District',
+      pricing_tier: 'standard',
+      cleaning_duration: 90,
+      special_instructions: undefined,
+      active: true,
+      owner_id: 'owner2',
+    },
+    {
+      id: '3',
+      name: 'Family Beach House',
+      address: '789 Coastal Drive, Beachfront',
+      pricing_tier: 'premium',
+      cleaning_duration: 240,
+      special_instructions: 'Sandy floors require extra attention. Check for beach equipment storage.',
+      active: false,
+      owner_id: 'owner3',
+    },
+  ])
+
+  // Toast notifications
+  const activeNotifications = ref<ToastNotification[]>([])
+  const notificationCounter = ref(0)
+
+  const toastTypes = [
+    {
+      type: 'success' as const,
+      label: 'Success',
+      color: 'success',
+      icon: 'mdi-check-circle',
+    },
+    {
+      type: 'warning' as const,
+      label: 'Warning',
+      color: 'warning',
+      icon: 'mdi-alert',
+    },
+    {
+      type: 'error' as const,
+      label: 'Error',
+      color: 'error',
+      icon: 'mdi-alert-circle',
+    },
+    {
+      type: 'info' as const,
+      label: 'Info',
+      color: 'info',
+      icon: 'mdi-information',
+    },
+  ]
+
+  // Skeleton loaders
+  const selectedSkeletonVariant = ref<'wave' | 'pulse' | 'shimmer' | 'static'>('shimmer')
+  const skeletonAnimated = ref(true)
+
+  const skeletonTypes = [
+    { type: 'card' as const, label: 'Property Card', showProgress: false },
+    { type: 'list-item' as const, label: 'List Item', showProgress: false },
+    { type: 'dashboard-widget' as const, label: 'Dashboard Widget', showProgress: true },
+    { type: 'calendar-event' as const, label: 'Calendar Event', showProgress: false },
+    { type: 'form-field' as const, label: 'Form Field', showProgress: false },
+    { type: 'nav-menu' as const, label: 'Navigation Menu', showProgress: false },
+  ]
+
+  // Quick Actions FAB
+  const fabPulse = ref(true)
+
+  const quickActions = ref<QuickAction[]>([
+    {
+      id: 'add-property',
+      icon: 'mdi-home-plus',
+      tooltip: 'Add New Property',
+      color: 'primary',
+      priority: 4,
+      action: () => console.log('Add property'),
+    },
+    {
+      id: 'quick-booking',
+      icon: 'mdi-calendar-plus',
+      tooltip: 'Quick Booking',
+      color: 'success',
+      priority: 3,
+      action: () => console.log('Quick booking'),
+    },
+    {
+      id: 'urgent-alert',
+      icon: 'mdi-alert',
+      tooltip: 'Urgent Alerts',
+      color: 'error',
+      priority: 2,
+      condition: () => true,
+      action: () => console.log('View alerts'),
+    },
+    {
+      id: 'settings',
+      icon: 'mdi-cog',
+      tooltip: 'Settings',
+      color: 'secondary',
+      priority: 1,
+      action: () => console.log('Open settings'),
+    },
+  ])
+
+  // Mobile Bottom Navigation
+  const selectedRole = ref<'owner' | 'admin'>('owner')
+  const showNavHint = ref(true)
+
+  const mobileNavItems = ref<NavItem[]>([
+    {
+      id: 'dashboard',
+      value: 'dashboard',
+      label: 'Dashboard',
+      icon: 'mdi-view-dashboard',
+      route: '/dashboard',
+      role: 'shared',
+    },
+    {
+      id: 'properties',
+      value: 'properties',
+      label: 'Properties',
+      icon: 'mdi-home-group',
+      route: '/properties',
+      badge: { count: 3, color: 'primary' },
+      role: 'shared',
+    },
+    {
+      id: 'bookings',
+      value: 'bookings',
+      label: 'Bookings',
+      icon: 'mdi-calendar-check',
+      route: '/bookings',
+      badge: { count: 12, color: 'success', pulse: true },
+      role: 'shared',
+    },
+    {
+      id: 'cleaners',
+      value: 'cleaners',
+      label: 'Cleaners',
+      icon: 'mdi-account-group',
+      route: '/cleaners',
+      badge: { count: 2, color: 'warning', urgent: true },
+      role: 'admin',
+    },
+    {
+      id: 'analytics',
+      value: 'analytics',
+      label: 'Analytics',
+      icon: 'mdi-chart-line',
+      route: '/analytics',
+      role: 'admin',
+    },
+    {
+      id: 'profile',
+      value: 'profile',
+      label: 'Profile',
+      icon: 'mdi-account',
+      route: '/profile',
+      role: 'shared',
+    },
+  ])
+
+  // Performance metrics
+  const renderTime = ref(15)
+  const animationFps = ref(60)
+  const memoryUsage = ref(24)
+  const interactionScore = ref(95)
+
+  // Methods
+  function getRandomDate () {
+    const start = new Date(2024, 0, 1)
+    const end = new Date()
+    return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()))
+  }
+
+  function showToast (toastType: typeof toastTypes[0]) {
+    const id = `toast-${++notificationCounter.value}`
+
+    const sampleActions: ToastAction[] = [
+      {
+        id: 'view',
+        label: 'View',
+        icon: 'mdi-eye',
+        action: () => console.log('View action'),
+      },
+      {
+        id: 'dismiss',
+        label: 'Dismiss',
+        variant: 'outlined',
+        action: () => removeNotification(id),
+      },
+    ]
+
+    const notification: ToastNotification = {
+      id,
+      type: toastType.type,
+      title: `${toastType.label} Notification`,
+      message: `This is a sample ${toastType.type} notification with enhanced styling and interactions.`,
+      priority: toastType.type === 'error' ? 'critical' : 'normal',
+      actions: toastType.type === 'info' ? undefined : sampleActions,
+      details: toastType.type === 'error' ? 'Additional error details can be shown here for debugging purposes.' : undefined,
+      showProgress: toastType.type === 'info',
+      progressValue: toastType.type === 'info' ? 65 : undefined,
     }
-  ];
-  
-  const notification: ToastNotification = {
-    id,
-    type: toastType.type,
-    title: `${toastType.label} Notification`,
-    message: `This is a sample ${toastType.type} notification with enhanced styling and interactions.`,
-    priority: toastType.type === 'error' ? 'critical' : 'normal',
-    actions: toastType.type !== 'info' ? sampleActions : undefined,
-    details: toastType.type === 'error' ? 'Additional error details can be shown here for debugging purposes.' : undefined,
-    showProgress: toastType.type === 'info',
-    progressValue: toastType.type === 'info' ? 65 : undefined
-  };
-  
-  activeNotifications.value.push(notification);
-};
 
-const removeNotification = (id: string) => {
-  const index = activeNotifications.value.findIndex(n => n.id === id);
-  if (index > -1) {
-    activeNotifications.value.splice(index, 1);
+    activeNotifications.value.push(notification)
   }
-};
 
-const handleToastAction = (action: ToastAction, notification: ToastNotification) => {
-  console.log('Toast action:', action.id, 'for notification:', notification.id);
-  if (action.action) {
-    action.action();
+  function removeNotification (id: string) {
+    const index = activeNotifications.value.findIndex(n => n.id === id)
+    if (index !== -1) {
+      activeNotifications.value.splice(index, 1)
+    }
   }
-};
 
-// Property card handlers
-const handlePropertyView = (id: string) => {
-  console.log('View property:', id);
-};
-
-const handlePropertyEdit = (id: string) => {
-  console.log('Edit property:', id);
-};
-
-const handleQuickBooking = (id: string) => {
-  console.log('Quick booking for property:', id);
-  showToast(toastTypes[0]); // Show success toast
-};
-
-const handlePropertyDelete = (id: string) => {
-  console.log('Delete property:', id);
-  showToast(toastTypes[2]); // Show error toast
-};
-
-// FAB handlers
-const handleQuickAction = (action: QuickAction) => {
-  console.log('Quick action:', action.id);
-  if (action.action) {
-    action.action();
+  function handleToastAction (action: ToastAction, notification: ToastNotification) {
+    console.log('Toast action:', action.id, 'for notification:', notification.id)
+    if (action.action) {
+      action.action()
+    }
   }
-};
 
-const handleFabToggle = (isExpanded: boolean) => {
-  console.log('FAB expanded:', isExpanded);
-};
-
-// Mobile nav handlers
-const handleMobileNavigation = (item: NavItem) => {
-  console.log('Navigate to:', item.route);
-};
-
-const handleNavItemClick = (item: NavItem) => {
-  console.log('Nav item clicked:', item.id);
-};
-
-// Performance monitoring
-const updatePerformanceMetrics = () => {
-  renderTime.value = Math.floor(Math.random() * 10) + 10;
-  animationFps.value = Math.floor(Math.random() * 5) + 58;
-  memoryUsage.value = Math.floor(Math.random() * 10) + 20;
-  interactionScore.value = Math.floor(Math.random() * 10) + 90;
-};
-
-let performanceInterval: number;
-
-onMounted(() => {
-  performanceInterval = window.setInterval(updatePerformanceMetrics, 2000);
-});
-
-onUnmounted(() => {
-  if (performanceInterval) {
-    window.clearInterval(performanceInterval);
+  // Property card handlers
+  function handlePropertyView (id: string) {
+    console.log('View property:', id)
   }
-});
+
+  function handlePropertyEdit (id: string) {
+    console.log('Edit property:', id)
+  }
+
+  function handleQuickBooking (id: string) {
+    console.log('Quick booking for property:', id)
+    showToast(toastTypes[0]) // Show success toast
+  }
+
+  function handlePropertyDelete (id: string) {
+    console.log('Delete property:', id)
+    showToast(toastTypes[2]) // Show error toast
+  }
+
+  // FAB handlers
+  function handleQuickAction (action: QuickAction) {
+    console.log('Quick action:', action.id)
+    if (action.action) {
+      action.action()
+    }
+  }
+
+  function handleFabToggle (isExpanded: boolean) {
+    console.log('FAB expanded:', isExpanded)
+  }
+
+  // Mobile nav handlers
+  function handleMobileNavigation (item: NavItem) {
+    console.log('Navigate to:', item.route)
+  }
+
+  function handleNavItemClick (item: NavItem) {
+    console.log('Nav item clicked:', item.id)
+  }
+
+  // Performance monitoring
+  function updatePerformanceMetrics () {
+    renderTime.value = Math.floor(Math.random() * 10) + 10
+    animationFps.value = Math.floor(Math.random() * 5) + 58
+    memoryUsage.value = Math.floor(Math.random() * 10) + 20
+    interactionScore.value = Math.floor(Math.random() * 10) + 90
+  }
+
+  let performanceInterval: number
+
+  onMounted(() => {
+    performanceInterval = window.setInterval(updatePerformanceMetrics, 2000)
+  })
+
+  onUnmounted(() => {
+    if (performanceInterval) {
+      window.clearInterval(performanceInterval)
+    }
+  })
 </script>
 
 <style scoped>
@@ -745,25 +745,25 @@ onUnmounted(() => {
   .ui-demo-page {
     padding: 16px;
   }
-  
+
   .demo-title {
     font-size: 2rem;
   }
-  
+
   .demo-section {
     padding: 16px;
     margin-bottom: 32px;
   }
-  
+
   .section-title {
     font-size: 1.5rem;
   }
-  
+
   .demo-controls {
     flex-direction: column;
     align-items: stretch;
   }
-  
+
   .fab-demo-area {
     min-height: 200px;
     padding: 16px;
@@ -793,4 +793,4 @@ onUnmounted(() => {
 .text-h4 {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-</style> 
+</style>

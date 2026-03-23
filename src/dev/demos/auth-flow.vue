@@ -3,8 +3,8 @@
     <v-row>
       <v-col cols="12">
         <v-card
-          elevation="2"
           class="pa-6"
+          elevation="2"
         >
           <v-card-title class="text-h4 mb-4">
             <v-icon
@@ -15,16 +15,16 @@
             </v-icon>
             Authentication Flow Demo
           </v-card-title>
-          
+
           <v-card-subtitle class="mb-6">
             Test role-based authentication and navigation
           </v-card-subtitle>
-          
+
           <!-- Current Auth State -->
           <v-alert
+            class="mb-6"
             :type="authStore.isAuthenticated ? 'success' : 'info'"
             variant="tonal"
-            class="mb-6"
           >
             <div class="text-h6 mb-2">
               Current Authentication State
@@ -39,51 +39,51 @@
               <strong>Status:</strong> Not authenticated
             </div>
           </v-alert>
-          
+
           <!-- Error Display -->
           <v-alert
             v-if="authStore.error"
-            type="error"
-            variant="tonal"
             class="mb-4"
             closable
+            type="error"
+            variant="tonal"
             @click:close="authStore.clearError"
           >
             {{ authStore.error }}
           </v-alert>
-          
+
           <!-- Success Display -->
           <v-alert
             v-if="successMessage"
-            type="success"
-            variant="tonal"
             class="mb-4"
             closable
+            type="success"
+            variant="tonal"
             @click:close="successMessage = ''"
           >
             {{ successMessage }}
           </v-alert>
-          
+
           <!-- Authentication Actions -->
           <div class="mb-6">
             <v-card
-              variant="outlined"
               class="pa-4"
+              variant="outlined"
             >
               <v-card-title class="text-h6 mb-4">
                 Authentication Actions
               </v-card-title>
-              
+
               <v-row class="mb-4">
                 <v-col
                   cols="12"
                   md="4"
                 >
                   <v-btn
-                    color="primary"
                     block
-                    :loading="authStore.loading"
+                    color="primary"
                     :disabled="authStore.isAuthenticated"
+                    :loading="authStore.loading"
                     @click="loginAsOwner"
                   >
                     <v-icon class="mr-2">
@@ -97,10 +97,10 @@
                   md="4"
                 >
                   <v-btn
-                    color="secondary"
                     block
-                    :loading="authStore.loading"
+                    color="secondary"
                     :disabled="authStore.isAuthenticated"
+                    :loading="authStore.loading"
                     @click="loginAsAdmin"
                   >
                     <v-icon class="mr-2">
@@ -114,10 +114,10 @@
                   md="4"
                 >
                   <v-btn
-                    color="warning"
                     block
-                    :loading="authStore.loading"
+                    color="warning"
                     :disabled="authStore.isAuthenticated"
+                    :loading="authStore.loading"
                     @click="loginAsCleaner"
                   >
                     <v-icon class="mr-2">
@@ -127,11 +127,11 @@
                   </v-btn>
                 </v-col>
               </v-row>
-              
+
               <v-btn
                 v-if="authStore.isAuthenticated"
-                color="error"
                 block
+                color="error"
                 :loading="authStore.loading"
                 @click="handleLogout"
               >
@@ -142,20 +142,20 @@
               </v-btn>
             </v-card>
           </div>
-          
+
           <!-- Admin Features -->
           <div
             v-if="authStore.isAdmin"
             class="mb-6"
           >
             <v-card
-              variant="outlined"
               class="pa-4"
+              variant="outlined"
             >
               <v-card-title class="text-h6 mb-4">
                 Admin Features
               </v-card-title>
-              
+
               <v-alert
                 type="info"
                 variant="tonal"
@@ -164,25 +164,25 @@
               </v-alert>
             </v-card>
           </div>
-          
+
           <!-- Navigation Testing -->
           <div class="mb-6">
             <v-card
-              variant="outlined"
               class="pa-4"
+              variant="outlined"
             >
               <v-card-title class="text-h6 mb-4">
                 Navigation Testing
               </v-card-title>
-              
+
               <v-row>
                 <v-col
                   cols="12"
                   md="6"
                 >
                   <v-btn
-                    color="info"
                     block
+                    color="info"
                     :disabled="!authStore.isAuthenticated"
                     @click="navigateToHome"
                   >
@@ -197,9 +197,9 @@
                   md="6"
                 >
                   <v-btn
+                    block
                     color="info"
                     variant="outlined"
-                    block
                     @click="goToLogin"
                   >
                     <v-icon class="mr-2">
@@ -211,20 +211,20 @@
               </v-row>
             </v-card>
           </div>
-          
+
           <!-- Registration Testing -->
           <div class="mb-6">
             <v-card
-              variant="outlined"
               class="pa-4"
+              variant="outlined"
             >
               <v-card-title class="text-h6 mb-4">
                 Registration Testing
               </v-card-title>
-              
+
               <v-btn
-                color="success"
                 block
+                color="success"
                 @click="goToSignup"
               >
                 <v-icon class="mr-2">
@@ -234,17 +234,17 @@
               </v-btn>
             </v-card>
           </div>
-          
+
           <!-- Auth Helpers Testing -->
           <div class="mb-6">
             <v-card
-              variant="outlined"
               class="pa-4"
+              variant="outlined"
             >
               <v-card-title class="text-h6 mb-4">
                 Auth Helpers Testing
               </v-card-title>
-              
+
               <v-row>
                 <v-col
                   cols="12"
@@ -298,87 +298,87 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { 
-  getDefaultRouteForRole, 
-  getRoleDisplayName 
-} from '@/utils/authHelpers'
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useAuthStore } from '@/stores/auth'
+  import {
+    getDefaultRouteForRole,
+    getRoleDisplayName,
+  } from '@/utils/authHelpers'
 
-// Router and stores
-const router = useRouter()
-const authStore = useAuthStore()
+  // Router and stores
+  const router = useRouter()
+  const authStore = useAuthStore()
 
-// Local state
-const successMessage = ref('')
+  // Local state
+  const successMessage = ref('')
 
-// Authentication actions
-async function loginAsOwner() {
-  try {
-    const success = await authStore.login('owner@example.com', 'password')
-    if (success) {
-      successMessage.value = 'Successfully logged in as Owner'
+  // Authentication actions
+  async function loginAsOwner () {
+    try {
+      const success = await authStore.login('owner@example.com', 'password')
+      if (success) {
+        successMessage.value = 'Successfully logged in as Owner'
+      }
+    } catch (error) {
+      console.error('Login failed:', error)
     }
-  } catch (error) {
-    console.error('Login failed:', error)
   }
-}
 
-async function loginAsAdmin() {
-  try {
-    const success = await authStore.login('admin@example.com', 'password')
-    if (success) {
-      successMessage.value = 'Successfully logged in as Admin'
+  async function loginAsAdmin () {
+    try {
+      const success = await authStore.login('admin@example.com', 'password')
+      if (success) {
+        successMessage.value = 'Successfully logged in as Admin'
+      }
+    } catch (error) {
+      console.error('Login failed:', error)
     }
-  } catch (error) {
-    console.error('Login failed:', error)
   }
-}
 
-async function loginAsCleaner() {
-  try {
-    const success = await authStore.login('cleaner@example.com', 'password')
-    if (success) {
-      successMessage.value = 'Successfully logged in as Cleaner'
+  async function loginAsCleaner () {
+    try {
+      const success = await authStore.login('cleaner@example.com', 'password')
+      if (success) {
+        successMessage.value = 'Successfully logged in as Cleaner'
+      }
+    } catch (error) {
+      console.error('Login failed:', error)
     }
-  } catch (error) {
-    console.error('Login failed:', error)
   }
-}
 
-async function handleLogout() {
-  try {
-    const success = await authStore.logout()
-    if (success) {
-      successMessage.value = 'Successfully logged out'
+  async function handleLogout () {
+    try {
+      const success = await authStore.logout()
+      if (success) {
+        successMessage.value = 'Successfully logged out'
+      }
+    } catch (error) {
+      console.error('Logout failed:', error)
     }
-  } catch (error) {
-    console.error('Logout failed:', error)
   }
-}
 
-// Navigation actions
-function navigateToHome() {
-  const role = authStore.user?.role
-  if (role) {
-    const defaultRoute = getDefaultRouteForRole(role)
-    router.push(defaultRoute)
-  } else {
-    router.push('/')
+  // Navigation actions
+  function navigateToHome () {
+    const role = authStore.user?.role
+    if (role) {
+      const defaultRoute = getDefaultRouteForRole(role)
+      router.push(defaultRoute)
+    } else {
+      router.push('/')
+    }
   }
-}
 
-function goToLogin() {
-  router.push('/auth/login')
-}
+  function goToLogin () {
+    router.push('/auth/login')
+  }
 
-function goToSignup() {
-  router.push('/auth/register')
-}
+  function goToSignup () {
+    router.push('/auth/register')
+  }
 
-// Clear any existing errors when component mounts
-authStore.clearError()
+  // Clear any existing errors when component mounts
+  authStore.clearError()
 </script>
 
 <style scoped>
@@ -393,4 +393,4 @@ authStore.clearError()
 .v-alert {
   transition: all 0.3s ease;
 }
-</style> 
+</style>

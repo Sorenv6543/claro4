@@ -1,193 +1,203 @@
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { supabase } from '@/plugins/supabase';
-import type { Property } from '@/types';
-import type { RealtimeChannel } from '@supabase/supabase-js';
+import type { RealtimeChannel } from '@supabase/supabase-js'
+import type { Property } from '@/types'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { supabase } from '@/plugins/supabase'
 
 /**
  * Supabase-based property operations with automatic RLS filtering
  * Replaces frontend filtering with database-level security
- * 
+ *
  * Key Features:
  * - Automatic owner data isolation via RLS policies
  * - Real-time subscriptions for property changes
  * - Type-safe database operations
  * - Maintains same API interface as Pinia version
  */
-export function useSupabaseProperties() {
+export function useSupabaseProperties () {
   // State
-  const properties = ref<Property[]>([]);
-  const loading = ref(false);
-  const error = ref<string | null>(null);
-  
+  const properties = ref<Property[]>([])
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+
   // Real-time subscription
-  let subscription: RealtimeChannel | null = null;
-  
+  let subscription: RealtimeChannel | null = null
+
   // CORE DATABASE OPERATIONS
-  
+
   /**
    * Fetch properties with automatic RLS filtering
    * - Owners see only their properties
    * - Admins see all properties
    */
-  async function fetchProperties(): Promise<Property[]> {
-    loading.value = true;
-    error.value = null;
-    
+  async function fetchProperties (): Promise<Property[]> {
+    loading.value = true
+    error.value = null
+
     try {
       const { data, error: fetchError } = await supabase
         .from('properties')
         .select('*')
         .eq('active', true)
-        .order('name', { ascending: true });
-      
-      if (fetchError) throw fetchError;
-      
-      properties.value = data || [];
-      return data || [];
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to fetch properties';
-      console.error('Supabase property fetch error:', err);
-      return [];
+        .order('name', { ascending: true })
+
+      if (fetchError) {
+        throw fetchError
+      }
+
+      properties.value = data || []
+      return data || []
+    } catch (error_) {
+      error.value = error_ instanceof Error ? error_.message : 'Failed to fetch properties'
+      console.error('Supabase property fetch error:', error_)
+      return []
     } finally {
-      loading.value = false;
+      loading.value = false
     }
   }
-  
+
   /**
    * Create a new property with automatic owner_id assignment
    */
-  async function createProperty(propertyData: Omit<Property, 'id' | 'created_at' | 'updated_at' | 'owner_id'>): Promise<string | null> {
-    loading.value = true;
-    error.value = null;
-    
+  async function createProperty (propertyData: Omit<Property, 'id' | 'created_at' | 'updated_at' | 'owner_id'>): Promise<string | null> {
+    loading.value = true
+    error.value = null
+
     try {
       // Get current user
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-      
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        throw new Error('Not authenticated')
+      }
+
       const newProperty = {
         ...propertyData,
-        owner_id: user.id // Automatic owner assignment
-      };
-      
+        owner_id: user.id, // Automatic owner assignment
+      }
+
       const { data, error: createError } = await supabase
         .from('properties')
         .insert([newProperty])
         .select()
-        .single();
-      
-      if (createError) throw createError;
-      
+        .single()
+
+      if (createError) {
+        throw createError
+      }
+
       // Add to local state for immediate UI update
       if (data) {
-        properties.value.push(data);
+        properties.value.push(data)
       }
-      
-      return data?.id || null;
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to create property';
-      console.error('Supabase property creation error:', err);
-      return null;
+
+      return data?.id || null
+    } catch (error_) {
+      error.value = error_ instanceof Error ? error_.message : 'Failed to create property'
+      console.error('Supabase property creation error:', error_)
+      return null
     } finally {
-      loading.value = false;
+      loading.value = false
     }
   }
-  
+
   /**
    * Update a property (RLS ensures user can only update their own)
    */
-  async function updateProperty(id: string, updates: Partial<Property>): Promise<boolean> {
-    loading.value = true;
-    error.value = null;
-    
+  async function updateProperty (id: string, updates: Partial<Property>): Promise<boolean> {
+    loading.value = true
+    error.value = null
+
     try {
       const { data, error: updateError } = await supabase
         .from('properties')
         .update(updates)
         .eq('id', id)
         .select()
-        .single();
-      
-      if (updateError) throw updateError;
-      
+        .single()
+
+      if (updateError) {
+        throw updateError
+      }
+
       // Update local state
       if (data) {
-        const index = properties.value.findIndex(p => p.id === id);
+        const index = properties.value.findIndex(p => p.id === id)
         if (index !== -1) {
-          properties.value[index] = { ...properties.value[index], ...data };
+          properties.value[index] = { ...properties.value[index], ...data }
         }
       }
-      
-      return true;
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to update property';
-      console.error('Supabase property update error:', err);
-      return false;
+
+      return true
+    } catch (error_) {
+      error.value = error_ instanceof Error ? error_.message : 'Failed to update property'
+      console.error('Supabase property update error:', error_)
+      return false
     } finally {
-      loading.value = false;
+      loading.value = false
     }
   }
-  
+
   /**
    * Delete a property (RLS ensures user can only delete their own)
    * Soft delete by setting active = false
    */
-  async function deleteProperty(id: string): Promise<boolean> {
-    loading.value = true;
-    error.value = null;
-    
+  async function deleteProperty (id: string): Promise<boolean> {
+    loading.value = true
+    error.value = null
+
     try {
       const { error: deleteError } = await supabase
         .from('properties')
         .update({ active: false })
-        .eq('id', id);
-      
-      if (deleteError) throw deleteError;
-      
+        .eq('id', id)
+
+      if (deleteError) {
+        throw deleteError
+      }
+
       // Remove from local state
-      properties.value = properties.value.filter(p => p.id !== id);
-      
-      return true;
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Failed to delete property';
-      console.error('Supabase property deletion error:', err);
-      return false;
+      properties.value = properties.value.filter(p => p.id !== id)
+
+      return true
+    } catch (error_) {
+      error.value = error_ instanceof Error ? error_.message : 'Failed to delete property'
+      console.error('Supabase property deletion error:', error_)
+      return false
     } finally {
-      loading.value = false;
+      loading.value = false
     }
   }
-  
+
   /**
    * Get a single property by ID (with RLS filtering)
    */
-  async function getPropertyById(id: string): Promise<Property | null> {
+  async function getPropertyById (id: string): Promise<Property | null> {
     try {
       const { data, error: fetchError } = await supabase
         .from('properties')
         .select('*')
         .eq('id', id)
         .eq('active', true)
-        .single();
-      
+        .single()
+
       if (fetchError) {
-        console.error('Property fetch error:', fetchError);
-        return null;
+        console.error('Property fetch error:', fetchError)
+        return null
       }
-      
-      return data;
-    } catch (err) {
-      console.error('Supabase property fetch error:', err);
-      return null;
+
+      return data
+    } catch (error_) {
+      console.error('Supabase property fetch error:', error_)
+      return null
     }
   }
-  
+
   // REAL-TIME SUBSCRIPTIONS
-  
+
   /**
    * Subscribe to real-time property changes
    * RLS automatically filters to user's accessible data
    */
-  function subscribeToProperties() {
+  function subscribeToProperties () {
     subscription = supabase
       .channel('property-changes')
       .on(
@@ -195,127 +205,130 @@ export function useSupabaseProperties() {
         {
           event: '*',
           schema: 'public',
-          table: 'properties'
+          table: 'properties',
         },
-        (payload) => {
-          console.log('Property change received:', payload);
-          
+        payload => {
+          console.log('Property change received:', payload)
+
           switch (payload.eventType) {
-            case 'INSERT':
+            case 'INSERT': {
               if (payload.new && payload.new.active) {
-                properties.value.push(payload.new as Property);
+                properties.value.push(payload.new as Property)
               }
-              break;
-              
-            case 'UPDATE':
+              break
+            }
+
+            case 'UPDATE': {
               if (payload.new) {
-                const index = properties.value.findIndex(p => p.id === payload.new.id);
+                const index = properties.value.findIndex(p => p.id === payload.new.id)
                 if (index !== -1) {
                   if (payload.new.active) {
-                    properties.value[index] = payload.new as Property;
+                    properties.value[index] = payload.new as Property
                   } else {
                     // Property was deactivated, remove from list
-                    properties.value.splice(index, 1);
+                    properties.value.splice(index, 1)
                   }
                 } else if (payload.new.active) {
                   // Property was reactivated, add to list
-                  properties.value.push(payload.new as Property);
+                  properties.value.push(payload.new as Property)
                 }
               }
-              break;
-              
-            case 'DELETE':
+              break
+            }
+
+            case 'DELETE': {
               if (payload.old) {
-                properties.value = properties.value.filter(p => p.id !== payload.old.id);
+                properties.value = properties.value.filter(p => p.id !== payload.old.id)
               }
-              break;
+              break
+            }
           }
-        }
+        },
       )
-      .subscribe((status) => {
+      .subscribe(status => {
         if (status === 'SUBSCRIBED') {
-          console.log('✅ Subscribed to property changes');
+          console.log('✅ Subscribed to property changes')
         } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Property subscription error');
+          console.error('❌ Property subscription error')
         }
-      });
+      })
   }
-  
+
   /**
    * Unsubscribe from real-time changes
    */
-  function unsubscribeFromProperties() {
+  function unsubscribeFromProperties () {
     if (subscription) {
-      supabase.removeChannel(subscription);
-      subscription = null;
+      supabase.removeChannel(subscription)
+      subscription = null
     }
   }
-  
+
   // COMPUTED PROPERTIES (Auto-filtered by RLS)
-  
+
   /**
    * All active properties (automatically filtered by RLS)
    * - Owners see only their properties
    * - Admins see all properties
    */
-  const allProperties = computed(() => properties.value);
-  
+  const allProperties = computed(() => properties.value)
+
   /**
    * Properties grouped by type (auto-filtered by RLS)
    */
   const propertiesByType = computed(() => {
-    const typeGroups: Record<string, Property[]> = {};
-    
-    properties.value.forEach(property => {
-      const type = property.property_type || 'other';
+    const typeGroups: Record<string, Property[]> = {}
+
+    for (const property of properties.value) {
+      const type = property.property_type || 'other'
       if (!typeGroups[type]) {
-        typeGroups[type] = [];
+        typeGroups[type] = []
       }
-      typeGroups[type].push(property);
-    });
-    
-    return typeGroups;
-  });
-  
+      typeGroups[type].push(property)
+    }
+
+    return typeGroups
+  })
+
   /**
    * Properties with their booking counts (requires joined query)
    */
   const propertiesWithBookingCounts = computed(() => {
     // This would typically be a joined query, but for now we'll just return properties
     // In a full implementation, you'd do a joined query with booking counts
-    return properties.value;
-  });
-  
+    return properties.value
+  })
+
   // LIFECYCLE MANAGEMENT
-  
+
   onMounted(() => {
-    fetchProperties();
-    subscribeToProperties();
-  });
-  
+    fetchProperties()
+    subscribeToProperties()
+  })
+
   onUnmounted(() => {
-    unsubscribeFromProperties();
-  });
-  
+    unsubscribeFromProperties()
+  })
+
   return {
     // State
     properties: allProperties,
     loading,
     error,
-    
+
     // Operations
     fetchProperties,
     createProperty,
     updateProperty,
     deleteProperty,
     getPropertyById,
-    
+
     // Computed data (auto-filtered by RLS)
     propertiesByType,
     propertiesWithBookingCounts,
-    
+
     // Subscription management
     subscribeToProperties,
-    unsubscribeFromProperties
-  };
-} 
+    unsubscribeFromProperties,
+  }
+}

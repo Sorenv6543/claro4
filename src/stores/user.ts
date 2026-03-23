@@ -1,8 +1,8 @@
-import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import type { User, Property, Booking } from '@/types';
-import { usePropertyStore } from '@/stores/property';
-import { useBookingStore } from '@/stores/booking';
+import type { Booking, Property, User } from '@/types'
+import { defineStore } from 'pinia'
+import { computed, ref } from 'vue'
+import { useBookingStore } from '@/stores/booking'
+import { usePropertyStore } from '@/stores/property'
 
 /**
  * User store for the Property Cleaning Scheduler
@@ -11,15 +11,15 @@ import { useBookingStore } from '@/stores/booking';
  */
 export const useUserStore = defineStore('user', () => {
   // State
-  const user = ref<User | null>(null);
+  const user = ref<User | null>(null)
   const settings = ref({
     notifications: true,
     timezone: 'America/New_York',
     theme: 'light',
     language: 'en',
     defaultCalendarView: 'timeGridWeek',
-    autoRefreshInterval: 30000 // 30 seconds
-  });
+    autoRefreshInterval: 30_000, // 30 seconds
+  })
 
   // User-specific view preferences
   const viewPreferences = ref({
@@ -28,144 +28,148 @@ export const useUserStore = defineStore('user', () => {
     recentlyViewedProperties: [] as string[],
     defaultPropertyFilters: {
       showInactive: false,
-      pricingTier: 'all'
-    }
-  });
+      pricingTier: 'all',
+    },
+  })
 
   // Get store instances
-  const propertyStore = usePropertyStore();
-  const bookingStore = useBookingStore();
+  const propertyStore = usePropertyStore()
+  const bookingStore = useBookingStore()
 
   // Getters - User-specific filtered views
-  const isAuthenticated = computed(() => !!user.value);
-  const currentUser = computed(() => user.value);
-  const sessionId = computed(() => user.value ? `session-${user.value.id}` : undefined);
-  
+  const isAuthenticated = computed(() => !!user.value)
+  const currentUser = computed(() => user.value)
+  const sessionId = computed(() => user.value ? `session-${user.value.id}` : undefined)
+
   /**
    * User's properties (filtered by ownership or admin access)
    */
   const userProperties = computed(() => {
-    if (!user.value) return [];
-    
-    if (user.value.role === 'admin') {
-      return propertyStore.propertiesArray;
+    if (!user.value) {
+      return []
     }
-    
-    return propertyStore.propertiesByOwner(user.value.id);
-  });
-  
+
+    if (user.value.role === 'admin') {
+      return propertyStore.propertiesArray
+    }
+
+    return propertyStore.propertiesByOwner(user.value.id)
+  })
+
   /**
    * User's active properties only
    */
   const userActiveProperties = computed(() => {
-    const activeMap = new Map<string, Property>();
-    
+    const activeMap = new Map<string, Property>()
+
     if (Array.isArray(userProperties.value)) {
-      userProperties.value.forEach((property: Property) => {
+      for (const property of userProperties.value) {
         if (property.active) {
-          activeMap.set(property.id, property);
+          activeMap.set(property.id, property)
         }
-      });
+      }
     } else {
-      userProperties.value.forEach((property: Property, id: string) => {
+      for (const [id, property] of userProperties.value) {
         if (property.active) {
-          activeMap.set(id, property);
+          activeMap.set(id, property)
         }
-      });
+      }
     }
-    
-    return activeMap;
-  });
-  
+
+    return activeMap
+  })
+
   /**
    * User's bookings (filtered by ownership or role access)
    */
   const userBookings = computed(() => {
-    if (!user.value) return [];
-    
+    if (!user.value) {
+      return []
+    }
+
     if (user.value.role === 'admin') {
-      return bookingStore.bookingsArray;
+      return bookingStore.bookingsArray
     }
-    
+
     if (user.value.role === 'cleaner') {
-      return bookingStore.bookingsArray.filter(booking => 
-        booking.assigned_cleaner_id === user.value?.id
-      );
+      return bookingStore.bookingsArray.filter(booking =>
+        booking.assigned_cleaner_id === user.value?.id,
+      )
     }
-    
-    return bookingStore.bookingsByOwner(user.value.id);
-  });
-  
+
+    return bookingStore.bookingsByOwner(user.value.id)
+  })
+
   /**
    * Today's bookings for this user
    */
   const userTodayBookings = computed(() => {
-    const today = new Date().toISOString().split('T')[0];
-    const todayMap = new Map<string, Booking>();
-    
+    const today = new Date().toISOString().split('T')[0]
+    const todayMap = new Map<string, Booking>()
+
     if (Array.isArray(userBookings.value)) {
-      userBookings.value.forEach((booking: Booking) => {
+      for (const booking of userBookings.value) {
         if (booking.checkout_date.startsWith(today) || booking.checkin_date.startsWith(today)) {
-          todayMap.set(booking.id, booking);
+          todayMap.set(booking.id, booking)
         }
-      });
+      }
     } else {
-      userBookings.value.forEach((booking: Booking, id: string) => {
+      for (const [id, booking] of userBookings.value) {
         if (booking.checkout_date.startsWith(today) || booking.checkin_date.startsWith(today)) {
-          todayMap.set(id, booking);
+          todayMap.set(id, booking)
         }
-      });
+      }
     }
-    
-    return todayMap;
-  });
-  
+
+    return todayMap
+  })
+
   /**
    * User's turn bookings (urgent)
    */
   const userTurnBookings = computed(() => {
-    const turnMap = new Map<string, Booking>();
-    
+    const turnMap = new Map<string, Booking>()
+
     if (Array.isArray(userBookings.value)) {
-      userBookings.value.forEach((booking: Booking) => {
+      for (const booking of userBookings.value) {
         if (booking.booking_type === 'turn') {
-          turnMap.set(booking.id, booking);
+          turnMap.set(booking.id, booking)
         }
-      });
+      }
     } else {
-      userBookings.value.forEach((booking: Booking, id: string) => {
+      for (const [id, booking] of userBookings.value) {
         if (booking.booking_type === 'turn') {
-          turnMap.set(id, booking);
+          turnMap.set(id, booking)
         }
-      });
+      }
     }
-    
-    return turnMap;
-  });
-  
+
+    return turnMap
+  })
+
   /**
    * User's favorite properties
    */
   const favoriteProperties = computed(() => {
-    const favoritesMap = new Map<string, Property>();
-    
+    const favoritesMap = new Map<string, Property>()
+
     if (Array.isArray(userProperties.value)) {
-      userProperties.value.forEach((property: Property) => {
+      for (const property of userProperties.value) {
         if (viewPreferences.value.favoriteProperties.has(property.id)) {
-          favoritesMap.set(property.id, property);
+          favoritesMap.set(property.id, property)
         }
-      });
+      }
     } else {
-      userProperties.value.forEach((property: Property, id: string) => {
+      for (const [id, property] of userProperties.value) {
         if (viewPreferences.value.favoriteProperties.has(property.id)) {
-          favoritesMap.set(id, property);
+          favoritesMap.set(id, property)
         }
-      });
+      }
     }
-    
-    return favoritesMap;
-  });
-  
+
+    return favoritesMap
+  })
+
   /**
    * Recently viewed properties (last 5)
    */
@@ -173,89 +177,95 @@ export const useUserStore = defineStore('user', () => {
     return viewPreferences.value.recentlyViewedProperties
       .slice(0, 5)
       .map(id => propertyStore.getPropertyById(id))
-      .filter(Boolean);
-  });
+      .filter(Boolean)
+  })
 
   // Actions
-  function setUser(newUser: User | null) {
-    user.value = newUser;
-    
+  function setUser (newUser: User | null) {
+    user.value = newUser
+
     // Clear user-specific data when logging out
     if (!newUser) {
-      clearUserPreferences();
+      clearUserPreferences()
     }
   }
-  
-  function updateSettings(newSettings: Partial<typeof settings.value>) {
+
+  function updateSettings (newSettings: Partial<typeof settings.value>) {
     settings.value = {
       ...settings.value,
-      ...newSettings
-    };
-  }
-  
-  function toggleFavoriteProperty(propertyId: string) {
-    if (viewPreferences.value.favoriteProperties.has(propertyId)) {
-      viewPreferences.value.favoriteProperties.delete(propertyId);
-    } else {
-      viewPreferences.value.favoriteProperties.add(propertyId);
+      ...newSettings,
     }
   }
-  
-  function addRecentlyViewedProperty(propertyId: string) {
+
+  function toggleFavoriteProperty (propertyId: string) {
+    if (viewPreferences.value.favoriteProperties.has(propertyId)) {
+      viewPreferences.value.favoriteProperties.delete(propertyId)
+    } else {
+      viewPreferences.value.favoriteProperties.add(propertyId)
+    }
+  }
+
+  function addRecentlyViewedProperty (propertyId: string) {
     // Remove if already exists
-    viewPreferences.value.recentlyViewedProperties = 
-      viewPreferences.value.recentlyViewedProperties.filter(id => id !== propertyId);
-    
+    viewPreferences.value.recentlyViewedProperties
+      = viewPreferences.value.recentlyViewedProperties.filter(id => id !== propertyId)
+
     // Add to beginning
-    viewPreferences.value.recentlyViewedProperties.unshift(propertyId);
-    
+    viewPreferences.value.recentlyViewedProperties.unshift(propertyId)
+
     // Keep only last 10
     if (viewPreferences.value.recentlyViewedProperties.length > 10) {
-      viewPreferences.value.recentlyViewedProperties = 
-        viewPreferences.value.recentlyViewedProperties.slice(0, 10);
+      viewPreferences.value.recentlyViewedProperties
+        = viewPreferences.value.recentlyViewedProperties.slice(0, 10)
     }
   }
-  
-  function updateViewPreferences(preferences: Partial<typeof viewPreferences.value>) {
+
+  function updateViewPreferences (preferences: Partial<typeof viewPreferences.value>) {
     viewPreferences.value = {
       ...viewPreferences.value,
-      ...preferences
-    };
+      ...preferences,
+    }
   }
-  
-  function clearUserPreferences() {
+
+  function clearUserPreferences () {
     viewPreferences.value = {
       sidebarCollapsed: false,
       favoriteProperties: new Set<string>(),
       recentlyViewedProperties: [],
       defaultPropertyFilters: {
         showInactive: false,
-        pricingTier: 'all'
-      }
-    };
+        pricingTier: 'all',
+      },
+    }
   }
-  
+
   /**
    * Check if user has permission to perform action on resource
    */
-  function hasPermission(action: 'view' | 'edit' | 'delete', resourceType: 'property' | 'booking', resourceOwnerId?: string): boolean {
-    if (!user.value) return false;
-    
+  function hasPermission (action: 'view' | 'edit' | 'delete', resourceType: 'property' | 'booking', resourceOwnerId?: string): boolean {
+    if (!user.value) {
+      return false
+    }
+
     // Admins can do everything
-    if (user.value.role === 'admin') return true;
-    
+    if (user.value.role === 'admin') {
+      return true
+    }
+
     // Owners can manage their own resources
     if (user.value.role === 'owner') {
-      if (action === 'view') return true;
-      return resourceOwnerId === user.value.id;
+      if (action === 'view') {
+        return true
+      }
+      return resourceOwnerId === user.value.id
     }
-    
+
     // Cleaners can only view assigned bookings
     if (user.value.role === 'cleaner') {
-      return action === 'view' && resourceType === 'booking';
+      return action === 'view' && resourceType === 'booking'
     }
-    
-    return false;
+
+    return false
   }
 
   return {
@@ -263,7 +273,7 @@ export const useUserStore = defineStore('user', () => {
     user,
     settings,
     viewPreferences,
-    
+
     // Getters - User-filtered views
     isAuthenticated,
     currentUser,
@@ -275,7 +285,7 @@ export const useUserStore = defineStore('user', () => {
     userTurnBookings,
     favoriteProperties,
     recentProperties,
-    
+
     // Actions
     setUser,
     updateSettings,
@@ -283,6 +293,6 @@ export const useUserStore = defineStore('user', () => {
     addRecentlyViewedProperty,
     updateViewPreferences,
     clearUserPreferences,
-    hasPermission
-  };
-});
+    hasPermission,
+  }
+})

@@ -3,5 +3,5 @@
 </template>
 
 <script setup lang="ts">
-import OwnerSidebarDemo from '@/dev/demos/OwnerSidebarDemo.vue';
-</script> 
+  import OwnerSidebarDemo from '@/dev/demos/OwnerSidebarDemo.vue'
+</script>

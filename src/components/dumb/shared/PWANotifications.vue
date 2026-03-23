@@ -13,8 +13,8 @@
       </v-banner-text>
       <template #actions>
         <v-btn
-          variant="text"
           size="small"
+          variant="text"
           @click="checkConnection"
         >
           Retry
@@ -40,17 +40,17 @@
       </v-banner-text>
       <template #actions>
         <v-btn
-          variant="text"
           size="small"
+          variant="text"
           @click="dismissInstallPrompt"
         >
           Not Now
         </v-btn>
         <v-btn
           color="white"
-          variant="elevated"
-          size="small"
           :loading="installing"
+          size="small"
+          variant="elevated"
           @click="handleInstall"
         >
           Install
@@ -76,17 +76,17 @@
       </v-banner-text>
       <template #actions>
         <v-btn
-          variant="text"
           size="small"
-          @click="$emit('dismissUpdate')"
+          variant="text"
+          @click="$emit('dismiss-update')"
         >
           Later
         </v-btn>
         <v-btn
           color="white"
-          variant="elevated"
-          size="small"
           :loading="updating"
+          size="small"
+          variant="elevated"
           @click="handleUpdate"
         >
           Update Now
@@ -97,8 +97,8 @@
     <!-- Offline Ready -->
     <v-snackbar
       v-model="showOfflineReadySnackbar"
-      timeout="4000"
       color="success"
+      timeout="4000"
     >
       App is ready to work offline!
       <template #actions>
@@ -114,8 +114,8 @@
     <!-- Install Success -->
     <v-snackbar
       v-model="showInstallSuccess"
-      timeout="4000"
       color="success"
+      timeout="4000"
     >
       CleanSync installed successfully!
       <template #actions>
@@ -131,92 +131,92 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
-import { usePWA } from '@/composables/shared/usePWA'
+  import { ref, watch } from 'vue'
+  import { usePWA } from '@/composables/shared/usePWA'
 
-// Emits
-interface Emits {
-  (e: 'dismissUpdate'): void
-}
-
-defineEmits<Emits>()
-
-// PWA Composable
-const {
-  isOnline,
-  canInstall,
-  showUpdatePrompt,
-  showOfflineReady,
-  installPWA,
-  updatePWA
-} = usePWA()
-
-// Local state
-const hideInstallPrompt = ref(false)
-const installing = ref(false)
-const updating = ref(false)
-const showOfflineReadySnackbar = ref(false)
-const showInstallSuccess = ref(false)
-
-// Methods
-const checkConnection = () => {
-  // Force check network status
-  window.dispatchEvent(new Event('online'))
-}
-
-const dismissInstallPrompt = () => {
-  hideInstallPrompt.value = true
-  // Store dismissal in localStorage to remember user preference
-  localStorage.setItem('pwa-install-dismissed', Date.now().toString())
-}
-
-const handleInstall = async () => {
-  installing.value = true
-  try {
-    const success = await installPWA()
-    if (success) {
-      showInstallSuccess.value = true
-    }
-  } catch (error) {
-    console.error('Installation failed:', error)
-  } finally {
-    installing.value = false
+  // Emits
+  interface Emits {
+    (e: 'dismiss-update'): void
   }
-}
 
-const handleUpdate = async () => {
-  updating.value = true
-  try {
-    await updatePWA()
-  } catch (error) {
-    console.error('Update failed:', error)
-  } finally {
-    updating.value = false
+  defineEmits<Emits>()
+
+  // PWA Composable
+  const {
+    isOnline,
+    canInstall,
+    showUpdatePrompt,
+    showOfflineReady,
+    installPWA,
+    updatePWA,
+  } = usePWA()
+
+  // Local state
+  const hideInstallPrompt = ref(false)
+  const installing = ref(false)
+  const updating = ref(false)
+  const showOfflineReadySnackbar = ref(false)
+  const showInstallSuccess = ref(false)
+
+  // Methods
+  function checkConnection () {
+    // Force check network status
+    window.dispatchEvent(new Event('online'))
   }
-}
 
-// Watch for offline ready status
-watch(showOfflineReady, (newValue) => {
-  if (newValue) {
-    showOfflineReadySnackbar.value = true
+  function dismissInstallPrompt () {
+    hideInstallPrompt.value = true
+    // Store dismissal in localStorage to remember user preference
+    localStorage.setItem('pwa-install-dismissed', Date.now().toString())
   }
-})
 
-// Check if install prompt was previously dismissed
-const checkInstallDismissal = () => {
-  const dismissed = localStorage.getItem('pwa-install-dismissed')
-  if (dismissed) {
-    const dismissedTime = parseInt(dismissed)
-    const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000)
-    // Re-show prompt after one week
-    if (dismissedTime > oneWeekAgo) {
-      hideInstallPrompt.value = true
+  async function handleInstall () {
+    installing.value = true
+    try {
+      const success = await installPWA()
+      if (success) {
+        showInstallSuccess.value = true
+      }
+    } catch (error) {
+      console.error('Installation failed:', error)
+    } finally {
+      installing.value = false
     }
   }
-}
 
-// Initialize
-checkInstallDismissal()
+  async function handleUpdate () {
+    updating.value = true
+    try {
+      await updatePWA()
+    } catch (error) {
+      console.error('Update failed:', error)
+    } finally {
+      updating.value = false
+    }
+  }
+
+  // Watch for offline ready status
+  watch(showOfflineReady, newValue => {
+    if (newValue) {
+      showOfflineReadySnackbar.value = true
+    }
+  })
+
+  // Check if install prompt was previously dismissed
+  function checkInstallDismissal () {
+    const dismissed = localStorage.getItem('pwa-install-dismissed')
+    if (dismissed) {
+      const dismissedTime = Number.parseInt(dismissed)
+      const oneWeekAgo = Date.now() - (7 * 24 * 60 * 60 * 1000)
+      // Re-show prompt after one week
+      if (dismissedTime > oneWeekAgo) {
+        hideInstallPrompt.value = true
+      }
+    }
+  }
+
+  // Initialize
+  checkInstallDismissal()
 </script>
 
 <style scoped>
@@ -237,4 +237,4 @@ checkInstallDismissal()
   position: relative;
   top: 0;
 }
-</style> 
+</style>

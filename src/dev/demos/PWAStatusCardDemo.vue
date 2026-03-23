@@ -6,9 +6,9 @@
           <v-card-title class="text-h4 text-center py-4">
             PWA Status Card Demo
           </v-card-title>
-          
+
           <v-divider />
-          
+
           <v-card-text>
             <v-row>
               <!-- Development Mode (Always Visible) -->
@@ -24,7 +24,7 @@
                 </p>
                 <PWAStatusCard />
               </v-col>
-              
+
               <!-- Production Mode (Hidden by Default) -->
               <v-col
                 cols="12"
@@ -39,7 +39,7 @@
                 <PWAStatusCard :show-in-production="true" />
               </v-col>
             </v-row>
-            
+
             <!-- Integration Examples -->
             <v-row class="mt-6">
               <v-col cols="12">
@@ -62,16 +62,16 @@
                         Owner Dashboard
                       </v-tab>
                     </v-tabs>
-                    
+
                     <v-window v-model="selectedTab">
                       <v-window-item value="sidebar">
                         <pre class="code-example mt-3"><code>&lt;!-- Add to OwnerSidebar.vue or AdminSidebar.vue --&gt;
 &lt;template&gt;
   &lt;!-- Existing sidebar content --&gt;
-  
+
   &lt;!-- PWA Status (Development Only) --&gt;
   &lt;PWAStatusCard /&gt;
-  
+
   &lt;!-- Rest of sidebar --&gt;
 &lt;/template&gt;
 
@@ -79,15 +79,15 @@
 import PWAStatusCard from '@/components/dumb/shared/PWAStatusCard.vue'
 &lt;/script&gt;</code></pre>
                       </v-window-item>
-                      
+
                       <v-window-item value="admin">
                         <pre class="code-example mt-3"><code>&lt;!-- Add to AdminSidebar.vue for system monitoring --&gt;
 &lt;template&gt;
   &lt;!-- Admin sidebar content --&gt;
-  
+
   &lt;!-- PWA System Status (Show in Production for Admins) --&gt;
   &lt;PWAStatusCard :show-in-production="isAdmin" /&gt;
-  
+
 &lt;/template&gt;
 
 &lt;script setup&gt;
@@ -98,15 +98,15 @@ const authStore = useAuthStore()
 const isAdmin = computed(() =&gt; authStore.isAdmin)
 &lt;/script&gt;</code></pre>
                       </v-window-item>
-                      
+
                       <v-window-item value="owner">
                         <pre class="code-example mt-3"><code>&lt;!-- Add to OwnerSidebar.vue for user debugging --&gt;
 &lt;template&gt;
   &lt;!-- Owner sidebar content --&gt;
-  
+
   &lt;!-- PWA Status (Development Only) --&gt;
   &lt;PWAStatusCard /&gt;
-  
+
 &lt;/template&gt;
 
 &lt;script setup&gt;
@@ -118,13 +118,13 @@ import PWAStatusCard from '@/components/dumb/shared/PWAStatusCard.vue'
                 </v-card>
               </v-col>
             </v-row>
-            
+
             <!-- Usage Notes -->
             <v-row class="mt-4">
               <v-col cols="12">
                 <v-card
-                  variant="outlined"
                   color="info"
+                  variant="outlined"
                 >
                   <v-card-title class="text-h6">
                     <v-icon class="mr-2">
@@ -140,21 +140,21 @@ import PWAStatusCard from '@/components/dumb/shared/PWAStatusCard.vue'
                           Card is always visible for debugging PWA features during development
                         </v-list-item-subtitle>
                       </v-list-item>
-                      
+
                       <v-list-item>
                         <v-list-item-title>Production Mode</v-list-item-title>
                         <v-list-item-subtitle>
                           Card is hidden by default. Use :show-in-production="true" to force display
                         </v-list-item-subtitle>
                       </v-list-item>
-                      
+
                       <v-list-item>
                         <v-list-item-title>Admin Dashboard</v-list-item-title>
                         <v-list-item-subtitle>
                           Useful for system monitoring and troubleshooting PWA issues
                         </v-list-item-subtitle>
                       </v-list-item>
-                      
+
                       <v-list-item>
                         <v-list-item-title>Quick Actions</v-list-item-title>
                         <v-list-item-subtitle>
@@ -174,10 +174,10 @@ import PWAStatusCard from '@/components/dumb/shared/PWAStatusCard.vue'
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import PWAStatusCard from '@/components/dumb/shared/PWAStatusCard.vue'
+  import { ref } from 'vue'
+  import PWAStatusCard from '@/components/dumb/shared/PWAStatusCard.vue'
 
-const selectedTab = ref('sidebar')
+  const selectedTab = ref('sidebar')
 </script>
 
 <style scoped>
@@ -194,4 +194,4 @@ const selectedTab = ref('sidebar')
 .code-example code {
   color: rgb(var(--v-theme-on-surface));
 }
-</style> 
+</style>

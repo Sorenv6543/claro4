@@ -6,5 +6,3 @@ declare global {
   const __BUILD_VERSION__: string
   const __BUILD_TIMESTAMP__: string
 }
-
-export {} 

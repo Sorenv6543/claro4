@@ -21,22 +21,22 @@
       </v-card-subtitle>
       <v-card-text>
         <AdminCalendarControls
-          current-view="dayGridMonth"
-          :current-date="today"
-          :selected-bookings="mockSelectedBookings"
           :cleaners="mockCleaners"
+          :current-date="today"
+          current-view="dayGridMonth"
           :property-owners="mockPropertyOwners"
-          @view-change="log('view-change', $event)"
-          @date-change="log('date-change', $event)"
-          @navigate="log('navigate', $event)"
-          @filter-change="log('filter-change', $event)"
-          @refresh="log('refresh')"
-          @export="log('export', $event)"
-          @print="log('print')"
+          :selected-bookings="mockSelectedBookings"
           @bulk-assign="log('bulk-assign')"
-          @bulk-status-update="log('bulk-status-update')"
           @bulk-delete="log('bulk-delete')"
+          @bulk-status-update="log('bulk-status-update')"
+          @date-change="log('date-change', $event)"
+          @export="log('export', $event)"
+          @filter-change="log('filter-change', $event)"
+          @navigate="log('navigate', $event)"
+          @print="log('print')"
           @real-time-toggle="log('real-time-toggle', $event)"
+          @refresh="log('refresh')"
+          @view-change="log('view-change', $event)"
         />
       </v-card-text>
     </v-card>
@@ -61,8 +61,8 @@
         <BookingDetailsModal
           v-model="showBookingModal"
           :booking="mockBooking"
-          :property="mockProperty"
           :cleaner="null"
+          :property="mockProperty"
           @close="showBookingModal = false"
         />
       </v-card-text>
@@ -80,16 +80,16 @@
       </v-card-subtitle>
       <v-card-text>
         <TurnPriorityPanel
-          :turns="mockTurns"
-          :properties="mockProperties"
           :cleaners="mockCleaners"
+          :properties="mockProperties"
           :property-owners="mockPropertyOwners"
+          :turns="mockTurns"
           @assign-cleaner="log('assign-cleaner', $event)"
-          @view-details="log('view-details', $event)"
-          @escalate="log('escalate', $event)"
           @bulk-assign="log('bulk-assign', $event)"
+          @escalate="log('escalate', $event)"
           @escalate-all="log('escalate-all', $event)"
           @refresh="log('refresh')"
+          @view-details="log('view-details', $event)"
         />
       </v-card-text>
     </v-card>
@@ -142,77 +142,77 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import AdminCalendarControls from '@/components/dumb/admin/AdminCalendarControls.vue'
-import BookingDetailsModal from '@/components/dumb/admin/BookingDetailsModal.vue'
-import TurnPriorityPanel from '@/components/dumb/admin/TurnPriorityPanel.vue'
-import PerformanceMetricsDashboard from '@/components/dumb/admin/PerformanceMetricsDashboard.vue'
-import type { Booking } from '@/types/booking'
-import type { Property } from '@/types/property'
-import type { Cleaner } from '@/types/user'
+  import type { Booking } from '@/types/booking'
+  import type { Property } from '@/types/property'
+  import type { Cleaner } from '@/types/user'
+  import { ref } from 'vue'
+  import AdminCalendarControls from '@/components/dumb/admin/AdminCalendarControls.vue'
+  import BookingDetailsModal from '@/components/dumb/admin/BookingDetailsModal.vue'
+  import PerformanceMetricsDashboard from '@/components/dumb/admin/PerformanceMetricsDashboard.vue'
+  import TurnPriorityPanel from '@/components/dumb/admin/TurnPriorityPanel.vue'
 
-const today = new Date().toISOString().slice(0, 10)
-const showBookingModal = ref(false)
-const eventLog = ref<Array<{ event: string; payload?: unknown }>>([])
+  const today = new Date().toISOString().slice(0, 10)
+  const showBookingModal = ref(false)
+  const eventLog = ref<Array<{ event: string, payload?: unknown }>>([])
 
-const log = (event: string, payload?: unknown) => {
-  eventLog.value.unshift({ event, payload })
-  if (eventLog.value.length > 50) eventLog.value.pop()
-}
+  function log (event: string, payload?: unknown) {
+    eventLog.value.unshift({ event, payload })
+    if (eventLog.value.length > 50) eventLog.value.pop()
+  }
 
-// Mock data
-const mockSelectedBookings = ['b1', 'b2']
+  // Mock data
+  const mockSelectedBookings = ['b1', 'b2']
 
-const mockCleaners: Cleaner[] = [
-  { id: 'c1', name: 'Maria Santos', email: 'maria@example.com', role: 'cleaner', skills: ['Standard Cleaning', 'Deep Cleaning'], max_daily_bookings: 4 },
-  { id: 'c2', name: 'James Wilson', email: 'james@example.com', role: 'cleaner', skills: ['Standard Cleaning'], max_daily_bookings: 3 },
-] as Cleaner[]
+  const mockCleaners: Cleaner[] = [
+    { id: 'c1', name: 'Maria Santos', email: 'maria@example.com', role: 'cleaner', skills: ['Standard Cleaning', 'Deep Cleaning'], max_daily_bookings: 4 },
+    { id: 'c2', name: 'James Wilson', email: 'james@example.com', role: 'cleaner', skills: ['Standard Cleaning'], max_daily_bookings: 3 },
+  ] as Cleaner[]
 
-const mockPropertyOwners = [
-  { id: 'o1', name: 'Alice Johnson' },
-  { id: 'o2', name: 'Bob Smith' },
-]
+  const mockPropertyOwners = [
+    { id: 'o1', name: 'Alice Johnson' },
+    { id: 'o2', name: 'Bob Smith' },
+  ]
 
-const mockProperty: Property = {
-  id: 'p1',
-  owner_id: 'o1',
-  name: 'Sunset Villa',
-  address: '123 Beach Rd',
-  bedrooms: 3,
-  bathrooms: 2,
-  square_feet: 1800,
-  cleaning_duration: 120,
-  pricing_tier: 'premium',
-  active: true,
-} as Property
+  const mockProperty: Property = {
+    id: 'p1',
+    owner_id: 'o1',
+    name: 'Sunset Villa',
+    address: '123 Beach Rd',
+    bedrooms: 3,
+    bathrooms: 2,
+    square_feet: 1800,
+    cleaning_duration: 120,
+    pricing_tier: 'premium',
+    active: true,
+  } as Property
 
-const mockProperties: Property[] = [
-  mockProperty,
-  { ...mockProperty, id: 'p2', name: 'Mountain Retreat', address: '456 Hill St', owner_id: 'o2' },
-]
+  const mockProperties: Property[] = [
+    mockProperty,
+    { ...mockProperty, id: 'p2', name: 'Mountain Retreat', address: '456 Hill St', owner_id: 'o2' },
+  ]
 
-const now = new Date()
-const twoHoursFromNow = new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString()
-const fiveHoursFromNow = new Date(now.getTime() + 5 * 60 * 60 * 1000).toISOString()
-const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString()
+  const now = new Date()
+  const twoHoursFromNow = new Date(now.getTime() + 2 * 60 * 60 * 1000).toISOString()
+  const fiveHoursFromNow = new Date(now.getTime() + 5 * 60 * 60 * 1000).toISOString()
+  const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000).toISOString()
 
-const mockBooking: Booking = {
-  id: 'b1',
-  property_id: 'p1',
-  owner_id: 'o1',
-  checkout_date: today,
-  checkin_date: tomorrow.slice(0, 10),
-  booking_type: 'turn',
-  status: 'pending',
-  guest_count: 4,
-  notes: 'Early checkout requested',
-  assigned_cleaner_id: null,
-  priority: 'high',
-} as Booking
+  const mockBooking: Booking = {
+    id: 'b1',
+    property_id: 'p1',
+    owner_id: 'o1',
+    checkout_date: today,
+    checkin_date: tomorrow.slice(0, 10),
+    booking_type: 'turn',
+    status: 'pending',
+    guest_count: 4,
+    notes: 'Early checkout requested',
+    assigned_cleaner_id: null,
+    priority: 'high',
+  } as Booking
 
-const mockTurns: Booking[] = [
-  { ...mockBooking, id: 't1', checkout_date: twoHoursFromNow, checkin_date: fiveHoursFromNow },
-  { ...mockBooking, id: 't2', checkout_date: fiveHoursFromNow, checkin_date: tomorrow, property_id: 'p2', assigned_cleaner_id: 'c1', priority: 'normal' },
-  { ...mockBooking, id: 't3', checkout_date: tomorrow, checkin_date: tomorrow, property_id: 'p1', priority: 'low' },
-] as Booking[]
+  const mockTurns: Booking[] = [
+    { ...mockBooking, id: 't1', checkout_date: twoHoursFromNow, checkin_date: fiveHoursFromNow },
+    { ...mockBooking, id: 't2', checkout_date: fiveHoursFromNow, checkin_date: tomorrow, property_id: 'p2', assigned_cleaner_id: 'c1', priority: 'normal' },
+    { ...mockBooking, id: 't3', checkout_date: tomorrow, checkin_date: tomorrow, property_id: 'p1', priority: 'low' },
+  ] as Booking[]
 </script>

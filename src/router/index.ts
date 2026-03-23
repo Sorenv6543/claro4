@@ -8,14 +8,11 @@
 // ✅ Applies navigation guards
 
 import { createRouter, createWebHistory } from 'vue-router'
-import { developmentGuard, loadingGuard, authGuard, afterNavigationGuard } from './guards'
+import { afterNavigationGuard, authGuard, developmentGuard, loadingGuard } from './guards'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-
-
-
 
     // Auth routes - only accessible to unauthenticated users
     {
@@ -23,19 +20,17 @@ const router = createRouter({
       name: 'home',
       component: () => import('@/pages/auth/login.vue'),
       meta: {
-        layout: 'auth'
-      }
+        layout: 'auth',
+      },
     },
     {
       path: '/auth/register',
       name: 'register',
       component: () => import('@/pages/auth/register.vue'),
       meta: {
-        layout: 'auth'
-      }
+        layout: 'auth',
+      },
     },
-
-
 
     // Owner routes - only accessible to owner users
     {
@@ -45,12 +40,12 @@ const router = createRouter({
       meta: {
         layout: 'owner',
         role: 'owner',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/owner/calendar',
-      redirect: '/owner/dashboard'
+      redirect: '/owner/dashboard',
     },
     {
       path: '/owner/bookings',
@@ -59,8 +54,8 @@ const router = createRouter({
       meta: {
         layout: 'owner',
         role: 'owner',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/owner/profile',
@@ -69,8 +64,8 @@ const router = createRouter({
       meta: {
         layout: 'owner',
         role: 'owner',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/owner/properties',
@@ -79,8 +74,8 @@ const router = createRouter({
       meta: {
         layout: 'owner',
         role: 'owner',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/owner/properties/:id',
@@ -89,8 +84,8 @@ const router = createRouter({
       meta: {
         layout: 'owner',
         role: 'owner',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/owner/settings',
@@ -99,11 +94,9 @@ const router = createRouter({
       meta: {
         layout: 'owner',
         role: 'owner',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
-
-
 
     // Admin routes - only accessible to admin users
     {
@@ -113,8 +106,8 @@ const router = createRouter({
       meta: {
         layout: 'admin',
         role: 'admin',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/admin/schedule',
@@ -123,8 +116,8 @@ const router = createRouter({
       meta: {
         layout: 'admin',
         role: 'admin',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/admin/properties',
@@ -133,8 +126,8 @@ const router = createRouter({
       meta: {
         layout: 'admin',
         role: 'admin',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/admin/properties/:id',
@@ -143,8 +136,8 @@ const router = createRouter({
       meta: {
         layout: 'admin',
         role: 'admin',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/admin/properties/:id/edit',
@@ -153,8 +146,8 @@ const router = createRouter({
       meta: {
         layout: 'admin',
         role: 'admin',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/admin/bookings',
@@ -163,8 +156,8 @@ const router = createRouter({
       meta: {
         layout: 'admin',
         role: 'admin',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/admin/property-owners',
@@ -173,8 +166,8 @@ const router = createRouter({
       meta: {
         layout: 'admin',
         role: 'admin',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/admin/reports',
@@ -183,8 +176,8 @@ const router = createRouter({
       meta: {
         layout: 'admin',
         role: 'admin',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/admin/cleaners',
@@ -193,8 +186,8 @@ const router = createRouter({
       meta: {
         layout: 'admin',
         role: 'admin',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
     {
       path: '/admin/users',
@@ -203,8 +196,8 @@ const router = createRouter({
       meta: {
         layout: 'admin',
         role: 'admin',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
 
     {
@@ -214,8 +207,8 @@ const router = createRouter({
       meta: {
         layout: 'admin',
         role: 'admin',
-        requiresAuth: true
-      }
+        requiresAuth: true,
+      },
     },
 
     // Dev/demo routes - no auth required, blocked in production
@@ -223,13 +216,13 @@ const router = createRouter({
       path: '/dev/demos',
       name: 'dev-demos',
       component: () => import('@/pages/demos/index.vue'),
-      meta: { layout: 'bare' }
+      meta: { layout: 'bare' },
     },
     {
       path: '/dev/demos/:slug',
       name: 'dev-demo-viewer',
       component: () => import('@/pages/demos/[slug].vue'),
-      meta: { layout: 'bare' }
+      meta: { layout: 'bare' },
     },
 
     // ── AI Component Lab (ui-mockups worktree only) ─────────────────────────
@@ -239,7 +232,7 @@ const router = createRouter({
       component: () => import('@/pages/lab/index.vue'),
       meta: { layout: 'bare', demo: true },
     },
-  ]
+  ],
 })
 
 // Apply navigation guards

@@ -1,4 +1,4 @@
-<!-- 
+<!--
 🎯 ADMIN DATA STORE DEMO
 Showcases the admin data store with system-wide access and analytics
 Based on TASK-072 implementation
@@ -11,26 +11,26 @@ Based on TASK-072 implementation
         <v-card>
           <v-card-title class="d-flex align-center">
             <v-icon
-              icon="mdi-shield-crown"
               class="mr-3"
+              icon="mdi-shield-crown"
             />
             Admin Data Store Demo
             <v-spacer />
             <v-chip
               color="info"
-              variant="tonal"
               size="small"
+              variant="tonal"
             >
               System-Wide Access
             </v-chip>
           </v-card-title>
-          
+
           <v-card-text>
             <v-alert
+              class="mb-4"
+              title="TASK-072: Admin Store-Level Architecture"
               type="info"
               variant="tonal"
-              title="TASK-072: Admin Store-Level Architecture"
-              class="mb-4"
             >
               <p class="mb-2">
                 This demo showcases the admin data store with system-wide access and business analytics.
@@ -64,7 +64,7 @@ Based on TASK-072 implementation
                   </v-card-text>
                 </v-card>
               </v-col>
-              
+
               <v-col
                 cols="12"
                 md="3"
@@ -84,7 +84,7 @@ Based on TASK-072 implementation
                   </v-card-text>
                 </v-card>
               </v-col>
-              
+
               <v-col
                 cols="12"
                 md="3"
@@ -104,7 +104,7 @@ Based on TASK-072 implementation
                   </v-card-text>
                 </v-card>
               </v-col>
-              
+
               <v-col
                 cols="12"
                 md="3"
@@ -132,38 +132,38 @@ Based on TASK-072 implementation
                 <v-card>
                   <v-card-title class="d-flex align-center">
                     <v-icon
-                      icon="mdi-alert-circle"
                       class="mr-2"
+                      icon="mdi-alert-circle"
                     />
                     Critical Alerts ({{ adminData.criticalAlerts.length }})
                   </v-card-title>
-                  
+
                   <v-card-text>
                     <div v-if="adminData.criticalAlerts.length > 0">
                       <v-alert
                         v-for="alert in adminData.criticalAlerts"
                         :key="alert.title"
+                        class="mb-2"
                         :type="alert.type"
                         variant="tonal"
-                        class="mb-2"
                       >
                         <template #prepend>
-                          <v-avatar 
+                          <v-avatar
                             :color="getAlertColor(alert.type)"
                             size="40"
                           >
                             <span class="text-h6">{{ alert.count }}</span>
                           </v-avatar>
                         </template>
-                        
+
                         <v-alert-title>{{ alert.title }}</v-alert-title>
                         <div>{{ alert.message }}</div>
-                        
+
                         <template #append>
                           <v-btn
                             :color="getAlertColor(alert.type)"
-                            variant="outlined"
                             size="small"
+                            variant="outlined"
                             @click="handleAlert(alert.action)"
                           >
                             Take Action
@@ -171,15 +171,15 @@ Based on TASK-072 implementation
                         </template>
                       </v-alert>
                     </div>
-                    
+
                     <v-alert
                       v-else
                       type="success"
                       variant="tonal"
                     >
                       <v-icon
-                        icon="mdi-check-circle"
                         class="mr-2"
+                        icon="mdi-check-circle"
                       />
                       No critical alerts! System is running smoothly.
                     </v-alert>
@@ -194,39 +194,39 @@ Based on TASK-072 implementation
                 <v-card>
                   <v-card-title class="d-flex align-center">
                     <v-icon
-                      icon="mdi-chart-bar"
                       class="mr-2"
+                      icon="mdi-chart-bar"
                     />
                     Owner Performance Analytics
                   </v-card-title>
-                  
+
                   <v-card-text>
                     <v-data-table
-                      :headers="ownerHeaders"
-                      :items="adminData.ownerAnalytics"
-                      item-key="ownerId"
                       class="elevation-1"
+                      :headers="ownerHeaders"
+                      item-key="ownerId"
+                      :items="adminData.ownerAnalytics"
                     >
                       <template #[`item.properties`]="{ item }">
                         <v-chip
-                          size="small"
                           color="primary"
+                          size="small"
                           variant="tonal"
                         >
                           {{ item.properties.length }}
                         </v-chip>
                       </template>
-                      
+
                       <template #[`item.bookings`]="{ item }">
                         <v-chip
-                          size="small"
                           color="success"
+                          size="small"
                           variant="tonal"
                         >
                           {{ item.bookings.length }}
                         </v-chip>
                       </template>
-                      
+
                       <template #[`item.revenue`]="{ item }">
                         <strong>${{ item.revenue.toLocaleString() }}</strong>
                       </template>
@@ -242,12 +242,12 @@ Based on TASK-072 implementation
                 <v-card>
                   <v-card-title class="d-flex align-center">
                     <v-icon
-                      icon="mdi-speedometer"
                       class="mr-2"
+                      icon="mdi-speedometer"
                     />
                     Performance Insights
                   </v-card-title>
-                  
+
                   <v-card-text>
                     <v-row>
                       <v-col
@@ -269,7 +269,7 @@ Based on TASK-072 implementation
                           </v-card-text>
                         </v-card>
                       </v-col>
-                      
+
                       <v-col
                         cols="12"
                         md="3"
@@ -289,7 +289,7 @@ Based on TASK-072 implementation
                           </v-card-text>
                         </v-card>
                       </v-col>
-                      
+
                       <v-col
                         cols="12"
                         md="3"
@@ -309,7 +309,7 @@ Based on TASK-072 implementation
                           </v-card-text>
                         </v-card>
                       </v-col>
-                      
+
                       <v-col
                         cols="12"
                         md="3"
@@ -341,8 +341,8 @@ Based on TASK-072 implementation
                 <v-card>
                   <v-card-title class="d-flex align-center">
                     <v-icon
-                      icon="mdi-home-group"
                       class="mr-2"
+                      icon="mdi-home-group"
                     />
                     All Properties ({{ adminData.allProperties.size }})
                     <v-spacer />
@@ -354,7 +354,7 @@ Based on TASK-072 implementation
                       {{ showAllProperties ? 'Hide' : 'Show' }} Details
                     </v-btn>
                   </v-card-title>
-                  
+
                   <v-expand-transition>
                     <v-card-text v-if="showAllProperties">
                       <v-row>
@@ -362,15 +362,15 @@ Based on TASK-072 implementation
                           v-for="property in adminData.allProperties.slice(0, 6)"
                           :key="property.id"
                           cols="12"
-                          md="6"
                           lg="4"
+                          md="6"
                         >
                           <v-card variant="outlined">
                             <v-card-title class="d-flex align-center">
-                              <v-icon 
-                                :icon="property.active ? 'mdi-home' : 'mdi-home-off'"
-                                :color="property.active ? 'success' : 'grey'"
+                              <v-icon
                                 class="mr-2"
+                                :color="property.active ? 'success' : 'grey'"
+                                :icon="property.active ? 'mdi-home' : 'mdi-home-off'"
                               />
                               {{ property.name }}
                             </v-card-title>
@@ -403,8 +403,8 @@ Based on TASK-072 implementation
                 <v-card>
                   <v-card-title class="d-flex align-center">
                     <v-icon
-                      icon="mdi-calendar-multiple"
                       class="mr-2"
+                      icon="mdi-calendar-multiple"
                     />
                     All Bookings ({{ adminData.allBookings.length }})
                     <v-spacer />
@@ -416,7 +416,7 @@ Based on TASK-072 implementation
                       {{ showAllBookings ? 'Hide' : 'Show' }} Details
                     </v-btn>
                   </v-card-title>
-                  
+
                   <v-expand-transition>
                     <v-card-text v-if="showAllBookings">
                       <v-list>
@@ -425,28 +425,28 @@ Based on TASK-072 implementation
                           :key="booking.id"
                         >
                           <template #prepend>
-                            <v-avatar 
+                            <v-avatar
                               :color="getBookingTypeColor(booking.booking_type)"
                               size="40"
                             >
                               <v-icon :icon="getBookingTypeIcon(booking.booking_type)" />
                             </v-avatar>
                           </template>
-                          
+
                           <v-list-item-title>
                             Property: {{ booking.property_id.substring(0, 8) }}
                           </v-list-item-title>
                           <v-list-item-subtitle>
                             {{ formatDate(booking.checkout_date) }} → {{ formatDate(booking.checkin_date) }}
                           </v-list-item-subtitle>
-                          
+
                           <template #append>
                             <div class="d-flex flex-column align-end">
-                              <v-chip 
+                              <v-chip
+                                class="mb-1"
                                 :color="getStatusColor(booking.status)"
                                 size="small"
                                 variant="tonal"
-                                class="mb-1"
                               >
                                 {{ booking.status }}
                               </v-chip>
@@ -470,69 +470,69 @@ Based on TASK-072 implementation
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useAdminDataStore } from '@/stores/adminData'
+  import { computed, ref } from 'vue'
+  import { useAdminDataStore } from '@/stores/adminData'
 
-// Store
-const adminDataStore = useAdminDataStore()
+  // Store
+  const adminDataStore = useAdminDataStore()
 
-// Local state
-const showAllProperties = ref(false)
-const showAllBookings = ref(false)
+  // Local state
+  const showAllProperties = ref(false)
+  const showAllBookings = ref(false)
 
-// Get admin data from store
-const adminData = computed(() => adminDataStore)
+  // Get admin data from store
+  const adminData = computed(() => adminDataStore)
 
-// Table headers for owner analytics
-const ownerHeaders = [
-  { title: 'Owner ID', value: 'ownerId', key: 'ownerId' },
-  { title: 'Owner Name', value: 'ownerName', key: 'ownerName' },
-  { title: 'Properties', value: 'properties', key: 'properties' },
-  { title: 'Bookings', value: 'bookings', key: 'bookings' },
-  { title: 'Revenue', value: 'revenue', key: 'revenue' }
-]
+  // Table headers for owner analytics
+  const ownerHeaders = [
+    { title: 'Owner ID', value: 'ownerId', key: 'ownerId' },
+    { title: 'Owner Name', value: 'ownerName', key: 'ownerName' },
+    { title: 'Properties', value: 'properties', key: 'properties' },
+    { title: 'Bookings', value: 'bookings', key: 'bookings' },
+    { title: 'Revenue', value: 'revenue', key: 'revenue' },
+  ]
 
-// Methods
-const getAlertColor = (type: string): string => {
-  const colors: Record<string, string> = {
-    warning: 'warning',
-    error: 'error',
-    info: 'info'
+  // Methods
+  function getAlertColor (type: string): string {
+    const colors: Record<string, string> = {
+      warning: 'warning',
+      error: 'error',
+      info: 'info',
+    }
+    return colors[type] || 'grey'
   }
-  return colors[type] || 'grey'
-}
 
-const handleAlert = (action: string) => {
-  console.log('Handle alert action:', action)
+  function handleAlert (action: string) {
+    console.log('Handle alert action:', action)
   // This would navigate to the appropriate admin interface
-}
-
-const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString()
-}
-
-const getBookingTypeColor = (type: string): string => {
-  return type === 'turn' ? 'warning' : 'primary'
-}
-
-const getBookingTypeIcon = (type: string): string => {
-  return type === 'turn' ? 'mdi-swap-horizontal' : 'mdi-calendar-check'
-}
-
-const getStatusColor = (status: string): string => {
-  const colors: Record<string, string> = {
-    pending: 'warning',
-    scheduled: 'info',
-    in_progress: 'primary',
-    completed: 'success',
-    cancelled: 'error'
   }
-  return colors[status] || 'grey'
-}
+
+  function formatDate (dateString: string): string {
+    return new Date(dateString).toLocaleDateString()
+  }
+
+  function getBookingTypeColor (type: string): string {
+    return type === 'turn' ? 'warning' : 'primary'
+  }
+
+  function getBookingTypeIcon (type: string): string {
+    return type === 'turn' ? 'mdi-swap-horizontal' : 'mdi-calendar-check'
+  }
+
+  function getStatusColor (status: string): string {
+    const colors: Record<string, string> = {
+      pending: 'warning',
+      scheduled: 'info',
+      in_progress: 'primary',
+      completed: 'success',
+      cancelled: 'error',
+    }
+    return colors[status] || 'grey'
+  }
 </script>
 
 <style scoped>
 .v-card {
   height: 100%;
 }
-</style> 
+</style>

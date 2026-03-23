@@ -2,8 +2,8 @@
 <template>
   <div>
     <v-menu
-      location="bottom end"
       :close-on-content-click="false"
+      location="bottom end"
       min-width="300"
     >
       <template #activator="{ props: menuProps }">
@@ -27,7 +27,7 @@
           Select Theme
         </v-card-title>
         <v-divider />
-        
+
         <v-card-text class="pt-4">
           <div class="text-subtitle-2 mb-2">
             Light Themes
@@ -39,32 +39,32 @@
               cols="3"
             >
               <v-tooltip
-                :text="themeOption.label"
                 location="bottom"
+                :text="themeOption.label"
               >
                 <template #activator="{ props: tooltipProps }">
                   <v-card
                     v-bind="tooltipProps"
-                    :color="themeOption.color"
-                    height="40"
-                    width="40"
                     class="mx-auto theme-swatch"
                     :class="{ 'theme-swatch-active': currentTheme === themeOption.name }"
+                    :color="themeOption.color"
                     elevation="2"
+                    height="40"
+                    width="40"
                     @click="setTheme(themeOption.name)"
                   >
                     <v-icon
                       v-if="currentTheme === themeOption.name"
-                      icon="mdi-check"
                       class="theme-swatch-icon"
                       color="white"
+                      icon="mdi-check"
                     />
                   </v-card>
                 </template>
               </v-tooltip>
             </v-col>
           </v-row>
-          
+
           <div class="text-subtitle-2 mb-2 mt-4">
             Dark Themes
           </div>
@@ -75,25 +75,25 @@
               cols="3"
             >
               <v-tooltip
-                :text="themeOption.label"
                 location="bottom"
+                :text="themeOption.label"
               >
                 <template #activator="{ props: tooltipProps }">
                   <v-card
                     v-bind="tooltipProps"
-                    :color="themeOption.color"
-                    height="40"
-                    width="40"
                     class="mx-auto theme-swatch"
                     :class="{ 'theme-swatch-active': currentTheme === themeOption.name }"
+                    :color="themeOption.color"
                     elevation="2"
+                    height="40"
+                    width="40"
                     @click="setTheme(themeOption.name)"
                   >
                     <v-icon
                       v-if="currentTheme === themeOption.name"
-                      icon="mdi-check"
                       class="theme-swatch-icon"
                       color="white"
+                      icon="mdi-check"
                     />
                   </v-card>
                 </template>
@@ -107,53 +107,53 @@
 </template>
 
 <script setup lang="ts">
-import { useTheme } from 'vuetify';
-import { computed, onMounted } from 'vue';
+  import { computed, onMounted } from 'vue'
+  import { useTheme } from 'vuetify'
 
-// Access the Vuetify theme
-const theme = useTheme();
+  // Access the Vuetify theme
+  const theme = useTheme()
 
-// Computed property for the current theme name
-const currentTheme = computed(() => theme.global.name.value);
+  // Computed property for the current theme name
+  const currentTheme = computed(() => theme.global.name.value)
 
-// Light theme options
-const lightThemes = [
-  { name: 'light', label: 'Classic Blue', color: '#2196F3' },
-  { name: 'green', label: 'Nature Green', color: '#4CAF50' },
-  { name: 'purple', label: 'Royal Purple', color: '#9C27B0' },
-  { name: 'orange', label: 'Warm Orange', color: '#FF5722' },
-  { name: 'teal', label: 'Ocean Teal', color: '#009688' },
-  { name: 'red', label: 'Bold Red', color: '#F44336' },
-  { name: 'brown', label: 'Earthy Brown', color: '#795548' }
-];
+  // Light theme options
+  const lightThemes = [
+    { name: 'light', label: 'Classic Blue', color: '#2196F3' },
+    { name: 'green', label: 'Nature Green', color: '#4CAF50' },
+    { name: 'purple', label: 'Royal Purple', color: '#9C27B0' },
+    { name: 'orange', label: 'Warm Orange', color: '#FF5722' },
+    { name: 'teal', label: 'Ocean Teal', color: '#009688' },
+    { name: 'red', label: 'Bold Red', color: '#F44336' },
+    { name: 'brown', label: 'Earthy Brown', color: '#795548' },
+  ]
 
-// Dark theme options
-const darkThemes = [
-  { name: 'dark', label: 'Classic Dark', color: '#1E1E1E' },
-  { name: 'darkGreen', label: 'Dark Green', color: '#1E392A' },
-  { name: 'darkPurple', label: 'Dark Purple', color: '#311B92' },
-  { name: 'darkOrange', label: 'Dark Orange', color: '#3E2723' },
-  { name: 'darkTeal', label: 'Dark Teal', color: '#004D40' },
-  { name: 'darkRed', label: 'Dark Red', color: '#B71C1C' },
-  { name: 'darkBrown', label: 'Dark Brown', color: '#3E2723' }
-];
+  // Dark theme options
+  const darkThemes = [
+    { name: 'dark', label: 'Classic Dark', color: '#1E1E1E' },
+    { name: 'darkGreen', label: 'Dark Green', color: '#1E392A' },
+    { name: 'darkPurple', label: 'Dark Purple', color: '#311B92' },
+    { name: 'darkOrange', label: 'Dark Orange', color: '#3E2723' },
+    { name: 'darkTeal', label: 'Dark Teal', color: '#004D40' },
+    { name: 'darkRed', label: 'Dark Red', color: '#B71C1C' },
+    { name: 'darkBrown', label: 'Dark Brown', color: '#3E2723' },
+  ]
 
-// Cache the theme preference in localStorage
-const THEME_STORAGE_KEY = 'property-scheduler-theme';
+  // Cache the theme preference in localStorage
+  const THEME_STORAGE_KEY = 'property-scheduler-theme'
 
-// Function to set the theme
-const setTheme = (themeName: string) => {
-  theme.global.name.value = themeName;
-  localStorage.setItem(THEME_STORAGE_KEY, themeName);
-};
-
-// Load saved theme on component mount
-onMounted(() => {
-  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY);
-  if (savedTheme) {
-    theme.global.name.value = savedTheme;
+  // Function to set the theme
+  function setTheme (themeName: string) {
+    theme.global.name.value = themeName
+    localStorage.setItem(THEME_STORAGE_KEY, themeName)
   }
-});
+
+  // Load saved theme on component mount
+  onMounted(() => {
+    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
+    if (savedTheme) {
+      theme.global.name.value = savedTheme
+    }
+  })
 </script>
 
 <style scoped>
@@ -180,4 +180,4 @@ onMounted(() => {
   transform: translate(-50%, -50%);
   font-size: 16px !important;
 }
-</style> 
+</style>

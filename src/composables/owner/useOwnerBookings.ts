@@ -41,7 +41,9 @@ function useOwnerBookingsPinia () {
      * Get all bookings for the current owner only
      */
   const myBookings = computed((): Booking[] => {
-    if (!currentUserId.value) return []
+    if (!currentUserId.value) {
+      return []
+    }
     return Array.from(bookingStore.bookings.values())
       .filter(booking => booking.owner_id === currentUserId.value)
   })
@@ -50,7 +52,9 @@ function useOwnerBookingsPinia () {
      * Get current owner's properties only
      */
   const myProperties = computed((): Property[] => {
-    if (!currentUserId.value) return []
+    if (!currentUserId.value) {
+      return []
+    }
     return Array.from(propertyStore.properties.values())
       .filter(property => property.owner_id === currentUserId.value)
   })
@@ -59,7 +63,9 @@ function useOwnerBookingsPinia () {
      * Get today's turn bookings for current owner only
      */
   const myTodayTurns = computed(() => {
-    if (!currentUserId.value) return []
+    if (!currentUserId.value) {
+      return []
+    }
     const today = new Date().toISOString().split('T')[0]
     return myBookings.value.filter(booking =>
       booking.booking_type === 'turn'
@@ -88,7 +94,7 @@ function useOwnerBookingsPinia () {
             && checkoutDate <= nextWeek
             && booking.status !== 'completed'
         })
-        .sort((a: Booking, b: Booking) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
+        .toSorted((a: Booking, b: Booking) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
 
       trackCachePerformance('owner-upcoming-cleanings', upcoming.length > 0)
       return upcoming
@@ -370,7 +376,7 @@ function useOwnerBookingsPinia () {
         // Show turns that are within 6 hours or overdue
         return hoursUntil <= 6
       })
-      .sort((a: Booking, b: Booking) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
+      .toSorted((a: Booking, b: Booking) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
   }
 
   /**

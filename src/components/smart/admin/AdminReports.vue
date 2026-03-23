@@ -32,8 +32,8 @@
         <v-row class="mb-6">
           <v-col
             cols="12"
-            sm="6"
             md="3"
+            sm="6"
           >
             <v-card class="metric-card">
               <v-card-text>
@@ -59,8 +59,8 @@
 
           <v-col
             cols="12"
-            sm="6"
             md="3"
+            sm="6"
           >
             <v-card class="metric-card">
               <v-card-text>
@@ -86,8 +86,8 @@
 
           <v-col
             cols="12"
-            sm="6"
             md="3"
+            sm="6"
           >
             <v-card class="metric-card">
               <v-card-text>
@@ -113,8 +113,8 @@
 
           <v-col
             cols="12"
-            sm="6"
             md="3"
+            sm="6"
           >
             <v-card class="metric-card">
               <v-card-text>
@@ -147,8 +147,8 @@
               <v-card-text>
                 <div class="chart-placeholder">
                   <v-icon
-                    size="64"
                     color="grey-lighten-2"
+                    size="64"
                   >
                     mdi-chart-line
                   </v-icon>
@@ -178,8 +178,8 @@
                   class="text-center py-4"
                 >
                   <v-icon
-                    size="48"
                     color="grey-lighten-1"
+                    size="48"
                   >
                     mdi-home-search
                   </v-icon>
@@ -222,8 +222,8 @@
                   class="text-center py-4"
                 >
                   <v-icon
-                    size="48"
                     color="grey-lighten-1"
+                    size="48"
                   >
                     mdi-account-search
                   </v-icon>
@@ -260,59 +260,59 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useAdminBookings } from '@/composables/admin/useAdminBookings'
-import { useAdminProperties } from '@/composables/admin/useAdminProperties'
-import { formatPropertyAddress } from '@/types/property'
-import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
+  import { computed } from 'vue'
+  import { useAdminBookings } from '@/composables/admin/useAdminBookings'
+  import { useAdminProperties } from '@/composables/admin/useAdminProperties'
+  import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
+  import { formatPropertyAddress } from '@/types/property'
 
-// Composables
-const { allBookings } = useAdminBookings()
-const { allProperties } = useAdminProperties()
-const { availableCleaners } = useCleanerManagement()
+  // Composables
+  const { allBookings } = useAdminBookings()
+  const { allProperties } = useAdminProperties()
+  const { availableCleaners } = useCleanerManagement()
 
-// Computed metrics
-const metrics = computed(() => {
-  const completedBookings = allBookings.value.filter(b => b.status === 'completed')
+  // Computed metrics
+  const metrics = computed(() => {
+    const completedBookings = allBookings.value.filter(b => b.status === 'completed')
 
-  return {
-    totalRevenue: '$' + (completedBookings.length * 150).toLocaleString(),
-    completedBookings: completedBookings.length,
-    averageRating: '4.8',
-    activeCleaners: availableCleaners.value.length
+    return {
+      totalRevenue: '$' + (completedBookings.length * 150).toLocaleString(),
+      completedBookings: completedBookings.length,
+      averageRating: '4.8',
+      activeCleaners: availableCleaners.value.length,
+    }
+  })
+
+  const topProperties = computed(() => {
+    return allProperties.value.slice(0, 5).map(property => {
+      const propertyBookings = allBookings.value.filter(b => b.property_id === property.id)
+      const completedBookings = propertyBookings.filter(b => b.status === 'completed')
+
+      return {
+        name: formatPropertyAddress(property, 'short'),
+        revenue: completedBookings.length * 150,
+        bookings: completedBookings.length,
+      }
+    })
+  })
+
+  const topCleaners = computed(() => {
+    return availableCleaners.value.slice(0, 5).map(cleaner => {
+      const cleanerBookings = allBookings.value.filter(b => b.assigned_cleaner_id === cleaner.id)
+      const completedBookings = cleanerBookings.filter(b => b.status === 'completed')
+
+      return {
+        name: cleaner.name,
+        completed: completedBookings.length,
+        rating: '4.8',
+      }
+    })
+  })
+
+  // Methods
+  function exportReport () {
+    console.log('Exporting report...')
   }
-})
-
-const topProperties = computed(() => {
-  return allProperties.value.slice(0, 5).map(property => {
-    const propertyBookings = allBookings.value.filter(b => b.property_id === property.id)
-    const completedBookings = propertyBookings.filter(b => b.status === 'completed')
-
-    return {
-      name: formatPropertyAddress(property, 'short'),
-      revenue: completedBookings.length * 150,
-      bookings: completedBookings.length
-    }
-  })
-})
-
-const topCleaners = computed(() => {
-  return availableCleaners.value.slice(0, 5).map(cleaner => {
-    const cleanerBookings = allBookings.value.filter(b => b.assigned_cleaner_id === cleaner.id)
-    const completedBookings = cleanerBookings.filter(b => b.status === 'completed')
-
-    return {
-      name: cleaner.name,
-      completed: completedBookings.length,
-      rating: '4.8'
-    }
-  })
-})
-
-// Methods
-const exportReport = () => {
-  console.log('Exporting report...')
-}
 </script>
 
 <style scoped>

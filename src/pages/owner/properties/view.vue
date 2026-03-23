@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import OwnerPropertyView from '@/components/smart/owner/OwnerPropertyView.vue'
+  import OwnerPropertyView from '@/components/smart/owner/OwnerPropertyView.vue'
 
-defineOptions({ name: 'OwnerPropertyViewPage' })
+  defineOptions({ name: 'OwnerPropertyViewPage' })
 </script>

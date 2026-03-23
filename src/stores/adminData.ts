@@ -1,15 +1,15 @@
+import type { Booking, Property } from '@/types'
 // src/stores/adminData.ts - Admin-specific data store for system-wide access
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import { usePropertyStore } from '@/stores/property'
 import { useBookingStore } from '@/stores/booking'
-import { 
+import { usePropertyStore } from '@/stores/property'
+import {
   calculateSystemMetrics,
-  getUrgentTurns,
+  getRecentBookings,
   getUpcomingBookings,
-  getRecentBookings
+  getUrgentTurns,
 } from '@/utils/businessLogic'
-import type { Property, Booking } from '@/types'
 
 // Admin data store for system-wide access
 export const useAdminDataStore = defineStore('adminData', () => {
@@ -21,7 +21,7 @@ export const useAdminDataStore = defineStore('adminData', () => {
   const cacheTimestamp = ref(0)
   const cachedOwnerAnalytics = ref<OwnerStats[]>([])
   const cachedAlerts = ref<Alert[]>([])
-  const CACHE_TTL = 15000 // 15 seconds for admin calculations
+  const CACHE_TTL = 15_000 // 15 seconds for admin calculations
 
   // Cache management
   const isCacheValid = computed(() => {
@@ -56,12 +56,12 @@ export const useAdminDataStore = defineStore('adminData', () => {
   const systemMetrics = computed(() => {
     // Use extracted utility function to eliminate duplication
     const baseMetrics = calculateSystemMetrics(allProperties.value, allBookings.value)
-    
+
     // Add admin-specific revenue calculation when available
     return {
       ...baseMetrics,
       totalRevenue: 0, // Will be calculated when amount field exists
-      thisMonthRevenue: 0 // Will be calculated when amount field exists
+      thisMonthRevenue: 0, // Will be calculated when amount field exists
     }
   })
 
@@ -94,9 +94,9 @@ export const useAdminDataStore = defineStore('adminData', () => {
     }
 
     const ownerStats = new Map<string, OwnerStats>()
-    
+
     // Efficient Map iteration for properties
-    allProperties.value.forEach((property: Property) => {
+    for (const property of allProperties.value.values()) {
       const ownerId = property.owner_id
       if (!ownerStats.has(ownerId)) {
         ownerStats.set(ownerId, {
@@ -105,14 +105,14 @@ export const useAdminDataStore = defineStore('adminData', () => {
           properties: [],
           bookings: [],
           revenue: 0,
-          avgOccupancy: 0
+          avgOccupancy: 0,
         })
       }
       ownerStats.get(ownerId)!.properties.push(property)
-    })
+    }
 
     // Efficient Map iteration for bookings
-    allBookings.value.forEach((booking: Booking) => {
+    for (const booking of allBookings.value.values()) {
       const ownerId = booking.owner_id
       if (ownerStats.has(ownerId)) {
         const stats = ownerStats.get(ownerId)!
@@ -122,7 +122,7 @@ export const useAdminDataStore = defineStore('adminData', () => {
         //   stats.revenue += booking.amount || 0
         // }
       }
-    })
+    }
 
     const result = Array.from(ownerStats.values())
     cachedOwnerAnalytics.value = result
@@ -155,21 +155,21 @@ export const useAdminDataStore = defineStore('adminData', () => {
     let overdueCount = 0
     const propertyBookingCounts = new Map<string, number>()
 
-    allBookings.value.forEach(booking => {
+    for (const booking of allBookings.value.values()) {
       const checkoutDate = new Date(booking.checkout_date)
       const checkinDate = new Date(booking.checkin_date)
 
       // Count unassigned cleanings
-      if (!booking.assigned_cleaner_id && // Note: using assigned_cleaner_id from Booking interface
-          booking.status === 'pending' &&
-          checkoutDate <= twentyFourHours) {
+      if (!booking.assigned_cleaner_id // Note: using assigned_cleaner_id from Booking interface
+        && booking.status === 'pending'
+        && checkoutDate <= twentyFourHours) {
         unassignedCount++
       }
 
       // Count overdue turns
-      if (booking.booking_type === 'turn' &&
-          booking.status === 'pending' &&
-          checkoutDate < now) {
+      if (booking.booking_type === 'turn'
+        && booking.status === 'pending'
+        && checkoutDate < now) {
         overdueCount++
       }
 
@@ -178,15 +178,15 @@ export const useAdminDataStore = defineStore('adminData', () => {
         const currentCount = propertyBookingCounts.get(booking.property_id) || 0
         propertyBookingCounts.set(booking.property_id, currentCount + 1)
       }
-    })
+    }
 
     // Count inactive properties efficiently
     let inactivePropertiesCount = 0
-    allProperties.value.forEach((property: Property) => {
+    for (const property of allProperties.value.values()) {
       if (property.active && !propertyBookingCounts.has(property.id)) {
         inactivePropertiesCount++
       }
-    })
+    }
 
     // Generate alerts based on counts
     if (unassignedCount > 0) {
@@ -195,7 +195,7 @@ export const useAdminDataStore = defineStore('adminData', () => {
         title: 'Unassigned Cleanings',
         message: `${unassignedCount} cleanings need cleaner assignment`,
         count: unassignedCount,
-        action: 'assign-cleaners'
+        action: 'assign-cleaners',
       })
     }
 
@@ -205,7 +205,7 @@ export const useAdminDataStore = defineStore('adminData', () => {
         title: 'Overdue Turns',
         message: `${overdueCount} turns are overdue`,
         count: overdueCount,
-        action: 'urgent-turns'
+        action: 'urgent-turns',
       })
     }
 
@@ -215,7 +215,7 @@ export const useAdminDataStore = defineStore('adminData', () => {
         title: 'Inactive Properties',
         message: `${inactivePropertiesCount} properties have no recent bookings`,
         count: inactivePropertiesCount,
-        action: 'review-properties'
+        action: 'review-properties',
       })
     }
 
@@ -235,23 +235,25 @@ export const useAdminDataStore = defineStore('adminData', () => {
     let completedBookings = 0
 
     // Count properties efficiently
-    properties.forEach(() => totalProperties++)
+    for (const _property of properties.values()) {
+      totalProperties++
+    }
 
     // Single pass through bookings for all metrics
-    bookings.forEach((booking: Booking) => {
+    for (const booking of bookings.values()) {
       totalBookings++
-      
+
       if (booking.booking_type === 'turn') {
         turnBookings++
       }
-      
+
       if (booking.status === 'completed') {
         completedBookings++
       }
-    })
+    }
 
     return {
-      avgBookingsPerProperty: totalProperties > 0 
+      avgBookingsPerProperty: totalProperties > 0
         ? Math.round((recentBookings.size / totalProperties) * 100) / 100
         : 0,
       turnPercentage: totalBookings > 0
@@ -260,7 +262,7 @@ export const useAdminDataStore = defineStore('adminData', () => {
       completionRate: totalBookings > 0
         ? Math.round((completedBookings / totalBookings) * 100)
         : 0,
-      avgRevenue: 0 // Will be calculated when amount field exists
+      avgRevenue: 0, // Will be calculated when amount field exists
     }
   })
 
@@ -277,23 +279,23 @@ export const useAdminDataStore = defineStore('adminData', () => {
     // System data - Map references for O(1) performance
     allProperties,
     allBookings,
-    
+
     // Pre-computed Maps using business logic
     urgentTurnsMap,
     upcomingBookingsMap,
     recentBookingsMap,
-    
+
     // Array getters for UI components that need arrays
     allPropertiesArray,
     allBookingsArray,
-    
+
     // Business intelligence
     systemMetrics,
     ownerAnalytics,
     criticalAlerts,
     performanceInsights,
-    
+
     // Cache management
-    invalidateCache
+    invalidateCache,
   }
-}) 
+})

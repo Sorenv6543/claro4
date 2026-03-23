@@ -1,15 +1,15 @@
+import type { Booking, Property } from '@/types'
 // src/stores/ownerData.ts - Owner-specific data store with caching
 import { defineStore } from 'pinia'
-import { ref, computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { usePropertyStore } from '@/stores/property'
 import { useBookingStore } from '@/stores/booking'
-import { 
-  getUrgentTurns,
+import { usePropertyStore } from '@/stores/property'
+import {
+  getRecentBookings,
   getUpcomingBookings,
-  getRecentBookings
+  getUrgentTurns,
 } from '@/utils/businessLogic'
-import type { Property, Booking } from '@/types'
 
 export const useOwnerDataStore = defineStore('ownerData', () => {
   // Dependencies
@@ -22,14 +22,14 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
   const cachedProperties = ref<Property[]>([])
   const cachedBookings = ref<Booking[]>([])
   const cacheTimestamp = ref<number>(0)
-  const CACHE_TTL = 30000 // 30 seconds
+  const CACHE_TTL = 30_000 // 30 seconds
 
   // Cache management
   const isCacheValid = computed(() => {
     const now = Date.now()
     return (
-      lastOwnerId.value === authStore.user?.id &&
-      (now - cacheTimestamp.value) < CACHE_TTL
+      lastOwnerId.value === authStore.user?.id
+      && (now - cacheTimestamp.value) < CACHE_TTL
     )
   })
 
@@ -42,34 +42,40 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
 
   // Core owner data getters with caching (maintaining Map structure for O(1) performance)
   const ownerPropertiesMap = computed((): Map<string, Property> => {
-    if (!authStore.user?.id) return new Map()
+    if (!authStore.user?.id) {
+      return new Map()
+    }
 
     const filtered = new Map<string, Property>()
-    propertyStore.properties.forEach((property: Property, id: string) => {
+    for (const [id, property] of propertyStore.properties) {
       if (property.owner_id === authStore.user?.id) {
         filtered.set(id, property)
       }
-    })
+    }
 
     return filtered
   })
 
   const ownerBookingsMap = computed((): Map<string, Booking> => {
-    if (!authStore.user?.id) return new Map()
+    if (!authStore.user?.id) {
+      return new Map()
+    }
 
     const filtered = new Map<string, Booking>()
-    bookingStore.bookings.forEach((booking: Booking, id: string) => {
+    for (const [id, booking] of bookingStore.bookings) {
       if (booking.owner_id === authStore.user?.id) {
         filtered.set(id, booking)
       }
-    })
+    }
 
     return filtered
   })
 
   // Array getters for components that need arrays (cached for performance)
   const ownerProperties = computed((): Property[] => {
-    if (!authStore.user?.id) return []
+    if (!authStore.user?.id) {
+      return []
+    }
 
     // Return cached data if valid
     if (isCacheValid.value && cachedProperties.value.length > 0) {
@@ -78,11 +84,11 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
 
     // Filter and cache new data efficiently
     const filtered: Property[] = []
-    propertyStore.properties.forEach((property: Property) => {
+    for (const property of propertyStore.properties.values()) {
       if (property.owner_id === authStore.user?.id) {
         filtered.push(property)
       }
-    })
+    }
 
     cachedProperties.value = filtered
     lastOwnerId.value = authStore.user.id
@@ -92,7 +98,9 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
   })
 
   const ownerBookings = computed((): Booking[] => {
-    if (!authStore.user?.id) return []
+    if (!authStore.user?.id) {
+      return []
+    }
 
     // Return cached data if valid for bookings
     if (isCacheValid.value && cachedBookings.value.length > 0) {
@@ -101,11 +109,11 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
 
     // Filter and cache new data efficiently
     const filtered: Booking[] = []
-    bookingStore.bookings.forEach((booking: Booking) => {
+    for (const booking of bookingStore.bookings.values()) {
       if (booking.owner_id === authStore.user?.id) {
         filtered.push(booking)
       }
-    })
+    }
 
     cachedBookings.value = filtered
     return filtered
@@ -114,11 +122,11 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
   // Derived owner data using Maps and business logic utilities
   const activePropertiesMap = computed((): Map<string, Property> => {
     const activeMap = new Map<string, Property>()
-    ownerPropertiesMap.value.forEach((property: Property, id: string) => {
+    for (const [id, property] of ownerPropertiesMap.value) {
       if (property.active) {
         activeMap.set(id, property)
       }
-    })
+    }
     return activeMap
   })
 
@@ -141,8 +149,8 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
 
   const recentBookings = computed((): Booking[] => {
     return Array.from(recentBookingsMap.value.values())
-      .sort((a, b) => 
-        new Date(b.checkout_date).getTime() - new Date(a.checkout_date).getTime()
+      .toSorted((a, b) =>
+        new Date(b.checkout_date).getTime() - new Date(a.checkout_date).getTime(),
       )
   })
 
@@ -157,14 +165,14 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
   const todayBookingsMap = computed((): Map<string, Booking> => {
     const today = new Date().toISOString().split('T')[0]
     const todayMap = new Map<string, Booking>()
-    
-    ownerBookingsMap.value.forEach((booking: Booking, id: string) => {
-      if (booking.checkout_date.startsWith(today) ||
-          booking.checkin_date.startsWith(today)) {
+
+    for (const [id, booking] of ownerBookingsMap.value) {
+      if (booking.checkout_date.startsWith(today)
+        || booking.checkin_date.startsWith(today)) {
         todayMap.set(id, booking)
       }
-    })
-    
+    }
+
     return todayMap
   })
 
@@ -175,11 +183,11 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
   // Property-specific helpers using Maps
   const getPropertyBookingsMap = (propertyId: string): Map<string, Booking> => {
     const propertyBookings = new Map<string, Booking>()
-    ownerBookingsMap.value.forEach((booking, id) => {
+    for (const [id, booking] of ownerBookingsMap.value.entries()) {
       if (booking.property_id === propertyId) {
         propertyBookings.set(id, booking)
       }
-    })
+    }
     return propertyBookings
   }
 
@@ -191,39 +199,41 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
     const bookingsMap = getPropertyBookingsMap(propertyId)
     const thisMonth = new Date()
     thisMonth.setDate(1)
-    
+
     let thisMonthCount = 0
-    bookingsMap.forEach(booking => {
+    for (const booking of bookingsMap.values()) {
       if (new Date(booking.checkin_date) >= thisMonth) {
         thisMonthCount++
       }
-    })
+    }
 
     return {
       totalBookings: bookingsMap.size,
       thisMonthBookings: thisMonthCount,
       avgNightly: 0, // Will be implemented when booking pricing is added
-      occupancyRate: calculateOccupancyRate(propertyId)
+      occupancyRate: calculateOccupancyRate(propertyId),
     }
   }
 
   const calculateOccupancyRate = (propertyId: string): number => {
     const bookingsMap = getPropertyBookingsMap(propertyId)
-    if (bookingsMap.size === 0) return 0
+    if (bookingsMap.size === 0) {
+      return 0
+    }
 
     const now = new Date()
     const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1)
     const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
-    
+
     let bookedDays = 0
-    bookingsMap.forEach(booking => {
+    for (const booking of bookingsMap.values()) {
       const checkin = new Date(booking.checkin_date)
       const checkout = new Date(booking.checkout_date)
-      
+
       if (checkin >= lastMonth && checkout <= thisMonth) {
         bookedDays += Math.ceil((checkout.getTime() - checkin.getTime()) / (1000 * 60 * 60 * 24))
       }
-    })
+    }
 
     const totalDays = Math.ceil((thisMonth.getTime() - lastMonth.getTime()) / (1000 * 60 * 60 * 24))
     return Math.round((bookedDays / totalDays) * 100)
@@ -237,7 +247,7 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
     upcomingBookingsCount: upcomingBookingsMap.value.size,
     urgentTurnsCount: urgentTurnsMap.value.size,
     totalRevenue: 0, // Revenue tracking will be implemented when booking pricing is added
-    thisMonthRevenue: 0 // Revenue tracking will be implemented when booking pricing is added
+    thisMonthRevenue: 0, // Revenue tracking will be implemented when booking pricing is added
   }))
 
   // Actions
@@ -246,7 +256,7 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
     // Force refresh of base stores
     await Promise.allSettled([
       propertyStore.fetchProperties?.() || Promise.resolve(),
-      bookingStore.fetchBookings?.() || Promise.resolve()
+      bookingStore.fetchBookings?.() || Promise.resolve(),
     ])
   }
 
@@ -259,7 +269,7 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
     const newProperty = {
       ...propertyData,
       id,
-      owner_id: authStore.user.id
+      owner_id: authStore.user.id,
     } as Property
 
     propertyStore.addProperty(newProperty)
@@ -276,7 +286,7 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
     const newBooking = {
       ...bookingData,
       id,
-      owner_id: authStore.user.id
+      owner_id: authStore.user.id,
     } as Booking
 
     bookingStore.addBooking(newBooking)
@@ -285,7 +295,7 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
   }
 
   // Watch for auth changes to invalidate cache
-  authStore.$subscribe((mutation) => {
+  authStore.$subscribe(mutation => {
     if (mutation.storeId === 'auth' && authStore.user?.id !== lastOwnerId.value) {
       invalidateCache()
     }
@@ -309,7 +319,7 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
     recentBookingsMap,
     urgentTurnsMap,
     todayBookingsMap,
-    
+
     // Array getters for UI components that need arrays
     ownerProperties,
     ownerBookings,
@@ -319,21 +329,20 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
     urgentTurns,
     todayBookings,
     stats,
-    
+
     // Helpers - Map-based
     getPropertyBookingsMap,
     getPropertyBookings,
     getPropertyStats,
-    
+
     // Actions
     refreshOwnerData,
     createOwnerProperty,
     createOwnerBooking,
     invalidateCache,
-    
+
     // Cache info (for debugging)
     isCacheValid,
-    cacheTimestamp: computed(() => cacheTimestamp.value)
+    cacheTimestamp: computed(() => cacheTimestamp.value),
   }
 })
-

@@ -2,19 +2,19 @@
 <template>
   <v-container class="fill-height">
     <v-row
-      justify="center"
       align="center"
+      justify="center"
     >
       <v-col
         cols="12"
-        sm="10"
-        md="8"
         lg="6"
+        md="8"
+        sm="10"
         xl="4"
       >
         <v-card
-          elevation="8"
           class="pa-6"
+          elevation="8"
         >
           <!-- Header -->
           <v-card-title class="text-h4 text-center mb-2">
@@ -27,35 +27,35 @@
             </v-icon>
             Create Account
           </v-card-title>
-          
+
           <v-card-subtitle class="text-center mb-6">
             Join Property Cleaning Scheduler
           </v-card-subtitle>
-          
+
           <!-- Error Alert -->
           <v-alert
             v-if="authStore.error"
-            type="error"
-            variant="tonal"
             class="mb-4"
             closable
+            type="error"
+            variant="tonal"
             @click:close="authStore.clearError()"
           >
             {{ authStore.error }}
           </v-alert>
-          
+
           <!-- Success Alert -->
           <v-alert
             v-if="successMessage"
-            type="success"
-            variant="tonal"
             class="mb-4"
             closable
+            type="success"
+            variant="tonal"
             @click:close="successMessage = ''"
           >
             {{ successMessage }}
           </v-alert>
-          
+
           <!-- Registration Form -->
           <v-form
             ref="registerForm"
@@ -68,14 +68,14 @@
               </v-label>
               <v-radio-group
                 v-model="selectedRole"
-                :rules="roleRules"
                 class="mt-2"
+                :rules="roleRules"
               >
                 <v-radio
                   v-for="role in availableRoles"
                   :key="role.value"
-                  :value="role.value"
                   class="mb-2"
+                  :value="role.value"
                 >
                   <template #label>
                     <div class="ml-2">
@@ -90,99 +90,99 @@
                 </v-radio>
               </v-radio-group>
             </div>
-            
+
             <!-- Personal Information -->
             <v-text-field
               v-model="name"
-              label="Full Name"
               autocomplete="name"
-              prepend-inner-icon="mdi-account"
-              variant="outlined"
-              :rules="nameRules"
-              :disabled="authStore.loading"
               class="mb-3"
+              :disabled="authStore.loading"
+              label="Full Name"
+              prepend-inner-icon="mdi-account"
               required
+              :rules="nameRules"
+              variant="outlined"
             />
-            
+
             <v-text-field
               v-model="email"
-              label="Email Address"
-              type="email"
               autocomplete="email"
-              prepend-inner-icon="mdi-email"
-              variant="outlined"
-              :rules="emailRules"
-              :disabled="authStore.loading"
               class="mb-3"
+              :disabled="authStore.loading"
+              label="Email Address"
+              prepend-inner-icon="mdi-email"
               required
+              :rules="emailRules"
+              type="email"
+              variant="outlined"
             />
-            
+
             <!-- Company Name (for property owners) -->
             <v-text-field
               v-if="selectedRole === 'owner'"
               v-model="companyName"
-              label="Company Name (Optional)"
               autocomplete="organization"
+              class="mb-3"
+              :disabled="authStore.loading"
+              hint="e.g., Your Property Management Company"
+              label="Company Name (Optional)"
+              persistent-hint
               prepend-inner-icon="mdi-office-building"
               variant="outlined"
-              :disabled="authStore.loading"
-              class="mb-3"
-              hint="e.g., Your Property Management Company"
-              persistent-hint
             />
-            
+
             <!-- Password Fields -->
             <v-text-field
               v-model="password"
-              label="Password"
-              :type="showPassword ? 'text' : 'password'"
-              autocomplete="new-password"
-              prepend-inner-icon="mdi-lock"
               :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-              variant="outlined"
-              :rules="passwordRules"
-              :disabled="authStore.loading"
+              autocomplete="new-password"
               class="mb-3"
+              :disabled="authStore.loading"
+              label="Password"
+              prepend-inner-icon="mdi-lock"
               required
+              :rules="passwordRules"
+              :type="showPassword ? 'text' : 'password'"
+              variant="outlined"
               @click:append-inner="showPassword = !showPassword"
             />
-            
+
             <v-text-field
               v-model="confirmPassword"
-              label="Confirm Password"
-              :type="showConfirmPassword ? 'text' : 'password'"
-              autocomplete="new-password"
-              prepend-inner-icon="mdi-lock-check"
               :append-inner-icon="showConfirmPassword ? 'mdi-eye' : 'mdi-eye-off'"
-              variant="outlined"
-              :rules="confirmPasswordRules"
-              :disabled="authStore.loading"
+              autocomplete="new-password"
               class="mb-4"
+              :disabled="authStore.loading"
+              label="Confirm Password"
+              prepend-inner-icon="mdi-lock-check"
               required
+              :rules="confirmPasswordRules"
+              :type="showConfirmPassword ? 'text' : 'password'"
+              variant="outlined"
               @click:append-inner="showConfirmPassword = !showConfirmPassword"
             />
-            
+
             <!-- Terms and Conditions -->
             <v-checkbox
               v-model="agreeToTerms"
-              :rules="termsRules"
-              :disabled="authStore.loading"
               class="mb-4"
+              :disabled="authStore.loading"
+              :rules="termsRules"
             >
               <template #label>
                 <div class="text-body-2">
-                  I agree to the 
+                  I agree to the
                   <a
-                    href="#"
                     class="text-primary"
+                    href="#"
                     @click.prevent="showTerms = true"
                   >
                     Terms of Service
-                  </a> 
-                  and 
+                  </a>
+                  and
                   <a
-                    href="#"
                     class="text-primary"
+                    href="#"
                     @click.prevent="showPrivacy = true"
                   >
                     Privacy Policy
@@ -190,15 +190,15 @@
                 </div>
               </template>
             </v-checkbox>
-            
+
             <!-- Submit Button -->
             <v-btn
-              type="submit"
-              color="primary"
-              size="large"
               block
-              :loading="authStore.loading"
               class="mb-4"
+              color="primary"
+              :loading="authStore.loading"
+              size="large"
+              type="submit"
               @click="handleRegister"
             >
               <v-icon class="mr-2">
@@ -207,18 +207,18 @@
               Create Account
             </v-btn>
           </v-form>
-          
+
           <!-- Footer Links -->
           <v-divider class="my-4" />
-          
+
           <div class="text-center">
             <p class="text-body-2 mb-2">
               Already have an account?
             </p>
             <v-btn
               color="primary"
-              variant="text"
               :disabled="authStore.loading"
+              variant="text"
               @click="goToLogin"
             >
               Sign In
@@ -227,7 +227,7 @@
         </v-card>
       </v-col>
     </v-row>
-    
+
     <!-- Terms Dialog -->
     <v-dialog
       v-model="showTerms"
@@ -246,7 +246,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    
+
     <!-- Privacy Dialog -->
     <v-dialog
       v-model="showPrivacy"
@@ -269,112 +269,112 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { getAvailableRoles, getDefaultRouteForRole } from '@/utils/authHelpers'
-import type { UserRole } from '@/types'
+  import type { UserRole } from '@/types'
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useAuthStore } from '@/stores/auth'
+  import { getAvailableRoles, getDefaultRouteForRole } from '@/utils/authHelpers'
 
-// Router and stores
-const router = useRouter()
-const authStore = useAuthStore()
+  // Router and stores
+  const router = useRouter()
+  const authStore = useAuthStore()
 
-// Form data
-const name = ref('')
-const email = ref('')
-const companyName = ref('')
-const password = ref('')
-const confirmPassword = ref('')
-const selectedRole = ref<UserRole>('owner') // Default to owner
-const agreeToTerms = ref(false)
-const showPassword = ref(false)
-const showConfirmPassword = ref(false)
-const successMessage = ref('')
-const registerForm = ref()
+  // Form data
+  const name = ref('')
+  const email = ref('')
+  const companyName = ref('')
+  const password = ref('')
+  const confirmPassword = ref('')
+  const selectedRole = ref<UserRole>('owner') // Default to owner
+  const agreeToTerms = ref(false)
+  const showPassword = ref(false)
+  const showConfirmPassword = ref(false)
+  const successMessage = ref('')
+  const registerForm = ref()
 
-// Dialog states
-const showTerms = ref(false)
-const showPrivacy = ref(false)
+  // Dialog states
+  const showTerms = ref(false)
+  const showPrivacy = ref(false)
 
-// Available roles for registration
-const availableRoles = getAvailableRoles()
+  // Available roles for registration
+  const availableRoles = getAvailableRoles()
 
-// Validation rules
-const nameRules = [
-  (v: string) => !!v || 'Full name is required',
-  (v: string) => v.length >= 2 || 'Name must be at least 2 characters'
-]
+  // Validation rules
+  const nameRules = [
+    (v: string) => !!v || 'Full name is required',
+    (v: string) => v.length >= 2 || 'Name must be at least 2 characters',
+  ]
 
-const emailRules = [
-  (v: string) => !!v || 'Email is required',
-  (v: string) => /.+@.+\..+/.test(v) || 'Email must be valid'
-]
+  const emailRules = [
+    (v: string) => !!v || 'Email is required',
+    (v: string) => /.+@.+\..+/.test(v) || 'Email must be valid',
+  ]
 
-const passwordRules = [
-  (v: string) => !!v || 'Password is required',
-  (v: string) => v.length >= 8 || 'Password must be at least 8 characters',
-  (v: string) => /(?=.*[a-z])/.test(v) || 'Password must contain at least one lowercase letter',
-  (v: string) => /(?=.*[A-Z])/.test(v) || 'Password must contain at least one uppercase letter',
-  (v: string) => /(?=.*\d)/.test(v) || 'Password must contain at least one number'
-]
+  const passwordRules = [
+    (v: string) => !!v || 'Password is required',
+    (v: string) => v.length >= 8 || 'Password must be at least 8 characters',
+    (v: string) => /(?=.*[a-z])/.test(v) || 'Password must contain at least one lowercase letter',
+    (v: string) => /(?=.*[A-Z])/.test(v) || 'Password must contain at least one uppercase letter',
+    (v: string) => /(?=.*\d)/.test(v) || 'Password must contain at least one number',
+  ]
 
-const confirmPasswordRules = [
-  (v: string) => !!v || 'Please confirm your password',
-  (v: string) => v === password.value || 'Passwords do not match'
-]
+  const confirmPasswordRules = [
+    (v: string) => !!v || 'Please confirm your password',
+    (v: string) => v === password.value || 'Passwords do not match',
+  ]
 
-const roleRules = [
-  (v: UserRole) => !!v || 'Please select an account type'
-]
+  const roleRules = [
+    (v: UserRole) => !!v || 'Please select an account type',
+  ]
 
-const termsRules = [
-  (v: boolean) => !!v || 'You must agree to the terms and conditions'
-]
+  const termsRules = [
+    (v: boolean) => !!v || 'You must agree to the terms and conditions',
+  ]
 
-/**
- * Handle form submission
- */
-async function handleRegister() {
-  // Validate form
-  const { valid } = await registerForm.value.validate()
-  if (!valid) return
-  
-  try {
-    const success = await authStore.register({
-      email: email.value,
-      password: password.value,
-      name: name.value,
-      role: selectedRole.value,
-      company_name: companyName.value
-    })
-    
-    if (success) {
-      // Show success message
-      successMessage.value = 'Registration successful! Redirecting to your dashboard...'
+  /**
+   * Handle form submission
+   */
+  async function handleRegister () {
+    // Validate form
+    const { valid } = await registerForm.value.validate()
+    if (!valid) return
 
-      // Navigate to role-appropriate dashboard
-      const defaultRoute = getDefaultRouteForRole(authStore.user?.role)
-      
-      // Small delay to show success message
-      setTimeout(async () => {
-        await router.push(defaultRoute)
-      }, 1500)
-    }
-  } catch (error) {
-    console.error('Registration error:', error)
+    try {
+      const success = await authStore.register({
+        email: email.value,
+        password: password.value,
+        name: name.value,
+        role: selectedRole.value,
+        company_name: companyName.value,
+      })
+
+      if (success) {
+        // Show success message
+        successMessage.value = 'Registration successful! Redirecting to your dashboard...'
+
+        // Navigate to role-appropriate dashboard
+        const defaultRoute = getDefaultRouteForRole(authStore.user?.role)
+
+        // Small delay to show success message
+        setTimeout(async () => {
+          await router.push(defaultRoute)
+        }, 1500)
+      }
+    } catch (error) {
+      console.error('Registration error:', error)
     // Error is handled by the auth store
+    }
   }
-}
 
-/**
- * Navigate to login page
- */
-function goToLogin() {
-  router.push('/auth/login')
-}
+  /**
+   * Navigate to login page
+   */
+  function goToLogin () {
+    router.push('/auth/login')
+  }
 
-// Clear any existing errors when component mounts
-authStore.clearError()
+  // Clear any existing errors when component mounts
+  authStore.clearError()
 </script>
 
 <style scoped>
@@ -432,4 +432,4 @@ a {
 a:hover {
   text-decoration: underline;
 }
-</style> 
+</style>

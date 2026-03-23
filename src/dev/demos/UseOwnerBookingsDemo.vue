@@ -16,45 +16,45 @@
               {{ currentUserId ? `Owner: ${authStore.user?.name}` : 'Not Logged In' }}
             </v-chip>
           </v-card-title>
-          
+
           <v-card-text>
             <v-alert
               v-if="!currentUserId"
-              type="warning"
               class="mb-4"
+              type="warning"
             >
               Please log in to test owner-specific functionality
             </v-alert>
-            
+
             <!-- Loading/Error/Success States -->
             <v-alert
               v-if="loading"
-              type="info"
               class="mb-4"
+              type="info"
             >
               <v-progress-circular
+                class="mr-2"
                 indeterminate
                 size="20"
-                class="mr-2"
               />
               Loading...
             </v-alert>
-            
+
             <v-alert
               v-if="error"
-              type="error"
               class="mb-4"
               closable
+              type="error"
               @click:close="error = null"
             >
               {{ error }}
             </v-alert>
-            
+
             <v-alert
               v-if="success"
-              type="success"
               class="mb-4"
               closable
+              type="success"
               @click:close="success = null"
             >
               {{ success }}
@@ -63,7 +63,7 @@
         </v-card>
       </v-col>
     </v-row>
-    
+
     <!-- Owner Statistics -->
     <v-row>
       <v-col
@@ -86,8 +86,8 @@
                 sm="4"
               >
                 <v-card
-                  variant="outlined"
                   class="text-center pa-2"
+                  variant="outlined"
                 >
                   <div class="text-h6">
                     {{ value }}
@@ -101,7 +101,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-      
+
       <v-col
         cols="12"
         md="6"
@@ -124,8 +124,8 @@
               <v-list-item
                 v-for="turn in myTodayTurns"
                 :key="turn.id"
-                :title="getPropertyName(turn.property_id)"
                 :subtitle="`Checkout: ${formatDateTime(turn.checkout_date)} | Checkin: ${formatDateTime(turn.checkin_date)}`"
+                :title="getPropertyName(turn.property_id)"
               >
                 <template #prepend>
                   <v-avatar
@@ -149,7 +149,7 @@
         </v-card>
       </v-col>
     </v-row>
-    
+
     <!-- My Bookings List -->
     <v-row>
       <v-col cols="12">
@@ -171,15 +171,15 @@
               Refresh
             </v-btn>
           </v-card-title>
-          
+
           <v-card-text>
             <div
               v-if="myBookings.size === 0"
               class="text-center text-medium-emphasis py-8"
             >
               <v-icon
-                size="64"
                 class="mb-4"
+                size="64"
               >
                 mdi-calendar-blank
               </v-icon>
@@ -190,18 +190,18 @@
                 Create your first booking to get started
               </div>
             </div>
-            
+
             <v-data-table
               v-else
+              class="elevation-1"
               :headers="bookingHeaders"
               :items="Array.from(myBookings.values())"
               :items-per-page="10"
-              class="elevation-1"
             >
               <template #[`item.property_id`]="{ item }">
                 {{ getPropertyName(item.property_id) }}
               </template>
-              
+
               <template #[`item.booking_type`]="{ item }">
                 <v-chip
                   :color="item.booking_type === 'turn' ? 'error' : 'primary'"
@@ -211,7 +211,7 @@
                   {{ item.booking_type }}
                 </v-chip>
               </template>
-              
+
               <template #[`item.status`]="{ item }">
                 <v-chip
                   :color="getStatusColor(item.status)"
@@ -220,7 +220,7 @@
                   {{ item.status }}
                 </v-chip>
               </template>
-              
+
               <template #[`item.priority`]="{ item }">
                 <v-chip
                   :color="getPriorityColor(calculateMyBookingPriority(item))"
@@ -230,15 +230,15 @@
                   {{ calculateMyBookingPriority(item) }}
                 </v-chip>
               </template>
-              
+
               <template #[`item.checkout_date`]="{ item }">
                 {{ formatDate(item.checkout_date) }}
               </template>
-              
+
               <template #[`item.checkin_date`]="{ item }">
                 {{ formatDate(item.checkin_date) }}
               </template>
-              
+
               <template #[`item.actions`]="{ item }">
                 <v-btn
                   icon="mdi-pencil"
@@ -247,10 +247,10 @@
                   @click="editBooking(item)"
                 />
                 <v-btn
+                  color="error"
                   icon="mdi-delete"
                   size="small"
                   variant="text"
-                  color="error"
                   @click="confirmDeleteBooking(item)"
                 />
               </template>
@@ -259,7 +259,7 @@
         </v-card>
       </v-col>
     </v-row>
-    
+
     <!-- Upcoming Cleanings -->
     <v-row>
       <v-col cols="12">
@@ -279,8 +279,8 @@
             </div>
             <v-timeline
               v-else
-              side="end"
               density="compact"
+              side="end"
             >
               <v-timeline-item
                 v-for="cleaning in myUpcomingCleanings"
@@ -294,8 +294,8 @@
                   </div>
                 </template>
                 <v-card
-                  variant="outlined"
                   class="mb-2"
+                  variant="outlined"
                 >
                   <v-card-text class="py-2">
                     <div class="font-weight-medium">
@@ -306,9 +306,9 @@
                     </div>
                     <div class="d-flex align-center mt-1">
                       <v-chip
+                        class="mr-2"
                         :color="cleaning.booking_type === 'turn' ? 'error' : 'primary'"
                         size="x-small"
-                        class="mr-2"
                       >
                         {{ cleaning.booking_type }}
                       </v-chip>
@@ -327,7 +327,7 @@
         </v-card>
       </v-col>
     </v-row>
-    
+
     <!-- Test Actions -->
     <v-row>
       <v-col cols="12">
@@ -342,14 +342,14 @@
             <v-row>
               <v-col
                 cols="12"
-                sm="6"
                 md="3"
+                sm="6"
               >
                 <v-btn
                   block
                   color="primary"
-                  :loading="loading"
                   :disabled="!currentUserId"
+                  :loading="loading"
                   @click="testCreateBooking"
                 >
                   Test Create Booking
@@ -357,14 +357,14 @@
               </v-col>
               <v-col
                 cols="12"
-                sm="6"
                 md="3"
+                sm="6"
               >
                 <v-btn
                   block
                   color="secondary"
-                  :loading="loading"
                   :disabled="!currentUserId || myBookings.size === 0"
+                  :loading="loading"
                   @click="testUpdateBooking"
                 >
                   Test Update First Booking
@@ -372,14 +372,14 @@
               </v-col>
               <v-col
                 cols="12"
-                sm="6"
                 md="3"
+                sm="6"
               >
                 <v-btn
                   block
                   color="warning"
-                  :loading="loading"
                   :disabled="!currentUserId || myBookings.size === 0"
+                  :loading="loading"
                   @click="testStatusChange"
                 >
                   Test Status Change
@@ -387,14 +387,14 @@
               </v-col>
               <v-col
                 cols="12"
-                sm="6"
                 md="3"
+                sm="6"
               >
                 <v-btn
                   block
                   color="info"
-                  :loading="loading"
                   :disabled="!currentUserId"
+                  :loading="loading"
                   @click="generateSampleData"
                 >
                   Generate Sample Data
@@ -405,7 +405,7 @@
         </v-card>
       </v-col>
     </v-row>
-    
+
     <!-- Confirmation Dialog -->
     <v-dialog
       v-model="showDeleteDialog"
@@ -438,192 +438,192 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useOwnerBookings } from '@/composables/owner/useOwnerBookings';
-import { useAuthStore } from '@/stores/auth';
-import { usePropertyStore } from '@/stores/property';
-import type { Booking, BookingFormData } from '@/types';
+  import type { Booking, BookingFormData } from '@/types'
+  import { computed, ref } from 'vue'
+  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
+  import { useAuthStore } from '@/stores/auth'
+  import { usePropertyStore } from '@/stores/property'
 
-// Composables
-const ownerBookings = useOwnerBookings();
-const authStore = useAuthStore();
-const propertyStore = usePropertyStore();
+  // Composables
+  const ownerBookings = useOwnerBookings()
+  const authStore = useAuthStore()
+  const propertyStore = usePropertyStore()
 
-// Destructure owner booking composable
-const {
-  loading,
-  error,
-  success,
-  myBookings,
-  myProperties,
-  myTodayTurns,
-  myUpcomingCleanings,
-  myBookingStats,
-  fetchMyBookings,
-  createMyBooking,
-  updateMyBooking,
-  deleteMyBooking,
-  changeMyBookingStatus,
-  calculateMyBookingPriority
-} = ownerBookings;
+  // Destructure owner booking composable
+  const {
+    loading,
+    error,
+    success,
+    myBookings,
+    myProperties,
+    myTodayTurns,
+    myUpcomingCleanings,
+    myBookingStats,
+    fetchMyBookings,
+    createMyBooking,
+    updateMyBooking,
+    deleteMyBooking,
+    changeMyBookingStatus,
+    calculateMyBookingPriority,
+  } = ownerBookings
 
-// Local state
-const showDeleteDialog = ref(false);
-const bookingToDelete = ref<Booking | null>(null);
+  // Local state
+  const showDeleteDialog = ref(false)
+  const bookingToDelete = ref<Booking | null>(null)
 
-// Computed
-const currentUserId = computed(() => authStore.user?.id);
+  // Computed
+  const currentUserId = computed(() => authStore.user?.id)
 
-// Table headers
-const bookingHeaders = [
-  { title: 'Property', key: 'property_id', sortable: true },
-  { title: 'Type', key: 'booking_type', sortable: true },
-  { title: 'Status', key: 'status', sortable: true },
-  { title: 'Priority', key: 'priority', sortable: false },
-  { title: 'Checkout', key: 'checkout_date', sortable: true },
-  { title: 'Checkin', key: 'checkin_date', sortable: true },
-  { title: 'Actions', key: 'actions', sortable: false }
-];
+  // Table headers
+  const bookingHeaders = [
+    { title: 'Property', key: 'property_id', sortable: true },
+    { title: 'Type', key: 'booking_type', sortable: true },
+    { title: 'Status', key: 'status', sortable: true },
+    { title: 'Priority', key: 'priority', sortable: false },
+    { title: 'Checkout', key: 'checkout_date', sortable: true },
+    { title: 'Checkin', key: 'checkin_date', sortable: true },
+    { title: 'Actions', key: 'actions', sortable: false },
+  ]
 
-// Helper functions
-function getPropertyName(propertyId: string): string {
-  const property = propertyStore.getPropertyById(propertyId);
-  return property ? property.name : 'Unknown Property';
-}
-
-function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString();
-}
-
-function formatDateTime(dateString: string): string {
-  return new Date(dateString).toLocaleString();
-}
-
-function formatStatKey(key: string): string {
-  return key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-}
-
-function getStatusColor(status: string): string {
-  const colors: Record<string, string> = {
-    pending: 'orange',
-    scheduled: 'blue',
-    in_progress: 'purple',
-    completed: 'green',
-    cancelled: 'red'
-  };
-  return colors[status] || 'grey';
-}
-
-function getPriorityColor(priority: string): string {
-  const colors: Record<string, string> = {
-    low: 'grey',
-    normal: 'blue',
-    high: 'orange',
-    urgent: 'red'
-  };
-  return colors[priority] || 'grey';
-}
-
-// Test functions
-async function testCreateBooking() {
-  const propertiesArray = Array.from(myProperties.value.values());
-  if (!currentUserId.value || propertiesArray.length === 0) {
-    error.value = 'No properties available for testing';
-    return;
+  // Helper functions
+  function getPropertyName (propertyId: string): string {
+    const property = propertyStore.getPropertyById(propertyId)
+    return property ? property.name : 'Unknown Property'
   }
-  
-  const testBookingData: BookingFormData = {
-    property_id: propertiesArray[0].id,
-    checkout_date: new Date().toISOString(),
-    checkin_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
-    booking_type: 'standard',
-    status: 'pending',
-    guest_count: 2,
-    notes: 'Test booking created from demo',
-    owner_id: currentUserId.value
-  };
-  
-  await createMyBooking(testBookingData);
-}
 
-async function testUpdateBooking() {
-  const bookingsArray = Array.from(myBookings.value.values());
-  if (bookingsArray.length === 0) return;
-  
-  const firstBooking = bookingsArray[0];
-  const updates: Partial<BookingFormData> = {
-    notes: `Updated at ${new Date().toLocaleTimeString()}`,
-    guest_count: (firstBooking.guest_count || 1) + 1
-  };
-  
-  await updateMyBooking(firstBooking.id, updates);
-}
-
-async function testStatusChange() {
-  if (myBookings.value.length === 0) return;
-  
-  const firstBooking = myBookings.value[0];
-  const nextStatus = firstBooking.status === 'pending' ? 'scheduled' : 'pending';
-  
-  await changeMyBookingStatus(firstBooking.id, nextStatus);
-}
-
-async function generateSampleData() {
-  if (!currentUserId.value || myProperties.value.length === 0) {
-    error.value = 'No properties available for sample data generation';
-    return;
+  function formatDate (dateString: string): string {
+    return new Date(dateString).toLocaleDateString()
   }
-  
-  const sampleBookings: BookingFormData[] = [
-    {
-      property_id: myProperties.value[0].id,
+
+  function formatDateTime (dateString: string): string {
+    return new Date(dateString).toLocaleString()
+  }
+
+  function formatStatKey (key: string): string {
+    return key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())
+  }
+
+  function getStatusColor (status: string): string {
+    const colors: Record<string, string> = {
+      pending: 'orange',
+      scheduled: 'blue',
+      in_progress: 'purple',
+      completed: 'green',
+      cancelled: 'red',
+    }
+    return colors[status] || 'grey'
+  }
+
+  function getPriorityColor (priority: string): string {
+    const colors: Record<string, string> = {
+      low: 'grey',
+      normal: 'blue',
+      high: 'orange',
+      urgent: 'red',
+    }
+    return colors[priority] || 'grey'
+  }
+
+  // Test functions
+  async function testCreateBooking () {
+    const propertiesArray = Array.from(myProperties.value.values())
+    if (!currentUserId.value || propertiesArray.length === 0) {
+      error.value = 'No properties available for testing'
+      return
+    }
+
+    const testBookingData: BookingFormData = {
+      property_id: propertiesArray[0].id,
       checkout_date: new Date().toISOString(),
-      checkin_date: new Date().toISOString(), // Same day = turn
-      booking_type: 'turn',
-      status: 'pending',
-      guest_count: 4,
-      notes: 'Urgent turn booking - same day checkout/checkin',
-      owner_id: currentUserId.value
-    },
-    {
-      property_id: myProperties.value[0].id,
-      checkout_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // Day after tomorrow
-      checkin_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
+      checkin_date: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString(), // Tomorrow
       booking_type: 'standard',
       status: 'pending',
       guest_count: 2,
-      notes: 'Standard booking with 1-day gap',
-      owner_id: currentUserId.value
+      notes: 'Test booking created from demo',
+      owner_id: currentUserId.value,
     }
-  ];
-  
-  for (const bookingData of sampleBookings) {
-    await createMyBooking(bookingData);
+
+    await createMyBooking(testBookingData)
   }
-}
 
-function editBooking(booking: Booking) {
-  // In a real app, this would open an edit modal
-  console.log('Edit booking:', booking);
-  success.value = `Edit functionality would open for booking ${booking.id}`;
-}
+  async function testUpdateBooking () {
+    const bookingsArray = Array.from(myBookings.value.values())
+    if (bookingsArray.length === 0) return
 
-function confirmDeleteBooking(booking: Booking) {
-  bookingToDelete.value = booking;
-  showDeleteDialog.value = true;
-}
+    const firstBooking = bookingsArray[0]
+    const updates: Partial<BookingFormData> = {
+      notes: `Updated at ${new Date().toLocaleTimeString()}`,
+      guest_count: (firstBooking.guest_count || 1) + 1,
+    }
 
-async function executeDelete() {
-  if (bookingToDelete.value) {
-    await deleteMyBooking(bookingToDelete.value.id);
-    showDeleteDialog.value = false;
-    bookingToDelete.value = null;
+    await updateMyBooking(firstBooking.id, updates)
   }
-}
+
+  async function testStatusChange () {
+    if (myBookings.value.length === 0) return
+
+    const firstBooking = myBookings.value[0]
+    const nextStatus = firstBooking.status === 'pending' ? 'scheduled' : 'pending'
+
+    await changeMyBookingStatus(firstBooking.id, nextStatus)
+  }
+
+  async function generateSampleData () {
+    if (!currentUserId.value || myProperties.value.length === 0) {
+      error.value = 'No properties available for sample data generation'
+      return
+    }
+
+    const sampleBookings: BookingFormData[] = [
+      {
+        property_id: myProperties.value[0].id,
+        checkout_date: new Date().toISOString(),
+        checkin_date: new Date().toISOString(), // Same day = turn
+        booking_type: 'turn',
+        status: 'pending',
+        guest_count: 4,
+        notes: 'Urgent turn booking - same day checkout/checkin',
+        owner_id: currentUserId.value,
+      },
+      {
+        property_id: myProperties.value[0].id,
+        checkout_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString(), // Day after tomorrow
+        checkin_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days from now
+        booking_type: 'standard',
+        status: 'pending',
+        guest_count: 2,
+        notes: 'Standard booking with 1-day gap',
+        owner_id: currentUserId.value,
+      },
+    ]
+
+    for (const bookingData of sampleBookings) {
+      await createMyBooking(bookingData)
+    }
+  }
+
+  function editBooking (booking: Booking) {
+    // In a real app, this would open an edit modal
+    console.log('Edit booking:', booking)
+    success.value = `Edit functionality would open for booking ${booking.id}`
+  }
+
+  function confirmDeleteBooking (booking: Booking) {
+    bookingToDelete.value = booking
+    showDeleteDialog.value = true
+  }
+
+  async function executeDelete () {
+    if (bookingToDelete.value) {
+      await deleteMyBooking(bookingToDelete.value.id)
+      showDeleteDialog.value = false
+      bookingToDelete.value = null
+    }
+  }
 </script>
 
 <style scoped>
 .v-card {
   margin-bottom: 16px;
 }
-</style> 
+</style>

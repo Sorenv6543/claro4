@@ -1,13 +1,13 @@
 <!-- src/pages/auth/login.vue -->
 <template>
   <v-card
-    elevation="8"
     class="pa-6"
+    elevation="8"
   >
     <v-card-title class="text-h4 text-center mb-4">
       <v-icon
-        color="primary"
         class="mr-2"
+        color="primary"
       >
         mdi-login
       </v-icon>
@@ -20,8 +20,8 @@
       class="text-center py-8"
     >
       <v-progress-circular
-        indeterminate
         color="primary"
+        indeterminate
       />
       <p class="mt-4">
         Signing you in...
@@ -37,9 +37,9 @@
       <!-- Error Alert -->
       <v-alert
         v-if="authStore.error || loginError"
-        type="error"
         class="mb-4"
         closable
+        type="error"
         @click:close="authStore.clearError(); loginError = null"
       >
         {{ authStore.error || loginError }}
@@ -48,38 +48,38 @@
       <!-- Email Field -->
       <v-text-field
         v-model="email"
-        label="Email"
-        type="email"
-        :rules="emailRules"
-        variant="outlined"
         class="mb-3"
+        label="Email"
         prepend-inner-icon="mdi-email"
         required
+        :rules="emailRules"
+        type="email"
+        variant="outlined"
       />
 
       <!-- Password Field -->
       <v-text-field
         v-model="password"
-        :label="showPassword ? 'Password (visible)' : 'Password'"
-        :type="showPassword ? 'text' : 'password'"
-        :rules="passwordRules"
-        variant="outlined"
-        class="mb-4"
-        prepend-inner-icon="mdi-lock"
         :append-inner-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+        class="mb-4"
+        :label="showPassword ? 'Password (visible)' : 'Password'"
+        prepend-inner-icon="mdi-lock"
         required
+        :rules="passwordRules"
+        :type="showPassword ? 'text' : 'password'"
+        variant="outlined"
         @click:append-inner="showPassword = !showPassword"
       />
 
       <!-- Sign In Button -->
       <v-btn
-        type="submit"
-        color="primary"
-        size="large"
         block
-        :loading="submitting"
-        :disabled="submitting"
         class="mb-4"
+        color="primary"
+        :disabled="submitting"
+        :loading="submitting"
+        size="large"
+        type="submit"
       >
         <v-icon class="mr-2">
           mdi-login
@@ -95,8 +95,8 @@
         </p>
         <v-btn
           color="primary"
-          variant="text"
           :disabled="submitting"
+          variant="text"
           @click="goToRegister"
         >
           Create Account
@@ -104,8 +104,8 @@
         <v-divider class="my-4" />
         <v-btn
           color="primary"
-          variant="text"
           :disabled="submitting"
+          variant="text"
           @click="goToDemos"
         >
           Demos
@@ -116,63 +116,63 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/auth'
-import { getDefaultRouteForRole } from '@/utils/authHelpers'
-import type { VForm } from 'vuetify/components'
+  import type { VForm } from 'vuetify/components'
+  import { ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useAuthStore } from '@/stores/auth'
+  import { getDefaultRouteForRole } from '@/utils/authHelpers'
 
-const router = useRouter()
-const authStore = useAuthStore()
-const email = ref('')
-const password = ref('')
-const showPassword = ref(false)
-const submitting = ref(false)
-const loginError = ref<string | null>(null)
-const loginForm = ref<VForm | null>(null)
+  const router = useRouter()
+  const authStore = useAuthStore()
+  const email = ref('')
+  const password = ref('')
+  const showPassword = ref(false)
+  const submitting = ref(false)
+  const loginError = ref<string | null>(null)
+  const loginForm = ref<VForm | null>(null)
 
-const emailRules = [
-  (v: string) => !!v || 'Email is required',
-  (v: string) => /.+@.+\..+/.test(v) || 'Email must be valid'
-]
-const passwordRules = [
-  (v: string) => !!v || 'Password is required'
-]
+  const emailRules = [
+    (v: string) => !!v || 'Email is required',
+    (v: string) => /.+@.+\..+/.test(v) || 'Email must be valid',
+  ]
+  const passwordRules = [
+    (v: string) => !!v || 'Password is required',
+  ]
 
-async function handleLogin() {
-  const { valid } = await loginForm.value!.validate()
-  if (!valid) return
+  async function handleLogin () {
+    const { valid } = await loginForm.value!.validate()
+    if (!valid) return
 
-  submitting.value = true
-  loginError.value = null
-  authStore.clearError()
+    submitting.value = true
+    loginError.value = null
+    authStore.clearError()
 
-  try {
-    const success = await authStore.login(email.value, password.value)
-    if (success && authStore.user) {
-      await router.push(getDefaultRouteForRole(authStore.user.role))
-    } else if (success && !authStore.user) {
-      loginError.value = 'Login succeeded but your profile could not be loaded. Please try again.'
-    }
+    try {
+      const success = await authStore.login(email.value, password.value)
+      if (success && authStore.user) {
+        await router.push(getDefaultRouteForRole(authStore.user.role))
+      } else if (success && !authStore.user) {
+        loginError.value = 'Login succeeded but your profile could not be loaded. Please try again.'
+      }
     // If !success, authStore.error is already set by the store
-  } catch (err) {
-    // Navigation failures or other unexpected errors
-    if (!authStore.error) {
-      loginError.value = err instanceof Error ? err.message : 'An unexpected error occurred'
+    } catch (error) {
+      // Navigation failures or other unexpected errors
+      if (!authStore.error) {
+        loginError.value = error instanceof Error ? error.message : 'An unexpected error occurred'
+      }
+    } finally {
+      submitting.value = false
     }
-  } finally {
-    submitting.value = false
   }
-}
 
-function goToDemos() {
-  router.push('/demos')
-}
+  function goToDemos () {
+    router.push('/demos')
+  }
 
-function goToRegister() {
-  router.push('/auth/register')
-}
+  function goToRegister () {
+    router.push('/auth/register')
+  }
 
-// Clear any stale errors on mount
-authStore.clearError()
+  // Clear any stale errors on mount
+  authStore.clearError()
 </script>

@@ -1,4 +1,4 @@
-import { ref, computed, type Ref, type ComputedRef } from 'vue'
+import { computed, type ComputedRef, ref, type Ref } from 'vue'
 
 /**
  * Shared TTL-based cache for filtered Map computeds.
@@ -31,7 +31,7 @@ export interface MapCache {
    */
   cachedGroupBy: <V, K extends string>(
     source: () => Map<string, V>,
-    keyFn: (item: V) => K
+    keyFn: (item: V) => K,
   ) => ComputedRef<Map<K, Map<string, V>>>
   /**
    * Create a computed that filters a source Map by a predicate,
@@ -40,7 +40,7 @@ export interface MapCache {
    */
   cachedFilter: <V>(
     source: () => Map<string, V>,
-    predicate: (item: V) => boolean
+    predicate: (item: V) => boolean,
   ) => ComputedRef<Map<string, V>>
   /**
    * Create a computed that filters a source Map by a parameterized key,
@@ -49,11 +49,11 @@ export interface MapCache {
    */
   cachedFilterBy: <V>(
     source: () => Map<string, V>,
-    matchFn: (item: V, key: string) => boolean
+    matchFn: (item: V, key: string) => boolean,
   ) => ComputedRef<(key: string) => Map<string, V>>
 }
 
-export function createMapCache(ttl: number = 10_000): MapCache {
+export function createMapCache (ttl = 10_000): MapCache {
   // Track all cached refs so invalidate() can clear them
   const trackedCaches: { cache: Ref<unknown>, timestamp: Ref<number> }[] = []
   const trackedParamCaches: { cache: Ref<Map<string, unknown>>, timestamp: Ref<number> }[] = []
@@ -79,7 +79,7 @@ export function createMapCache(ttl: number = 10_000): MapCache {
 
   const cachedGroupBy = <V, K extends string>(
     source: () => Map<string, V>,
-    keyFn: (item: V) => K
+    keyFn: (item: V) => K,
   ): ComputedRef<Map<K, Map<string, V>>> => {
     const cached = ref<Map<K, Map<string, V>> | null>(null) as Ref<Map<K, Map<string, V>> | null>
     const ownTimestamp = ref(0)
@@ -91,13 +91,13 @@ export function createMapCache(ttl: number = 10_000): MapCache {
       }
 
       const grouped = new Map<K, Map<string, V>>()
-      source().forEach((item, id) => {
+      for (const [id, item] of source().entries()) {
         const key = keyFn(item)
         if (!grouped.has(key)) {
           grouped.set(key, new Map())
         }
         grouped.get(key)!.set(id, item)
-      })
+      }
 
       cached.value = grouped
       const now = Date.now()
@@ -109,7 +109,7 @@ export function createMapCache(ttl: number = 10_000): MapCache {
 
   const cachedFilter = <V>(
     source: () => Map<string, V>,
-    predicate: (item: V) => boolean
+    predicate: (item: V) => boolean,
   ): ComputedRef<Map<string, V>> => {
     const cached = ref<Map<string, V> | null>(null) as Ref<Map<string, V> | null>
     const ownTimestamp = ref(0)
@@ -121,11 +121,11 @@ export function createMapCache(ttl: number = 10_000): MapCache {
       }
 
       const filtered = new Map<string, V>()
-      source().forEach((item, id) => {
+      for (const [id, item] of source().entries()) {
         if (predicate(item)) {
           filtered.set(id, item)
         }
-      })
+      }
 
       cached.value = filtered
       const now = Date.now()
@@ -137,7 +137,7 @@ export function createMapCache(ttl: number = 10_000): MapCache {
 
   const cachedFilterBy = <V>(
     source: () => Map<string, V>,
-    matchFn: (item: V, key: string) => boolean
+    matchFn: (item: V, key: string) => boolean,
   ): ComputedRef<(key: string) => Map<string, V>> => {
     const cached = ref(new Map<string, Map<string, V>>()) as Ref<Map<string, Map<string, V>>>
     const ownTimestamp = ref(0)
@@ -149,11 +149,11 @@ export function createMapCache(ttl: number = 10_000): MapCache {
       }
 
       const filtered = new Map<string, V>()
-      source().forEach((item, id) => {
+      for (const [id, item] of source().entries()) {
         if (matchFn(item, key)) {
           filtered.set(id, item)
         }
-      })
+      }
 
       cached.value.set(key, filtered)
       const now = Date.now()

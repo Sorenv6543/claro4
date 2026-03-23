@@ -1,16 +1,15 @@
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { usePushNotifications } from './usePushNotifications'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useBackgroundSync } from './useBackgroundSync'
+import { usePushNotifications } from './usePushNotifications'
 
-
-export const usePWA = () => {
+export function usePWA () {
   // PWA Installation
   const isPWAInstallable = ref(false)
   const isPWAInstalled = ref(false)
-  
+
   // Network Status
   const isOnline = ref(navigator.onLine)
-  
+
   // Service Worker - Mock in development
   const needRefresh = ref(false)
   const offlineReady = ref(false)
@@ -68,27 +67,27 @@ export const usePWA = () => {
     isPWAInstalled,
     isPWA,
     installPWA,
-    
+
     // Network
     isOnline,
-    
+
     // Service Worker
     needRefresh,
     offlineReady,
     updatePWA,
-    
+
     // Push Notifications
     pushNotifications,
-    
+
     // Background Sync
     backgroundSync,
-    
+
     // Computed states
     canInstall: computed(() => false), // Always false in development
     showUpdatePrompt: computed(() => false), // Always false in development
     showOfflineReady: computed(() => false), // Always false in development
-    
+
     // Combined PWA status
-    isFullyFunctional: computed(() => false) // Always false in development
+    isFullyFunctional: computed(() => false), // Always false in development
   }
-} 
+}

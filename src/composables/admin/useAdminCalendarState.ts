@@ -1,11 +1,11 @@
 import type { EventClickArg } from '@fullcalendar/core'
 import type { Booking, BookingStatus, BookingType } from '@/types'
-import { formatPropertyAddress } from '@/types/property'
 import { computed, ref } from 'vue'
 import { useCalendarState } from '@/composables/shared/useCalendarState'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
 import { useUIStore } from '@/stores/ui'
+import { formatPropertyAddress } from '@/types/property'
 
 /**
  * Admin-specific calendar state composable
@@ -69,7 +69,7 @@ export function useAdminCalendarState () {
         const checkoutTime = new Date(booking.checkout_date)
         return checkoutTime <= sixHoursFromNow
       })
-      .sort((a, b) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
+      .toSorted((a, b) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
       .map(booking => {
         const property = propertyStore.properties.get(booking.property_id)
         const hoursUntil = Math.max(0, Math.floor((new Date(booking.checkout_date).getTime() - now.getTime()) / (1000 * 60 * 60)))

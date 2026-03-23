@@ -213,10 +213,10 @@
 <script setup lang="ts">
   import type { Booking, BookingFormData } from '@/types/booking'
   import type { Property } from '@/types/property'
-  import { formatPropertyAddress } from '@/types/property'
   import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
   import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
   import { computed, nextTick, ref, watch } from 'vue'
+  import { formatPropertyAddress } from '@/types/property'
 
   // Props
   interface Props {
@@ -298,7 +298,7 @@
     if (!form.value.checkout_date || !form.value.checkin_date) return false
     const checkinDate = new Date(String(form.value.checkin_date || ''))
     const checkoutDate = new Date(String(form.value.checkout_date || ''))
-    if (isNaN(checkinDate.getTime()) || isNaN(checkoutDate.getTime())) return false
+    if (Number.isNaN(checkinDate.getTime()) || Number.isNaN(checkoutDate.getTime())) return false
     return checkoutDate < checkinDate
   })
 
@@ -331,7 +331,7 @@
       const checkinDate = new Date(String(form.value.checkin_date || ''))
 
       // Check if dates are valid
-      if (isNaN(checkoutDate.getTime()) || isNaN(checkinDate.getTime())) return
+      if (Number.isNaN(checkoutDate.getTime()) || Number.isNaN(checkinDate.getTime())) return
 
       // Same day = turn booking
       form.value.booking_type = checkoutDate.toDateString() === checkinDate.toDateString() ? 'turn' : 'standard'

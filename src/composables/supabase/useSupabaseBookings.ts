@@ -288,7 +288,7 @@ export function useSupabaseBookings () {
           && checkoutDate <= nextWeek
           && booking.status !== 'completed'
       })
-      .sort((a, b) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
+      .toSorted((a, b) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
   })
 
   /**

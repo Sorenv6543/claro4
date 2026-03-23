@@ -1,4 +1,4 @@
-<!-- 
+<!--
 🎯 OWNER DATA STORE DEMO
 Showcases the enhanced owner data store with caching and performance optimizations
 Based on TASK-072 implementation
@@ -11,26 +11,26 @@ Based on TASK-072 implementation
         <v-card>
           <v-card-title class="d-flex align-center">
             <v-icon
-              icon="mdi-speedometer"
               class="mr-3"
+              icon="mdi-speedometer"
             />
             Enhanced Owner Data Store Demo
             <v-spacer />
             <v-chip
               :color="ownerData.isCacheValid ? 'success' : 'warning'"
-              variant="tonal"
               size="small"
+              variant="tonal"
             >
               Cache: {{ ownerData.isCacheValid ? 'Valid' : 'Invalid' }}
             </v-chip>
           </v-card-title>
-          
+
           <v-card-text>
             <v-alert
+              class="mb-4"
+              title="TASK-072: Store-Level Role Filtering Architecture"
               type="info"
               variant="tonal"
-              title="TASK-072: Store-Level Role Filtering Architecture"
-              class="mb-4"
             >
               <p class="mb-2">
                 This demo showcases the enhanced owner data store with performance caching and role-based filtering.
@@ -55,9 +55,9 @@ Based on TASK-072 implementation
                 >
                   <v-card-title>Cache Status</v-card-title>
                   <v-card-text>
-                    <v-chip 
-                      :color="ownerData.isCacheValid ? 'success' : 'error'"
+                    <v-chip
                       class="mb-2"
+                      :color="ownerData.isCacheValid ? 'success' : 'error'"
                     >
                       {{ ownerData.isCacheValid ? 'Cache Valid' : 'Cache Expired' }}
                     </v-chip>
@@ -70,7 +70,7 @@ Based on TASK-072 implementation
                   </v-card-text>
                 </v-card>
               </v-col>
-              
+
               <v-col
                 cols="12"
                 md="6"
@@ -126,36 +126,36 @@ Based on TASK-072 implementation
                 <v-card>
                   <v-card-title class="d-flex align-center">
                     <v-icon
-                      icon="mdi-home-group"
                       class="mr-2"
+                      icon="mdi-home-group"
                     />
                     My Properties ({{ ownerData.ownerProperties.length }})
                     <v-spacer />
                     <v-btn
                       color="primary"
-                      variant="tonal"
                       prepend-icon="mdi-plus"
+                      variant="tonal"
                       @click="createSampleProperty"
                     >
                       Add Property
                     </v-btn>
                   </v-card-title>
-                  
+
                   <v-card-text>
                     <v-row>
                       <v-col
                         v-for="property in ownerData.ownerProperties"
                         :key="property.id"
                         cols="12"
-                        md="6"
                         lg="4"
+                        md="6"
                       >
                         <v-card variant="outlined">
                           <v-card-title class="d-flex align-center">
-                            <v-icon 
-                              :icon="property.active ? 'mdi-home' : 'mdi-home-off'"
-                              :color="property.active ? 'success' : 'grey'"
+                            <v-icon
                               class="mr-2"
+                              :color="property.active ? 'success' : 'grey'"
+                              :icon="property.active ? 'mdi-home' : 'mdi-home-off'"
                             />
                             {{ property.name }}
                           </v-card-title>
@@ -175,7 +175,7 @@ Based on TASK-072 implementation
                           </v-card-text>
                         </v-card>
                       </v-col>
-                      
+
                       <v-col
                         v-if="ownerData.ownerProperties.length === 0"
                         cols="12"
@@ -199,22 +199,22 @@ Based on TASK-072 implementation
                 <v-card>
                   <v-card-title class="d-flex align-center">
                     <v-icon
-                      icon="mdi-calendar-check"
                       class="mr-2"
+                      icon="mdi-calendar-check"
                     />
                     My Bookings ({{ ownerData.ownerBookings.length }})
                     <v-spacer />
                     <v-btn
                       color="secondary"
-                      variant="tonal"
-                      prepend-icon="mdi-plus"
                       :disabled="ownerData.ownerProperties.length === 0"
+                      prepend-icon="mdi-plus"
+                      variant="tonal"
                       @click="createSampleBooking"
                     >
                       Add Booking
                     </v-btn>
                   </v-card-title>
-                  
+
                   <v-card-text>
                     <v-row>
                       <v-col
@@ -236,7 +236,7 @@ Based on TASK-072 implementation
                           </v-card-text>
                         </v-card>
                       </v-col>
-                      
+
                       <v-col
                         cols="12"
                         md="4"
@@ -256,7 +256,7 @@ Based on TASK-072 implementation
                           </v-card-text>
                         </v-card>
                       </v-col>
-                      
+
                       <v-col
                         cols="12"
                         md="4"
@@ -277,9 +277,9 @@ Based on TASK-072 implementation
                         </v-card>
                       </v-col>
                     </v-row>
-                    
+
                     <v-divider class="my-4" />
-                    
+
                     <div v-if="ownerData.ownerBookings.length > 0">
                       <v-list>
                         <v-list-item
@@ -287,23 +287,23 @@ Based on TASK-072 implementation
                           :key="booking.id"
                         >
                           <template #prepend>
-                            <v-avatar 
+                            <v-avatar
                               :color="getBookingTypeColor(booking.booking_type)"
                               size="40"
                             >
                               <v-icon :icon="getBookingTypeIcon(booking.booking_type)" />
                             </v-avatar>
                           </template>
-                          
+
                           <v-list-item-title>
                             Property: {{ getPropertyName(booking.property_id) }}
                           </v-list-item-title>
                           <v-list-item-subtitle>
                             {{ formatDate(booking.checkout_date) }} → {{ formatDate(booking.checkin_date) }}
                           </v-list-item-subtitle>
-                          
+
                           <template #append>
-                            <v-chip 
+                            <v-chip
                               :color="getStatusColor(booking.status)"
                               size="small"
                               variant="tonal"
@@ -314,7 +314,7 @@ Based on TASK-072 implementation
                         </v-list-item>
                       </v-list>
                     </div>
-                    
+
                     <v-alert
                       v-else
                       type="info"
@@ -336,13 +336,13 @@ Based on TASK-072 implementation
                     <div class="d-flex gap-2 flex-wrap">
                       <v-btn
                         color="primary"
-                        prepend-icon="mdi-refresh"
                         :loading="loading"
+                        prepend-icon="mdi-refresh"
                         @click="refreshData"
                       >
                         Refresh Data
                       </v-btn>
-                      
+
                       <v-btn
                         color="warning"
                         prepend-icon="mdi-delete-sweep"
@@ -377,7 +377,7 @@ Based on TASK-072 implementation
                             <div>This Month: <strong>${{ ownerData.stats.thisMonthRevenue.toLocaleString() }}</strong></div>
                           </div>
                         </v-col>
-                        
+
                         <v-col
                           cols="12"
                           md="6"
@@ -402,105 +402,105 @@ Based on TASK-072 implementation
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useOwnerDataStore } from '@/stores/ownerData'
-import type { Property, Booking } from '@/types'
+  import type { Booking, Property } from '@/types'
+  import { ref } from 'vue'
+  import { useOwnerDataStore } from '@/stores/ownerData'
 
-// Store
-const ownerData = useOwnerDataStore()
+  // Store
+  const ownerData = useOwnerDataStore()
 
-// Local state
-const loading = ref(false)
-const showMetrics = ref(false)
+  // Local state
+  const loading = ref(false)
+  const showMetrics = ref(false)
 
-// Methods
-const refreshData = async () => {
-  loading.value = true
-  try {
-    await ownerData.refreshOwnerData()
-  } finally {
-    loading.value = false
+  // Methods
+  async function refreshData () {
+    loading.value = true
+    try {
+      await ownerData.refreshOwnerData()
+    } finally {
+      loading.value = false
+    }
   }
-}
 
-const invalidateCache = () => {
-  ownerData.invalidateCache()
-}
-
-const createSampleProperty = async () => {
-  const sampleProperty: Partial<Property> = {
-    name: `Property ${ownerData.ownerProperties.length + 1}`,
-    address: `${Math.floor(Math.random() * 9999)} Demo Street, Demo City`,
-    pricing_tier: ['basic', 'premium', 'luxury'][Math.floor(Math.random() * 3)] as any,
-    active: true,
-    bedrooms: Math.floor(Math.random() * 4) + 1,
-    bathrooms: Math.floor(Math.random() * 3) + 1,
-    cleaning_duration: 120
+  function invalidateCache () {
+    ownerData.invalidateCache()
   }
-  
-  await ownerData.createOwnerProperty(sampleProperty)
-}
 
-const createSampleBooking = async () => {
-  if (ownerData.ownerProperties.length === 0) return
-  
-  const randomProperty = ownerData.ownerProperties[Math.floor(Math.random() * ownerData.ownerProperties.length)]
-  const checkoutDate = new Date()
-  checkoutDate.setDate(checkoutDate.getDate() + Math.floor(Math.random() * 30))
-  const checkinDate = new Date(checkoutDate)
-  checkinDate.setDate(checkinDate.getDate() + Math.floor(Math.random() * 3) + 1)
-  
-  const sampleBooking: Partial<Booking> = {
-    property_id: randomProperty.id,
-    checkout_date: checkoutDate.toISOString().split('T')[0],
-    checkin_date: checkinDate.toISOString().split('T')[0],
-    booking_type: Math.random() > 0.7 ? 'turn' : 'standard',
-    status: ['pending', 'confirmed', 'scheduled'][Math.floor(Math.random() * 3)] as any,
-    guest_count: Math.floor(Math.random() * 6) + 1,
-    cleaning_scheduled: true,
-    total_cost: Math.floor(Math.random() * 500) + 100,
-    nightly_rate: Math.floor(Math.random() * 200) + 50
+  async function createSampleProperty () {
+    const sampleProperty: Partial<Property> = {
+      name: `Property ${ownerData.ownerProperties.length + 1}`,
+      address: `${Math.floor(Math.random() * 9999)} Demo Street, Demo City`,
+      pricing_tier: ['basic', 'premium', 'luxury'][Math.floor(Math.random() * 3)] as any,
+      active: true,
+      bedrooms: Math.floor(Math.random() * 4) + 1,
+      bathrooms: Math.floor(Math.random() * 3) + 1,
+      cleaning_duration: 120,
+    }
+
+    await ownerData.createOwnerProperty(sampleProperty)
   }
-  
-  await ownerData.createOwnerBooking(sampleBooking)
-}
 
-const formatTimestamp = (timestamp: number): string => {
-  if (!timestamp) return 'Never'
-  return new Date(timestamp).toLocaleTimeString()
-}
+  async function createSampleBooking () {
+    if (ownerData.ownerProperties.length === 0) return
 
-const formatDate = (dateString: string): string => {
-  return new Date(dateString).toLocaleDateString()
-}
+    const randomProperty = ownerData.ownerProperties[Math.floor(Math.random() * ownerData.ownerProperties.length)]
+    const checkoutDate = new Date()
+    checkoutDate.setDate(checkoutDate.getDate() + Math.floor(Math.random() * 30))
+    const checkinDate = new Date(checkoutDate)
+    checkinDate.setDate(checkinDate.getDate() + Math.floor(Math.random() * 3) + 1)
 
-const getPropertyName = (propertyId: string): string => {
-  const property = ownerData.ownerProperties.find(p => p.id === propertyId)
-  return property?.name || 'Unknown Property'
-}
+    const sampleBooking: Partial<Booking> = {
+      property_id: randomProperty.id,
+      checkout_date: checkoutDate.toISOString().split('T')[0],
+      checkin_date: checkinDate.toISOString().split('T')[0],
+      booking_type: Math.random() > 0.7 ? 'turn' : 'standard',
+      status: ['pending', 'confirmed', 'scheduled'][Math.floor(Math.random() * 3)] as any,
+      guest_count: Math.floor(Math.random() * 6) + 1,
+      cleaning_scheduled: true,
+      total_cost: Math.floor(Math.random() * 500) + 100,
+      nightly_rate: Math.floor(Math.random() * 200) + 50,
+    }
 
-const getBookingTypeColor = (type: string): string => {
-  return type === 'turn' ? 'warning' : 'primary'
-}
-
-const getBookingTypeIcon = (type: string): string => {
-  return type === 'turn' ? 'mdi-swap-horizontal' : 'mdi-calendar-check'
-}
-
-const getStatusColor = (status: string): string => {
-  const colors: Record<string, string> = {
-    pending: 'warning',
-    confirmed: 'success',
-    scheduled: 'info',
-    completed: 'success',
-    cancelled: 'error'
+    await ownerData.createOwnerBooking(sampleBooking)
   }
-  return colors[status] || 'grey'
-}
+
+  function formatTimestamp (timestamp: number): string {
+    if (!timestamp) return 'Never'
+    return new Date(timestamp).toLocaleTimeString()
+  }
+
+  function formatDate (dateString: string): string {
+    return new Date(dateString).toLocaleDateString()
+  }
+
+  function getPropertyName (propertyId: string): string {
+    const property = ownerData.ownerProperties.find(p => p.id === propertyId)
+    return property?.name || 'Unknown Property'
+  }
+
+  function getBookingTypeColor (type: string): string {
+    return type === 'turn' ? 'warning' : 'primary'
+  }
+
+  function getBookingTypeIcon (type: string): string {
+    return type === 'turn' ? 'mdi-swap-horizontal' : 'mdi-calendar-check'
+  }
+
+  function getStatusColor (status: string): string {
+    const colors: Record<string, string> = {
+      pending: 'warning',
+      confirmed: 'success',
+      scheduled: 'info',
+      completed: 'success',
+      cancelled: 'error',
+    }
+    return colors[status] || 'grey'
+  }
 </script>
 
 <style scoped>
 .v-card {
   height: 100%;
 }
-</style> 
+</style>

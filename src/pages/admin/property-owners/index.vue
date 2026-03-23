@@ -5,12 +5,12 @@
 </template>
 
 <script setup lang="ts">
-import AdminPropertyOwners from '@/components/smart/admin/AdminPropertyOwners.vue';
+  import AdminPropertyOwners from '@/components/smart/admin/AdminPropertyOwners.vue'
 
-// Meta information for this page
-defineOptions({
-  name: 'AdminPropertyOwnersPage'
-});
+  // Meta information for this page
+  defineOptions({
+    name: 'AdminPropertyOwnersPage',
+  })
 </script>
 
 <style scoped>

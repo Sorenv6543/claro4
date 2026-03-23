@@ -348,7 +348,7 @@
     return filtered.map(booking => ({
       ...booking,
       property_name: getPropertyName(booking.property_id),
-    })).sort((a, b) =>
+    })).toSorted((a, b) =>
       new Date(b.checkout_date).getTime() - new Date(a.checkout_date).getTime(),
     )
   })

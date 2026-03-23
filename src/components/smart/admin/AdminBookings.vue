@@ -35,11 +35,11 @@
           >
             <v-text-field
               v-model="searchQuery"
-              prepend-inner-icon="mdi-magnify"
-              label="Search bookings..."
-              variant="outlined"
-              density="compact"
               clearable
+              density="compact"
+              label="Search bookings..."
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
             />
           </v-col>
           <v-col
@@ -48,11 +48,11 @@
           >
             <v-select
               v-model="statusFilter"
+              clearable
+              density="compact"
               :items="statusOptions"
               label="Status"
               variant="outlined"
-              density="compact"
-              clearable
             />
           </v-col>
           <v-col
@@ -61,11 +61,11 @@
           >
             <v-select
               v-model="typeFilter"
+              clearable
+              density="compact"
               :items="typeOptions"
               label="Type"
               variant="outlined"
-              density="compact"
-              clearable
             />
           </v-col>
           <v-col
@@ -74,11 +74,11 @@
           >
             <v-select
               v-model="propertyFilter"
+              clearable
+              density="compact"
               :items="propertyOptions"
               label="Property"
               variant="outlined"
-              density="compact"
-              clearable
             />
           </v-col>
           <v-col
@@ -88,17 +88,17 @@
             <div class="d-flex gap-2">
               <v-text-field
                 v-model="dateFrom"
-                type="date"
-                label="From"
-                variant="outlined"
                 density="compact"
+                label="From"
+                type="date"
+                variant="outlined"
               />
               <v-text-field
                 v-model="dateTo"
-                type="date"
-                label="To"
-                variant="outlined"
                 density="compact"
+                label="To"
+                type="date"
+                variant="outlined"
               />
             </div>
           </v-col>
@@ -116,24 +116,24 @@
             <div class="d-flex align-center gap-2">
               <v-select
                 v-model="itemsPerPage"
+                density="compact"
                 :items="[10, 25, 50, 100]"
                 label="Items per page"
-                variant="outlined"
-                density="compact"
                 style="width: 140px;"
+                variant="outlined"
               />
               <v-btn-toggle
                 v-model="tableView"
-                variant="outlined"
                 density="compact"
+                variant="outlined"
               >
                 <v-btn
-                  value="table"
                   icon="mdi-table"
+                  value="table"
                 />
                 <v-btn
-                  value="cards"
                   icon="mdi-view-grid"
+                  value="cards"
                 />
               </v-btn-toggle>
             </div>
@@ -144,8 +144,8 @@
             class="text-center py-8"
           >
             <v-icon
-              size="64"
               color="grey-lighten-1"
+              size="64"
             >
               mdi-calendar-search
             </v-icon>
@@ -160,13 +160,13 @@
           <!-- Table View -->
           <v-data-table
             v-else-if="tableView === 'table'"
+            class="bookings-table"
             :headers="tableHeaders"
+            hide-default-footer
             :items="paginatedBookings"
             :items-per-page="itemsPerPage"
-            :sort-by="sortBy"
             :search="searchQuery"
-            hide-default-footer
-            class="bookings-table"
+            :sort-by="sortBy"
             @click:row="openBookingDetails"
           >
             <template #[`item.status`]="{ item }">
@@ -239,8 +239,8 @@
             <template #[`item.guest_count`]="{ item }">
               <div class="d-flex align-center">
                 <v-icon
-                  size="16"
                   class="mr-1"
+                  size="16"
                 >
                   mdi-account-group
                 </v-icon>
@@ -337,15 +337,15 @@
 
                   <div class="text-body-2 text-medium-emphasis mb-2">
                     <v-icon
-                      size="16"
                       class="mr-1"
+                      size="16"
                     >
                       mdi-calendar
                     </v-icon>
                     {{ formatDate(booking.checkout_date) }}
                     <v-icon
-                      size="16"
                       class="ml-3 mr-1"
+                      size="16"
                     >
                       mdi-arrow-right
                     </v-icon>
@@ -358,8 +358,8 @@
                       class="text-body-2"
                     >
                       <v-icon
-                        size="16"
                         class="mr-1"
+                        size="16"
                       >
                         mdi-account
                       </v-icon>
@@ -370,8 +370,8 @@
                       class="text-body-2 text-warning"
                     >
                       <v-icon
-                        size="16"
                         class="mr-1"
+                        size="16"
                       >
                         mdi-account-alert
                       </v-icon>
@@ -383,8 +383,8 @@
                       class="text-body-2"
                     >
                       <v-icon
-                        size="16"
                         class="mr-1"
+                        size="16"
                       >
                         mdi-account-group
                       </v-icon>
@@ -470,8 +470,8 @@
           </p>
           <div class="text-center py-4">
             <v-icon
-              size="48"
               color="grey-lighten-1"
+              size="48"
             >
               mdi-form-select
             </v-icon>
@@ -505,11 +505,11 @@
         <v-card-text>
           <v-select
             v-model="selectedCleaner"
+            item-title="name"
+            item-value="id"
             :items="cleanerOptions"
             label="Select Cleaner"
             variant="outlined"
-            item-title="name"
-            item-value="id"
           />
         </v-card-text>
         <v-card-actions>
@@ -530,255 +530,255 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useAdminBookings } from '@/composables/admin/useAdminBookings'
-import { useAdminProperties } from '@/composables/admin/useAdminProperties'
-import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
-import type { Booking } from '@/types/booking'
-import { formatPropertyAddress } from '@/types/property'
+  import type { Booking } from '@/types/booking'
+  import { computed, ref } from 'vue'
+  import { useAdminBookings } from '@/composables/admin/useAdminBookings'
+  import { useAdminProperties } from '@/composables/admin/useAdminProperties'
+  import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
+  import { formatPropertyAddress } from '@/types/property'
 
-// Composables
-const { allBookings, updateBooking } = useAdminBookings()
-const { allProperties } = useAdminProperties()
-const { availableCleaners } = useCleanerManagement()
+  // Composables
+  const { allBookings, updateBooking } = useAdminBookings()
+  const { allProperties } = useAdminProperties()
+  const { availableCleaners } = useCleanerManagement()
 
-// Reactive state
-const searchQuery = ref('')
-const statusFilter = ref('')
-const typeFilter = ref('')
-const propertyFilter = ref('')
-const dateFrom = ref('')
-const dateTo = ref('')
+  // Reactive state
+  const searchQuery = ref('')
+  const statusFilter = ref('')
+  const typeFilter = ref('')
+  const propertyFilter = ref('')
+  const dateFrom = ref('')
+  const dateTo = ref('')
 
-// Table state
-const tableView = ref('table')
-const itemsPerPage = ref(25)
-const currentPage = ref(1)
-const sortBy = ref([{ key: 'created_at', order: 'desc' as const }])
+  // Table state
+  const tableView = ref('table')
+  const itemsPerPage = ref(25)
+  const currentPage = ref(1)
+  const sortBy = ref([{ key: 'created_at', order: 'desc' as const }])
 
-// Dialog state
-const showBookingDialog = ref(false)
-const showCleanerDialog = ref(false)
-const editingBooking = ref<Booking | null>(null)
-const selectedBookingForCleaner = ref<Booking | null>(null)
-const selectedCleaner = ref('')
+  // Dialog state
+  const showBookingDialog = ref(false)
+  const showCleanerDialog = ref(false)
+  const editingBooking = ref<Booking | null>(null)
+  const selectedBookingForCleaner = ref<Booking | null>(null)
+  const selectedCleaner = ref('')
 
-// Filter options
-const statusOptions = [
-  { title: 'Pending', value: 'pending' },
-  { title: 'Scheduled', value: 'scheduled' },
-  { title: 'In Progress', value: 'in_progress' },
-  { title: 'Completed', value: 'completed' },
-  { title: 'Cancelled', value: 'cancelled' }
-]
+  // Filter options
+  const statusOptions = [
+    { title: 'Pending', value: 'pending' },
+    { title: 'Scheduled', value: 'scheduled' },
+    { title: 'In Progress', value: 'in_progress' },
+    { title: 'Completed', value: 'completed' },
+    { title: 'Cancelled', value: 'cancelled' },
+  ]
 
-const typeOptions = [
-  { title: 'Standard', value: 'standard' },
-  { title: 'Turn', value: 'turn' }
-]
+  const typeOptions = [
+    { title: 'Standard', value: 'standard' },
+    { title: 'Turn', value: 'turn' },
+  ]
 
-// Table headers
-const tableHeaders = [
-  { title: 'Status', key: 'status', sortable: true, width: '120px' },
-  { title: 'Type', key: 'booking_type', sortable: true, width: '140px' },
-  { title: 'Property', key: 'property', sortable: false, width: '200px' },
-  { title: 'Dates', key: 'dates', sortable: true, width: '150px' },
-  { title: 'Cleaner', key: 'cleaner', sortable: false, width: '140px' },
-  { title: 'Guests', key: 'guest_count', sortable: true, width: '80px' },
-  { title: 'Created', key: 'created_at', sortable: true, width: '120px' },
-  { title: 'Actions', key: 'actions', sortable: false, width: '120px', align: 'end' as const }
-] as const
+  // Table headers
+  const tableHeaders = [
+    { title: 'Status', key: 'status', sortable: true, width: '120px' },
+    { title: 'Type', key: 'booking_type', sortable: true, width: '140px' },
+    { title: 'Property', key: 'property', sortable: false, width: '200px' },
+    { title: 'Dates', key: 'dates', sortable: true, width: '150px' },
+    { title: 'Cleaner', key: 'cleaner', sortable: false, width: '140px' },
+    { title: 'Guests', key: 'guest_count', sortable: true, width: '80px' },
+    { title: 'Created', key: 'created_at', sortable: true, width: '120px' },
+    { title: 'Actions', key: 'actions', sortable: false, width: '120px', align: 'end' as const },
+  ] as const
 
-// Computed properties
-const propertyOptions = computed(() => {
-  return allProperties.value.map(property => ({
-    title: formatPropertyAddress(property, 'short'),
-    value: property.id
-  }))
-})
+  // Computed properties
+  const propertyOptions = computed(() => {
+    return allProperties.value.map(property => ({
+      title: formatPropertyAddress(property, 'short'),
+      value: property.id,
+    }))
+  })
 
-const cleanerOptions = computed(() => {
-  return availableCleaners.value.map(cleaner => ({
-    id: cleaner.id,
-    name: cleaner.name
-  }))
-})
+  const cleanerOptions = computed(() => {
+    return availableCleaners.value.map(cleaner => ({
+      id: cleaner.id,
+      name: cleaner.name,
+    }))
+  })
 
-const paginatedBookings = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage.value
-  const end = start + itemsPerPage.value
-  return filteredBookings.value.slice(start, end)
-})
+  const paginatedBookings = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage.value
+    const end = start + itemsPerPage.value
+    return filteredBookings.value.slice(start, end)
+  })
 
-const filteredBookings = computed(() => {
-  let bookings = allBookings.value
+  const filteredBookings = computed(() => {
+    let bookings = allBookings.value
 
-  // Search filter
-  if (searchQuery.value) {
-    const query = searchQuery.value.toLowerCase()
-    bookings = bookings.filter(booking => {
-      const propertyName = getPropertyName(booking.property_id).toLowerCase()
-      const cleanerName = booking.assigned_cleaner_id
-        ? getCleanerName(booking.assigned_cleaner_id).toLowerCase()
-        : ''
-      return propertyName.includes(query) || cleanerName.includes(query)
+    // Search filter
+    if (searchQuery.value) {
+      const query = searchQuery.value.toLowerCase()
+      bookings = bookings.filter(booking => {
+        const propertyName = getPropertyName(booking.property_id).toLowerCase()
+        const cleanerName = booking.assigned_cleaner_id
+          ? getCleanerName(booking.assigned_cleaner_id).toLowerCase()
+          : ''
+        return propertyName.includes(query) || cleanerName.includes(query)
+      })
+    }
+
+    // Status filter
+    if (statusFilter.value) {
+      bookings = bookings.filter(booking => booking.status === statusFilter.value)
+    }
+
+    // Type filter
+    if (typeFilter.value) {
+      bookings = bookings.filter(booking => booking.booking_type === typeFilter.value)
+    }
+
+    // Property filter
+    if (propertyFilter.value) {
+      bookings = bookings.filter(booking => booking.property_id === propertyFilter.value)
+    }
+
+    // Date range filter
+    if (dateFrom.value) {
+      bookings = bookings.filter(booking => booking.checkout_date >= dateFrom.value)
+    }
+    if (dateTo.value) {
+      bookings = bookings.filter(booking => booking.checkout_date <= dateTo.value)
+    }
+
+    // Sort by date (most recent first)
+    return bookings.toSorted((a, b) => {
+      const dateA = new Date(a.checkout_date)
+      const dateB = new Date(b.checkout_date)
+      return dateB.getTime() - dateA.getTime()
+    })
+  })
+
+  // Helper methods
+  function getPropertyName (propertyId: string): string {
+    const property = allProperties.value.find(p => p.id === propertyId)
+    return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
+  }
+
+  function getCleanerName (cleanerId: string): string {
+    const cleaner = availableCleaners.value.find(c => c.id === cleanerId)
+    return cleaner?.name || 'Unknown Cleaner'
+  }
+
+  function getPropertyAddress (propertyId: string): string {
+    const property = allProperties.value.find(p => p.id === propertyId)
+    return property ? formatPropertyAddress(property) : 'Unknown Address'
+  }
+
+  function getStatusColor (status: string): string {
+    const colors: Record<string, string> = {
+      pending: 'warning',
+      scheduled: 'info',
+      in_progress: 'primary',
+      completed: 'success',
+      cancelled: 'error',
+    }
+    return colors[status] || 'grey'
+  }
+
+  function getPriorityColor (priority: string): string {
+    const colors: Record<string, string> = {
+      low: 'grey',
+      normal: 'primary',
+      high: 'orange',
+      urgent: 'error',
+    }
+    return colors[priority] || 'primary'
+  }
+
+  function formatDate (dateString: string): string {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      weekday: 'short',
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
     })
   }
 
-  // Status filter
-  if (statusFilter.value) {
-    bookings = bookings.filter(booking => booking.status === statusFilter.value)
+  function formatDateTime (dateString: string): string {
+    const date = new Date(dateString)
+    return date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+    })
   }
 
-  // Type filter
-  if (typeFilter.value) {
-    bookings = bookings.filter(booking => booking.booking_type === typeFilter.value)
+  // Dialog methods
+  function openCreateBookingDialog () {
+    editingBooking.value = null
+    showBookingDialog.value = true
   }
 
-  // Property filter
-  if (propertyFilter.value) {
-    bookings = bookings.filter(booking => booking.property_id === propertyFilter.value)
+  function openBookingDetails (booking: Booking) {
+    console.log('Opening booking details:', booking.id)
   }
 
-  // Date range filter
-  if (dateFrom.value) {
-    bookings = bookings.filter(booking => booking.checkout_date >= dateFrom.value)
-  }
-  if (dateTo.value) {
-    bookings = bookings.filter(booking => booking.checkout_date <= dateTo.value)
+  function editBooking (booking: Booking) {
+    editingBooking.value = booking
+    showBookingDialog.value = true
   }
 
-  // Sort by date (most recent first)
-  return bookings.sort((a, b) => {
-    const dateA = new Date(a.checkout_date)
-    const dateB = new Date(b.checkout_date)
-    return dateB.getTime() - dateA.getTime()
-  })
-})
-
-// Helper methods
-const getPropertyName = (propertyId: string): string => {
-  const property = allProperties.value.find(p => p.id === propertyId)
-  return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
-}
-
-const getCleanerName = (cleanerId: string): string => {
-  const cleaner = availableCleaners.value.find(c => c.id === cleanerId)
-  return cleaner?.name || 'Unknown Cleaner'
-}
-
-const getPropertyAddress = (propertyId: string): string => {
-  const property = allProperties.value.find(p => p.id === propertyId)
-  return property ? formatPropertyAddress(property) : 'Unknown Address'
-}
-
-const getStatusColor = (status: string): string => {
-  const colors: Record<string, string> = {
-    pending: 'warning',
-    scheduled: 'info',
-    in_progress: 'primary',
-    completed: 'success',
-    cancelled: 'error'
+  function closeBookingDialog () {
+    showBookingDialog.value = false
+    editingBooking.value = null
   }
-  return colors[status] || 'grey'
-}
 
-const getPriorityColor = (priority: string): string => {
-  const colors: Record<string, string> = {
-    low: 'grey',
-    normal: 'primary',
-    high: 'orange',
-    urgent: 'error'
+  function saveBooking () {
+    console.log('Saving booking...')
+    closeBookingDialog()
   }
-  return colors[priority] || 'primary'
-}
 
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
-    weekday: 'short',
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
+  // Cleaner assignment methods
+  function assignCleaner (booking: Booking) {
+    selectedBookingForCleaner.value = booking
+    selectedCleaner.value = ''
+    showCleanerDialog.value = true
+  }
 
-const formatDateTime = (dateString: string): string => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('en-US', {
-    month: 'short',
-    day: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit'
-  })
-}
+  function closeCleanerDialog () {
+    showCleanerDialog.value = false
+    selectedBookingForCleaner.value = null
+    selectedCleaner.value = ''
+  }
 
-// Dialog methods
-const openCreateBookingDialog = () => {
-  editingBooking.value = null
-  showBookingDialog.value = true
-}
+  async function confirmCleanerAssignment () {
+    if (selectedBookingForCleaner.value && selectedCleaner.value) {
+      try {
+        await updateBooking(selectedBookingForCleaner.value.id, {
+          assigned_cleaner_id: selectedCleaner.value,
+          status: 'scheduled',
+        })
+        console.log('Cleaner assigned successfully')
+      } catch (error) {
+        console.error('Failed to assign cleaner:', error)
+      }
+    }
+    closeCleanerDialog()
+  }
 
-const openBookingDetails = (booking: Booking) => {
-  console.log('Opening booking details:', booking.id)
-}
+  // Booking actions
+  function duplicateBooking (booking: Booking) {
+    console.log('Duplicating booking:', booking.id)
+  }
 
-const editBooking = (booking: Booking) => {
-  editingBooking.value = booking
-  showBookingDialog.value = true
-}
-
-const closeBookingDialog = () => {
-  showBookingDialog.value = false
-  editingBooking.value = null
-}
-
-const saveBooking = () => {
-  console.log('Saving booking...')
-  closeBookingDialog()
-}
-
-// Cleaner assignment methods
-const assignCleaner = (booking: Booking) => {
-  selectedBookingForCleaner.value = booking
-  selectedCleaner.value = ''
-  showCleanerDialog.value = true
-}
-
-const closeCleanerDialog = () => {
-  showCleanerDialog.value = false
-  selectedBookingForCleaner.value = null
-  selectedCleaner.value = ''
-}
-
-const confirmCleanerAssignment = async () => {
-  if (selectedBookingForCleaner.value && selectedCleaner.value) {
+  async function cancelBooking (booking: Booking) {
     try {
-      await updateBooking(selectedBookingForCleaner.value.id, {
-        assigned_cleaner_id: selectedCleaner.value,
-        status: 'scheduled'
-      })
-      console.log('Cleaner assigned successfully')
+      await updateBooking(booking.id, { status: 'cancelled' })
+      console.log('Booking cancelled successfully')
     } catch (error) {
-      console.error('Failed to assign cleaner:', error)
+      console.error('Failed to cancel booking:', error)
     }
   }
-  closeCleanerDialog()
-}
-
-// Booking actions
-const duplicateBooking = (booking: Booking) => {
-  console.log('Duplicating booking:', booking.id)
-}
-
-const cancelBooking = async (booking: Booking) => {
-  try {
-    await updateBooking(booking.id, { status: 'cancelled' })
-    console.log('Booking cancelled successfully')
-  } catch (error) {
-    console.error('Failed to cancel booking:', error)
-  }
-}
 </script>
 
 <style scoped>

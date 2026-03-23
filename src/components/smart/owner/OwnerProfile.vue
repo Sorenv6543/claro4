@@ -25,8 +25,8 @@
           <v-card class="mb-4">
             <v-card-title>
               <v-icon
-                color="primary"
                 class="mr-2"
+                color="primary"
               >
                 mdi-account
               </v-icon>
@@ -91,8 +91,8 @@
           <v-card class="mb-4">
             <v-card-title>
               <v-icon
-                color="info"
                 class="mr-2"
+                color="info"
               >
                 mdi-cog
               </v-icon>
@@ -138,8 +138,8 @@
           <v-card>
             <v-card-title>
               <v-icon
-                color="warning"
                 class="mr-2"
+                color="warning"
               >
                 mdi-cog
               </v-icon>
@@ -182,8 +182,8 @@
           <v-card class="mb-4">
             <v-card-title>
               <v-icon
-                color="success"
                 class="mr-2"
+                color="success"
               >
                 mdi-chart-line
               </v-icon>
@@ -221,8 +221,8 @@
           <v-card>
             <v-card-title>
               <v-icon
-                color="info"
                 class="mr-2"
+                color="info"
               >
                 mdi-account-circle
               </v-icon>
@@ -230,9 +230,9 @@
             </v-card-title>
             <v-card-text class="text-center">
               <v-avatar
+                class="mb-4"
                 color="primary"
                 size="120"
-                class="mb-4"
               >
                 <v-icon
                   color="white"
@@ -248,10 +248,10 @@
                 {{ user.email }}
               </div>
               <v-btn
-                color="primary"
-                variant="outlined"
-                size="small"
                 class="mt-3"
+                color="primary"
+                size="small"
+                variant="outlined"
                 @click="handleChangeAvatar"
               >
                 Change Avatar
@@ -266,8 +266,8 @@
           <v-card>
             <v-card-text class="text-center">
               <v-progress-circular
-                indeterminate
                 color="primary"
+                indeterminate
               />
               <div class="mt-4">
                 Loading profile...
@@ -281,42 +281,42 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
+  import { computed } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useAuthStore } from '@/stores/auth'
 
-defineOptions({
-  name: 'OwnerProfileComponent'
-});
+  defineOptions({
+    name: 'OwnerProfileComponent',
+  })
 
-const router = useRouter();
-const authStore = useAuthStore();
+  const router = useRouter()
+  const authStore = useAuthStore()
 
-const user = computed(() => authStore.user);
+  const user = computed(() => authStore.user)
 
-const handleEditProfile = () => {
-  console.log('Edit profile clicked');
-};
+  function handleEditProfile () {
+    console.log('Edit profile clicked')
+  }
 
-const handleChangePassword = () => {
-  console.log('Change password clicked');
-};
+  function handleChangePassword () {
+    console.log('Change password clicked')
+  }
 
-const handleSettings = () => {
-  router.push('/owner/settings');
-};
+  function handleSettings () {
+    router.push('/owner/settings')
+  }
 
-const handleChangeAvatar = () => {
-  console.log('Change avatar clicked');
-};
+  function handleChangeAvatar () {
+    console.log('Change avatar clicked')
+  }
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-};
+  function formatDate (dateString: string) {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
+  }
 </script>
 
 <style scoped>

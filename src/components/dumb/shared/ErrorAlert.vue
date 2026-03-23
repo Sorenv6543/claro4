@@ -1,19 +1,19 @@
 <template>
   <v-alert
     v-if="show"
+    :class="alertClasses"
+    :closable="closable"
+    :density="density"
+    :prominent="prominent"
     :type="alertType"
     :variant="variant"
-    :closable="closable"
-    :prominent="prominent"
-    :density="density"
-    :class="alertClasses"
     @click:close="handleClose"
   >
     <!-- Alert icon -->
     <template #prepend>
       <v-icon :icon="alertIcon" />
     </template>
-    
+
     <!-- Alert title -->
     <template
       v-if="title"
@@ -21,15 +21,15 @@
     >
       <span class="error-alert-title">{{ title }}</span>
     </template>
-    
+
     <!-- Main error message -->
     <div class="error-alert-content">
       <div class="error-message">
         {{ displayMessage }}
       </div>
-      
+
       <!-- Business impact (admin only) -->
-      <div 
+      <div
         v-if="showBusinessImpact && businessImpact"
         class="business-impact mt-2"
       >
@@ -41,10 +41,10 @@
           {{ businessImpactText }}
         </v-chip>
       </div>
-      
+
       <!-- Error details (admin only) -->
       <v-expand-transition>
-        <div 
+        <div
           v-if="showDetails && errorDetails"
           class="error-details mt-3"
         >
@@ -57,9 +57,9 @@
           </div>
         </div>
       </v-expand-transition>
-      
+
       <!-- Affected resources (admin only) -->
-      <div 
+      <div
         v-if="showAffectedResources && affectedResources?.length"
         class="affected-resources mt-2"
       >
@@ -70,53 +70,53 @@
           <v-chip
             v-for="resource in affectedResources.slice(0, 3)"
             :key="resource"
+            class="mr-1 mb-1"
             size="x-small"
             variant="outlined"
-            class="mr-1 mb-1"
           >
             {{ resource }}
           </v-chip>
           <v-chip
             v-if="affectedResources.length > 3"
+            class="mr-1 mb-1"
             size="x-small"
             variant="outlined"
-            class="mr-1 mb-1"
           >
             +{{ affectedResources.length - 3 }} more
           </v-chip>
         </div>
       </div>
-      
+
       <!-- Action buttons -->
-      <div 
+      <div
         v-if="showActions"
         class="error-actions mt-3"
       >
         <v-btn
           v-if="retryable && !isRetrying"
+          color="primary"
           size="small"
           variant="outlined"
-          color="primary"
           @click="handleRetry"
         >
           <v-icon
-            start
             icon="mdi-refresh"
+            start
           />
           Try Again
         </v-btn>
-        
+
         <v-btn
           v-if="isRetrying"
+          color="primary"
+          disabled
+          loading
           size="small"
           variant="outlined"
-          color="primary"
-          loading
-          disabled
         >
           Retrying...
         </v-btn>
-        
+
         <v-btn
           v-if="showDetailsToggle && isAdmin"
           size="small"
@@ -125,31 +125,31 @@
         >
           {{ showDetails ? 'Hide' : 'Show' }} Details
         </v-btn>
-        
+
         <v-btn
           v-if="escalatable && isAdmin"
+          color="warning"
           size="small"
           variant="outlined"
-          color="warning"
           @click="handleEscalate"
         >
           <v-icon
-            start
             icon="mdi-alert-octagon"
+            start
           />
           Escalate
         </v-btn>
       </div>
-      
+
       <!-- Help text (owner only) -->
-      <div 
+      <div
         v-if="showHelpText && helpText"
         class="help-text mt-2"
       >
-        <v-icon 
-          icon="mdi-information-outline" 
-          size="small" 
+        <v-icon
           class="mr-1"
+          icon="mdi-information-outline"
+          size="small"
         />
         <span class="text-caption">{{ helpText }}</span>
       </div>
@@ -158,165 +158,178 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import type { UserRole, BusinessImpact } from '@/types';
+  import type { BusinessImpact, UserRole } from '@/types'
+  import { computed, ref } from 'vue'
 
-interface Props {
-  /** Whether to show the alert */
-  show?: boolean;
-  /** Error message to display */
-  message: string;
-  /** Alert title */
-  title?: string;
-  /** Error type/severity */
-  type?: 'error' | 'warning' | 'info';
-  /** User role for role-based display */
-  userRole?: UserRole;
-  /** Business impact level (admin only) */
-  businessImpact?: BusinessImpact;
-  /** Technical error details (admin only) */
-  errorDetails?: string;
-  /** Affected resources (admin only) */
-  affectedResources?: string[];
-  /** Whether error is retryable */
-  retryable?: boolean;
-  /** Whether error can be escalated */
-  escalatable?: boolean;
-  /** Help text for users (owner only) */
-  helpText?: string;
-  /** Alert variant */
-  variant?: 'flat' | 'tonal' | 'outlined' | 'text' | 'elevated' | 'plain';
-  /** Whether alert is closable */
-  closable?: boolean;
-  /** Whether to show prominent styling */
-  prominent?: boolean;
-  /** Alert density */
-  density?: 'default' | 'comfortable' | 'compact';
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  show: true,
-  type: 'error',
-  variant: 'tonal',
-  closable: true,
-  prominent: false,
-  density: 'default'
-});
-
-// Emits
-const emit = defineEmits<{
-  close: [];
-  retry: [];
-  escalate: [];
-}>();
-
-// Local state
-const showDetails = ref(false);
-const isRetrying = ref(false);
-
-// Computed properties
-const isAdmin = computed(() => props.userRole === 'admin');
-const isOwner = computed(() => props.userRole === 'owner');
-
-const alertType = computed(() => {
-  if (props.type === 'error') return 'error';
-  if (props.type === 'warning') return 'warning';
-  return 'info';
-});
-
-const alertIcon = computed(() => {
-  switch (props.type) {
-    case 'error': return 'mdi-alert-circle';
-    case 'warning': return 'mdi-alert';
-    default: return 'mdi-information';
+  interface Props {
+    /** Whether to show the alert */
+    show?: boolean
+    /** Error message to display */
+    message: string
+    /** Alert title */
+    title?: string
+    /** Error type/severity */
+    type?: 'error' | 'warning' | 'info'
+    /** User role for role-based display */
+    userRole?: UserRole
+    /** Business impact level (admin only) */
+    businessImpact?: BusinessImpact
+    /** Technical error details (admin only) */
+    errorDetails?: string
+    /** Affected resources (admin only) */
+    affectedResources?: string[]
+    /** Whether error is retryable */
+    retryable?: boolean
+    /** Whether error can be escalated */
+    escalatable?: boolean
+    /** Help text for users (owner only) */
+    helpText?: string
+    /** Alert variant */
+    variant?: 'flat' | 'tonal' | 'outlined' | 'text' | 'elevated' | 'plain'
+    /** Whether alert is closable */
+    closable?: boolean
+    /** Whether to show prominent styling */
+    prominent?: boolean
+    /** Alert density */
+    density?: 'default' | 'comfortable' | 'compact'
   }
-});
 
-const alertClasses = computed(() => [
-  'error-alert',
-  `error-alert--${props.userRole}`,
-  {
-    'error-alert--with-actions': showActions.value,
-    'error-alert--admin': isAdmin.value,
-    'error-alert--owner': isOwner.value
+  const props = withDefaults(defineProps<Props>(), {
+    show: true,
+    type: 'error',
+    variant: 'tonal',
+    closable: true,
+    prominent: false,
+    density: 'default',
+  })
+
+  // Emits
+  const emit = defineEmits<{
+    close: []
+    retry: []
+    escalate: []
+  }>()
+
+  // Local state
+  const showDetails = ref(false)
+  const isRetrying = ref(false)
+
+  // Computed properties
+  const isAdmin = computed(() => props.userRole === 'admin')
+  const isOwner = computed(() => props.userRole === 'owner')
+
+  const alertType = computed(() => {
+    if (props.type === 'error') return 'error'
+    if (props.type === 'warning') return 'warning'
+    return 'info'
+  })
+
+  const alertIcon = computed(() => {
+    switch (props.type) {
+      case 'error': { return 'mdi-alert-circle'
+      }
+      case 'warning': { return 'mdi-alert'
+      }
+      default: { return 'mdi-information'
+      }
+    }
+  })
+
+  const alertClasses = computed(() => [
+    'error-alert',
+    `error-alert--${props.userRole}`,
+    {
+      'error-alert--with-actions': showActions.value,
+      'error-alert--admin': isAdmin.value,
+      'error-alert--owner': isOwner.value,
+    },
+  ])
+
+  const displayMessage = computed(() => {
+    // For owners, show simplified message
+    if (isOwner.value) {
+      return props.message
+    }
+
+    // For admins, show full technical message
+    return props.message
+  })
+
+  const businessImpactColor = computed(() => {
+    switch (props.businessImpact) {
+      case 'critical': { return 'error'
+      }
+      case 'high': { return 'warning'
+      }
+      case 'medium': { return 'info'
+      }
+      case 'low': { return 'success'
+      }
+      default: { return 'grey'
+      }
+    }
+  })
+
+  const businessImpactText = computed(() => {
+    switch (props.businessImpact) {
+      case 'critical': { return 'Critical Impact'
+      }
+      case 'high': { return 'High Impact'
+      }
+      case 'medium': { return 'Medium Impact'
+      }
+      case 'low': { return 'Low Impact'
+      }
+      default: { return 'Unknown Impact'
+      }
+    }
+  })
+
+  const showBusinessImpact = computed(() =>
+    isAdmin.value && props.businessImpact,
+  )
+
+  const showAffectedResources = computed(() =>
+    isAdmin.value && props.affectedResources?.length,
+  )
+
+  const showDetailsToggle = computed(() =>
+    isAdmin.value && props.errorDetails,
+  )
+
+  const showActions = computed(() =>
+    props.retryable || (isAdmin.value && (props.escalatable || props.errorDetails)),
+  )
+
+  const showHelpText = computed(() =>
+    isOwner.value && props.helpText,
+  )
+
+  // Methods
+  function handleClose (): void {
+    emit('close')
   }
-]);
 
-const displayMessage = computed(() => {
-  // For owners, show simplified message
-  if (isOwner.value) {
-    return props.message;
+  async function handleRetry (): Promise<void> {
+    isRetrying.value = true
+    try {
+      emit('retry')
+      // Reset retry state after a delay
+      setTimeout(() => {
+        isRetrying.value = false
+      }, 2000)
+    } catch {
+      isRetrying.value = false
+    }
   }
-  
-  // For admins, show full technical message
-  return props.message;
-});
 
-const businessImpactColor = computed(() => {
-  switch (props.businessImpact) {
-    case 'critical': return 'error';
-    case 'high': return 'warning';
-    case 'medium': return 'info';
-    case 'low': return 'success';
-    default: return 'grey';
+  function handleEscalate (): void {
+    emit('escalate')
   }
-});
 
-const businessImpactText = computed(() => {
-  switch (props.businessImpact) {
-    case 'critical': return 'Critical Impact';
-    case 'high': return 'High Impact';
-    case 'medium': return 'Medium Impact';
-    case 'low': return 'Low Impact';
-    default: return 'Unknown Impact';
+  function toggleDetails (): void {
+    showDetails.value = !showDetails.value
   }
-});
-
-const showBusinessImpact = computed(() => 
-  isAdmin.value && props.businessImpact
-);
-
-const showAffectedResources = computed(() => 
-  isAdmin.value && props.affectedResources?.length
-);
-
-const showDetailsToggle = computed(() => 
-  isAdmin.value && props.errorDetails
-);
-
-const showActions = computed(() => 
-  props.retryable || (isAdmin.value && (props.escalatable || props.errorDetails))
-);
-
-const showHelpText = computed(() => 
-  isOwner.value && props.helpText
-);
-
-// Methods
-function handleClose(): void {
-  emit('close');
-}
-
-async function handleRetry(): Promise<void> {
-  isRetrying.value = true;
-  try {
-    emit('retry');
-    // Reset retry state after a delay
-    setTimeout(() => {
-      isRetrying.value = false;
-    }, 2000);
-  } catch (_error) {
-    isRetrying.value = false;
-  }
-}
-
-function handleEscalate(): void {
-  emit('escalate');
-}
-
-function toggleDetails(): void {
-  showDetails.value = !showDetails.value;
-}
 </script>
 
 <style scoped>
@@ -414,4 +427,4 @@ function toggleDetails(): void {
 .v-theme--dark .help-text {
   background-color: rgba(var(--v-theme-info), 0.05);
 }
-</style> 
+</style>

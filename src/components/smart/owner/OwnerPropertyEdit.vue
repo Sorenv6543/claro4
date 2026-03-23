@@ -116,11 +116,11 @@
 
 <script setup lang="ts">
   import type { Property } from '@/types'
-  import { formatPropertyAddress } from '@/types/property'
   import { onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   import { usePropertyStore } from '@/stores/property'
+  import { formatPropertyAddress } from '@/types/property'
 
   defineOptions({
     name: 'OwnerPropertyEditComponent',

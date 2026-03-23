@@ -12,14 +12,14 @@
     >
       Loading admin booking data...
     </div>
-    
+
     <div
       v-if="error"
       class="error"
     >
       Error: {{ error }}
     </div>
-    
+
     <div
       v-if="success"
       class="success"
@@ -111,8 +111,8 @@
           v-if="turnAlerts.alerts.length > 0"
           class="alert-list"
         >
-          <div 
-            v-for="alert in turnAlerts.alerts" 
+          <div
+            v-for="alert in turnAlerts.alerts"
             :key="alert.id"
             class="alert-item"
             :class="alert.priority"
@@ -137,8 +137,8 @@
     <section class="status-section">
       <h2>Bookings by Status (System-Wide)</h2>
       <div class="status-grid">
-        <div 
-          v-for="(bookings, status) in bookingsByStatus" 
+        <div
+          v-for="(bookings, status) in bookingsByStatus"
           :key="status"
           class="status-card"
         >
@@ -147,8 +147,8 @@
             {{ bookings.length }}
           </div>
           <div class="status-list">
-            <div 
-              v-for="booking in bookings.slice(0, 3)" 
+            <div
+              v-for="booking in bookings.slice(0, 3)"
               :key="booking.id"
               class="booking-item"
             >
@@ -174,8 +174,8 @@
         <p><strong>Average Workload Score:</strong> {{ cleanerAnalysis.averageWorkload.toFixed(1) }}</p>
       </div>
       <div class="cleaner-workloads">
-        <div 
-          v-for="(workload, cleanerId) in cleanerAnalysis.cleanerWorkloads" 
+        <div
+          v-for="(workload, cleanerId) in cleanerAnalysis.cleanerWorkloads"
           :key="cleanerId"
           class="cleaner-card"
         >
@@ -199,8 +199,8 @@
         <p><strong>Average Turn Rate:</strong> {{ propertyReport.averageTurnRate.toFixed(1) }}%</p>
       </div>
       <div class="property-stats">
-        <div 
-          v-for="[propertyId, stats] in Object.entries(propertyReport.propertyStats).slice(0, 5)" 
+        <div
+          v-for="[propertyId, stats] in Object.entries(propertyReport.propertyStats).slice(0, 5)"
           :key="propertyId"
           class="property-card"
         >
@@ -220,8 +220,8 @@
       <h2>Advanced Filtering Demo</h2>
       <div class="filter-controls">
         <label>
-          <input 
-            v-model="filterCriteria.unassignedOnly" 
+          <input
+            v-model="filterCriteria.unassignedOnly"
             type="checkbox"
             @change="applyFilters"
           >
@@ -265,8 +265,8 @@
       <div class="filtered-results">
         <h3>Filtered Results: {{ filteredBookings.length }} bookings</h3>
         <div class="booking-list">
-          <div 
-            v-for="booking in filteredBookings.slice(0, 10)" 
+          <div
+            v-for="booking in filteredBookings.slice(0, 10)"
             :key="booking.id"
             class="booking-card"
           >
@@ -293,110 +293,110 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useAdminBookings } from '@/composables/admin/useAdminBookings';
-import type { BookingStatus, BookingType } from '@/types';
+  import type { BookingStatus, BookingType } from '@/types'
+  import { computed, onMounted, ref } from 'vue'
+  import { useAdminBookings } from '@/composables/admin/useAdminBookings'
 
-// Use the admin bookings composable
-const {
-  // State
-  loading,
-  error,
-  success,
-  
-  // Computed properties (system-wide, no filtering)
-  allBookings,
-  systemMetrics,
-  bookingsByStatus,
-  
-  // Admin operations
-  fetchAllBookings,
-  assignCleaner,
-  updateBookingStatus,
-  bulkAssignCleaner,
-  
-  // Analytics
-  getSystemTurnAlerts,
-  getCleanerWorkloadAnalysis,
-  getPropertyUtilizationReport,
-  
-  // Advanced filtering
-  filterBookings
-} = useAdminBookings();
+  // Use the admin bookings composable
+  const {
+    // State
+    loading,
+    error,
+    success,
 
-// Demo state
-const filterCriteria = ref<{
-  unassignedOnly: boolean;
-  status: BookingStatus | '';
-  bookingType: BookingType | '';
-}>({
-  unassignedOnly: false,
-  status: '',
-  bookingType: ''
-});
+    // Computed properties (system-wide, no filtering)
+    allBookings,
+    systemMetrics,
+    bookingsByStatus,
 
-const filteredBookings = ref(allBookings.value);
+    // Admin operations
+    fetchAllBookings,
+    assignCleaner,
+    updateBookingStatus,
+    bulkAssignCleaner,
 
-// Computed analytics
-const turnAlerts = computed(() => getSystemTurnAlerts());
-const cleanerAnalysis = computed(() => getCleanerWorkloadAnalysis());
-const propertyReport = computed(() => getPropertyUtilizationReport());
+    // Analytics
+    getSystemTurnAlerts,
+    getCleanerWorkloadAnalysis,
+    getPropertyUtilizationReport,
 
-// Demo action handlers
-async function handleFetchAllBookings() {
-  await fetchAllBookings();
-}
+    // Advanced filtering
+    filterBookings,
+  } = useAdminBookings()
 
-async function handleTestCleanerAssignment() {
-  if (allBookings.value.length > 0) {
-    const firstBooking = allBookings.value[0];
-    const testCleanerId = 'test-cleaner-123';
-    await assignCleaner(firstBooking.id, testCleanerId);
+  // Demo state
+  const filterCriteria = ref<{
+    unassignedOnly: boolean
+    status: BookingStatus | ''
+    bookingType: BookingType | ''
+  }>({
+    unassignedOnly: false,
+    status: '',
+    bookingType: '',
+  })
+
+  const filteredBookings = ref(allBookings.value)
+
+  // Computed analytics
+  const turnAlerts = computed(() => getSystemTurnAlerts())
+  const cleanerAnalysis = computed(() => getCleanerWorkloadAnalysis())
+  const propertyReport = computed(() => getPropertyUtilizationReport())
+
+  // Demo action handlers
+  async function handleFetchAllBookings () {
+    await fetchAllBookings()
   }
-}
 
-async function handleTestStatusUpdate() {
-  if (allBookings.value.length > 0) {
-    const firstBooking = allBookings.value[0];
-    await updateBookingStatus(firstBooking.id, 'scheduled');
+  async function handleTestCleanerAssignment () {
+    if (allBookings.value.length > 0) {
+      const firstBooking = allBookings.value[0]
+      const testCleanerId = 'test-cleaner-123'
+      await assignCleaner(firstBooking.id, testCleanerId)
+    }
   }
-}
 
-async function handleTestBulkAssignment() {
-  const unassignedBookingIds = allBookings.value
-    .filter(b => !b.assigned_cleaner_id)
-    .slice(0, 3)
-    .map(b => b.id);
-  
-  if (unassignedBookingIds.length > 0) {
-    const testCleanerId = 'bulk-test-cleaner-456';
-    await bulkAssignCleaner(unassignedBookingIds, testCleanerId);
+  async function handleTestStatusUpdate () {
+    if (allBookings.value.length > 0) {
+      const firstBooking = allBookings.value[0]
+      await updateBookingStatus(firstBooking.id, 'scheduled')
+    }
   }
-}
 
-function applyFilters() {
-  const criteria: any = {};
-  
-  if (filterCriteria.value.unassignedOnly) {
-    criteria.unassignedOnly = true;
-  }
-  
-  if (filterCriteria.value.status) {
-    criteria.status = [filterCriteria.value.status];
-  }
-  
-  if (filterCriteria.value.bookingType) {
-    criteria.bookingType = [filterCriteria.value.bookingType];
-  }
-  
-  filteredBookings.value = filterBookings(criteria);
-}
+  async function handleTestBulkAssignment () {
+    const unassignedBookingIds = allBookings.value
+      .filter(b => !b.assigned_cleaner_id)
+      .slice(0, 3)
+      .map(b => b.id)
 
-// Initialize demo
-onMounted(async () => {
-  await handleFetchAllBookings();
-  applyFilters();
-});
+    if (unassignedBookingIds.length > 0) {
+      const testCleanerId = 'bulk-test-cleaner-456'
+      await bulkAssignCleaner(unassignedBookingIds, testCleanerId)
+    }
+  }
+
+  function applyFilters () {
+    const criteria: any = {}
+
+    if (filterCriteria.value.unassignedOnly) {
+      criteria.unassignedOnly = true
+    }
+
+    if (filterCriteria.value.status) {
+      criteria.status = [filterCriteria.value.status]
+    }
+
+    if (filterCriteria.value.bookingType) {
+      criteria.bookingType = [filterCriteria.value.bookingType]
+    }
+
+    filteredBookings.value = filterBookings(criteria)
+  }
+
+  // Initialize demo
+  onMounted(async () => {
+    await handleFetchAllBookings()
+    applyFilters()
+  })
 </script>
 
 <style scoped>
@@ -682,4 +682,4 @@ button:disabled {
   overflow-x: auto;
   font-size: 0.9em;
 }
-</style> 
+</style>

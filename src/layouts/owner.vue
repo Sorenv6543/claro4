@@ -2,10 +2,10 @@
 <template>
   <v-app class="owner-layout">
     <v-app-bar
-      height="64"
-      flat
-      color="surface"
       border="b"
+      color="surface"
+      flat
+      height="64"
       order="-1"
     >
       <!-- Hamburger -->
@@ -21,31 +21,31 @@
 
       <!-- Calendar controls — visible only on the schedule page -->
       <template v-if="isCalendarPage">
-        <v-divider vertical class="mx-3 my-4 d-none d-sm-flex" />
+        <v-divider class="mx-3 my-0 d-none d-sm-flex" vertical />
 
         <v-btn
-          variant="outlined"
-          size="small"
           class="text-none mr-2"
+          size="small"
+          variant="outlined"
           @click="calendarState.goToToday()"
         >
           Today
         </v-btn>
 
         <v-btn
-          icon="mdi-chevron-left"
-          variant="text"
-          size="small"
-          density="comfortable"
           aria-label="Previous period"
+          density="comfortable"
+          icon="mdi-chevron-left"
+          size="small"
+          variant="text"
           @click="calendarState.prev()"
         />
         <v-btn
-          icon="mdi-chevron-right"
-          variant="text"
-          size="small"
-          density="comfortable"
           aria-label="Next period"
+          density="comfortable"
+          icon="mdi-chevron-right"
+          size="small"
+          variant="text"
           @click="calendarState.next()"
         />
 
@@ -63,14 +63,14 @@
       <template v-if="isCalendarPage">
         <v-btn-toggle
           v-model="viewMode"
-          mandatory
-          density="compact"
-          rounded="pill"
-          color="primary"
           class="mr-2"
+          color="primary"
+          density="compact"
+          mandatory
+          rounded="pill"
         >
-          <v-btn value="ranges" size="small" class="text-none">Ranges</v-btn>
-          <v-btn value="events" size="small" class="text-none">Events</v-btn>
+          <v-btn class="text-none" size="small" value="ranges">Ranges</v-btn>
+          <v-btn class="text-none" size="small" value="events">Events</v-btn>
         </v-btn-toggle>
       </template>
 
@@ -80,10 +80,10 @@
           <template #activator="{ props: menuProps }">
             <v-btn
               v-bind="menuProps"
-              variant="outlined"
-              size="small"
-              class="text-none mr-2"
               append-icon="mdi-chevron-down"
+              class="text-none mr-2"
+              size="small"
+              variant="outlined"
             >
               {{ viewLabels[activeViewKey] }}
             </v-btn>
@@ -92,10 +92,10 @@
             <v-list-item
               v-for="opt in viewOptions"
               :key="opt.value"
-              :prepend-icon="opt.icon"
-              :title="opt.label"
               :active="activeViewKey === opt.value"
               color="primary"
+              :prepend-icon="opt.icon"
+              :title="opt.label"
               @click="switchView(opt.value)"
             />
           </v-list>
@@ -104,24 +104,24 @@
 
       <!-- Notification bell -->
       <v-btn
-        icon="mdi-bell-outline"
-        variant="text"
-        size="small"
-        class="mr-1"
         aria-label="Notifications"
+        class="mr-1"
+        icon="mdi-bell-outline"
+        size="small"
+        variant="text"
       />
 
       <!-- DEV: theme picker -->
       <template v-if="isDev">
-        <v-menu location="bottom end" :close-on-content-click="false">
+        <v-menu :close-on-content-click="false" location="bottom end">
           <template #activator="{ props: menuProps }">
             <v-btn
               v-bind="menuProps"
-              icon="mdi-palette"
-              variant="text"
-              size="small"
-              class="mr-1"
               aria-label="Theme picker"
+              class="mr-1"
+              icon="mdi-palette"
+              size="small"
+              variant="text"
             />
           </template>
           <v-card elevation="2" rounded="lg" style="padding:12px;width:296px">
@@ -141,8 +141,8 @@
                 <div style="padding:3px 6px;font-size:11px;background:#fff;color:#333">{{ t.label }}</div>
                 <v-icon
                   v-if="theme.global.name.value === t.id"
-                  size="14"
                   color="white"
+                  size="14"
                   style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.45);border-radius:50%;padding:2px"
                 >mdi-check</v-icon>
               </div>
@@ -156,9 +156,9 @@
         <template #activator="{ props: menuProps }">
           <v-avatar
             v-bind="menuProps"
+            class="mr-2"
             color="primary"
             size="28"
-            class="mr-2"
             style="cursor: pointer"
           >
             <span class="text-caption font-weight-bold">{{ userInitials }}</span>
@@ -191,92 +191,92 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useDisplay, useTheme } from 'vuetify'
-import { useAuthStore } from '@stores/auth'
-import { useCalendarState } from '@/composables/shared/useCalendarState'
-import { THEMES } from '@/layouts/ownerThemes'
-import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
-import OwnerBottomNav from '@/components/smart/owner/OwnerBottomNav.vue'
+  import { useAuthStore } from '@stores/auth'
+  import { computed, ref } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { useDisplay, useTheme } from 'vuetify'
+  import OwnerBottomNav from '@/components/smart/owner/OwnerBottomNav.vue'
+  import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
+  import { useCalendarState } from '@/composables/shared/useCalendarState'
+  import { THEMES } from '@/layouts/ownerThemes'
 
-const isDev = import.meta.env.DEV
-const { mdAndUp } = useDisplay()
-const theme = useTheme()
-const router = useRouter()
-const route = useRoute()
-const authStore = useAuthStore()
-const calendarState = useCalendarState()
+  const isDev = import.meta.env.DEV
+  const { mdAndUp } = useDisplay()
+  const theme = useTheme()
+  const router = useRouter()
+  const route = useRoute()
+  const authStore = useAuthStore()
+  const calendarState = useCalendarState()
 
-const sidebarOpen = ref(mdAndUp.value)
-const viewMode = calendarState.viewMode
+  const sidebarOpen = ref(mdAndUp.value)
+  const viewMode = calendarState.viewMode
 
-// Show calendar controls only on the schedule/dashboard page
-const isCalendarPage = computed(() => route.path === '/owner/dashboard')
+  // Show calendar controls only on the schedule/dashboard page
+  const isCalendarPage = computed(() => route.path === '/owner/dashboard')
 
-// ── Calendar header data ─────────────────────────────────────────
-const formattedMonthYear = computed(() =>
-  calendarState.currentDate.value.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
-)
+  // ── Calendar header data ─────────────────────────────────────────
+  const formattedMonthYear = computed(() =>
+    calendarState.currentDate.value.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
+  )
 
-const formattedMonthYearShort = computed(() =>
-  calendarState.currentDate.value.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-)
+  const formattedMonthYearShort = computed(() =>
+    calendarState.currentDate.value.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+  )
 
-const viewOptions = [
-  { value: 'month', label: 'Month', icon: 'mdi-calendar-month-outline' },
-  { value: 'week', label: 'Week', icon: 'mdi-calendar-week-outline' },
-  { value: 'day', label: 'Day', icon: 'mdi-calendar-today-outline' },
-  { value: 'list', label: 'List', icon: 'mdi-format-list-bulleted' },
-] as const
+  const viewOptions = [
+    { value: 'month', label: 'Month', icon: 'mdi-calendar-month-outline' },
+    { value: 'week', label: 'Week', icon: 'mdi-calendar-week-outline' },
+    { value: 'day', label: 'Day', icon: 'mdi-calendar-today-outline' },
+    { value: 'list', label: 'List', icon: 'mdi-format-list-bulleted' },
+  ] as const
 
-const viewLabels: Record<string, string> = {
-  month: 'Month',
-  week: 'Week',
-  day: 'Day',
-  list: 'List',
-}
-
-const activeViewKey = computed(() => {
-  const v = calendarState.currentView.value
-  if (v === 'timeGridWeek') return 'week'
-  if (v === 'timeGridDay') return 'day'
-  if (v === 'listWeek') return 'list'
-  return 'month'
-})
-
-function switchView(key: string) {
-  const viewMap: Record<string, 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'> = {
-    week: 'timeGridWeek',
-    day: 'timeGridDay',
-    list: 'listWeek',
-    month: 'dayGridMonth',
+  const viewLabels: Record<string, string> = {
+    month: 'Month',
+    week: 'Week',
+    day: 'Day',
+    list: 'List',
   }
-  calendarState.setCalendarView(viewMap[key] ?? 'dayGridMonth')
-}
 
-// ── Theme / Auth ─────────────────────────────────────────────────
-function applyTheme(id: string) {
-  theme.global.name.value = id
-}
+  const activeViewKey = computed(() => {
+    const v = calendarState.currentView.value
+    if (v === 'timeGridWeek') return 'week'
+    if (v === 'timeGridDay') return 'day'
+    if (v === 'listWeek') return 'list'
+    return 'month'
+  })
 
-const userInitials = computed(() => {
-  const name =
-    authStore.user?.name ||
-    authStore.user?.email?.split('@')[0] ||
-    'U'
-  return name
-    .split(' ')
-    .map((n: string) => n[0] ?? '')
-    .join('')
-    .toUpperCase()
-    .slice(0, 2)
-})
+  function switchView (key: string) {
+    const viewMap: Record<string, 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'> = {
+      week: 'timeGridWeek',
+      day: 'timeGridDay',
+      list: 'listWeek',
+      month: 'dayGridMonth',
+    }
+    calendarState.setCalendarView(viewMap[key] ?? 'dayGridMonth')
+  }
 
-async function handleSignOut() {
-  await authStore.logout()
-  router.push('/')
-}
+  // ── Theme / Auth ─────────────────────────────────────────────────
+  function applyTheme (id: string) {
+    theme.global.name.value = id
+  }
+
+  const userInitials = computed(() => {
+    const name
+      = authStore.user?.name
+        || authStore.user?.email?.split('@')[0]
+        || 'U'
+    return name
+      .split(' ')
+      .map((n: string) => n[0] ?? '')
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  })
+
+  async function handleSignOut () {
+    await authStore.logout()
+    router.push('/')
+  }
 </script>
 
 <style scoped>

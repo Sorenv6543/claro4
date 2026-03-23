@@ -1,7 +1,7 @@
 <template>
   <v-card
-    variant="outlined"
     class="admin-calendar-controls"
+    variant="outlined"
   >
     <v-card-title class="text-subtitle-1 py-2 d-flex align-center">
       <v-icon class="mr-2">
@@ -10,15 +10,15 @@
       Calendar Controls
       <v-spacer />
       <v-btn
-        variant="text"
-        size="small"
         :icon="expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
+        size="small"
+        variant="text"
         @click="expanded = !expanded"
       />
     </v-card-title>
-    
+
     <v-divider />
-    
+
     <v-expand-transition>
       <v-card-text
         v-show="expanded"
@@ -36,14 +36,14 @@
               </div>
               <v-btn-toggle
                 v-model="selectedView"
-                variant="outlined"
                 divided
                 mandatory
+                variant="outlined"
                 @update:model-value="handleViewChange"
               >
                 <v-btn
-                  value="dayGridMonth"
                   size="small"
+                  value="dayGridMonth"
                 >
                   <v-icon start>
                     mdi-calendar-month
@@ -51,8 +51,8 @@
                   Month
                 </v-btn>
                 <v-btn
-                  value="timeGridWeek"
                   size="small"
+                  value="timeGridWeek"
                 >
                   <v-icon start>
                     mdi-calendar-week
@@ -60,8 +60,8 @@
                   Week
                 </v-btn>
                 <v-btn
-                  value="timeGridDay"
                   size="small"
+                  value="timeGridDay"
                 >
                   <v-icon start>
                     mdi-calendar-today
@@ -69,8 +69,8 @@
                   Day
                 </v-btn>
                 <v-btn
-                  value="listWeek"
                   size="small"
+                  value="listWeek"
                 >
                   <v-icon start>
                     mdi-format-list-bulleted
@@ -79,7 +79,7 @@
                 </v-btn>
               </v-btn-toggle>
             </v-col>
-            
+
             <v-col
               cols="12"
               md="6"
@@ -89,46 +89,46 @@
               </div>
               <div class="d-flex gap-2 align-center">
                 <v-btn
-                  variant="outlined"
                   size="small"
+                  variant="outlined"
                   @click="handlePrevious"
                 >
                   <v-icon>mdi-chevron-left</v-icon>
                 </v-btn>
-                
+
                 <v-btn
-                  variant="outlined"
                   size="small"
+                  variant="outlined"
                   @click="handleToday"
                 >
                   Today
                 </v-btn>
-                
+
                 <v-btn
-                  variant="outlined"
                   size="small"
+                  variant="outlined"
                   @click="handleNext"
                 >
                   <v-icon>mdi-chevron-right</v-icon>
                 </v-btn>
-                
+
                 <v-spacer />
-                
+
                 <v-text-field
                   v-model="selectedDate"
-                  type="date"
-                  variant="outlined"
                   density="compact"
                   hide-details
                   style="max-width: 150px;"
+                  type="date"
+                  variant="outlined"
                   @update:model-value="handleDateChange"
                 />
               </div>
             </v-col>
           </v-row>
-          
+
           <v-divider class="my-4" />
-          
+
           <!-- Filters -->
           <v-row>
             <v-col
@@ -137,13 +137,13 @@
             >
               <v-select
                 v-model="filters.status"
+                chips
+                clearable
+                density="compact"
                 :items="statusOptions"
                 label="Status Filter"
-                variant="outlined"
-                density="compact"
-                clearable
                 multiple
-                chips
+                variant="outlined"
                 @update:model-value="handleFilterChange"
               >
                 <template #chip="{ props, item }">
@@ -157,20 +157,20 @@
                 </template>
               </v-select>
             </v-col>
-            
+
             <v-col
               cols="12"
               md="3"
             >
               <v-select
                 v-model="filters.cleaner"
+                chips
+                clearable
+                density="compact"
                 :items="cleanerOptions"
                 label="Cleaner Filter"
-                variant="outlined"
-                density="compact"
-                clearable
                 multiple
-                chips
+                variant="outlined"
                 @update:model-value="handleFilterChange"
               >
                 <template #item="{ props, item }">
@@ -187,20 +187,20 @@
                 </template>
               </v-select>
             </v-col>
-            
+
             <v-col
               cols="12"
               md="3"
             >
               <v-select
                 v-model="filters.bookingType"
+                chips
+                clearable
+                density="compact"
                 :items="bookingTypeOptions"
                 label="Booking Type"
-                variant="outlined"
-                density="compact"
-                clearable
                 multiple
-                chips
+                variant="outlined"
                 @update:model-value="handleFilterChange"
               >
                 <template #chip="{ props, item }">
@@ -214,25 +214,25 @@
                 </template>
               </v-select>
             </v-col>
-            
+
             <v-col
               cols="12"
               md="3"
             >
               <v-select
                 v-model="filters.propertyOwner"
+                chips
+                clearable
+                density="compact"
                 :items="propertyOwnerOptions"
                 label="Property Owner"
-                variant="outlined"
-                density="compact"
-                clearable
                 multiple
-                chips
+                variant="outlined"
                 @update:model-value="handleFilterChange"
               />
             </v-col>
           </v-row>
-          
+
           <!-- Advanced Filters -->
           <v-row v-if="showAdvancedFilters">
             <v-col
@@ -241,13 +241,13 @@
             >
               <v-select
                 v-model="filters.priority"
+                chips
+                clearable
+                density="compact"
                 :items="priorityOptions"
                 label="Priority Level"
-                variant="outlined"
-                density="compact"
-                clearable
                 multiple
-                chips
+                variant="outlined"
                 @update:model-value="handleFilterChange"
               >
                 <template #chip="{ props, item }">
@@ -261,38 +261,38 @@
                 </template>
               </v-select>
             </v-col>
-            
+
             <v-col
               cols="12"
               md="4"
             >
               <v-text-field
                 v-model="filters.dateRange.start"
+                density="compact"
                 label="Start Date"
                 type="date"
                 variant="outlined"
-                density="compact"
                 @update:model-value="handleFilterChange"
               />
             </v-col>
-            
+
             <v-col
               cols="12"
               md="4"
             >
               <v-text-field
                 v-model="filters.dateRange.end"
+                density="compact"
                 label="End Date"
                 type="date"
                 variant="outlined"
-                density="compact"
                 @update:model-value="handleFilterChange"
               />
             </v-col>
           </v-row>
-          
+
           <v-divider class="my-4" />
-          
+
           <!-- Action Controls -->
           <v-row>
             <v-col
@@ -304,9 +304,9 @@
               </div>
               <div class="d-flex flex-wrap gap-2">
                 <v-btn
-                  variant="outlined"
-                  size="small"
                   color="primary"
+                  size="small"
+                  variant="outlined"
                   @click="handleRefresh"
                 >
                   <v-icon start>
@@ -314,11 +314,11 @@
                   </v-icon>
                   Refresh
                 </v-btn>
-                
+
                 <v-btn
-                  variant="outlined"
-                  size="small"
                   color="success"
+                  size="small"
+                  variant="outlined"
                   @click="handleExport"
                 >
                   <v-icon start>
@@ -326,11 +326,11 @@
                   </v-icon>
                   Export
                 </v-btn>
-                
+
                 <v-btn
-                  variant="outlined"
-                  size="small"
                   color="info"
+                  size="small"
+                  variant="outlined"
                   @click="handlePrint"
                 >
                   <v-icon start>
@@ -338,10 +338,10 @@
                   </v-icon>
                   Print
                 </v-btn>
-                
+
                 <v-btn
-                  variant="text"
                   size="small"
+                  variant="text"
                   @click="showAdvancedFilters = !showAdvancedFilters"
                 >
                   <v-icon start>
@@ -351,7 +351,7 @@
                 </v-btn>
               </div>
             </v-col>
-            
+
             <v-col
               cols="12"
               md="6"
@@ -361,10 +361,10 @@
               </div>
               <div class="d-flex flex-wrap gap-2">
                 <v-btn
-                  variant="outlined"
-                  size="small"
                   color="warning"
                   :disabled="!hasSelectedBookings"
+                  size="small"
+                  variant="outlined"
                   @click="handleBulkAssign"
                 >
                   <v-icon start>
@@ -372,12 +372,12 @@
                   </v-icon>
                   Bulk Assign
                 </v-btn>
-                
+
                 <v-btn
-                  variant="outlined"
-                  size="small"
                   color="info"
                   :disabled="!hasSelectedBookings"
+                  size="small"
+                  variant="outlined"
                   @click="handleBulkStatusUpdate"
                 >
                   <v-icon start>
@@ -385,12 +385,12 @@
                   </v-icon>
                   Update Status
                 </v-btn>
-                
+
                 <v-btn
-                  variant="outlined"
-                  size="small"
                   color="error"
                   :disabled="!hasSelectedBookings"
+                  size="small"
+                  variant="outlined"
                   @click="handleBulkDelete"
                 >
                   <v-icon start>
@@ -401,7 +401,7 @@
               </div>
             </v-col>
           </v-row>
-          
+
           <!-- Real-time Updates -->
           <v-row>
             <v-col cols="12">
@@ -416,20 +416,20 @@
                   />
                   <span class="text-body-2 ml-2">Real-time Updates</span>
                 </div>
-                
+
                 <div class="text-caption text-medium-emphasis">
                   Last updated: {{ lastUpdated }}
                 </div>
               </div>
             </v-col>
           </v-row>
-          
+
           <!-- Filter Summary -->
           <v-row v-if="hasActiveFilters">
             <v-col cols="12">
               <v-card
-                variant="tonal"
                 color="info"
+                variant="tonal"
               >
                 <v-card-text class="py-2">
                   <div class="d-flex align-center">
@@ -441,9 +441,9 @@
                       <v-chip
                         v-for="filter in activeFilterSummary"
                         :key="filter.key"
+                        closable
                         size="x-small"
                         variant="outlined"
-                        closable
                         @click:close="clearFilter(filter.key)"
                       >
                         {{ filter.label }}
@@ -451,8 +451,8 @@
                     </div>
                     <v-spacer />
                     <v-btn
-                      variant="text"
                       size="small"
+                      variant="text"
                       @click="clearAllFilters"
                     >
                       Clear All
@@ -469,274 +469,280 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import type { Cleaner } from '@/types/user'
+  import type { Cleaner } from '@/types/user'
+  import { computed, ref, watch } from 'vue'
 
-// Props
-interface Props {
-  currentView: string
-  currentDate: string
-  selectedBookings: string[]
-  cleaners: Cleaner[]
-  propertyOwners: Array<{ id: string; name: string }>
-  loading?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  loading: false
-})
-
-// Emits
-interface Emits {
-  'view-change': [view: string]
-  'date-change': [date: string]
-  'navigate': [direction: 'prev' | 'next' | 'today']
-  'filter-change': [filters: CalendarFilters]
-  'refresh': []
-  'export': [format: string]
-  'print': []
-  'bulk-assign': []
-  'bulk-status-update': []
-  'bulk-delete': []
-  'real-time-toggle': [enabled: boolean | null]
-}
-
-const emit = defineEmits<Emits>()
-
-// Types
-interface CalendarFilters {
-  status: string[]
-  cleaner: string[]
-  bookingType: string[]
-  propertyOwner: string[]
-  priority: string[]
-  dateRange: {
-    start: string
-    end: string
+  // Props
+  interface Props {
+    currentView: string
+    currentDate: string
+    selectedBookings: string[]
+    cleaners: Cleaner[]
+    propertyOwners: Array<{ id: string, name: string }>
+    loading?: boolean
   }
-}
 
-// State
-const expanded = ref(true)
-const showAdvancedFilters = ref(false)
-const realTimeUpdates = ref(true)
-const selectedView = ref(props.currentView)
-const selectedDate = ref(props.currentDate)
+  const props = withDefaults(defineProps<Props>(), {
+    loading: false,
+  })
 
-const filters = ref<CalendarFilters>({
-  status: [],
-  cleaner: [],
-  bookingType: [],
-  propertyOwner: [],
-  priority: [],
-  dateRange: {
-    start: '',
-    end: ''
+  // Emits
+  interface Emits {
+    'view-change': [view: string]
+    'date-change': [date: string]
+    'navigate': [direction: 'prev' | 'next' | 'today']
+    'filter-change': [filters: CalendarFilters]
+    'refresh': []
+    'export': [format: string]
+    'print': []
+    'bulk-assign': []
+    'bulk-status-update': []
+    'bulk-delete': []
+    'real-time-toggle': [enabled: boolean | null]
   }
-})
 
-// Computed properties
-const hasSelectedBookings = computed(() => {
-  return props.selectedBookings.length > 0
-})
+  const emit = defineEmits<Emits>()
 
-const hasActiveFilters = computed(() => {
-  return filters.value.status.length > 0 ||
-         filters.value.cleaner.length > 0 ||
-         filters.value.bookingType.length > 0 ||
-         filters.value.propertyOwner.length > 0 ||
-         filters.value.priority.length > 0 ||
-         filters.value.dateRange.start ||
-         filters.value.dateRange.end
-})
-
-const activeFilterSummary = computed(() => {
-  const summary = []
-  
-  if (filters.value.status.length > 0) {
-    summary.push({ key: 'status', label: `Status: ${filters.value.status.length} selected` })
+  // Types
+  interface CalendarFilters {
+    status: string[]
+    cleaner: string[]
+    bookingType: string[]
+    propertyOwner: string[]
+    priority: string[]
+    dateRange: {
+      start: string
+      end: string
+    }
   }
-  if (filters.value.cleaner.length > 0) {
-    summary.push({ key: 'cleaner', label: `Cleaners: ${filters.value.cleaner.length} selected` })
-  }
-  if (filters.value.bookingType.length > 0) {
-    summary.push({ key: 'bookingType', label: `Types: ${filters.value.bookingType.length} selected` })
-  }
-  if (filters.value.propertyOwner.length > 0) {
-    summary.push({ key: 'propertyOwner', label: `Owners: ${filters.value.propertyOwner.length} selected` })
-  }
-  if (filters.value.priority.length > 0) {
-    summary.push({ key: 'priority', label: `Priority: ${filters.value.priority.length} selected` })
-  }
-  if (filters.value.dateRange.start || filters.value.dateRange.end) {
-    summary.push({ key: 'dateRange', label: 'Date Range Set' })
-  }
-  
-  return summary
-})
 
-const lastUpdated = computed(() => {
-  return new Date().toLocaleTimeString()
-})
+  // State
+  const expanded = ref(true)
+  const showAdvancedFilters = ref(false)
+  const realTimeUpdates = ref(true)
+  const selectedView = ref(props.currentView)
+  const selectedDate = ref(props.currentDate)
 
-// Options
-const statusOptions = [
-  { title: 'Pending', value: 'pending' },
-  { title: 'Scheduled', value: 'scheduled' },
-  { title: 'In Progress', value: 'in_progress' },
-  { title: 'Completed', value: 'completed' },
-  { title: 'Cancelled', value: 'cancelled' }
-]
-
-const bookingTypeOptions = [
-  { title: 'Standard Cleaning', value: 'standard' },
-  { title: 'Turn Cleaning', value: 'turn' }
-]
-
-const priorityOptions = [
-  { title: 'Standard', value: 'standard' },
-  { title: 'High', value: 'high' },
-  { title: 'Urgent', value: 'urgent' }
-]
-
-const cleanerOptions = computed(() => {
-  return props.cleaners.map(cleaner => ({
-    title: cleaner.name,
-    value: cleaner.id
-  }))
-})
-
-const propertyOwnerOptions = computed(() => {
-  return props.propertyOwners.map(owner => ({
-    title: owner.name,
-    value: owner.id
-  }))
-})
-
-// Methods
-const handleViewChange = (view: string) => {
-  emit('view-change', view)
-}
-
-const handleDateChange = (date: string) => {
-  emit('date-change', date)
-}
-
-const handlePrevious = () => {
-  emit('navigate', 'prev')
-}
-
-const handleNext = () => {
-  emit('navigate', 'next')
-}
-
-const handleToday = () => {
-  emit('navigate', 'today')
-}
-
-const handleFilterChange = () => {
-  emit('filter-change', { ...filters.value })
-}
-
-const handleRefresh = () => {
-  emit('refresh')
-}
-
-const handleExport = () => {
-  emit('export', 'csv')
-}
-
-const handlePrint = () => {
-  emit('print')
-}
-
-const handleBulkAssign = () => {
-  emit('bulk-assign')
-}
-
-const handleBulkStatusUpdate = () => {
-  emit('bulk-status-update')
-}
-
-const handleBulkDelete = () => {
-  emit('bulk-delete')
-}
-
-const handleRealTimeToggle = (enabled: boolean | null) => {
-  emit('real-time-toggle', enabled)
-}
-
-const clearFilter = (filterKey: string) => {
-  switch (filterKey) {
-    case 'status':
-      filters.value.status = []
-      break
-    case 'cleaner':
-      filters.value.cleaner = []
-      break
-    case 'bookingType':
-      filters.value.bookingType = []
-      break
-    case 'propertyOwner':
-      filters.value.propertyOwner = []
-      break
-    case 'priority':
-      filters.value.priority = []
-      break
-    case 'dateRange':
-      filters.value.dateRange = { start: '', end: '' }
-      break
-  }
-  handleFilterChange()
-}
-
-const clearAllFilters = () => {
-  filters.value = {
+  const filters = ref<CalendarFilters>({
     status: [],
     cleaner: [],
     bookingType: [],
     propertyOwner: [],
     priority: [],
-    dateRange: { start: '', end: '' }
+    dateRange: {
+      start: '',
+      end: '',
+    },
+  })
+
+  // Computed properties
+  const hasSelectedBookings = computed(() => {
+    return props.selectedBookings.length > 0
+  })
+
+  const hasActiveFilters = computed(() => {
+    return filters.value.status.length > 0
+      || filters.value.cleaner.length > 0
+      || filters.value.bookingType.length > 0
+      || filters.value.propertyOwner.length > 0
+      || filters.value.priority.length > 0
+      || filters.value.dateRange.start
+      || filters.value.dateRange.end
+  })
+
+  const activeFilterSummary = computed(() => {
+    const summary = []
+
+    if (filters.value.status.length > 0) {
+      summary.push({ key: 'status', label: `Status: ${filters.value.status.length} selected` })
+    }
+    if (filters.value.cleaner.length > 0) {
+      summary.push({ key: 'cleaner', label: `Cleaners: ${filters.value.cleaner.length} selected` })
+    }
+    if (filters.value.bookingType.length > 0) {
+      summary.push({ key: 'bookingType', label: `Types: ${filters.value.bookingType.length} selected` })
+    }
+    if (filters.value.propertyOwner.length > 0) {
+      summary.push({ key: 'propertyOwner', label: `Owners: ${filters.value.propertyOwner.length} selected` })
+    }
+    if (filters.value.priority.length > 0) {
+      summary.push({ key: 'priority', label: `Priority: ${filters.value.priority.length} selected` })
+    }
+    if (filters.value.dateRange.start || filters.value.dateRange.end) {
+      summary.push({ key: 'dateRange', label: 'Date Range Set' })
+    }
+
+    return summary
+  })
+
+  const lastUpdated = computed(() => {
+    return new Date().toLocaleTimeString()
+  })
+
+  // Options
+  const statusOptions = [
+    { title: 'Pending', value: 'pending' },
+    { title: 'Scheduled', value: 'scheduled' },
+    { title: 'In Progress', value: 'in_progress' },
+    { title: 'Completed', value: 'completed' },
+    { title: 'Cancelled', value: 'cancelled' },
+  ]
+
+  const bookingTypeOptions = [
+    { title: 'Standard Cleaning', value: 'standard' },
+    { title: 'Turn Cleaning', value: 'turn' },
+  ]
+
+  const priorityOptions = [
+    { title: 'Standard', value: 'standard' },
+    { title: 'High', value: 'high' },
+    { title: 'Urgent', value: 'urgent' },
+  ]
+
+  const cleanerOptions = computed(() => {
+    return props.cleaners.map(cleaner => ({
+      title: cleaner.name,
+      value: cleaner.id,
+    }))
+  })
+
+  const propertyOwnerOptions = computed(() => {
+    return props.propertyOwners.map(owner => ({
+      title: owner.name,
+      value: owner.id,
+    }))
+  })
+
+  // Methods
+  function handleViewChange (view: string) {
+    emit('view-change', view)
   }
-  handleFilterChange()
-}
 
-const getStatusColor = (status: string) => {
-  const colors = {
-    pending: 'orange',
-    scheduled: 'blue',
-    in_progress: 'purple',
-    completed: 'green',
-    cancelled: 'red'
+  function handleDateChange (date: string) {
+    emit('date-change', date)
   }
-  return colors[status as keyof typeof colors] || 'grey'
-}
 
-const getPriorityColor = (priority: string) => {
-  const colors = {
-    standard: 'grey',
-    high: 'orange',
-    urgent: 'red'
+  function handlePrevious () {
+    emit('navigate', 'prev')
   }
-  return colors[priority as keyof typeof colors] || 'grey'
-}
 
-const getCleanerColor = (cleanerId: string) => {
-  // Generate consistent color based on cleaner ID
-  const colors = ['primary', 'secondary', 'success', 'info', 'warning']
-  const index = cleanerId.length % colors.length
-  return colors[index]
-}
+  function handleNext () {
+    emit('navigate', 'next')
+  }
 
-// Watch for prop changes
-watch(() => props.currentView, (newView) => {
-  selectedView.value = newView
-})
+  function handleToday () {
+    emit('navigate', 'today')
+  }
 
-watch(() => props.currentDate, (newDate) => {
-  selectedDate.value = newDate
-})
+  function handleFilterChange () {
+    emit('filter-change', { ...filters.value })
+  }
+
+  function handleRefresh () {
+    emit('refresh')
+  }
+
+  function handleExport () {
+    emit('export', 'csv')
+  }
+
+  function handlePrint () {
+    emit('print')
+  }
+
+  function handleBulkAssign () {
+    emit('bulk-assign')
+  }
+
+  function handleBulkStatusUpdate () {
+    emit('bulk-status-update')
+  }
+
+  function handleBulkDelete () {
+    emit('bulk-delete')
+  }
+
+  function handleRealTimeToggle (enabled: boolean | null) {
+    emit('real-time-toggle', enabled)
+  }
+
+  function clearFilter (filterKey: string) {
+    switch (filterKey) {
+      case 'status': {
+        filters.value.status = []
+        break
+      }
+      case 'cleaner': {
+        filters.value.cleaner = []
+        break
+      }
+      case 'bookingType': {
+        filters.value.bookingType = []
+        break
+      }
+      case 'propertyOwner': {
+        filters.value.propertyOwner = []
+        break
+      }
+      case 'priority': {
+        filters.value.priority = []
+        break
+      }
+      case 'dateRange': {
+        filters.value.dateRange = { start: '', end: '' }
+        break
+      }
+    }
+    handleFilterChange()
+  }
+
+  function clearAllFilters () {
+    filters.value = {
+      status: [],
+      cleaner: [],
+      bookingType: [],
+      propertyOwner: [],
+      priority: [],
+      dateRange: { start: '', end: '' },
+    }
+    handleFilterChange()
+  }
+
+  function getStatusColor (status: string) {
+    const colors = {
+      pending: 'orange',
+      scheduled: 'blue',
+      in_progress: 'purple',
+      completed: 'green',
+      cancelled: 'red',
+    }
+    return colors[status as keyof typeof colors] || 'grey'
+  }
+
+  function getPriorityColor (priority: string) {
+    const colors = {
+      standard: 'grey',
+      high: 'orange',
+      urgent: 'red',
+    }
+    return colors[priority as keyof typeof colors] || 'grey'
+  }
+
+  function getCleanerColor (cleanerId: string) {
+    // Generate consistent color based on cleaner ID
+    const colors = ['primary', 'secondary', 'success', 'info', 'warning']
+    const index = cleanerId.length % colors.length
+    return colors[index]
+  }
+
+  // Watch for prop changes
+  watch(() => props.currentView, newView => {
+    selectedView.value = newView
+  })
+
+  watch(() => props.currentDate, newDate => {
+    selectedDate.value = newDate
+  })
 </script>
 
 <style scoped>
@@ -750,7 +756,7 @@ watch(() => props.currentDate, (newDate) => {
   background-color: rgb(var(--v-theme-surface-variant));
 }
 
-.v-btn-toggle { 
+.v-btn-toggle {
   width: 100%;
 }
 

@@ -9,37 +9,37 @@
 </template>
 
 <script setup lang="ts">
+  import type {
+    CalendarOptions,
+    DateSelectArg,
+    DatesSetArg,
+    EventClickArg,
+    EventDropArg,
+  } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, Property } from '@/types'
-import type {
-  CalendarOptions,
-  DateSelectArg,
-  DatesSetArg,
-  EventClickArg,
-  EventDropArg,
-} from '@fullcalendar/core'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import type { EventResizeDoneArg } from '@fullcalendar/interaction'
-import interactionPlugin from '@fullcalendar/interaction'
-import listPlugin from '@fullcalendar/list'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import FullCalendar from '@fullcalendar/vue3'
-import {
-  computed,
-  onBeforeUnmount,
-  onMounted,
-  onUnmounted,
-  reactive,
-  ref,
-  watch,
-} from 'vue'
+  import dayGridPlugin from '@fullcalendar/daygrid'
+  import interactionPlugin from '@fullcalendar/interaction'
+  import listPlugin from '@fullcalendar/list'
+  import timeGridPlugin from '@fullcalendar/timegrid'
+  import FullCalendar from '@fullcalendar/vue3'
+  import {
+    computed,
+    onBeforeUnmount,
+    onMounted,
+    onUnmounted,
+    reactive,
+    ref,
+    watch,
+  } from 'vue'
   // Import event logger for component communication
   import eventLogger from '@/composables/shared/useComponentEventLogger'
-import { formatPropertyAddress } from '@/types/property'
-import { bookingToCalendarEvent, bookingToTransitionEvents } from '@/utils/calendarHelpers'
-import {
-  getMobileCalendarOptions,
-  handleViewportResize,
-} from '@/utils/mobileViewport'
+  import { formatPropertyAddress } from '@/types/property'
+  import { bookingToCalendarEvent, bookingToTransitionEvents } from '@/utils/calendarHelpers'
+  import {
+    getMobileCalendarOptions,
+    handleViewportResize,
+  } from '@/utils/mobileViewport'
 
   function escapeHtml (str: string): string {
     if (str == null) return ''
@@ -285,7 +285,9 @@ import {
       }
 
       // Phase 2: all writes
-      measurements.forEach(applyBadge)
+      for (const m of measurements) {
+        applyBadge(m)
+      }
     })
   }
 
@@ -331,13 +333,13 @@ import {
         const calendarApi = calendarRef.value.getApi()
         const relatedEvents = calendarApi.getEvents()
           .filter((e: any) => e.extendedProps?.booking?.id === bookingId)
-        relatedEvents.forEach((e: any) => {
+        for (const e of relatedEvents) {
           const original = [...e.classNames]
           e.setProp('classNames', [...e.classNames, 'transition-highlight'])
           setTimeout(() => {
             e.setProp('classNames', original)
           }, 2000)
-        })
+        }
       }
     }
   }
@@ -805,6 +807,11 @@ import {
   --fc-button-hover-bg-color: rgb(var(--v-theme-primary));
   --fc-button-active-bg-color: rgb(var(--v-theme-primary));
   --fc-today-bg-color: rgb(var(--v-theme-primary), 0.1);
+}
+
+/* Hide empty FullCalendar toolbar — controls are in the app bar */
+:deep(.fc-header-toolbar) {
+  display: none !important;
 }
 
 /* Turn booking highlighting */

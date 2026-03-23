@@ -3,7 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import OwnerProfile from '@/components/smart/owner/OwnerProfile.vue'
+  import OwnerProfile from '@/components/smart/owner/OwnerProfile.vue'
 
-defineOptions({ name: 'OwnerProfilePage' })
+  defineOptions({ name: 'OwnerProfilePage' })
 </script>

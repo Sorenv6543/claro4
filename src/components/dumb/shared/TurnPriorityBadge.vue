@@ -11,11 +11,11 @@
         'admin-interface': userRole === 'admin'
       }
     ]"
-    :color="getBadgeColor()"
-    :variant="variant"
-    :size="size"
     :closable="closable"
+    :color="getBadgeColor()"
     :label="label"
+    :size="size"
+    :variant="variant"
     @click="handleClick"
     @click:close="handleClose"
   >
@@ -24,9 +24,9 @@
       #prepend
     >
       <v-icon
+        class="mr-1"
         :icon="getPriorityIcon()"
         :size="getIconSize()"
-        class="mr-1"
       />
     </template>
 
@@ -39,10 +39,10 @@
       #append
     >
       <v-chip
-        size="x-small"
-        :color="getTimeColor()"
         class="ml-1 time-chip"
+        :color="getTimeColor()"
         label
+        size="x-small"
       >
         {{ formatTimeRemaining() }}
       </v-chip>
@@ -51,148 +51,163 @@
 </template>
 
 <script setup lang="ts">
-type BookingPriority = 'low' | 'normal' | 'high' | 'urgent';
+  type BookingPriority = 'low' | 'normal' | 'high' | 'urgent'
 
-interface Props {
-  priority: BookingPriority;
-  userRole?: 'owner' | 'admin' | 'cleaner';
-  animated?: boolean;
-  clickable?: boolean;
-  closable?: boolean;
-  label?: boolean;
-  showIcon?: boolean;
-  showTimeRemaining?: boolean;
-  timeRemaining?: number; // minutes
-  size?: 'x-small' | 'small' | 'default' | 'large' | 'x-large';
-  variant?: 'flat' | 'tonal' | 'outlined' | 'text' | 'elevated';
-}
-
-interface Emits {
-  (e: 'click'): void;
-  (e: 'close'): void;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  userRole: 'owner',
-  animated: true,
-  clickable: false,
-  closable: false,
-  label: true,
-  showIcon: true,
-  showTimeRemaining: false,
-  size: 'small',
-  variant: 'flat'
-});
-
-const emit = defineEmits<Emits>();
-
-// Get role-based colors
-const getBadgeColor = (): string => {
-  const isOwner = props.userRole === 'owner';
-  
-  switch (props.priority) {
-    case 'urgent':
-      return isOwner ? 'warning' : 'error';
-    case 'high':
-      return 'warning';
-    case 'normal':
-      return 'primary';
-    case 'low':
-      return 'info';
-    default:
-      return 'primary';
+  interface Props {
+    priority: BookingPriority
+    userRole?: 'owner' | 'admin' | 'cleaner'
+    animated?: boolean
+    clickable?: boolean
+    closable?: boolean
+    label?: boolean
+    showIcon?: boolean
+    showTimeRemaining?: boolean
+    timeRemaining?: number // minutes
+    size?: 'x-small' | 'small' | 'default' | 'large' | 'x-large'
+    variant?: 'flat' | 'tonal' | 'outlined' | 'text' | 'elevated'
   }
-};
 
-// Get priority icons
-const getPriorityIcon = (): string => {
-  switch (props.priority) {
-    case 'urgent':
-      return 'mdi-alert-circle';
-    case 'high':
-      return 'mdi-clock-fast';
-    case 'normal':
-      return 'mdi-clock-outline';
-    case 'low':
-      return 'mdi-clock-check-outline';
-    default:
-      return 'mdi-information-outline';
+  interface Emits {
+    (e: 'click' | 'close'): void
   }
-};
 
-// Get icon size based on chip size
-const getIconSize = (): string => {
-  switch (props.size) {
-    case 'x-small':
-      return 'x-small';
-    case 'small':
-      return 'small';
-    case 'large':
-      return 'default';
-    case 'x-large':
-      return 'large';
-    default:
-      return 'small';
-  }
-};
+  const props = withDefaults(defineProps<Props>(), {
+    userRole: 'owner',
+    animated: true,
+    clickable: false,
+    closable: false,
+    label: true,
+    showIcon: true,
+    showTimeRemaining: false,
+    size: 'small',
+    variant: 'flat',
+  })
 
-// Get role-based priority text
-const getPriorityText = (): string => {
-  const isOwner = props.userRole === 'owner';
-  
-  switch (props.priority) {
-    case 'urgent':
-      return isOwner ? 'Needs Attention' : 'URGENT';
-    case 'high':
-      return isOwner ? 'High Priority' : 'HIGH';
-    case 'normal':
-      return isOwner ? 'Normal' : 'NORMAL';
-    case 'low':
-      return isOwner ? 'Low Priority' : 'LOW';
-    default:
-      return 'Standard';
-  }
-};
+  const emit = defineEmits<Emits>()
 
-// Get time remaining color
-const getTimeColor = (): string => {
-  if (!props.timeRemaining) return 'grey';
-  
-  if (props.timeRemaining <= 30) {
-    return 'error';
-  } else if (props.timeRemaining <= 60) {
-    return 'warning';
-  } else {
-    return 'success';
-  }
-};
+  // Get role-based colors
+  function getBadgeColor (): string {
+    const isOwner = props.userRole === 'owner'
 
-// Format time remaining
-const formatTimeRemaining = (): string => {
-  if (!props.timeRemaining) return '';
-  
-  const hours = Math.floor(props.timeRemaining / 60);
-  const minutes = props.timeRemaining % 60;
-  
-  if (hours > 0) {
-    return `${hours}h ${minutes}m`;
-  } else {
-    return `${minutes}m`;
+    switch (props.priority) {
+      case 'urgent': {
+        return isOwner ? 'warning' : 'error'
+      }
+      case 'high': {
+        return 'warning'
+      }
+      case 'normal': {
+        return 'primary'
+      }
+      case 'low': {
+        return 'info'
+      }
+      default: {
+        return 'primary'
+      }
+    }
   }
-};
 
-// Event handlers
-const handleClick = (): void => {
-  if (props.clickable) {
-    emit('click');
+  // Get priority icons
+  function getPriorityIcon (): string {
+    switch (props.priority) {
+      case 'urgent': {
+        return 'mdi-alert-circle'
+      }
+      case 'high': {
+        return 'mdi-clock-fast'
+      }
+      case 'normal': {
+        return 'mdi-clock-outline'
+      }
+      case 'low': {
+        return 'mdi-clock-check-outline'
+      }
+      default: {
+        return 'mdi-information-outline'
+      }
+    }
   }
-};
 
-const handleClose = (): void => {
-  if (props.closable) {
-    emit('close');
+  // Get icon size based on chip size
+  function getIconSize (): string {
+    switch (props.size) {
+      case 'x-small': {
+        return 'x-small'
+      }
+      case 'small': {
+        return 'small'
+      }
+      case 'large': {
+        return 'default'
+      }
+      case 'x-large': {
+        return 'large'
+      }
+      default: {
+        return 'small'
+      }
+    }
   }
-};
+
+  // Get role-based priority text
+  function getPriorityText (): string {
+    const isOwner = props.userRole === 'owner'
+
+    switch (props.priority) {
+      case 'urgent': {
+        return isOwner ? 'Needs Attention' : 'URGENT'
+      }
+      case 'high': {
+        return isOwner ? 'High Priority' : 'HIGH'
+      }
+      case 'normal': {
+        return isOwner ? 'Normal' : 'NORMAL'
+      }
+      case 'low': {
+        return isOwner ? 'Low Priority' : 'LOW'
+      }
+      default: {
+        return 'Standard'
+      }
+    }
+  }
+
+  // Get time remaining color
+  function getTimeColor (): string {
+    if (!props.timeRemaining) return 'grey'
+
+    if (props.timeRemaining <= 30) {
+      return 'error'
+    } else if (props.timeRemaining <= 60) {
+      return 'warning'
+    } else {
+      return 'success'
+    }
+  }
+
+  // Format time remaining
+  function formatTimeRemaining (): string {
+    if (!props.timeRemaining) return ''
+
+    const hours = Math.floor(props.timeRemaining / 60)
+    const minutes = props.timeRemaining % 60
+
+    return hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`
+  }
+
+  // Event handlers
+  function handleClick (): void {
+    if (props.clickable) {
+      emit('click')
+    }
+  }
+
+  function handleClose (): void {
+    if (props.closable) {
+      emit('close')
+    }
+  }
 </script>
 
 <style scoped>
@@ -239,4 +254,4 @@ const handleClose = (): void => {
 .admin-interface .priority-urgent:hover {
   animation: urgentGlow 1s ease-in-out infinite alternate, shake 0.5s ease-in-out;
 }
-</style> 
+</style>
