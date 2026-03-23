@@ -1,10 +1,8 @@
 <template>
   <PropertySectionCard
-    :error="error"
-    icon="mdi-home"
     :editing="editing"
-    :loading="loading"
-    :save-disabled="!isDirty || !formValid"
+    icon="mdi-home"
+    :save-disabled="!isDirty"
     title="Property Info"
     @cancel="closeEdit"
     @edit="editing = true"
@@ -50,7 +48,6 @@
 
     <!-- Edit mode -->
     <template #edit>
-      <v-form v-model="formValid">
       <v-row dense>
         <v-col cols="12" md="8">
           <v-text-field
@@ -135,22 +132,19 @@
           <PropertyColorPicker v-model="form.color" />
         </v-col>
       </v-row>
-      </v-form>
     </template>
   </PropertySectionCard>
 </template>
 
 <script setup lang="ts">
-  import { computed, reactive, ref, watch } from 'vue'
-  import type { Property } from '@/types'
-  import { formatPropertyAddress } from '@/types/property'
-  import PropertySectionCard from '@/components/dumb/owner/PropertySectionCard.vue'
   import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
+import PropertySectionCard from '@/components/dumb/owner/PropertySectionCard.vue'
+import type { Property } from '@/types'
+import { formatPropertyAddress } from '@/types/property'
+import { computed, reactive, ref, watch } from 'vue'
 
   const props = defineProps<{
     property: Property
-    loading?: boolean
-    error?: string | null
   }>()
 
   const emit = defineEmits<{
@@ -158,7 +152,6 @@
   }>()
 
   const editing = ref(false)
-  const formValid = ref(false)
 
   const form = reactive({
     address_street: '',
@@ -230,7 +223,7 @@
     })
   }
 
-  watch(editing, (val) => {
+  watch(editing, val => {
     if (val) resetForm()
   })
 

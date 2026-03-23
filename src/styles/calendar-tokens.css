@@ -1,5 +1,7 @@
 /* Calendar event color tokens — mapped to Vuetify 4 theme variables.
-   Imported once in main.ts. All calendar event colors read from here. */
+   Imported once in main.ts. All calendar event colors read from here.
+   Background/border colors now come from property.color (set inline by calendarHelpers.ts).
+   These tokens are kept for turn-type event accent styling (e.g., text, badges). */
 :root {
   --cal-turn-urgent:   rgb(var(--v-theme-error));
   --cal-turn-high:     rgb(var(--v-theme-warning));
@@ -12,14 +14,9 @@
   --cal-std-low:       rgb(var(--v-theme-success));
 }
 
-/* FullCalendar event color classes — set via classNames in bookingToCalendarEvent.
-   Uses type-{bookingType} and priority-{priority} class combinations. */
-.fc-event.type-turn.priority-urgent  { background-color: var(--cal-turn-urgent)  !important; border-color: var(--cal-turn-urgent)  !important; }
-.fc-event.type-turn.priority-high    { background-color: var(--cal-turn-high)    !important; border-color: var(--cal-turn-high)    !important; }
-.fc-event.type-turn.priority-normal  { background-color: var(--cal-turn-normal)  !important; border-color: var(--cal-turn-normal)  !important; }
-.fc-event.type-turn.priority-low     { background-color: var(--cal-turn-low)     !important; border-color: var(--cal-turn-low)     !important; }
-
-.fc-event.type-standard.priority-urgent { background-color: var(--cal-std-urgent) !important; border-color: var(--cal-std-urgent) !important; }
-.fc-event.type-standard.priority-high   { background-color: var(--cal-std-high)   !important; border-color: var(--cal-std-high)   !important; }
-.fc-event.type-standard.priority-normal { background-color: var(--cal-std-normal) !important; border-color: var(--cal-std-normal) !important; }
-.fc-event.type-standard.priority-low    { background-color: var(--cal-std-low)    !important; border-color: var(--cal-std-low)    !important; }
+/* Turn events get a distinct left border accent to distinguish from standard bookings,
+   but background/border come from the property's color field. */
+.fc-event.type-turn { border-left: 4px solid var(--cal-turn-urgent) !important; }
+.fc-event.type-turn.priority-high   { border-left-color: var(--cal-turn-high)   !important; }
+.fc-event.type-turn.priority-normal { border-left-color: var(--cal-turn-normal) !important; }
+.fc-event.type-turn.priority-low    { border-left-color: var(--cal-turn-low)    !important; }
