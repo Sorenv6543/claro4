@@ -1,8 +1,10 @@
 <template>
   <PropertySectionCard
+    :error="error"
     icon="mdi-home"
     :editing="editing"
-    :save-disabled="!isDirty"
+    :loading="loading"
+    :save-disabled="!isDirty || !formValid"
     title="Property Info"
     @cancel="closeEdit"
     @edit="editing = true"
@@ -48,6 +50,7 @@
 
     <!-- Edit mode -->
     <template #edit>
+      <v-form v-model="formValid">
       <v-row dense>
         <v-col cols="12" md="8">
           <v-text-field
@@ -132,6 +135,7 @@
           <PropertyColorPicker v-model="form.color" />
         </v-col>
       </v-row>
+      </v-form>
     </template>
   </PropertySectionCard>
 </template>
@@ -145,6 +149,8 @@
 
   const props = defineProps<{
     property: Property
+    loading?: boolean
+    error?: string | null
   }>()
 
   const emit = defineEmits<{
@@ -152,6 +158,7 @@
   }>()
 
   const editing = ref(false)
+  const formValid = ref(false)
 
   const form = reactive({
     address_street: '',
