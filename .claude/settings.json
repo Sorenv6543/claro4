@@ -1,10 +1,23 @@
 {
   "permissions": {
     "allow": [
-      // "Bash(gh pr:*)",
-      // "Bash(supabase start:*)",
-      // "Bash(test:*)",
-      // "Bash(powershell -Command \"$vars = [System.Environment]::GetEnvironmentVariables\\(''User''\\); foreach\\($k in \\($vars.Keys | Sort-Object\\)\\) { Write-Output \\($k + ''='' + $vars[$k]\\) }\")"
+      "Bash(pnpm dev:*)",
+      "Bash(pnpm build:*)",
+      "Bash(pnpm run build:*)",
+      "Bash(pnpm test:*)",
+      "Bash(pnpm lint:*)",
+      "Bash(pnpm run lint:*)",
+      "Bash(pnpm run:*)",
+      "Bash(pnpm add:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm update:*)",
+      "Bash(pnpm preview:*)",
+      "Bash(npx vue-tsc:*)",
+      "Bash(npx eslint:*)",
+      "Bash(supabase start:*)",
+      "Bash(supabase db push:*)",
+      "Bash(supabase link:*)",
+      "Bash(supabase gen types:*)"
     ]
   },
   "enabledMcpjsonServers": [],
@@ -22,19 +35,32 @@
       }
     ],
     "PostToolUse": [
-     
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(node -e \"console.log((JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}')).file_path||'')\" 2>/dev/null); [[ \"$FILE\" == *.vue || \"$FILE\" == *.ts ]] && cd /c/Users/Soren/claro4 && npx eslint --fix \"$FILE\" 2>&1 | tail -3 || true",
+            "timeout": 15000
+          }
+        ]
+      },
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "FILE=$(node -e \"console.log((JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}')).file_path||'')\" 2>/dev/null); [[ \"$FILE\" == *supabase/migrations* ]] && supabase gen types typescript --project-id aejkrsvemqnftivzkkxd > /c/Users/Soren/claro4/src/types/supabase.ts && echo 'Types regenerated from schema' || true",
+            "timeout": 30000
+          }
+        ]
+      }
     ]
   },
   "enabledPlugins": {
     "chrome-devtools-mcp@claude-plugins-official": true,
-    "github@claude-plugins-official": true,
     "context7@claude-plugins-official": true,
     "feature-dev@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true,
-    "greptile@claude-plugins-official": true,
-    "feature-dev@claude-code-plugins": true,
-    "hookify@claude-code-plugins": true,
-    "pr-review-toolkit@claude-code-plugins": true,
-    "chrome-devtools-mcp@chrome-devtools-plugins": true
+    "playwright@claude-plugins-official": true
   }
 }
