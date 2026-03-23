@@ -395,13 +395,23 @@
       }
 
       if (propertyModalMode.value === 'create') {
-        await createMyProperty(propertyData as PropertyFormData)
+        const id = await createMyProperty(propertyData as PropertyFormData)
+        if (!id) {
+          const message = propertyError.value || 'Failed to create your property'
+          uiStore.addNotification('error', 'Save Failed', message)
+          return
+        }
       } else if (propertyModalData.value) {
         // Verify owner can update this property (same check as HomeOwner)
         if (propertyModalData.value.owner_id !== authStore.user?.id) {
           throw new Error('Cannot update property not owned by current user')
         }
-        await updateMyProperty(propertyModalData.value.id, propertyData as Partial<PropertyFormData>)
+        const success = await updateMyProperty(propertyModalData.value.id, propertyData as Partial<PropertyFormData>)
+        if (!success) {
+          const message = propertyError.value || 'Failed to update your property'
+          uiStore.addNotification('error', 'Save Failed', message)
+          return
+        }
       }
       uiStore.closeModal('propertyModal')
     } catch (err) {
