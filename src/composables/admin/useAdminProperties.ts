@@ -191,9 +191,7 @@ export function useAdminProperties () {
     error.value = null
 
     try {
-      // In a real app, this would make an API call to get all properties
-      // For now, we simulate the call and rely on store data
-      await new Promise(resolve => setTimeout(resolve, 500))
+      await propertyStore.fetchProperties()
 
       success.value = `Loaded ${allProperties.value.length} properties across all owners`
       loading.value = false
