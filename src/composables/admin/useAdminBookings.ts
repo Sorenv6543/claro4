@@ -10,7 +10,7 @@ import { calculateBookingPriority } from '@/utils/businessLogic'
 
 /**
  * Admin-specific booking composable
- * Extends shared useBookings functionality with admin system-wide access
+ * Uses useSupabaseBookings for CRUD with admin system-wide access
  *
  * Key Features:
  * - NO filtering - access ALL bookings across all owners (key difference from owner version)

@@ -317,8 +317,8 @@
 
   const emit = defineEmits<Emits>()
 
-  // PWA composable for offline sync
-  const { isOnline, backgroundSync } = usePWA()
+  // PWA composable for online status
+  const { isOnline } = usePWA()
 
   // Reactive data
   const formRef = ref()
@@ -453,26 +453,6 @@
 
     const { valid } = await formRef.value.validate()
     if (!valid) return
-
-    // If offline, queue the operation for background sync
-    if (!isOnline.value) {
-      const operation = props.mode === 'create' ? 'create_property' : 'update_property'
-      const data = props.mode === 'edit' && props.property
-        ? { id: props.property.id, ...form.value }
-        : form.value
-
-      backgroundSync.queueOperation(
-        operation,
-        data,
-        String(form.value.owner_id || 'current-user'), // TODO: Get from auth
-        'owner',
-      )
-
-      // Show offline confirmation
-      console.log(`Property ${props.mode} queued for sync when online`)
-      handleClose()
-      return
-    }
 
     emit('submit', { ...form.value })
   }

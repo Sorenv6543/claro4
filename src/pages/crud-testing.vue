@@ -1,8 +1,8 @@
 <script setup lang="ts">
   import type { BookingFormData, PropertyFormData } from '@/types'
   import { defineAsyncComponent, onMounted, reactive, ref } from 'vue'
-  import { useBookings } from '@/composables/shared/useBookings'
-  import { useProperties } from '@/composables/shared/useProperties'
+  import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
+  import { useSupabaseProperties } from '@/composables/supabase/useSupabaseProperties'
   import { useBookingStore } from '@/stores/booking'
   import { usePropertyStore } from '@/stores/property'
   import { formatPropertyAddress } from '@/types/property'
@@ -18,18 +18,19 @@
     createProperty,
     updateProperty,
     deleteProperty,
-    loading: propertyLoading,
-    error: propertyError,
-  } = useProperties()
+  } = useSupabaseProperties()
 
   const {
     createBooking,
     updateBooking,
     deleteBooking,
-    loading: bookingLoading,
-    error: bookingError,
-    fetchAllBookings,
-  } = useBookings()
+    fetchAndSubscribe,
+  } = useSupabaseBookings()
+
+  const propertyLoading = ref(false)
+  const propertyError = ref<string | null>(null)
+  const bookingLoading = ref(false)
+  const bookingError = ref<string | null>(null)
 
   // State
   const activeTab = ref('property')
@@ -101,25 +102,25 @@
   async function runPropertyCreateTest () {
     testResults.property.create.status = 'running'
     testResults.property.create.message = 'Creating test property...'
+    propertyLoading.value = true
+    propertyError.value = null
 
     try {
-      const propertyId = await createProperty({ ...testProperty })
+      const property = await createProperty({ ...testProperty })
+      testPropertyId.value = property.id
+      testResults.property.create.status = 'success'
+      testResults.property.create.message = `Property created with ID: ${property.id}`
 
-      if (propertyId) {
-        testPropertyId.value = propertyId
-        testResults.property.create.status = 'success'
-        testResults.property.create.message = `Property created with ID: ${propertyId}`
-
-        // Update the booking property_id for later booking tests
-        testBooking.property_id = propertyId
-        testBookingStandard.property_id = propertyId
-      } else {
-        testResults.property.create.status = 'failure'
-        testResults.property.create.message = propertyError.value || 'Failed to create property, but no error was provided'
-      }
+      // Update the booking property_id for later booking tests
+      testBooking.property_id = property.id
+      testBookingStandard.property_id = property.id
     } catch (error) {
       testResults.property.create.status = 'failure'
-      testResults.property.create.message = error instanceof Error ? error.message : 'Unknown error occurred'
+      const msg = error instanceof Error ? error.message : 'Unknown error occurred'
+      propertyError.value = msg
+      testResults.property.create.message = msg
+    } finally {
+      propertyLoading.value = false
     }
   }
 
@@ -150,6 +151,8 @@
   async function runPropertyUpdateTest () {
     testResults.property.update.status = 'running'
     testResults.property.update.message = 'Updating property data...'
+    propertyLoading.value = true
+    propertyError.value = null
 
     try {
       if (!testPropertyId.value) {
@@ -162,24 +165,24 @@
         cleaning_duration: 90,
       }
 
-      const success = await updateProperty(testPropertyId.value, updates)
-
-      if (success) {
-        testResults.property.update.status = 'success'
-        testResults.property.update.message = 'Property updated successfully'
-      } else {
-        testResults.property.update.status = 'failure'
-        testResults.property.update.message = propertyError.value || 'Failed to update property, but no error was provided'
-      }
+      await updateProperty(testPropertyId.value, updates)
+      testResults.property.update.status = 'success'
+      testResults.property.update.message = 'Property updated successfully'
     } catch (error) {
       testResults.property.update.status = 'failure'
-      testResults.property.update.message = error instanceof Error ? error.message : 'Unknown error occurred'
+      const msg = error instanceof Error ? error.message : 'Unknown error occurred'
+      propertyError.value = msg
+      testResults.property.update.message = msg
+    } finally {
+      propertyLoading.value = false
     }
   }
 
   async function runPropertyDeleteTest () {
     testResults.property.delete.status = 'running'
     testResults.property.delete.message = 'Deleting property...'
+    propertyLoading.value = true
+    propertyError.value = null
 
     try {
       if (!testPropertyId.value) {
@@ -192,19 +195,17 @@
         await deleteBooking(booking.id)
       }
 
-      const success = await deleteProperty(testPropertyId.value)
-
-      if (success) {
-        testResults.property.delete.status = 'success'
-        testResults.property.delete.message = 'Property deleted successfully'
-        testPropertyId.value = null
-      } else {
-        testResults.property.delete.status = 'failure'
-        testResults.property.delete.message = propertyError.value || 'Failed to delete property, but no error was provided'
-      }
+      await deleteProperty(testPropertyId.value)
+      testResults.property.delete.status = 'success'
+      testResults.property.delete.message = 'Property deleted successfully'
+      testPropertyId.value = null
     } catch (error) {
       testResults.property.delete.status = 'failure'
-      testResults.property.delete.message = error instanceof Error ? error.message : 'Unknown error occurred'
+      const msg = error instanceof Error ? error.message : 'Unknown error occurred'
+      propertyError.value = msg
+      testResults.property.delete.message = msg
+    } finally {
+      propertyLoading.value = false
     }
   }
 
@@ -212,6 +213,8 @@
   async function runBookingCreateTest () {
     testResults.booking.create.status = 'running'
     testResults.booking.create.message = 'Creating test booking...'
+    bookingLoading.value = true
+    bookingError.value = null
 
     try {
       if (!testPropertyId.value) {
@@ -219,23 +222,21 @@
       }
 
       testBooking.property_id = testPropertyId.value
-      const bookingId = await createBooking({ ...testBooking })
-
-      if (bookingId) {
-        testBookingId.value = bookingId
-        testResults.booking.create.status = 'success'
-        testResults.booking.create.message = `Booking created with ID: ${bookingId}`
-      } else {
-        testResults.booking.create.status = 'failure'
-        testResults.booking.create.message = bookingError.value || 'Failed to create booking, but no error was provided'
-      }
+      const booking = await createBooking({ ...testBooking })
+      testBookingId.value = booking.id
+      testResults.booking.create.status = 'success'
+      testResults.booking.create.message = `Booking created with ID: ${booking.id}`
 
       // Create a standard booking as well for calendar testing
       testBookingStandard.property_id = testPropertyId.value
       await createBooking({ ...testBookingStandard })
     } catch (error) {
       testResults.booking.create.status = 'failure'
-      testResults.booking.create.message = error instanceof Error ? error.message : 'Unknown error occurred'
+      const msg = error instanceof Error ? error.message : 'Unknown error occurred'
+      bookingError.value = msg
+      testResults.booking.create.message = msg
+    } finally {
+      bookingLoading.value = false
     }
   }
 
@@ -266,6 +267,8 @@
   async function runBookingUpdateTest () {
     testResults.booking.update.status = 'running'
     testResults.booking.update.message = 'Updating booking data...'
+    bookingLoading.value = true
+    bookingError.value = null
 
     try {
       if (!testBookingId.value) {
@@ -278,43 +281,41 @@
         status: 'scheduled' as const,
       }
 
-      const success = await updateBooking(testBookingId.value, updates)
-
-      if (success) {
-        testResults.booking.update.status = 'success'
-        testResults.booking.update.message = 'Booking updated successfully'
-      } else {
-        testResults.booking.update.status = 'failure'
-        testResults.booking.update.message = bookingError.value || 'Failed to update booking, but no error was provided'
-      }
+      await updateBooking(testBookingId.value, updates)
+      testResults.booking.update.status = 'success'
+      testResults.booking.update.message = 'Booking updated successfully'
     } catch (error) {
       testResults.booking.update.status = 'failure'
-      testResults.booking.update.message = error instanceof Error ? error.message : 'Unknown error occurred'
+      const msg = error instanceof Error ? error.message : 'Unknown error occurred'
+      bookingError.value = msg
+      testResults.booking.update.message = msg
+    } finally {
+      bookingLoading.value = false
     }
   }
 
   async function runBookingDeleteTest () {
     testResults.booking.delete.status = 'running'
     testResults.booking.delete.message = 'Deleting booking...'
+    bookingLoading.value = true
+    bookingError.value = null
 
     try {
       if (!testBookingId.value) {
         throw new Error('No booking ID available. Please create a booking first.')
       }
 
-      const success = await deleteBooking(testBookingId.value)
-
-      if (success) {
-        testResults.booking.delete.status = 'success'
-        testResults.booking.delete.message = 'Booking deleted successfully'
-        testBookingId.value = null
-      } else {
-        testResults.booking.delete.status = 'failure'
-        testResults.booking.delete.message = bookingError.value || 'Failed to delete booking, but no error was provided'
-      }
+      await deleteBooking(testBookingId.value)
+      testResults.booking.delete.status = 'success'
+      testResults.booking.delete.message = 'Booking deleted successfully'
+      testBookingId.value = null
     } catch (error) {
       testResults.booking.delete.status = 'failure'
-      testResults.booking.delete.message = error instanceof Error ? error.message : 'Unknown error occurred'
+      const msg = error instanceof Error ? error.message : 'Unknown error occurred'
+      bookingError.value = msg
+      testResults.booking.delete.message = msg
+    } finally {
+      bookingLoading.value = false
     }
   }
 
@@ -397,7 +398,7 @@
 
   // Setup test data on mount
   onMounted(async () => {
-    await fetchAllBookings()
+    await fetchAndSubscribe()
   })
 
   // Helper function to get status color

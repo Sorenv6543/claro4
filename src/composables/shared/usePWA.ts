@@ -1,5 +1,4 @@
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useBackgroundSync } from './useBackgroundSync'
 import { usePushNotifications } from './usePushNotifications'
 
 export function usePWA () {
@@ -54,12 +53,8 @@ export function usePWA () {
     }
   })
 
-  // Initialize push notifications and background sync
+  // Initialize push notifications
   const pushNotifications = usePushNotifications()
-  const backgroundSync = useBackgroundSync()
-
-  // Don't start background sync in development
-  console.log('PWA background sync disabled in development mode')
 
   return {
     // Installation
@@ -78,9 +73,6 @@ export function usePWA () {
 
     // Push Notifications
     pushNotifications,
-
-    // Background Sync
-    backgroundSync,
 
     // Computed states
     canInstall: computed(() => false), // Always false in development

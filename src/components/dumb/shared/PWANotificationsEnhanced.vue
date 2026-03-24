@@ -255,7 +255,6 @@
     installPWA,
     updatePWA,
     pushNotifications,
-    backgroundSync,
   } = usePWA()
 
   const { user } = useAuth()
@@ -299,20 +298,14 @@
   })
 
   const offlineMessage = computed(() => {
-    const pendingCount = backgroundSync?.queueLength?.value || 0
-    if (pendingCount > 0) {
-      return `${pendingCount} operations will sync when connection returns.`
-    }
     return 'Some features may be limited until connection returns.'
   })
 
-  const hasPendingSync = computed(() =>
-    backgroundSync?.hasPendingOperations?.value && backgroundSync?.canProcess?.value,
-  )
+  const hasPendingSync = computed(() => false)
 
-  const isProcessingSync = computed(() => backgroundSync?.isProcessing?.value || false)
+  const isProcessingSync = computed(() => false)
 
-  const syncStatus = computed(() => backgroundSync?.getQueueStatus?.() || { operations: {}, total: 0 })
+  const syncStatus = computed(() => ({ operations: {} as Record<string, number>, total: 0 }))
 
   const syncStatusMessage = computed(() => {
     const status = syncStatus.value
@@ -383,13 +376,7 @@
   }
 
   async function retrySync () {
-    try {
-      if (backgroundSync?.retryFailedOperations) {
-        await backgroundSync.retryFailedOperations()
-      }
-    } catch (error) {
-      console.error('Sync retry failed:', error)
-    }
+    // Background sync has been removed; this is a no-op stub
   }
 
   // Watchers
@@ -399,12 +386,7 @@
     }
   })
 
-  watch(() => backgroundSync?.queueLength?.value || 0, (newLength, oldLength) => {
-    // Show success when queue becomes empty (operations completed)
-    if (oldLength > 0 && newLength === 0 && isOnline.value) {
-      showSyncSuccess.value = true
-    }
-  })
+  // Background sync watcher removed (offline queue dropped)
 
   // Check dismissal preferences
   function checkDismissalPreferences () {

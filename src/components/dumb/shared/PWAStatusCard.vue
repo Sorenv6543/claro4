@@ -165,7 +165,6 @@
     installPWA,
     updatePWA,
     pushNotifications,
-    backgroundSync,
   } = usePWA()
 
   const authStore = useAuthStore()
@@ -191,8 +190,8 @@
     return 'Browser'
   })
 
-  const syncQueueLength = computed(() => backgroundSync?.queueLength?.value || 0)
-  const isProcessingSync = computed(() => backgroundSync?.isProcessing?.value || false)
+  const syncQueueLength = computed(() => 0)
+  const isProcessingSync = computed(() => false)
 
   const notificationStatus = computed(() => {
     if (!pushNotifications?.isSupported?.value) return 'Not Supported'
@@ -246,13 +245,7 @@
   }
 
   async function retrySync () {
-    try {
-      if (backgroundSync?.retryFailedOperations) {
-        await backgroundSync.retryFailedOperations()
-      }
-    } catch (error) {
-      console.error('Sync retry failed:', error)
-    }
+    // Background sync has been removed; this is a no-op stub
   }
 
   onMounted(() => {

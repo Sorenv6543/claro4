@@ -12,21 +12,21 @@ Owner composables filter all data to show only the current property owner's info
 - **Analytics**: Statistics scoped to the owner's data only
 
 ### **Composition Pattern**
-Owner composables extend shared composables using the composition pattern:
+Owner composables use the supabase composables for CRUD and the stores for reads:
 ```typescript
 export function useOwnerBookings() {
-  const baseBookings = useBookings(); // Get shared functionality
+  const { createBooking, updateBooking, deleteBooking } = useSupabaseBookings();
+  const bookingStore = useBookingStore();
   const authStore = useAuthStore();
-  
+
   // Add owner-specific filtering and functions
-  const myBookings = computed(() => 
+  const myBookings = computed(() =>
     Array.from(bookingStore.bookings.values())
       .filter(booking => booking.owner_id === currentUserId.value)
   );
-  
+
   return {
-    ...baseBookings, // Inherit base functionality
-    // Override with owner-specific versions
+    // Owner-specific versions
     myBookings,
     fetchMyBookings,
     createMyBooking,

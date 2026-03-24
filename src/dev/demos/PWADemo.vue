@@ -476,8 +476,18 @@
     installPWA,
     updatePWA,
     pushNotifications,
-    backgroundSync,
   } = usePWA()
+
+  // Stub for removed background sync
+  const backgroundSync = {
+    queueLength: ref(0),
+    isProcessing: ref(false),
+    lastSyncTime: ref<Date | null>(null),
+    hasPendingOperations: ref(false),
+    processQueue: () => console.log('Background sync removed'),
+    clearQueue: () => console.log('Background sync removed'),
+    queueOperation: (..._args: unknown[]) => console.log('Background sync removed'),
+  }
 
   // Local state
   const installing = ref(false)

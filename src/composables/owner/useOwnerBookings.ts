@@ -11,7 +11,7 @@ import { calculateBookingPriority } from '@/utils/businessLogic'
 
 /**
  * Owner-specific booking composable
- * Extends shared useBookings functionality with owner data filtering
+ * Uses useSupabaseBookings for CRUD with owner data filtering
  *
  * Key Features:
  * - All operations filtered to current owner's bookings only

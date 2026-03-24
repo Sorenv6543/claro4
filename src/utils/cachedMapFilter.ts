@@ -3,7 +3,7 @@ import { computed, type ComputedRef, ref, type Ref } from 'vue'
 /**
  * Shared TTL-based cache for filtered Map computeds.
  *
- * Every store (booking, property, ownerData, adminData) duplicates
+ * Every store (booking, property) duplicates
  * the same cacheTimestamp / isCacheValid / invalidateCache plumbing.
  * This utility extracts that into a single reusable primitive.
  *
