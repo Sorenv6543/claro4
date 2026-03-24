@@ -214,7 +214,9 @@
   const viewMode = calendarState.viewMode
 
   onMounted(() => {
-    initRealtimeSync()
+    initRealtimeSync().catch((err: unknown) => {
+      console.error('[OwnerLayout] Failed to initialize realtime sync:', err)
+    })
   })
 
   // Show calendar controls only on the schedule/dashboard page

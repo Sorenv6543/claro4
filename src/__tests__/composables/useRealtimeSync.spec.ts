@@ -60,17 +60,17 @@ describe('useRealtimeSync', () => {
   })
 
   // Helper to dynamically import the composable (fresh module state each time)
-  async function getComposable() {
+  async function getComposable () {
     const mod = await import('@/composables/supabase/useRealtimeSync')
     return mod.useRealtimeSync()
   }
 
-  async function getPropertyStore() {
+  async function getPropertyStore () {
     const mod = await import('@/stores/property')
     return mod.usePropertyStore()
   }
 
-  async function getBookingStore() {
+  async function getBookingStore () {
     const mod = await import('@/stores/booking')
     return mod.useBookingStore()
   }

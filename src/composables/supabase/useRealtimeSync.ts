@@ -1,17 +1,17 @@
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { supabase } from '@/plugins/supabase'
 import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useSupabaseProperties } from '@/composables/supabase/useSupabaseProperties'
+import { supabase } from '@/plugins/supabase'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
 
-export function useRealtimeSync() {
+export function useRealtimeSync () {
   const { fetchAndSubscribe: initBookings, unsubscribe: teardownBookings,
-          connectionStatus: bookingStatus } = useSupabaseBookings()
+    connectionStatus: bookingStatus } = useSupabaseBookings()
   const { fetchAndSubscribe: initProperties, unsubscribe: teardownProperties,
-          connectionStatus: propertyStatus } = useSupabaseProperties()
+    connectionStatus: propertyStatus } = useSupabaseProperties()
   const authStore = useAuthStore()
   const bookingStore = useBookingStore()
   const propertyStore = usePropertyStore()
@@ -20,15 +20,19 @@ export function useRealtimeSync() {
   let profileChannel: RealtimeChannel | null = null
 
   const connectionStatus = computed(() => {
-    if (bookingStatus.value === 'connected' && propertyStatus.value === 'connected')
+    if (bookingStatus.value === 'connected' && propertyStatus.value === 'connected') {
       return 'connected'
-    if (bookingStatus.value === 'connecting' || propertyStatus.value === 'connecting')
+    }
+    if (bookingStatus.value === 'connecting' || propertyStatus.value === 'connecting') {
       return 'connecting'
+    }
     return 'disconnected'
   })
 
-  function subscribeToProfileChanges() {
-    if (profileChannel) return
+  function subscribeToProfileChanges () {
+    if (profileChannel) {
+      return
+    }
     profileChannel = supabase
       .channel('user-profile-changes')
       .on(
@@ -39,18 +43,34 @@ export function useRealtimeSync() {
           table: 'user_profiles',
           filter: `id=eq.${authStore.user?.id}`,
         },
-        () => authStore.checkAuth(),
+        () => {
+          authStore.checkAuth().catch((err: unknown) =>
+            console.error('[useRealtimeSync] profile checkAuth failed:', err),
+          )
+        },
       )
-      .subscribe()
+      .subscribe((status: string) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.error('[useRealtimeSync] profile channel subscription failed:', status)
+        }
+      })
   }
 
-  async function init() {
-    await initBookings()
-    await initProperties()
-    subscribeToProfileChanges()
+  async function init () {
+    const results = await Promise.allSettled([initBookings(), initProperties()])
+    const failures = results.filter(r => r.status === 'rejected')
+    for (const result of failures) {
+      console.error('[useRealtimeSync] init partial failure:', (result as PromiseRejectedResult).reason)
+    }
+    if (failures.length === results.length) {
+      throw new Error('All data sources failed to initialize')
+    }
+    if (failures.length < results.length) {
+      subscribeToProfileChanges()
+    }
   }
 
-  function teardown() {
+  function teardown () {
     teardownBookings()
     teardownProperties()
     if (profileChannel) {
@@ -61,11 +81,11 @@ export function useRealtimeSync() {
     propertyStore.clearAll()
   }
 
-  function onOnline() {
+  function onOnline () {
     isOnline.value = true
-    init()
+    init().catch(err => console.error('[useRealtimeSync] reconnection failed:', err))
   }
-  function onOffline() {
+  function onOffline () {
     isOnline.value = false
   }
 

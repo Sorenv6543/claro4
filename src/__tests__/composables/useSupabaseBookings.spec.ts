@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Helper to build a valid BookingFormData
-function makeFormData(overrides: Partial<BookingFormData> = {}): BookingFormData {
+function makeFormData (overrides: Partial<BookingFormData> = {}): BookingFormData {
   return {
     property_id: 'prop-1',
     owner_id: 'owner-1',
@@ -19,7 +19,7 @@ function makeFormData(overrides: Partial<BookingFormData> = {}): BookingFormData
 }
 
 // Helper to build a full Booking object
-function makeBooking(overrides: Partial<Booking> = {}): Booking {
+function makeBooking (overrides: Partial<Booking> = {}): Booking {
   return {
     id: 'booking-1',
     property_id: 'prop-1',
@@ -65,13 +65,13 @@ describe('useSupabaseBookings', () => {
   })
 
   // Helper to dynamically import the composable (fresh module state each time)
-  async function getComposable() {
+  async function getComposable () {
     const mod = await import('@/composables/supabase/useSupabaseBookings')
     return mod.useSupabaseBookings()
   }
 
   // Helper to dynamically import the booking store
-  async function getBookingStore() {
+  async function getBookingStore () {
     const mod = await import('@/stores/booking')
     return mod.useBookingStore()
   }
@@ -137,7 +137,7 @@ describe('useSupabaseBookings', () => {
       const composable = await getComposable()
       const store = await getBookingStore()
 
-      await composable.fetchAndSubscribe()
+      await expect(composable.fetchAndSubscribe()).rejects.toBeTruthy()
 
       expect(store.bookings.size).toBe(0)
       expect(store.error).toBeTruthy()
@@ -149,7 +149,9 @@ describe('useSupabaseBookings', () => {
     it('optimistically adds booking to store before Supabase resolves', async () => {
       // Make insert return a promise that we control
       let resolveInsert!: (value: any) => void
-      const insertPromise = new Promise(resolve => { resolveInsert = resolve })
+      const insertPromise = new Promise(resolve => {
+        resolveInsert = resolve
+      })
 
       const insertMock = vi.fn().mockReturnValue(insertPromise)
       supabaseMock.from.mockReturnValue({
@@ -386,19 +388,19 @@ describe('useSupabaseBookings', () => {
   })
 
   describe('realtime deduplication', () => {
-    it('skips realtime INSERT for an optimistically-created booking', async () => {
-      // Set up insert to succeed
-      const insertMock = vi.fn().mockResolvedValue({ data: null, error: null })
+    it('skips realtime INSERT for an optimistically-created booking while CRUD in-flight', async () => {
+      // Use a controlled promise so we can fire the realtime event DURING the insert
+      let resolveInsert!: (value: any) => void
+      const insertPromise = new Promise(resolve => { resolveInsert = resolve })
       let realtimeCallback: ((payload: any) => void) | null = null
 
       supabaseMock.from.mockReturnValue({
         select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
-        insert: insertMock,
+        insert: vi.fn().mockReturnValue(insertPromise),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
       })
 
-      // Capture the realtime callback
       supabaseMock.channel = vi.fn().mockReturnValue({
         on: vi.fn().mockImplementation((_type: string, _filter: any, callback: any) => {
           realtimeCallback = callback
@@ -414,32 +416,31 @@ describe('useSupabaseBookings', () => {
       const composable = await getComposable()
       const store = await getBookingStore()
 
-      // Subscribe to set up the realtime channel (capturing the callback)
       await composable.fetchAndSubscribe()
 
-      // Create a booking (optimistic insert)
+      // Start creating — don't await yet
       const formData = makeFormData()
-      const createdBooking = await composable.createBooking(formData)
+      const createPromise = composable.createBooking(formData)
 
+      // Booking is in store optimistically
       expect(store.bookings.size).toBe(1)
+      const optimisticId = Array.from(store.bookings.keys())[0]
 
-      // Simulate a realtime INSERT event for the same booking ID
-      // This should be SKIPPED because the ID is in the optimisticIds set
-      const realtimeBooking = {
-        ...createdBooking,
-        notes: 'from-realtime', // different to prove dedup
-      }
-
+      // Fire realtime event WHILE insert is still pending — should be skipped
       expect(realtimeCallback).not.toBeNull()
       realtimeCallback!({
         eventType: 'INSERT',
-        new: realtimeBooking,
+        new: { ...store.bookings.get(optimisticId), notes: 'from-realtime' },
         old: null,
       })
 
-      // Store should still have the original optimistic version, not the realtime one
-      const storeBooking = store.bookings.get(createdBooking.id)
-      expect(storeBooking?.notes).not.toBe('from-realtime')
+      // Store should still have the original optimistic version
+      expect(store.bookings.get(optimisticId)?.notes).not.toBe('from-realtime')
+
+      // Now resolve the insert
+      resolveInsert({ data: null, error: null })
+      await createPromise
+
       expect(store.bookings.size).toBe(1)
     })
 
@@ -539,7 +540,8 @@ describe('useSupabaseBookings', () => {
       store.setBooking('s2', existing)
 
       await expect(composable.changeBookingStatus('s2', 'in_progress'))
-        .rejects.toThrow('Cannot transition from completed to in_progress')
+        .rejects
+        .toThrow('Cannot transition from completed to in_progress')
     })
   })
 

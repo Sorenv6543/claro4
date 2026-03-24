@@ -1,7 +1,7 @@
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import type { Booking, BookingFormData } from '@/types'
-import { ref } from 'vue'
 import { v4 as uuidv4 } from 'uuid'
+import { ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
 import { useBookingStore } from '@/stores/booking'
 import { canTransitionBookingStatus } from '@/utils/businessLogic'
@@ -11,12 +11,13 @@ let channel: RealtimeChannel | null = null
 const optimisticIds = new Set<string>()
 const connectionStatus = ref<'connecting' | 'connected' | 'disconnected'>('disconnected')
 
-const OPTIMISTIC_CLEANUP_DELAY = 5_000
+// Safety net timeout — primary cleanup is in CRUD finally blocks
+const OPTIMISTIC_SAFETY_TIMEOUT = 30_000
 
-export function useSupabaseBookings() {
+export function useSupabaseBookings () {
   const bookingStore = useBookingStore()
 
-  async function fetchAndSubscribe() {
+  async function fetchAndSubscribe () {
     bookingStore.loading = true
     bookingStore.error = null
 
@@ -26,20 +27,24 @@ export function useSupabaseBookings() {
         .select('*')
         .order('checkout_date', { ascending: true })
 
-      if (fetchError) throw fetchError
+      if (fetchError) {
+        throw fetchError
+      }
       bookingStore.setBookings((data ?? []) as Booking[])
-    } catch (err) {
-      bookingStore.error = err instanceof Error ? err.message : 'Failed to fetch bookings'
-      console.error('[useSupabaseBookings] fetch error:', err)
+      subscribe() // Only subscribe after successful fetch
+    } catch (error) {
+      bookingStore.error = error instanceof Error ? error.message : 'Failed to fetch bookings'
+      console.error('[useSupabaseBookings] fetch error:', error)
+      throw error // Propagate so callers can handle
     } finally {
       bookingStore.loading = false
     }
-
-    subscribe()
   }
 
-  function subscribe() {
-    if (channel) return
+  function subscribe () {
+    if (channel) {
+      return
+    }
     connectionStatus.value = 'connecting'
 
     channel = supabase
@@ -47,15 +52,18 @@ export function useSupabaseBookings() {
       .on(
         'postgres_changes',
         { event: '*', schema: 'public', table: 'bookings' },
-        (payload) => handleRealtimeEvent(payload),
+        payload => handleRealtimeEvent(payload),
       )
-      .subscribe((status) => {
-        if (status === 'SUBSCRIBED') connectionStatus.value = 'connected'
-        else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') connectionStatus.value = 'disconnected'
+      .subscribe(status => {
+        if (status === 'SUBSCRIBED') {
+          connectionStatus.value = 'connected'
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          connectionStatus.value = 'disconnected'
+        }
       })
   }
 
-  function unsubscribe() {
+  function unsubscribe () {
     if (channel) {
       supabase.removeChannel(channel)
       channel = null
@@ -64,32 +72,46 @@ export function useSupabaseBookings() {
     optimisticIds.clear()
   }
 
-  function handleRealtimeEvent(payload: any) {
-    const { eventType, new: newRecord, old: oldRecord } = payload
-    const id = (newRecord || oldRecord)?.id
-    if (!id) return
+  function handleRealtimeEvent (payload: any) {
+    try {
+      const { eventType, new: newRecord, old: oldRecord } = payload
+      const id = (newRecord || oldRecord)?.id
+      if (!id) {
+        return
+      }
 
-    switch (eventType) {
-      case 'INSERT':
-      case 'UPDATE': {
-        if (optimisticIds.has(id)) return
-        bookingStore.setBooking(id, newRecord as Booking)
-        break
+      switch (eventType) {
+        case 'INSERT':
+        case 'UPDATE': {
+          if (optimisticIds.has(id)) {
+            return
+          }
+          bookingStore.setBooking(id, newRecord as Booking)
+          break
+        }
+        case 'DELETE': {
+          if (!oldRecord?.id) return
+          optimisticIds.delete(id)
+          bookingStore.removeBooking(oldRecord.id)
+          break
+        }
       }
-      case 'DELETE': {
-        optimisticIds.delete(id)
-        bookingStore.removeBooking(oldRecord.id)
-        break
-      }
+    } catch (err) {
+      console.error('[useSupabaseBookings] realtime event error:', err, payload)
     }
   }
 
-  function trackOptimistic(id: string) {
+  function trackOptimistic (id: string) {
     optimisticIds.add(id)
-    setTimeout(() => optimisticIds.delete(id), OPTIMISTIC_CLEANUP_DELAY)
+    // Safety net — primary cleanup is in CRUD finally blocks
+    setTimeout(() => optimisticIds.delete(id), OPTIMISTIC_SAFETY_TIMEOUT)
   }
 
-  async function createBooking(formData: BookingFormData): Promise<Booking> {
+  function clearOptimistic (id: string) {
+    optimisticIds.delete(id)
+  }
+
+  async function createBooking (formData: BookingFormData): Promise<Booking> {
     const id = uuidv4()
     const now = new Date().toISOString()
 
@@ -119,18 +141,23 @@ export function useSupabaseBookings() {
 
     try {
       const { error } = await supabase.from('bookings').insert(booking)
-      if (error) throw error
+      if (error) {
+        throw error
+      }
       return booking
-    } catch (err) {
+    } catch (error) {
       bookingStore.removeBooking(id)
-      optimisticIds.delete(id)
-      throw err
+      throw error
+    } finally {
+      clearOptimistic(id)
     }
   }
 
-  async function updateBooking(id: string, updates: Partial<Booking>): Promise<Booking> {
+  async function updateBooking (id: string, updates: Partial<Booking>): Promise<Booking> {
     const existing = bookingStore.bookings.get(id)
-    if (!existing) throw new Error('Booking not found')
+    if (!existing) {
+      throw new Error('Booking not found')
+    }
 
     const updated: Booking = { ...existing, ...updates, updated_at: new Date().toISOString() }
 
@@ -139,42 +166,52 @@ export function useSupabaseBookings() {
 
     try {
       const { error } = await supabase.from('bookings').update(updates).eq('id', id)
-      if (error) throw error
+      if (error) {
+        throw error
+      }
       return updated
-    } catch (err) {
+    } catch (error) {
       bookingStore.setBooking(id, existing)
-      optimisticIds.delete(id)
-      throw err
+      throw error
+    } finally {
+      clearOptimistic(id)
     }
   }
 
-  async function deleteBooking(id: string): Promise<void> {
+  async function deleteBooking (id: string): Promise<void> {
     const existing = bookingStore.bookings.get(id)
-    if (!existing) throw new Error('Booking not found')
+    if (!existing) {
+      throw new Error('Booking not found')
+    }
 
     bookingStore.removeBooking(id)
     trackOptimistic(id)
 
     try {
       const { error } = await supabase.from('bookings').delete().eq('id', id)
-      if (error) throw error
-    } catch (err) {
+      if (error) {
+        throw error
+      }
+    } catch (error) {
       bookingStore.setBooking(id, existing)
-      optimisticIds.delete(id)
-      throw err
+      throw error
+    } finally {
+      clearOptimistic(id)
     }
   }
 
-  async function changeBookingStatus(id: string, status: Booking['status']): Promise<Booking> {
+  async function changeBookingStatus (id: string, status: Booking['status']): Promise<Booking> {
     const existing = bookingStore.bookings.get(id)
-    if (!existing) throw new Error('Booking not found')
+    if (!existing) {
+      throw new Error('Booking not found')
+    }
     if (!canTransitionBookingStatus(existing, status)) {
       throw new Error(`Cannot transition from ${existing.status} to ${status}`)
     }
     return updateBooking(id, { status })
   }
 
-  async function assignCleaner(bookingId: string, cleanerId: string): Promise<Booking> {
+  async function assignCleaner (bookingId: string, cleanerId: string): Promise<Booking> {
     return updateBooking(bookingId, { assigned_cleaner_id: cleanerId })
   }
 

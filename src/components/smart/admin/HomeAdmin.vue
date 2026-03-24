@@ -46,8 +46,9 @@
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   import AdminDashboard from '@/components/smart/admin/AdminDashboard.vue'
+  import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
+  import { useSupabaseProperties } from '@/composables/supabase/useSupabaseProperties'
   import { useAuthStore } from '@/stores/auth'
-  import { useBookingStore } from '@/stores/booking'
   import { usePropertyStore } from '@/stores/property'
   import { useUIStore } from '@/stores/ui'
 
@@ -59,7 +60,8 @@
 
   const uiStore = useUIStore()
   const propertyStore = usePropertyStore()
-  const bookingStore = useBookingStore()
+  const { createProperty: supaCreateProperty, updateProperty: supaUpdateProperty, deleteProperty: supaDeleteProperty } = useSupabaseProperties()
+  const { deleteBooking: supaDeleteBooking } = useSupabaseBookings()
   const authStore = useAuthStore()
   const { xs } = useDisplay()
 
@@ -136,13 +138,11 @@
   async function handlePropertyModalSave (formData: PropertyFormData): Promise<void> {
     try {
       if (propertyModalMode.value === 'create') {
-        const newProp = formData as Property
-        propertyStore.setProperty(newProp.id, newProp)
+        await supaCreateProperty(formData)
       } else {
         const existingProperty = propertyModalData.value
         if (existingProperty) {
-          const existing = propertyStore.properties.get(existingProperty.id)!
-          propertyStore.setProperty(existingProperty.id, { ...existing, ...formData } as Property)
+          await supaUpdateProperty(existingProperty.id, formData)
         }
       }
       uiStore.closeModal('propertyModal')
@@ -173,16 +173,14 @@
 
     if (data?.type === 'booking' && data?.id) {
       try {
-        // Admin can delete any booking - no ownership check needed
-        await bookingStore.removeBooking(data.id as string)
+        await supaDeleteBooking(data.id as string)
         uiStore.closeModal('eventModal')
       } catch (error) {
         console.error('Failed to delete booking:', error)
       }
     } else if (data?.type === 'property' && data?.id) {
       try {
-        // Admin can delete any property - no ownership check needed
-        await propertyStore.removeProperty(data.id as string)
+        await supaDeleteProperty(data.id as string)
         uiStore.closeModal('propertyModal')
       } catch (error) {
         console.error('Failed to delete property:', error)

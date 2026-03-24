@@ -3,7 +3,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Helper to build a valid PropertyFormData
-function makeFormData(overrides: Partial<PropertyFormData> = {}): PropertyFormData {
+function makeFormData (overrides: Partial<PropertyFormData> = {}): PropertyFormData {
   return {
     owner_id: 'owner-1',
     address_street: '123 Main St',
@@ -19,7 +19,7 @@ function makeFormData(overrides: Partial<PropertyFormData> = {}): PropertyFormDa
 }
 
 // Helper to build a full Property object
-function makeProperty(overrides: Partial<Property> = {}): Property {
+function makeProperty (overrides: Partial<Property> = {}): Property {
   return {
     id: 'prop-1',
     owner_id: 'owner-1',
@@ -54,13 +54,13 @@ describe('useSupabaseProperties', () => {
   })
 
   // Helper to dynamically import the composable (fresh module state each time)
-  async function getComposable() {
+  async function getComposable () {
     const mod = await import('@/composables/supabase/useSupabaseProperties')
     return mod.useSupabaseProperties()
   }
 
   // Helper to dynamically import the property store
-  async function getPropertyStore() {
+  async function getPropertyStore () {
     const mod = await import('@/stores/property')
     return mod.usePropertyStore()
   }
@@ -123,7 +123,7 @@ describe('useSupabaseProperties', () => {
       const composable = await getComposable()
       const store = await getPropertyStore()
 
-      await composable.fetchAndSubscribe()
+      await expect(composable.fetchAndSubscribe()).rejects.toBeTruthy()
 
       expect(store.properties.size).toBe(0)
       expect(store.error).toBeTruthy()
@@ -135,7 +135,9 @@ describe('useSupabaseProperties', () => {
     it('optimistically adds property to store before Supabase resolves', async () => {
       // Make insert return a promise that we control
       let resolveInsert!: (value: any) => void
-      const insertPromise = new Promise(resolve => { resolveInsert = resolve })
+      const insertPromise = new Promise(resolve => {
+        resolveInsert = resolve
+      })
 
       const insertMock = vi.fn().mockReturnValue(insertPromise)
       supabaseMock.from.mockReturnValue({
@@ -373,19 +375,19 @@ describe('useSupabaseProperties', () => {
   })
 
   describe('realtime handling', () => {
-    it('skips realtime INSERT for an optimistically-created property', async () => {
-      // Set up insert to succeed
-      const insertMock = vi.fn().mockResolvedValue({ data: null, error: null })
+    it('skips realtime INSERT for an optimistically-created property while CRUD in-flight', async () => {
+      // Use a controlled promise so we can fire the realtime event DURING the insert
+      let resolveInsert!: (value: any) => void
+      const insertPromise = new Promise(resolve => { resolveInsert = resolve })
       let realtimeCallback: ((payload: any) => void) | null = null
 
       supabaseMock.from.mockReturnValue({
         select: vi.fn().mockResolvedValue({ data: [], error: null }),
-        insert: insertMock,
+        insert: vi.fn().mockReturnValue(insertPromise),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
       })
 
-      // Capture the realtime callback
       supabaseMock.channel = vi.fn().mockReturnValue({
         on: vi.fn().mockImplementation((_type: string, _filter: any, callback: any) => {
           realtimeCallback = callback
@@ -401,33 +403,31 @@ describe('useSupabaseProperties', () => {
       const composable = await getComposable()
       const store = await getPropertyStore()
 
-      // Subscribe to set up the realtime channel (capturing the callback)
       await composable.fetchAndSubscribe()
 
-      // Create a property (optimistic insert)
+      // Start creating — don't await yet
       const formData = makeFormData()
-      const createdProperty = await composable.createProperty(formData)
+      const createPromise = composable.createProperty(formData)
 
+      // Property is in store optimistically
       expect(store.properties.size).toBe(1)
+      const optimisticId = Array.from(store.properties.keys())[0]
 
-      // Simulate a realtime INSERT event for the same property ID
-      // This should be SKIPPED because the ID is in the optimisticIds set
-      const realtimeProperty = {
-        ...createdProperty,
-        special_instructions: 'from-realtime',
-        active: true,
-      }
-
+      // Fire realtime event WHILE insert is still pending — should be skipped
       expect(realtimeCallback).not.toBeNull()
       realtimeCallback!({
         eventType: 'INSERT',
-        new: realtimeProperty,
+        new: { ...store.properties.get(optimisticId), special_instructions: 'from-realtime', active: true },
         old: null,
       })
 
-      // Store should still have the original optimistic version, not the realtime one
-      const storeProperty = store.properties.get(createdProperty.id)
-      expect(storeProperty?.special_instructions).not.toBe('from-realtime')
+      // Store should still have the original optimistic version
+      expect(store.properties.get(optimisticId)?.special_instructions).not.toBe('from-realtime')
+
+      // Now resolve the insert
+      resolveInsert({ data: null, error: null })
+      await createPromise
+
       expect(store.properties.size).toBe(1)
     })
 

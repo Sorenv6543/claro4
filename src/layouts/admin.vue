@@ -35,7 +35,6 @@
 </template>
 
 <script setup lang="ts">
-  import type { Booking, Property } from '@/types'
   import { computed, onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
@@ -60,8 +59,8 @@
   const isSidebarOpen = ref(true)
   const loading = ref<boolean>(false)
 
-  const bookings = ref<Booking[]>([])
-  const properties = ref<Property[]>([])
+  const bookings = computed(() => Array.from(bookingStore.bookings.values()))
+  const properties = computed(() => Array.from(propertyStore.properties.values()))
 
   // Computed stats for sidebar
   const totalProperties = computed(() => propertyStore.properties.size)
