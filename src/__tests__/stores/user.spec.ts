@@ -62,7 +62,7 @@ describe('User Store', () => {
     store.setUser(user)
 
     // Add properties
-    propertyStore.addProperty({
+    propertyStore.setProperty('prop1', {
       id: 'prop1',
       owner_id: 'owner1',
       name: 'Owner House',
@@ -73,7 +73,7 @@ describe('User Store', () => {
       color: '#5c6bc0',
     })
 
-    propertyStore.addProperty({
+    propertyStore.setProperty('prop2', {
       id: 'prop2',
       owner_id: 'other_owner',
       name: 'Other House',
@@ -115,7 +115,7 @@ describe('User Store', () => {
     store.setUser(adminUser)
 
     // Add properties from different owners
-    propertyStore.addProperty({
+    propertyStore.setProperty('prop1', {
       id: 'prop1',
       owner_id: 'owner1',
       name: 'House 1',
@@ -126,7 +126,7 @@ describe('User Store', () => {
       color: '#5c6bc0',
     })
 
-    propertyStore.addProperty({
+    propertyStore.setProperty('prop2', {
       id: 'prop2',
       owner_id: 'owner2',
       name: 'House 2',
@@ -210,7 +210,7 @@ describe('User Store', () => {
     })
     store.setUser(user)
 
-    propertyStore.addProperty({
+    propertyStore.setProperty('prop1', {
       id: 'prop1',
       owner_id: 'owner1',
       name: 'Beach House',

@@ -98,7 +98,7 @@
         active: true,
       } as Property
 
-      await propertyStore.addProperty(newProperty)
+      propertyStore.setProperty(newProperty.id, newProperty)
       router.push('/owner/properties')
     } catch (error) {
       console.error('Failed to create property:', error)

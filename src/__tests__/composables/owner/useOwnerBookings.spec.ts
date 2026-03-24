@@ -78,7 +78,7 @@ describe('useOwnerBookings (Role-Based)', () => {
 
     // createMyBooking requires a property that belongs to the owner in the property store
     const propertyStore = usePropertyStore()
-    propertyStore.addProperty({
+    propertyStore.setProperty('prop1', {
       id: 'prop1',
       owner_id: 'owner1',
       name: 'Owner House',

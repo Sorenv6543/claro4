@@ -462,7 +462,7 @@ function useOwnerBookingsPinia () {
     getOwnerPerformanceMetrics,
 
     // Store actions (scoped to owner)
-    fetchMyProperties: () => propertyStore.fetchProperties(),
+    fetchMyProperties: () => Promise.resolve(),
   }
 }
 

@@ -49,8 +49,8 @@ export function useProperties () {
         updated_at: new Date().toISOString(),
       } as Property
 
-      // Add to store (calls Supabase with optimistic update + rollback)
-      await propertyStore.addProperty(newProperty)
+      // Add to store (sync mutation; Supabase I/O handled by composables)
+      propertyStore.setProperty(newProperty.id, newProperty)
 
       success.value = 'Property created successfully'
       loading.value = false
@@ -87,8 +87,9 @@ export function useProperties () {
         throw new Error('Invalid pricing tier')
       }
 
-      // Update property in store (calls Supabase with optimistic update + rollback)
-      await propertyStore.updateProperty(id, updates)
+      // Update property in store (sync mutation; Supabase I/O handled by composables)
+      const existing = propertyStore.properties.get(id)!
+      propertyStore.setProperty(id, { ...existing, ...updates } as Property)
 
       success.value = 'Property updated successfully'
       loading.value = false
@@ -162,8 +163,9 @@ export function useProperties () {
         }
       }
 
-      // Update property status (calls Supabase with optimistic update + rollback)
-      await propertyStore.updateProperty(id, { active })
+      // Update property status (sync mutation; Supabase I/O handled by composables)
+      const existingProp = propertyStore.properties.get(id)!
+      propertyStore.setProperty(id, { ...existingProp, active } as Property)
 
       success.value = `Property ${active ? 'activated' : 'deactivated'} successfully`
       loading.value = false
@@ -273,7 +275,7 @@ export function useProperties () {
     error.value = null
 
     try {
-      await propertyStore.fetchProperties()
+      // No-op: property fetching now handled by useSupabaseProperties
       loading.value = false
       return true
     } catch (error_) {

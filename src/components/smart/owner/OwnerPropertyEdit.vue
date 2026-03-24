@@ -135,7 +135,7 @@
 
   onMounted(async () => {
     try {
-      await propertyStore.fetchProperties()
+      // Property data loaded via useSupabaseProperties realtime sync
       property.value = propertyStore.properties.get(propertyId) || null
 
       if (!property.value) {
@@ -150,7 +150,8 @@
   async function handleSave (propertyData: Partial<Property>) {
     try {
       if (property.value) {
-        await propertyStore.updateProperty(property.value.id, propertyData)
+        const existing = propertyStore.properties.get(property.value.id)!
+        propertyStore.setProperty(property.value.id, { ...existing, ...propertyData } as Property)
         router.push('/owner/properties')
       }
     } catch (error) {

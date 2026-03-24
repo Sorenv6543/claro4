@@ -136,11 +136,13 @@
   async function handlePropertyModalSave (formData: PropertyFormData): Promise<void> {
     try {
       if (propertyModalMode.value === 'create') {
-        await propertyStore.addProperty(formData as Property)
+        const newProp = formData as Property
+        propertyStore.setProperty(newProp.id, newProp)
       } else {
         const existingProperty = propertyModalData.value
         if (existingProperty) {
-          await propertyStore.updateProperty(existingProperty.id, formData)
+          const existing = propertyStore.properties.get(existingProperty.id)!
+          propertyStore.setProperty(existingProperty.id, { ...existing, ...formData } as Property)
         }
       }
       uiStore.closeModal('propertyModal')
@@ -212,7 +214,8 @@
   async function loadSystemData () {
     try {
       await Promise.all([
-        propertyStore.fetchProperties(),
+        // Property data loaded via useSupabaseProperties realtime sync
+        Promise.resolve(),
         // bookingStore.fetchBookings() removed — data loaded via realtime sync
         fetchAllUsers(),
       ])

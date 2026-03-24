@@ -643,7 +643,7 @@
     ]
 
     for (const property of sampleProperties) {
-      propertyStore.addProperty(property)
+      propertyStore.setProperty(property.id, property)
     }
 
     // Add sample bookings
