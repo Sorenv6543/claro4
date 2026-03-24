@@ -1,7 +1,6 @@
 import type { PricingTier, Property, PropertyMap } from '@/types'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import supabase from '@/plugins/supabase'
 import { createMapCache } from '@/utils/cachedMapFilter'
 
 /**
@@ -78,126 +77,25 @@ export const usePropertyStore = defineStore('property', () => {
     return count > 0 ? total / count : 0
   })
 
-  // --- Supabase RLS Policy ---
-  // Owners can insert/select their own properties. See supabase/migrations/002_rls_policies.sql for details.
-
-  // Actions
-  async function fetchProperties () {
-    loading.value = true
-    error.value = null
-
-    try {
-      const { data, error: supaError } = await supabase.from('properties').select('*')
-      if (supaError) {
-        throw supaError
-      }
-      properties.value.clear()
-      if (data) {
-        for (const prop of data) {
-          properties.value.set(prop.id, prop)
-        }
-      }
-    } catch (error_: unknown) {
-      error.value = error_ instanceof Error ? error_.message : 'Failed to fetch properties.'
-      console.error('fetchProperties error:', error_)
-    } finally {
-      loading.value = false
-      invalidateCache() // Invalidate cache after fetch
-    }
+  // Synchronous mutations (Supabase I/O handled by composables)
+  function setProperties (data: Property[]) {
+    properties.value = new Map(data.map(p => [p.id, p]))
+    invalidateCache()
   }
 
-  async function addProperty (property: Property) {
-    // Optimistic update
-    properties.value.set(property.id, property)
-    error.value = null
-
-    try {
-      const { error: supaError } = await supabase.from('properties').insert([property])
-      if (supaError) {
-        throw supaError
-      }
-      invalidateCache() // Invalidate cache after successful insert
-    } catch (error_: unknown) {
-      properties.value.delete(property.id)
-      error.value = error_ instanceof Error ? error_.message : 'Failed to add property.'
-      console.error('addProperty error:', error_)
-      throw error_
-    }
+  function setProperty (id: string, property: Property) {
+    properties.value.set(id, property)
+    invalidateCache()
   }
 
-  async function updateProperty (id: string, updates: Partial<Property>) {
-    const existing = properties.value.get(id)
-    if (!existing) {
-      error.value = 'Property not found'
-      throw new Error('Property not found')
-    }
-
-    // Optimistic update
-    const updated = {
-      ...existing,
-      ...updates,
-      updated_at: new Date().toISOString(),
-    }
-    properties.value.set(id, updated)
-    error.value = null
-
-    try {
-      const { error: supaError } = await supabase
-        .from('properties')
-        .update(updates)
-        .eq('id', id)
-
-      if (supaError) {
-        throw supaError
-      }
-      invalidateCache() // Invalidate cache after successful update
-    } catch (error_: unknown) {
-      // Rollback on error
-      properties.value.set(id, existing)
-      error.value = error_ instanceof Error ? error_.message : 'Failed to update property.'
-      console.error('updateProperty error:', error_)
-      throw error_
-    }
+  function removeProperty (id: string) {
+    properties.value.delete(id)
+    invalidateCache()
   }
-
-  async function removeProperty (id: string) {
-    const existing = properties.value.get(id)
-    if (!existing) {
-      error.value = 'Property not found'
-      throw new Error('Property not found')
-    }
-
-    // Optimistic update (soft delete by setting active = false)
-    const deactivated = { ...existing, active: false, updated_at: new Date().toISOString() }
-    properties.value.set(id, deactivated)
-    error.value = null
-
-    try {
-      const { error: supaError } = await supabase
-        .from('properties')
-        .update({ active: false, updated_at: new Date().toISOString() })
-        .eq('id', id)
-
-      if (supaError) {
-        throw supaError
-      }
-
-      // Remove from local state after successful soft delete
-      properties.value.delete(id)
-      invalidateCache() // Invalidate cache after successful delete
-    } catch (error_: unknown) {
-      // Rollback on error
-      properties.value.set(id, existing)
-      error.value = error_ instanceof Error ? error_.message : 'Failed to remove property.'
-      console.error('removeProperty error:', error_)
-      throw error_
-    }
-  }
-
 
   function clearAll () {
     properties.value.clear()
-    invalidateCache() // Invalidate cache when data changes
+    invalidateCache()
   }
 
   return {
@@ -223,10 +121,9 @@ export const usePropertyStore = defineStore('property', () => {
     propertiesByActiveStatus,
     averageCleaningDuration,
 
-    // Actions
-    fetchProperties,
-    addProperty,
-    updateProperty,
+    // Mutations
+    setProperties,
+    setProperty,
     removeProperty,
     clearAll,
 
