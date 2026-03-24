@@ -1,12 +1,13 @@
 import type { Booking, BookingFormData, BookingStatus, Property } from '@/types'
 import { computed, ref } from 'vue'
-import { useBookings } from '@/composables/shared/useBookings'
+import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 // useCachedComputed intentionally not used here — TTL caching delays
 // user-triggered mutations (booking create/edit) from appearing in the UI.
 import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
+import { calculateBookingPriority } from '@/utils/businessLogic'
 
 /**
  * Owner-specific booking composable
@@ -20,8 +21,13 @@ import { usePropertyStore } from '@/stores/property'
  * - Removes admin-only functions (cleaner assignment)
  */
 function useOwnerBookingsPinia () {
-  // Get shared functionality and stores
-  const baseBookings = useBookings()
+  // Get supabase CRUD and stores
+  const {
+    createBooking: supaCreateBooking,
+    updateBooking: supaUpdateBooking,
+    deleteBooking: supaDeleteBooking,
+    changeBookingStatus: supaChangeStatus,
+  } = useSupabaseBookings()
   const authStore = useAuthStore()
   const bookingStore = useBookingStore()
   const propertyStore = usePropertyStore()
@@ -148,26 +154,12 @@ function useOwnerBookingsPinia () {
 
   /**
      * Fetch current owner's bookings only
+     * @deprecated Data is now loaded via useRealtimeSync().init() at layout level.
+     * Kept as a no-op for backward compatibility.
      */
   async function fetchMyBookings (): Promise<boolean> {
-    if (!currentUserId.value) {
-      error.value = 'Please log in to view your bookings'
-      return false
-    }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      await bookingStore.fetchBookings()
-      success.value = `Loaded ${myBookings.value.length} of your bookings`
-      loading.value = false
-      return true
-    } catch (error_) {
-      error.value = 'Unable to load your bookings. Please try again.'
-      loading.value = false
-      throw error_
-    }
+    // No-op: data is now loaded via useRealtimeSync().init() at layout level
+    return true
   }
 
   /**
@@ -200,16 +192,12 @@ function useOwnerBookingsPinia () {
         owner_id: currentUserId.value,
       }
 
-      // Use base composable's create function
-      const bookingId = await baseBookings.createBooking(ownerBookingData)
+      // Delegate to supabase composable
+      const booking = await supaCreateBooking(ownerBookingData)
 
-      if (bookingId) {
-        success.value = 'Your booking has been created successfully'
-        loading.value = false
-        return bookingId
-      } else {
-        throw new Error('Failed to create booking')
-      }
+      success.value = 'Your booking has been created successfully'
+      loading.value = false
+      return booking.id
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Unable to create your booking. Please try again.'
       loading.value = false
@@ -253,16 +241,12 @@ function useOwnerBookingsPinia () {
         }
       }
 
-      // Use base composable's update function
-      const result = await baseBookings.updateBooking(id, updates)
+      // Delegate to supabase composable
+      await supaUpdateBooking(id, updates)
 
-      if (result) {
-        success.value = 'Your booking has been updated successfully'
-        loading.value = false
-        return true
-      } else {
-        throw new Error('Failed to update booking')
-      }
+      success.value = 'Your booking has been updated successfully'
+      loading.value = false
+      return true
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Unable to update your booking. Please try again.'
       loading.value = false
@@ -294,16 +278,12 @@ function useOwnerBookingsPinia () {
         throw new Error('You can only delete your own bookings')
       }
 
-      // Use base composable's delete function
-      const result = await baseBookings.deleteBooking(id)
+      // Delegate to supabase composable
+      await supaDeleteBooking(id)
 
-      if (result) {
-        success.value = 'Your booking has been deleted successfully'
-        loading.value = false
-        return true
-      } else {
-        throw new Error('Failed to delete booking')
-      }
+      success.value = 'Your booking has been deleted successfully'
+      loading.value = false
+      return true
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Unable to delete your booking. Please try again.'
       loading.value = false
@@ -335,16 +315,12 @@ function useOwnerBookingsPinia () {
         throw new Error('You can only update the status of your own bookings')
       }
 
-      // Use base composable's status change function
-      const result = await baseBookings.changeBookingStatus(id, status)
+      // Delegate to supabase composable
+      await supaChangeStatus(id, status)
 
-      if (result) {
-        success.value = 'Booking status updated successfully'
-        loading.value = false
-        return true
-      } else {
-        throw new Error('Failed to update booking status')
-      }
+      success.value = 'Booking status updated successfully'
+      loading.value = false
+      return true
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Unable to update booking status. Please try again.'
       loading.value = false
@@ -388,21 +364,7 @@ function useOwnerBookingsPinia () {
       return 'low'
     }
 
-    // Use base composable's priority calculation
-    return baseBookings.calculateBookingPriority(booking)
-  }
-
-  /**
-     * Get cleaning window for owner's booking
-     */
-  function getMyBookingCleaningWindow (booking: Booking) {
-    // Only calculate for owner's bookings
-    if (booking.owner_id !== currentUserId.value) {
-      return null
-    }
-
-    // Use base composable's cleaning window calculation
-    return baseBookings.calculateCleaningWindow(booking)
+    return calculateBookingPriority(booking)
   }
 
   /**
@@ -430,32 +392,6 @@ function useOwnerBookingsPinia () {
   })
 
   /**
-     * Create a new booking for the current owner and return the booking object
-     * (for test compatibility)
-     */
-  async function createOwnerBooking (formData: Partial<Booking>): Promise<Booking | null> {
-    if (!currentUserId.value) {
-      return null
-    }
-    // Simulate creation logic for test
-    const booking: Booking = {
-      id: 'test-id-' + Math.random().toString(36).slice(2),
-      property_id: formData.property_id || '',
-      owner_id: currentUserId.value,
-      checkout_date: formData.checkout_date || '',
-      checkin_date: formData.checkin_date || '',
-      checkin_time: formData.checkin_time || '15:00:00',
-      checkout_time: formData.checkout_time || '11:00:00',
-      booking_type: formData.booking_type || 'standard',
-      status: formData.status || 'pending',
-      priority: formData.priority || 'normal',
-    }
-    // Optionally add to store if needed for test
-    bookingStore.addBooking(booking)
-    return booking
-  }
-
-  /**
      * Check if current owner can edit a booking
      */
   function canEditBooking (bookingId: string): boolean {
@@ -475,27 +411,6 @@ function useOwnerBookingsPinia () {
     }
     const booking = bookingStore.getBookingById(bookingId)
     return booking?.owner_id === currentUserId.value
-  }
-
-  // Performance-monitored owner actions
-  const createBooking = async (bookingData: BookingFormData): Promise<Booking | null> => {
-    loading.value = true
-    error.value = null
-    try {
-      const result = await measureRolePerformance('owner', 'create-booking', async () => {
-        // Ensure owner_id is set for owner role
-        await bookingStore.addBooking(bookingData as Booking)
-        trackCachePerformance('owner-create-booking', true)
-        // Since addBooking returns void, we cannot get the bookingId here
-        return null
-      })
-      return result
-    } catch (error_) {
-      error.value = error_ instanceof Error ? error_.message : String(error_)
-      return null
-    } finally {
-      loading.value = false
-    }
   }
 
   // Role-specific performance metrics
@@ -533,22 +448,15 @@ function useOwnerBookingsPinia () {
     updateMyBooking,
     deleteMyBooking,
     changeMyBookingStatus,
-    createOwnerBooking,
     canEditBooking,
     canDeleteBooking,
 
     // Owner-specific business logic
     getMyTurnAlerts,
     calculateMyBookingPriority,
-    getMyBookingCleaningWindow,
 
-    // Inherited from base composable (for compatibility)
-    // Note: These work on all data, not owner-filtered
-    calculateCleaningWindow: baseBookings.calculateCleaningWindow,
-    calculateBookingPriority: baseBookings.calculateBookingPriority,
-
-    // Performance-monitored actions
-    createBooking,
+    // Business logic (imported directly from utils)
+    calculateBookingPriority,
 
     // Performance metrics
     getOwnerPerformanceMetrics,
