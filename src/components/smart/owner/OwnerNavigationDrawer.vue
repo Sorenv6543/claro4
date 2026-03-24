@@ -90,14 +90,14 @@
 </template>
 
 <script setup lang="ts">
+  import type { Property } from '@/types/property'
   import { useOwnerProperties } from '@composables/owner/useOwnerProperties'
   import { useAuthStore } from '@stores/auth'
-  import { PROPERTY_COLORS } from '@/utils/constants'
   import { computed } from 'vue'
   import { useRoute } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import { formatPropertyAddress } from '@/types/property'
-  import type { Property } from '@/types/property'
+  import { PROPERTY_COLORS } from '@/utils/constants'
 
   defineProps<{
     modelValue: boolean

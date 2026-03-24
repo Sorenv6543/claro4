@@ -11,8 +11,16 @@ src/components/smart/owner/HomeOwner.vue -
 
 <template>
   <div class="home-owner-page">
+    <!-- Loading state while initial data loads -->
+    <LoadingSpinner
+      v-if="initialLoading"
+      message="Loading your schedule..."
+      min-height="100%"
+      variant="page"
+    />
+
     <!-- Calendar -->
-    <div class="calendar-layout">
+    <div v-else class="calendar-layout">
       <!-- Calendar Content -->
       <div class="calendar-content">
         <OwnerCalendar
@@ -92,6 +100,7 @@ src/components/smart/owner/HomeOwner.vue -
   import OwnerDayViewBottomSheet from '@/components/dumb/owner/OwnerDayViewBottomSheet.vue'
   import BookingForm from '@/components/dumb/shared/BookingForm.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   // Owner-specific components
   import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue'
@@ -148,6 +157,7 @@ src/components/smart/owner/HomeOwner.vue -
   // ============================================================================
   // LOCAL STATE
   // ============================================================================
+  const initialLoading = ref(true)
   const selectedPropertyFilter = ref<string | null>(null)
 
   // Day view bottom sheet state
@@ -629,8 +639,11 @@ src/components/smart/owner/HomeOwner.vue -
         ])
       } catch (error) {
         console.error('❌ [HomeOwner] Failed to load your data:', error)
+      } finally {
+        initialLoading.value = false
       }
     } else {
+      initialLoading.value = false
       console.warn('⚠️ [HomeOwner] User is not authenticated as owner, skipping data load')
     }
   })

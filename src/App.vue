@@ -3,7 +3,13 @@
   <component :is="layout">
     <router-view v-slot="{ Component }">
       <transition mode="out-in" name="page-transition">
-        <component :is="Component" />
+        <component :is="Component" v-if="Component" />
+        <LoadingSpinner
+          v-else
+          message="Loading..."
+          min-height="60vh"
+          variant="page"
+        />
       </transition>
     </router-view>
   </component>
@@ -14,16 +20,16 @@
 
 <script setup lang="ts">
   import { computed, defineAsyncComponent } from 'vue'
-import { useRoute } from 'vue-router'
+  import { useRoute } from 'vue-router'
 
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
-import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
+  import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
 
   function lazyLayout (loader: () => Promise<any>) {
     return defineAsyncComponent({
       loader,
       loadingComponent: LoadingSpinner,
-      delay: 200,
+      delay: 0,
     })
   }
 
@@ -728,8 +734,14 @@ html, body {
   --theme-transition-duration: 0.3s;
 }
 
-/* Add smooth transition for theme colors */
-* {
+/* Smooth transition for theme color changes — scoped to top-level containers
+   to avoid triggering forced reflows on every element (CLS culprit) */
+.v-application,
+.v-navigation-drawer,
+.v-app-bar,
+.v-main,
+.v-card,
+.v-footer {
   transition: background-color var(--theme-transition-duration) ease,
              border-color var(--theme-transition-duration) ease,
              color var(--theme-transition-duration) ease,
