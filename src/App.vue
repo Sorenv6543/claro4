@@ -1,7 +1,11 @@
 <!-- App.vue -->
 <template>
   <component :is="layout">
-    <router-view />
+    <router-view v-slot="{ Component }">
+      <transition mode="out-in" name="page-transition">
+        <component :is="Component" />
+      </transition>
+    </router-view>
   </component>
 
   <!-- PWA Notifications Enhanced (global) -->
@@ -10,10 +14,10 @@
 
 <script setup lang="ts">
   import { computed, defineAsyncComponent } from 'vue'
-  import { useRoute } from 'vue-router'
+import { useRoute } from 'vue-router'
 
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
-  import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
+import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
 
   function lazyLayout (loader: () => Promise<any>) {
     return defineAsyncComponent({
@@ -35,8 +39,8 @@
 
   // Determine the current layout based on route meta
   const layout = computed(() => {
-    const name = route.meta.layout ?? 'default'
-    return layouts[name] ?? layouts.default
+    const name = (route.meta.layout as keyof typeof layouts) || 'default'
+    return layouts[name] || layouts.default
   })
 </script>
 
