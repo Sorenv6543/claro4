@@ -84,7 +84,9 @@ export function useSupabaseBookings() {
 - UPDATE: if id in `optimisticIds`, skip; else `bookingStore.setBooking(id, record)`
 - DELETE: `bookingStore.removeBooking(id)`
 
-**Singleton pattern:** Module-level state so multiple components calling `useSupabaseBookings()` share the same channel and optimistic tracking.
+**Singleton pattern:** Module-level state (a `let channel` and `const optimisticIds = new Set()` declared outside the function body) so multiple components calling `useSupabaseBookings()` share the same channel and optimistic tracking. The function returns references to this shared state — it does not create new subscriptions on each call.
+
+**Realtime filtering:** Supabase RLS policies already filter realtime events per-role at the database level (owners only receive their own data, admins receive all). No client-side `shouldIncludeBooking` / `shouldIncludeProperty` filtering is needed — that logic is removed.
 
 ### Store Simplification
 
@@ -171,14 +173,32 @@ export function useRealtimeSync() {
     return 'disconnected'
   })
 
+  // --- user_profiles realtime (stays here, not per-table) ---
+  // The existing useRealtimeSync subscribes to user_profiles UPDATE events
+  // filtered to the current user. This subscription stays in the coordinator
+  // because it's cross-cutting (triggers authStore.checkAuth() on role/profile
+  // changes). It does NOT move to a per-table composable.
+  function subscribeToProfileChanges() {
+    supabase.channel('public:user_profiles')
+      .on('postgres_changes', {
+        event: 'UPDATE',
+        schema: 'public',
+        table: 'user_profiles',
+        filter: `id=eq.${authStore.user?.id}`
+      }, () => authStore.checkAuth())
+      .subscribe()
+  }
+
   async function init() {
     await initBookings()
     await initProperties()
+    subscribeToProfileChanges()
   }
 
   function teardown() {
     teardownBookings()
     teardownProperties()
+    supabase.removeChannel(profileChannel)
     bookingStore.clear()
     propertyStore.clear()
   }
@@ -205,6 +225,8 @@ export function useRealtimeSync() {
 
 ```typescript
 // src/layouts/owner.vue and src/layouts/admin.vue — identical
+// IMPORTANT: useRealtimeSync() must be called during component setup (inside <script setup>),
+// not inside an async callback, so its internal onMounted/onUnmounted hooks register correctly.
 const { init, connectionStatus } = useRealtimeSync()
 onMounted(() => init())
 // teardown automatic via onUnmounted inside useRealtimeSync
@@ -212,21 +234,27 @@ onMounted(() => init())
 
 ## File Changes
 
-### Modified (11 files)
+### Modified (17 files)
 
 | File | Change |
 |------|--------|
 | `src/stores/booking.ts` | Strip Supabase calls, keep pure state + getters + cache |
 | `src/stores/property.ts` | Same treatment |
+| `src/stores/user.ts` | Update imports from deleted `ownerData.ts`/`adminData.ts` to use role composables |
 | `src/composables/supabase/useSupabaseBookings.ts` | Rewrite: owns all bookings CRUD + realtime + optimistic updates |
 | `src/composables/supabase/useSupabaseProperties.ts` | Same treatment |
-| `src/composables/supabase/useRealtimeSync.ts` | Rewrite: thin coordinator with network monitoring |
+| `src/composables/supabase/useRealtimeSync.ts` | Rewrite: thin coordinator with network monitoring + user_profiles subscription |
 | `src/composables/owner/useOwnerBookings.ts` | Delegate CRUD to supabase composable, merge analytics from `ownerData.ts` |
 | `src/composables/owner/useOwnerProperties.ts` | Same treatment |
 | `src/composables/admin/useAdminBookings.ts` | Delegate CRUD to supabase composable, merge analytics from `adminData.ts` |
 | `src/composables/admin/useAdminProperties.ts` | Same treatment |
+| `src/composables/shared/usePWA.ts` | Remove `useBackgroundSync` import and references |
 | `src/layouts/owner.vue` | Add `useRealtimeSync().init()` on mount |
-| `src/layouts/admin.vue` | Add `useRealtimeSync().init()` on mount, remove direct store fetch calls |
+| `src/layouts/admin.vue` | Add `useRealtimeSync().init()` on mount, remove direct store fetch calls; keep `fetchAllUsers()` as-is (auth data, outside scope) |
+| `src/components/smart/admin/AdminOwnerDetail.vue` | Replace `useOwnerDataStore` import with `useAdminBookings`/`useAdminProperties` |
+| `src/components/dumb/admin/PerformanceMetricsDashboard.vue` | Replace `useOwnerDataStore`/`useAdminDataStore` imports with role composables |
+| `src/dev/demos/OwnerDataStoreDemo.vue` | Update or delete — demo file for deleted store |
+| `src/dev/demos/Admin/AdminDataStoreDemo.vue` | Update or delete — demo file for deleted store |
 
 ### Deleted (5 files)
 
@@ -238,15 +266,19 @@ onMounted(() => init())
 | `src/composables/shared/useProperties.ts` | Same treatment |
 | `src/composables/shared/useBackgroundSync.ts` | Offline queue dropped |
 
+### Also Modified (consumer cleanup, Phase 3)
+
+| File | Change |
+|------|--------|
+| `src/pages/crud-testing.vue` | Replace `useBookings`/`useProperties` (deleted shared composables) with supabase composable calls |
+
 ### Not Changed
 
 - `src/stores/auth.ts` — keeps existing `useSupabaseAuth` delegation
 - `src/stores/ui.ts` — unrelated
-- `src/stores/user.ts` — references to deleted stores updated to use role composables
 - `src/utils/businessLogic.ts` — pure functions, unchanged
 - `src/router/guards.ts` — unchanged
-- All dumb components — unchanged
-- Smart components — minor import changes if they referenced deleted stores directly
+- All dumb components (except those listed above) — unchanged
 
 ## Migration Order
 
@@ -267,8 +299,12 @@ Repeat Phase 1 pattern for properties table.
 1. Delete `stores/ownerData.ts` and `stores/adminData.ts` (analytics already merged in Phase 1-2)
 2. Delete `composables/shared/useBackgroundSync.ts`
 3. Delete `composables/shared/useBookings.ts` and `composables/shared/useProperties.ts`
-4. Update `stores/user.ts` references
-5. Update any smart component imports
+4. Update `stores/user.ts` — replace deleted store imports with role composables
+5. Update `composables/shared/usePWA.ts` — remove `useBackgroundSync` import
+6. Update `components/smart/admin/AdminOwnerDetail.vue` — replace `useOwnerDataStore`
+7. Update `components/dumb/admin/PerformanceMetricsDashboard.vue` — replace deleted store imports
+8. Update or delete `dev/demos/OwnerDataStoreDemo.vue` and `dev/demos/Admin/AdminDataStoreDemo.vue`
+9. Update `pages/crud-testing.vue` — replace deleted shared composable imports
 
 ## Testing Strategy
 
