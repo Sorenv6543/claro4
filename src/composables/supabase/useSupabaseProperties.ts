@@ -1,334 +1,174 @@
 import type { RealtimeChannel } from '@supabase/supabase-js'
-import type { Property } from '@/types'
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import type { Property, PropertyFormData } from '@/types'
+import { ref } from 'vue'
+import { v4 as uuidv4 } from 'uuid'
 import { supabase } from '@/plugins/supabase'
+import { usePropertyStore } from '@/stores/property'
 
-/**
- * Supabase-based property operations with automatic RLS filtering
- * Replaces frontend filtering with database-level security
- *
- * Key Features:
- * - Automatic owner data isolation via RLS policies
- * - Real-time subscriptions for property changes
- * - Type-safe database operations
- * - Maintains same API interface as Pinia version
- */
-export function useSupabaseProperties () {
-  // State
-  const properties = ref<Property[]>([])
-  const loading = ref(false)
-  const error = ref<string | null>(null)
+// Module-level singleton state
+let channel: RealtimeChannel | null = null
+const optimisticIds = new Set<string>()
+const connectionStatus = ref<'connecting' | 'connected' | 'disconnected'>('disconnected')
 
-  // Real-time subscription
-  let subscription: RealtimeChannel | null = null
+const OPTIMISTIC_CLEANUP_DELAY = 5_000
 
-  // CORE DATABASE OPERATIONS
+export function useSupabaseProperties() {
+  const propertyStore = usePropertyStore()
 
-  /**
-   * Fetch properties with automatic RLS filtering
-   * - Owners see only their properties
-   * - Admins see all properties
-   */
-  async function fetchProperties (): Promise<Property[]> {
-    loading.value = true
-    error.value = null
+  async function fetchAndSubscribe() {
+    propertyStore.loading = true
+    propertyStore.error = null
 
     try {
       const { data, error: fetchError } = await supabase
         .from('properties')
         .select('*')
-        .eq('active', true)
-        .order('name', { ascending: true })
 
-      if (fetchError) {
-        throw fetchError
-      }
-
-      properties.value = data || []
-      return data || []
-    } catch (error_) {
-      error.value = error_ instanceof Error ? error_.message : 'Failed to fetch properties'
-      console.error('Supabase property fetch error:', error_)
-      return []
+      if (fetchError) throw fetchError
+      propertyStore.setProperties((data ?? []) as Property[])
+    } catch (err) {
+      propertyStore.error = err instanceof Error ? err.message : 'Failed to fetch properties'
+      console.error('[useSupabaseProperties] fetch error:', err)
     } finally {
-      loading.value = false
+      propertyStore.loading = false
     }
+
+    subscribe()
   }
 
-  /**
-   * Create a new property with automatic owner_id assignment
-   */
-  async function createProperty (propertyData: Omit<Property, 'id' | 'created_at' | 'updated_at' | 'owner_id'>): Promise<string | null> {
-    loading.value = true
-    error.value = null
+  function subscribe() {
+    if (channel) return
+    connectionStatus.value = 'connecting'
 
-    try {
-      // Get current user
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        throw new Error('Not authenticated')
-      }
-
-      const newProperty = {
-        ...propertyData,
-        owner_id: user.id, // Automatic owner assignment
-      }
-
-      const { data, error: createError } = await supabase
-        .from('properties')
-        .insert([newProperty])
-        .select()
-        .single()
-
-      if (createError) {
-        throw createError
-      }
-
-      // Add to local state for immediate UI update
-      if (data) {
-        properties.value.push(data)
-      }
-
-      return data?.id || null
-    } catch (error_) {
-      error.value = error_ instanceof Error ? error_.message : 'Failed to create property'
-      console.error('Supabase property creation error:', error_)
-      return null
-    } finally {
-      loading.value = false
-    }
-  }
-
-  /**
-   * Update a property (RLS ensures user can only update their own)
-   */
-  async function updateProperty (id: string, updates: Partial<Property>): Promise<boolean> {
-    loading.value = true
-    error.value = null
-
-    try {
-      const { data, error: updateError } = await supabase
-        .from('properties')
-        .update(updates)
-        .eq('id', id)
-        .select()
-        .single()
-
-      if (updateError) {
-        throw updateError
-      }
-
-      // Update local state
-      if (data) {
-        const index = properties.value.findIndex(p => p.id === id)
-        if (index !== -1) {
-          properties.value[index] = { ...properties.value[index], ...data }
-        }
-      }
-
-      return true
-    } catch (error_) {
-      error.value = error_ instanceof Error ? error_.message : 'Failed to update property'
-      console.error('Supabase property update error:', error_)
-      return false
-    } finally {
-      loading.value = false
-    }
-  }
-
-  /**
-   * Delete a property (RLS ensures user can only delete their own)
-   * Soft delete by setting active = false
-   */
-  async function deleteProperty (id: string): Promise<boolean> {
-    loading.value = true
-    error.value = null
-
-    try {
-      const { error: deleteError } = await supabase
-        .from('properties')
-        .update({ active: false })
-        .eq('id', id)
-
-      if (deleteError) {
-        throw deleteError
-      }
-
-      // Remove from local state
-      properties.value = properties.value.filter(p => p.id !== id)
-
-      return true
-    } catch (error_) {
-      error.value = error_ instanceof Error ? error_.message : 'Failed to delete property'
-      console.error('Supabase property deletion error:', error_)
-      return false
-    } finally {
-      loading.value = false
-    }
-  }
-
-  /**
-   * Get a single property by ID (with RLS filtering)
-   */
-  async function getPropertyById (id: string): Promise<Property | null> {
-    try {
-      const { data, error: fetchError } = await supabase
-        .from('properties')
-        .select('*')
-        .eq('id', id)
-        .eq('active', true)
-        .single()
-
-      if (fetchError) {
-        console.error('Property fetch error:', fetchError)
-        return null
-      }
-
-      return data
-    } catch (error_) {
-      console.error('Supabase property fetch error:', error_)
-      return null
-    }
-  }
-
-  // REAL-TIME SUBSCRIPTIONS
-
-  /**
-   * Subscribe to real-time property changes
-   * RLS automatically filters to user's accessible data
-   */
-  function subscribeToProperties () {
-    subscription = supabase
-      .channel('property-changes')
+    channel = supabase
+      .channel('properties-realtime')
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'properties',
-        },
-        payload => {
-          console.log('Property change received:', payload)
-
-          switch (payload.eventType) {
-            case 'INSERT': {
-              if (payload.new && payload.new.active) {
-                properties.value.push(payload.new as Property)
-              }
-              break
-            }
-
-            case 'UPDATE': {
-              if (payload.new) {
-                const index = properties.value.findIndex(p => p.id === payload.new.id)
-                if (index !== -1) {
-                  if (payload.new.active) {
-                    properties.value[index] = payload.new as Property
-                  } else {
-                    // Property was deactivated, remove from list
-                    properties.value.splice(index, 1)
-                  }
-                } else if (payload.new.active) {
-                  // Property was reactivated, add to list
-                  properties.value.push(payload.new as Property)
-                }
-              }
-              break
-            }
-
-            case 'DELETE': {
-              if (payload.old) {
-                properties.value = properties.value.filter(p => p.id !== payload.old.id)
-              }
-              break
-            }
-          }
-        },
+        { event: '*', schema: 'public', table: 'properties' },
+        (payload) => handleRealtimeEvent(payload),
       )
-      .subscribe(status => {
-        if (status === 'SUBSCRIBED') {
-          console.log('✅ Subscribed to property changes')
-        } else if (status === 'CHANNEL_ERROR') {
-          console.error('❌ Property subscription error')
-        }
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') connectionStatus.value = 'connected'
+        else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') connectionStatus.value = 'disconnected'
       })
   }
 
-  /**
-   * Unsubscribe from real-time changes
-   */
-  function unsubscribeFromProperties () {
-    if (subscription) {
-      supabase.removeChannel(subscription)
-      subscription = null
+  function unsubscribe() {
+    if (channel) {
+      supabase.removeChannel(channel)
+      channel = null
+    }
+    connectionStatus.value = 'disconnected'
+    optimisticIds.clear()
+  }
+
+  function handleRealtimeEvent(payload: any) {
+    const { eventType, new: newRecord, old: oldRecord } = payload
+    const id = (newRecord || oldRecord)?.id
+    if (!id) return
+
+    switch (eventType) {
+      case 'INSERT': {
+        if (optimisticIds.has(id)) return
+        if (newRecord.active) propertyStore.setProperty(id, newRecord as Property)
+        break
+      }
+      case 'UPDATE': {
+        if (optimisticIds.has(id)) return
+        if (newRecord.active === false) {
+          // Soft-deleted — remove from store
+          propertyStore.removeProperty(id)
+        } else {
+          propertyStore.setProperty(id, newRecord as Property)
+        }
+        break
+      }
+      case 'DELETE': {
+        optimisticIds.delete(id)
+        propertyStore.removeProperty(oldRecord.id)
+        break
+      }
     }
   }
 
-  // COMPUTED PROPERTIES (Auto-filtered by RLS)
+  function trackOptimistic(id: string) {
+    optimisticIds.add(id)
+    setTimeout(() => optimisticIds.delete(id), OPTIMISTIC_CLEANUP_DELAY)
+  }
 
-  /**
-   * All active properties (automatically filtered by RLS)
-   * - Owners see only their properties
-   * - Admins see all properties
-   */
-  const allProperties = computed(() => properties.value)
+  async function createProperty(formData: PropertyFormData): Promise<Property> {
+    const id = uuidv4()
+    const now = new Date().toISOString()
 
-  /**
-   * Properties grouped by type (auto-filtered by RLS)
-   */
-  const propertiesByType = computed(() => {
-    const typeGroups: Record<string, Property[]> = {}
+    const property: Property = {
+      id,
+      ...formData,
+      active: true,
+      created_at: now,
+      updated_at: now,
+    } as Property
 
-    for (const property of properties.value) {
-      const type = property.property_type || 'other'
-      if (!typeGroups[type]) {
-        typeGroups[type] = []
-      }
-      typeGroups[type].push(property)
+    propertyStore.setProperty(id, property)
+    trackOptimistic(id)
+
+    try {
+      const { error } = await supabase.from('properties').insert(property)
+      if (error) throw error
+      return property
+    } catch (err) {
+      propertyStore.removeProperty(id)
+      optimisticIds.delete(id)
+      throw err
     }
+  }
 
-    return typeGroups
-  })
+  async function updateProperty(id: string, updates: Partial<Property>): Promise<Property> {
+    const existing = propertyStore.properties.get(id)
+    if (!existing) throw new Error('Property not found')
 
-  /**
-   * Properties with their booking counts (requires joined query)
-   */
-  const propertiesWithBookingCounts = computed(() => {
-    // This would typically be a joined query, but for now we'll just return properties
-    // In a full implementation, you'd do a joined query with booking counts
-    return properties.value
-  })
+    const updated: Property = { ...existing, ...updates, updated_at: new Date().toISOString() }
 
-  // LIFECYCLE MANAGEMENT
+    propertyStore.setProperty(id, updated)
+    trackOptimistic(id)
 
-  onMounted(() => {
-    fetchProperties()
-    subscribeToProperties()
-  })
+    try {
+      const { error } = await supabase.from('properties').update(updates).eq('id', id)
+      if (error) throw error
+      return updated
+    } catch (err) {
+      propertyStore.setProperty(id, existing)
+      optimisticIds.delete(id)
+      throw err
+    }
+  }
 
-  onUnmounted(() => {
-    unsubscribeFromProperties()
-  })
+  // Soft delete — sets active=false, removes from store
+  async function deleteProperty(id: string): Promise<void> {
+    const existing = propertyStore.properties.get(id)
+    if (!existing) throw new Error('Property not found')
+
+    propertyStore.removeProperty(id)
+    trackOptimistic(id)
+
+    try {
+      const { error } = await supabase
+        .from('properties')
+        .update({ active: false, updated_at: new Date().toISOString() })
+        .eq('id', id)
+      if (error) throw error
+    } catch (err) {
+      propertyStore.setProperty(id, existing)
+      optimisticIds.delete(id)
+      throw err
+    }
+  }
 
   return {
-    // State
-    properties: allProperties,
-    loading,
-    error,
-
-    // Operations
-    fetchProperties,
+    fetchAndSubscribe,
+    unsubscribe,
     createProperty,
     updateProperty,
     deleteProperty,
-    getPropertyById,
-
-    // Computed data (auto-filtered by RLS)
-    propertiesByType,
-    propertiesWithBookingCounts,
-
-    // Subscription management
-    subscribeToProperties,
-    unsubscribeFromProperties,
+    connectionStatus,
   }
 }

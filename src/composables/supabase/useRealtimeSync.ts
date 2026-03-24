@@ -2,6 +2,7 @@ import type { RealtimeChannel } from '@supabase/supabase-js'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
 import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
+import { useSupabaseProperties } from '@/composables/supabase/useSupabaseProperties'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
@@ -9,6 +10,8 @@ import { usePropertyStore } from '@/stores/property'
 export function useRealtimeSync() {
   const { fetchAndSubscribe: initBookings, unsubscribe: teardownBookings,
           connectionStatus: bookingStatus } = useSupabaseBookings()
+  const { fetchAndSubscribe: initProperties, unsubscribe: teardownProperties,
+          connectionStatus: propertyStatus } = useSupabaseProperties()
   const authStore = useAuthStore()
   const bookingStore = useBookingStore()
   const propertyStore = usePropertyStore()
@@ -17,9 +20,10 @@ export function useRealtimeSync() {
   let profileChannel: RealtimeChannel | null = null
 
   const connectionStatus = computed(() => {
-    // For now, just use booking status since properties composable isn't rewritten yet
-    if (bookingStatus.value === 'connected') return 'connected'
-    if (bookingStatus.value === 'connecting') return 'connecting'
+    if (bookingStatus.value === 'connected' && propertyStatus.value === 'connected')
+      return 'connected'
+    if (bookingStatus.value === 'connecting' || propertyStatus.value === 'connecting')
+      return 'connecting'
     return 'disconnected'
   })
 
@@ -42,14 +46,13 @@ export function useRealtimeSync() {
 
   async function init() {
     await initBookings()
-    // Properties will be added in Phase 2 (Task 9) when useSupabaseProperties is rewritten
-    // For now, fetch properties directly from store as a temporary bridge
-    await propertyStore.fetchProperties()
+    await initProperties()
     subscribeToProfileChanges()
   }
 
   function teardown() {
     teardownBookings()
+    teardownProperties()
     if (profileChannel) {
       supabase.removeChannel(profileChannel)
       profileChannel = null

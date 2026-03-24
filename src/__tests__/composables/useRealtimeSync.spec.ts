@@ -14,6 +14,19 @@ vi.mock('@/composables/supabase/useSupabaseBookings', () => ({
   }),
 }))
 
+// Mock useSupabaseProperties at module level
+const mockInitProperties = vi.fn().mockResolvedValue(undefined)
+const mockTeardownProperties = vi.fn()
+const mockPropertyStatus = { value: 'disconnected' as string }
+
+vi.mock('@/composables/supabase/useSupabaseProperties', () => ({
+  useSupabaseProperties: () => ({
+    fetchAndSubscribe: mockInitProperties,
+    unsubscribe: mockTeardownProperties,
+    connectionStatus: mockPropertyStatus,
+  }),
+}))
+
 describe('useRealtimeSync', () => {
   let supabaseMock: any
 
@@ -25,6 +38,10 @@ describe('useRealtimeSync', () => {
     mockInitBookings.mockClear()
     mockTeardownBookings.mockClear()
     mockBookingStatus.value = 'disconnected'
+
+    mockInitProperties.mockClear()
+    mockTeardownProperties.mockClear()
+    mockPropertyStatus.value = 'disconnected'
 
     // Get the global supabase mock
     const supabaseModule = await import('@/plugins/supabase')
@@ -44,8 +61,6 @@ describe('useRealtimeSync', () => {
 
   // Helper to dynamically import the composable (fresh module state each time)
   async function getComposable() {
-    // Re-mock useSupabaseBookings before importing useRealtimeSync
-    // so the module-level mock is picked up
     const mod = await import('@/composables/supabase/useRealtimeSync')
     return mod.useRealtimeSync()
   }
@@ -69,15 +84,12 @@ describe('useRealtimeSync', () => {
       expect(mockInitBookings).toHaveBeenCalledOnce()
     })
 
-    it('calls propertyStore.fetchProperties as temporary bridge', async () => {
-      const propertyStore = await getPropertyStore()
-      const fetchSpy = vi.spyOn(propertyStore, 'fetchProperties').mockResolvedValue()
-
+    it('calls fetchAndSubscribe on properties', async () => {
       const composable = await getComposable()
 
       await composable.init()
 
-      expect(fetchSpy).toHaveBeenCalledOnce()
+      expect(mockInitProperties).toHaveBeenCalledOnce()
     })
 
     it('subscribes to profile changes', async () => {
@@ -96,6 +108,14 @@ describe('useRealtimeSync', () => {
       composable.teardown()
 
       expect(mockTeardownBookings).toHaveBeenCalledOnce()
+    })
+
+    it('calls unsubscribe on properties', async () => {
+      const composable = await getComposable()
+
+      composable.teardown()
+
+      expect(mockTeardownProperties).toHaveBeenCalledOnce()
     })
 
     it('clears booking store', async () => {
@@ -134,8 +154,9 @@ describe('useRealtimeSync', () => {
   })
 
   describe('connectionStatus', () => {
-    it('returns connected when booking status is connected', async () => {
+    it('returns connected when both booking and property status are connected', async () => {
       mockBookingStatus.value = 'connected'
+      mockPropertyStatus.value = 'connected'
 
       const composable = await getComposable()
 
@@ -144,14 +165,34 @@ describe('useRealtimeSync', () => {
 
     it('returns connecting when booking status is connecting', async () => {
       mockBookingStatus.value = 'connecting'
+      mockPropertyStatus.value = 'disconnected'
 
       const composable = await getComposable()
 
       expect(composable.connectionStatus.value).toBe('connecting')
     })
 
-    it('returns disconnected when booking status is disconnected', async () => {
+    it('returns connecting when property status is connecting', async () => {
+      mockBookingStatus.value = 'connected'
+      mockPropertyStatus.value = 'connecting'
+
+      const composable = await getComposable()
+
+      expect(composable.connectionStatus.value).toBe('connecting')
+    })
+
+    it('returns disconnected when both are disconnected', async () => {
       mockBookingStatus.value = 'disconnected'
+      mockPropertyStatus.value = 'disconnected'
+
+      const composable = await getComposable()
+
+      expect(composable.connectionStatus.value).toBe('disconnected')
+    })
+
+    it('returns disconnected when one is connected and one is disconnected', async () => {
+      mockBookingStatus.value = 'connected'
+      mockPropertyStatus.value = 'disconnected'
 
       const composable = await getComposable()
 
