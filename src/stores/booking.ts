@@ -109,22 +109,22 @@ export const useBookingStore = defineStore('booking', () => {
 
   // ACTIONS - Synchronous state mutations (Supabase interaction handled by composables)
 
-  function setBookings(data: Booking[]) {
+  function setBookings (data: Booking[]) {
     bookings.value = new Map(data.map(b => [b.id, b]))
     invalidateCache()
   }
 
-  function setBooking(id: string, booking: Booking) {
+  function setBooking (id: string, booking: Booking) {
     bookings.value.set(id, booking)
     invalidateCache()
   }
 
-  function removeBooking(id: string) {
+  function removeBooking (id: string) {
     bookings.value.delete(id)
     invalidateCache()
   }
 
-  function clearAll() {
+  function clearAll () {
     bookings.value.clear()
     invalidateCache()
   }

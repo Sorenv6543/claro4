@@ -111,7 +111,9 @@ export function useAdminProperties () {
    */
   function calculatePropertyMetrics (id: string) {
     const property = propertyStore.getPropertyById(id)
-    if (!property) return null
+    if (!property) {
+      return null
+    }
 
     const propertyBookings = Array.from(bookingStore.bookingsByProperty(id).values())
 
@@ -158,8 +160,8 @@ export function useAdminProperties () {
     const revenueProjection = projectedBookings * baseRevenue * revenueMultipliers[property.pricing_tier]
 
     // Cleaning load
-    const cleaningLoad: 'light' | 'moderate' | 'heavy' =
-      utilizationRate < 0.3 ? 'light' : utilizationRate < 0.7 ? 'moderate' : 'heavy'
+    const cleaningLoad: 'light' | 'moderate' | 'heavy'
+      = utilizationRate < 0.3 ? 'light' : (utilizationRate < 0.7 ? 'moderate' : 'heavy')
 
     return { utilizationRate, averageGapBetweenBookings, turnPercentage, revenueProjection, cleaningLoad }
   }
@@ -217,7 +219,9 @@ export function useAdminProperties () {
 
     for (const property of allProperties.value) {
       const metrics = calculatePropertyMetrics(property.id)
-      if (!metrics) continue
+      if (!metrics) {
+        continue
+      }
 
       const propertyBookings = Array.from(bookingStore.bookings.values())
         .filter(booking => booking.property_id === property.id)

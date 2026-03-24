@@ -1,9 +1,9 @@
 import type { Booking, BookingFormData, BookingStatus, Property } from '@/types'
 import { computed, ref } from 'vue'
-import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 // useCachedComputed intentionally not used here — TTL caching delays
 // user-triggered mutations (booking create/edit) from appearing in the UI.
 import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
+import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'

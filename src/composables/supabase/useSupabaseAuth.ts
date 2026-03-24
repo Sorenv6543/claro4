@@ -321,7 +321,7 @@ export function useSupabaseAuth () {
       if (currentSession) {
         session.value = currentSession
         if (!user.value) {
-          await loadUserProfile(currentSession.user.id)
+          await loadUserProfileSafe(currentSession.user.id)
         }
       } else {
         if (user.value) {

@@ -83,7 +83,9 @@ export function useOwnerProperties () {
    */
   function calculatePropertyMetrics (id: string) {
     const property = propertyStore.getPropertyById(id)
-    if (!property) return null
+    if (!property) {
+      return null
+    }
 
     const propertyBookings = Array.from(bookingStore.bookingsByProperty(id).values())
 
@@ -130,8 +132,8 @@ export function useOwnerProperties () {
     const revenueProjection = projectedBookings * baseRevenue * revenueMultipliers[property.pricing_tier]
 
     // Cleaning load
-    const cleaningLoad: 'light' | 'moderate' | 'heavy' =
-      utilizationRate < 0.3 ? 'light' : utilizationRate < 0.7 ? 'moderate' : 'heavy'
+    const cleaningLoad: 'light' | 'moderate' | 'heavy'
+      = utilizationRate < 0.3 ? 'light' : (utilizationRate < 0.7 ? 'moderate' : 'heavy')
 
     return { utilizationRate, averageGapBetweenBookings, turnPercentage, revenueProjection, cleaningLoad }
   }
@@ -248,8 +250,12 @@ export function useOwnerProperties () {
 
     try {
       const property = propertyStore.getPropertyById(id)
-      if (!property) throw new Error('Property not found')
-      if (property.owner_id !== currentUserId.value) throw new Error('You can only update your own properties')
+      if (!property) {
+        throw new Error('Property not found')
+      }
+      if (property.owner_id !== currentUserId.value) {
+        throw new Error('You can only update your own properties')
+      }
 
       await supaUpdate(id, updates)
 
@@ -278,8 +284,12 @@ export function useOwnerProperties () {
 
     try {
       const property = propertyStore.getPropertyById(id)
-      if (!property) throw new Error('Property not found')
-      if (property.owner_id !== currentUserId.value) throw new Error('You can only delete your own properties')
+      if (!property) {
+        throw new Error('Property not found')
+      }
+      if (property.owner_id !== currentUserId.value) {
+        throw new Error('You can only delete your own properties')
+      }
 
       const propertyBookings = bookingStore.bookingsByProperty(id)
       if (propertyBookings.size > 0) {
@@ -313,8 +323,12 @@ export function useOwnerProperties () {
 
     try {
       const property = propertyStore.getPropertyById(id)
-      if (!property) throw new Error('Property not found')
-      if (property.owner_id !== currentUserId.value) throw new Error('You can only manage your own properties')
+      if (!property) {
+        throw new Error('Property not found')
+      }
+      if (property.owner_id !== currentUserId.value) {
+        throw new Error('You can only manage your own properties')
+      }
 
       if (!active) {
         const check = canDeactivateProperty(id, bookingStore.bookingsByProperty(id).values())
@@ -339,10 +353,14 @@ export function useOwnerProperties () {
    * Get detailed metrics for a specific property (only if owned by current user)
    */
   function getMyPropertyMetrics (id: string) {
-    if (!currentUserId.value) return null
+    if (!currentUserId.value) {
+      return null
+    }
 
     const property = propertyStore.getPropertyById(id)
-    if (!property || property.owner_id !== currentUserId.value) return null
+    if (!property || property.owner_id !== currentUserId.value) {
+      return null
+    }
 
     return calculatePropertyMetrics(id)
   }
