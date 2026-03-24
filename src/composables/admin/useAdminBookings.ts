@@ -1,11 +1,12 @@
 import type { Booking, BookingFormData, BookingStatus, BookingType } from '@/types'
 
 import { computed, ref } from 'vue'
-import { useBookings } from '@/composables/shared/useBookings'
 import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
+import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
+import { calculateBookingPriority } from '@/utils/businessLogic'
 
 /**
  * Admin-specific booking composable
@@ -19,8 +20,14 @@ import { usePropertyStore } from '@/stores/property'
  * - Advanced filtering and business insights
  */
 export function useAdminBookings () {
-  // Get shared functionality and stores
-  const baseBookings = useBookings()
+  // Get supabase composable for CRUD and stores for reads
+  const {
+    createBooking: supaCreate,
+    updateBooking: supaUpdate,
+    deleteBooking: supaDelete,
+    changeBookingStatus: supaChangeStatus,
+    assignCleaner: supaAssignCleaner,
+  } = useSupabaseBookings()
   const authStore = useAuthStore()
   const bookingStore = useBookingStore()
   const propertyStore = usePropertyStore()
@@ -196,8 +203,7 @@ export function useAdminBookings () {
       loading.value = true
       error.value = null
 
-      const bookingWithId: Booking = {
-        id: `booking-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      const formData: BookingFormData = {
         property_id: (bookingData.property_id as string) || '',
         owner_id: (bookingData.owner_id as string) || '',
         checkout_date: (bookingData.checkout_date as string) || new Date().toISOString(),
@@ -209,13 +215,11 @@ export function useAdminBookings () {
         priority: (bookingData.priority as Booking['priority']) || 'normal',
         assigned_cleaner_id: (bookingData.assigned_cleaner_id as string | null) ?? null,
         notes: (bookingData.notes as string) || '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
       }
 
-      await bookingStore.addBooking(bookingWithId)
+      const created = await supaCreate(formData)
       success.value = 'Booking created successfully'
-      return bookingWithId
+      return created
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Failed to create booking'
       throw error_
@@ -230,26 +234,8 @@ export function useAdminBookings () {
       loading.value = true
       error.value = null
 
-      // Convert BookingFormData to Booking by adding required id
-      const bookingWithId: Booking = {
-        id: crypto.randomUUID(),
-        property_id: (bookingData.property_id as string) || '',
-        owner_id: (bookingData.owner_id as string) || '',
-        checkout_date: (bookingData.checkout_date as string) || new Date().toISOString(),
-        checkin_date: (bookingData.checkin_date as string) || new Date().toISOString(),
-        checkin_time: (bookingData.checkin_time as string) || '15:00:00',
-        checkout_time: (bookingData.checkout_time as string) || '11:00:00',
-        status: (bookingData.status as BookingStatus) || 'pending',
-        booking_type: (bookingData.booking_type as BookingType) || 'standard',
-        priority: (bookingData.priority as Booking['priority']) || 'normal',
-        assigned_cleaner_id: (bookingData.assigned_cleaner_id as string | null) ?? null,
-        notes: (bookingData.notes as string) || '',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      }
-
-      await bookingStore.addBooking(bookingWithId)
-      trackCachePerformance('admin-create-booking', true) // Changed to boolean
+      await supaCreate(bookingData)
+      trackCachePerformance('admin-create-booking', true)
 
       success.value = 'Booking created successfully'
     } catch (error_: unknown) {
@@ -266,13 +252,13 @@ export function useAdminBookings () {
       loading.value = true
       error.value = null
 
-      await bookingStore.updateBooking(id, updates)
-      trackCachePerformance('admin-update-booking', true) // Changed to boolean
+      await supaUpdate(id, updates)
+      trackCachePerformance('admin-update-booking', true)
 
       success.value = 'Booking updated successfully'
     } catch (error_: unknown) {
       error.value = `Failed to update booking: ${error_ instanceof Error ? error_.message : String(error_)}`
-      trackCachePerformance('admin-update-booking', false) // Changed to boolean
+      trackCachePerformance('admin-update-booking', false)
       throw error_
     } finally {
       loading.value = false
@@ -284,7 +270,7 @@ export function useAdminBookings () {
       loading.value = true
       error.value = null
 
-      await bookingStore.removeBooking(id) // Use removeBooking instead of deleteBooking
+      await supaDelete(id)
 
       success.value = 'Booking deleted successfully'
     } catch (error_: unknown) {
@@ -320,6 +306,7 @@ export function useAdminBookings () {
 
   /**
    * Fetch ALL bookings (no owner filter) - admin system-wide access
+   * Data is now loaded by layout via useRealtimeSync().init(); kept as thin wrapper for backward compat.
    */
   async function fetchAllBookings (): Promise<boolean> {
     if (!currentAdminId.value) {
@@ -327,21 +314,9 @@ export function useAdminBookings () {
       return false
     }
 
-    loading.value = true
-    error.value = null
-
-    try {
-      await bookingStore.fetchBookings()
-
-      success.value = `Loaded ${allBookings.value.length} bookings across all properties`
-      loading.value = false
-      return true
-    } catch (error_) {
-      console.error('[useAdminBookings] fetchAllBookings error:', error_)
-      error.value = 'Unable to load system bookings. Please try again.'
-      loading.value = false
-      return false
-    }
+    // Data is loaded by useRealtimeSync — nothing to do here
+    success.value = `Loaded ${allBookings.value.length} bookings across all properties`
+    return true
   }
 
   /**
@@ -358,22 +333,10 @@ export function useAdminBookings () {
     success.value = null
 
     try {
-      // Check if booking exists
-      const booking = bookingStore.getBookingById(bookingId)
-      if (!booking) {
-        throw new Error('Booking not found in system')
-      }
-
-      // Use base composable's assign cleaner function
-      const result = await baseBookings.assignCleaner(bookingId, cleanerId)
-
-      if (result) {
-        success.value = `Cleaner assigned successfully to booking ${bookingId}`
-        loading.value = false
-        return true
-      } else {
-        throw new Error('Failed to assign cleaner')
-      }
+      await supaAssignCleaner(bookingId, cleanerId)
+      success.value = `Cleaner assigned successfully to booking ${bookingId}`
+      loading.value = false
+      return true
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Unable to assign cleaner. System error occurred.'
       loading.value = false
@@ -395,22 +358,10 @@ export function useAdminBookings () {
     success.value = null
 
     try {
-      // Check if booking exists
-      const booking = bookingStore.getBookingById(bookingId)
-      if (!booking) {
-        throw new Error('Booking not found in system')
-      }
-
-      // Use base composable's status change function
-      const result = await baseBookings.changeBookingStatus(bookingId, status)
-
-      if (result) {
-        success.value = `Booking status updated to ${status} successfully`
-        loading.value = false
-        return true
-      } else {
-        throw new Error('Failed to update booking status')
-      }
+      await supaChangeStatus(bookingId, status)
+      success.value = `Booking status updated to ${status} successfully`
+      loading.value = false
+      return true
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Unable to update booking status. System error occurred.'
       loading.value = false
@@ -534,7 +485,7 @@ export function useAdminBookings () {
         checkin_date: turn.checkin_date,
         status: turn.status,
         assigned_cleaner_id: turn.assigned_cleaner_id,
-        priority: baseBookings.calculateBookingPriority(turn),
+        priority: calculateBookingPriority(turn),
         businessImpact: turn.assigned_cleaner_id ? 'Assigned - On Track' : 'URGENT - Needs Assignment',
       })),
     }
@@ -691,15 +642,10 @@ export function useAdminBookings () {
     // Admin CRUD operations
     fetchAllBookings,
     assignCleaner,
-    assignCleanerToBooking: (bookingId: string, cleanerId: string) => {
-      // Synchronous store update — does not persist to Supabase. Use assignCleaner() for the async Supabase version.
+    assignCleanerToBooking: async (bookingId: string, cleanerId: string) => {
       try {
-        const booking = bookingStore.bookings.get(bookingId)
-        if (booking) {
-          bookingStore.updateBooking(bookingId, { assigned_cleaner_id: cleanerId })
-          return true
-        }
-        return false
+        await supaUpdate(bookingId, { assigned_cleaner_id: cleanerId })
+        return true
       } catch (error_) {
         error.value = `Failed to assign cleaner: ${error_ instanceof Error ? error_.message : String(error_)}`
         console.error('[useAdminBookings] assignCleanerToBooking error:', error_)
@@ -719,12 +665,11 @@ export function useAdminBookings () {
     // Advanced filtering
     filterBookings,
 
-    // Expose base composable functions for admin use
+    // Expose CRUD functions for admin use
     createBooking,
     updateBooking,
     deleteBooking,
-    calculateBookingPriority: baseBookings.calculateBookingPriority,
-    calculateCleaningWindow: baseBookings.calculateCleaningWindow,
+    calculateBookingPriority,
 
     // Additional computed properties expected by tests
     systemTurnAlerts,
