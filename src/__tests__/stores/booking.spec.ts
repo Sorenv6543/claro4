@@ -17,7 +17,7 @@ describe('Booking Store', () => {
     expect(store.error).toBeNull()
   })
 
-  it('should add bookings to the Map', async () => {
+  it('should add bookings to the Map', () => {
     const store = useBookingStore()
     const booking: Booking = {
       id: 'booking1',
@@ -29,13 +29,13 @@ describe('Booking Store', () => {
       status: 'pending',
     }
 
-    await store.addBooking(booking)
+    store.setBooking(booking.id, booking)
     expect(store.bookings.size).toBe(1)
     expect(store.bookings.get('booking1')).toEqual(booking)
     expect(store.bookingsArray.length).toBe(1)
   })
 
-  it('should update bookings in the Map', async () => {
+  it('should update bookings in the Map', () => {
     const store = useBookingStore()
     const booking: Booking = {
       id: 'booking1',
@@ -47,8 +47,10 @@ describe('Booking Store', () => {
       status: 'pending',
     }
 
-    await store.addBooking(booking)
-    await store.updateBooking('booking1', {
+    store.setBooking(booking.id, booking)
+    const existing = store.bookings.get('booking1')!
+    store.setBooking('booking1', {
+      ...existing,
       status: 'scheduled',
       notes: 'Updated booking',
     })
@@ -56,10 +58,9 @@ describe('Booking Store', () => {
     const updated = store.bookings.get('booking1')
     expect(updated?.status).toBe('scheduled')
     expect(updated?.notes).toBe('Updated booking')
-    expect(updated?.updated_at).toBeDefined()
   })
 
-  it('should remove bookings from the Map', async () => {
+  it('should remove bookings from the Map', () => {
     const store = useBookingStore()
     const booking: Booking = {
       id: 'booking1',
@@ -71,10 +72,10 @@ describe('Booking Store', () => {
       status: 'pending',
     }
 
-    await store.addBooking(booking)
+    store.setBooking(booking.id, booking)
     expect(store.bookings.size).toBe(1)
 
-    await store.removeBooking('booking1')
+    store.removeBooking('booking1')
     expect(store.bookings.size).toBe(0)
     expect(store.bookings.get('booking1')).toBeUndefined()
   })
@@ -82,7 +83,7 @@ describe('Booking Store', () => {
   it('should filter bookings by status', () => {
     const store = useBookingStore()
 
-    store.addBooking({
+    store.setBooking('booking1', {
       id: 'booking1',
       property_id: 'prop1',
       owner_id: 'owner1',
@@ -92,7 +93,7 @@ describe('Booking Store', () => {
       status: 'pending',
     })
 
-    store.addBooking({
+    store.setBooking('booking2', {
       id: 'booking2',
       property_id: 'prop1',
       owner_id: 'owner1',
@@ -112,7 +113,7 @@ describe('Booking Store', () => {
   it('should filter bookings by type', () => {
     const store = useBookingStore()
 
-    store.addBooking({
+    store.setBooking('booking1', {
       id: 'booking1',
       property_id: 'prop1',
       owner_id: 'owner1',
@@ -122,7 +123,7 @@ describe('Booking Store', () => {
       status: 'pending',
     })
 
-    store.addBooking({
+    store.setBooking('booking2', {
       id: 'booking2',
       property_id: 'prop1',
       owner_id: 'owner1',
@@ -142,7 +143,7 @@ describe('Booking Store', () => {
   it('should filter bookings by property', () => {
     const store = useBookingStore()
 
-    store.addBooking({
+    store.setBooking('booking1', {
       id: 'booking1',
       property_id: 'prop1',
       owner_id: 'owner1',
@@ -152,7 +153,7 @@ describe('Booking Store', () => {
       status: 'pending',
     })
 
-    store.addBooking({
+    store.setBooking('booking2', {
       id: 'booking2',
       property_id: 'prop2',
       owner_id: 'owner1',
@@ -170,7 +171,7 @@ describe('Booking Store', () => {
   it('should filter bookings by date range', () => {
     const store = useBookingStore()
 
-    store.addBooking({
+    store.setBooking('booking1', {
       id: 'booking1',
       property_id: 'prop1',
       owner_id: 'owner1',
@@ -180,7 +181,7 @@ describe('Booking Store', () => {
       status: 'pending',
     })
 
-    store.addBooking({
+    store.setBooking('booking2', {
       id: 'booking2',
       property_id: 'prop1',
       owner_id: 'owner1',
@@ -196,7 +197,7 @@ describe('Booking Store', () => {
     expect(store.bookingsByDateRange('2023-05-31', '2023-06-13').size).toBe(2)
   })
 
-  it('should update booking status', async () => {
+  it('should update booking status via setBooking', () => {
     const store = useBookingStore()
     const booking: Booking = {
       id: 'booking1',
@@ -208,14 +209,15 @@ describe('Booking Store', () => {
       status: 'pending',
     }
 
-    await store.addBooking(booking)
-    await store.updateBookingStatus('booking1', 'scheduled')
+    store.setBooking(booking.id, booking)
+    const existing = store.bookings.get('booking1')!
+    store.setBooking('booking1', { ...existing, status: 'scheduled' })
 
     const updated = store.bookings.get('booking1')
     expect(updated?.status).toBe('scheduled')
   })
 
-  it('should assign cleaner to booking', async () => {
+  it('should assign cleaner to booking via setBooking', () => {
     const store = useBookingStore()
     const booking: Booking = {
       id: 'booking1',
@@ -227,8 +229,9 @@ describe('Booking Store', () => {
       status: 'pending',
     }
 
-    await store.addBooking(booking)
-    await store.assignCleaner('booking1', 'cleaner1')
+    store.setBooking(booking.id, booking)
+    const existing = store.bookings.get('booking1')!
+    store.setBooking('booking1', { ...existing, assigned_cleaner_id: 'cleaner1' })
 
     const updated = store.bookings.get('booking1')
     expect(updated?.assigned_cleaner_id).toBe('cleaner1')
@@ -237,7 +240,7 @@ describe('Booking Store', () => {
   it('should clear all bookings', () => {
     const store = useBookingStore()
 
-    store.addBooking({
+    store.setBooking('booking1', {
       id: 'booking1',
       property_id: 'prop1',
       owner_id: 'owner1',
@@ -247,7 +250,7 @@ describe('Booking Store', () => {
       status: 'pending',
     })
 
-    store.addBooking({
+    store.setBooking('booking2', {
       id: 'booking2',
       property_id: 'prop1',
       owner_id: 'owner1',
@@ -262,5 +265,15 @@ describe('Booking Store', () => {
     store.clearAll()
     expect(store.bookings.size).toBe(0)
     expect(store.bookingsArray.length).toBe(0)
+  })
+
+  it('should bulk set bookings via setBookings()', () => {
+    const store = useBookingStore()
+    store.setBookings([
+      { id: 'b1', property_id: 'p1', owner_id: 'o1', checkin_date: '2026-03-25', checkout_date: '2026-03-27', checkin_time: '15:00:00', checkout_time: '11:00:00', booking_type: 'standard', status: 'pending', priority: 'normal' } as Booking,
+      { id: 'b2', property_id: 'p2', owner_id: 'o2', checkin_date: '2026-03-25', checkout_date: '2026-03-27', checkin_time: '15:00:00', checkout_time: '11:00:00', booking_type: 'standard', status: 'pending', priority: 'normal' } as Booking,
+    ])
+    expect(store.bookings.size).toBe(2)
+    expect(store.bookings.get('b1')).toBeDefined()
   })
 })

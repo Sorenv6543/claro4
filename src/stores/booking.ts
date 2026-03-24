@@ -1,8 +1,7 @@
 import type { Booking, BookingMap, BookingStatus, BookingType } from '@/types/booking.ts'
-// EVENTS/BOOKING STORE - BOOKING STORE - BOOKING CRUD - BOOKING FILTERS - BOOKING ACTIONS
+// EVENTS/BOOKING STORE - Pure reactive state container (no Supabase)
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
-import supabase from '@/plugins/supabase.ts'
 import {
   filterBookingsByDateRange,
   getUpcomingBookings,
@@ -108,165 +107,26 @@ export const useBookingStore = defineStore('booking', () => {
     return Array.from(standardBookingsMap.value.values())
   })
 
-  // ACTIONS - EVENTS/BOOKINGCRUD - ADD - UPDATE - REMOVE - UPDATE STATUS - ASSIGN CLEANER - FETCH - CLEAR ALL
-  // addBooking - updateBooking - removeBooking - updateBookingStatus - assignCleaner - fetchBookings - clearAll
+  // ACTIONS - Synchronous state mutations (Supabase interaction handled by composables)
 
-  // function addBooking(booking: Booking) {
-  //   bookings.value.set(booking.id, booking);
-  //   invalidateCache(); // Invalidate cache when data changes
-  // }
-  // Example: src/stores/booking.ts - Add these methods
-  async function addBooking (booking: Booking) {
-  // Optimistic update
-    bookings.value.set(booking.id, booking)
-    error.value = null
-
-    try {
-      const { error: supaError } = await supabase.from('bookings').insert(booking)
-      if (supaError) {
-        throw supaError
-      }
-      invalidateCache() // Invalidate cache after successful insert
-    } catch (error_: unknown) {
-    // Rollback on error
-      bookings.value.delete(booking.id)
-      error.value = error_ instanceof Error ? error_.message : 'Failed to add booking.'
-      console.error('addBooking error:', error_)
-      throw error_
-    }
+  function setBookings(data: Booking[]) {
+    bookings.value = new Map(data.map(b => [b.id, b]))
+    invalidateCache()
   }
 
-  async function updateBooking (id: string, updates: Partial<Booking>) {
-    const existing = bookings.value.get(id)
-    if (!existing) {
-      error.value = 'Booking not found'
-      throw new Error('Booking not found')
-    }
-
-    console.log('🔍 [BookingStore] Updating booking:', { id, updates, existingOwner: existing.owner_id })
-
-    // Create updated booking object
-    const updated = {
-      ...existing,
-      ...updates,
-      updated_at: new Date().toISOString(),
-    }
-
-    // Store original state for potential rollback
-    const originalMap = new Map(bookings.value)
-
-    // Optimistic update
-    bookings.value.set(id, updated)
-    error.value = null
-
-    try {
-      const { error: supaError } = await supabase
-        .from('bookings')
-        .update(updates)
-        .eq('id', id)
-
-      if (supaError) {
-        console.error('❌ [BookingStore] Supabase update error:', supaError)
-        throw supaError
-      }
-
-      console.log('✅ [BookingStore] Successfully updated booking in Supabase')
-      invalidateCache() // Invalidate cache after successful update
-    } catch (error_: unknown) {
-      console.error('❌ [BookingStore] Update failed, rolling back:', error_)
-
-      // Complete rollback - restore entire map to prevent corruption
-      bookings.value.clear()
-      for (const [key, booking] of originalMap.entries()) {
-        bookings.value.set(key, booking)
-      }
-
-      error.value = error_ instanceof Error ? error_.message : 'Failed to update booking.'
-      invalidateCache() // Invalidate cache after rollback
-      throw error_
-    }
+  function setBooking(id: string, booking: Booking) {
+    bookings.value.set(id, booking)
+    invalidateCache()
   }
 
-  async function removeBooking (id: string) {
-    const existing = bookings.value.get(id)
-    if (!existing) {
-      error.value = 'Booking not found'
-      throw new Error('Booking not found')
-    }
-
-    // Optimistic update
+  function removeBooking(id: string) {
     bookings.value.delete(id)
-    error.value = null
-
-    try {
-      const { error: supaError } = await supabase
-        .from('bookings')
-        .delete()
-        .eq('id', id)
-
-      if (supaError) {
-        throw supaError
-      }
-      invalidateCache() // Invalidate cache after successful delete
-    } catch (error_: unknown) {
-      // Rollback on error
-      bookings.value.set(id, existing)
-      error.value = error_ instanceof Error ? error_.message : 'Failed to remove booking.'
-      console.error('removeBooking error:', error_)
-      throw error_
-    }
+    invalidateCache()
   }
 
-  function updateBookingStatus (id: string, status: BookingStatus) {
-    updateBooking(id, { status })
-  }
-
-  function assignCleaner (id: string, cleanerId: string) {
-    updateBooking(id, { assigned_cleaner_id: cleanerId })
-  }
-
-  async function fetchBookings () {
-    loading.value = true
-    error.value = null
-
-    try {
-      console.log('🔍 [BookingStore] Fetching bookings from Supabase...')
-
-      // Fetch bookings from Supabase
-      const { data, error: fetchError } = await supabase
-        .from('bookings')
-        .select('*')
-        .order('checkout_date', { ascending: true })
-
-      if (fetchError) {
-        console.error('❌ [BookingStore] Supabase error:', fetchError)
-        throw fetchError
-      }
-
-      console.log(`✅ [BookingStore] Fetched ${data?.length || 0} bookings from Supabase:`, data)
-
-      // Clear existing bookings and add fetched ones
-      bookings.value.clear()
-
-      if (data && data.length > 0) {
-        for (const booking of data) {
-          bookings.value.set(booking.id, booking)
-        }
-        console.log(`✅ [BookingStore] Added ${data.length} bookings to store`)
-      }
-
-      loading.value = false
-      invalidateCache() // Invalidate cache after fetch
-    } catch (error_) {
-      console.error('❌ [BookingStore] Error fetching bookings:', error_)
-      error.value = error_ instanceof Error ? error_.message : 'Unknown error fetching bookings'
-      loading.value = false
-    }
-  }
-
-  function clearAll () {
+  function clearAll() {
     bookings.value.clear()
-    invalidateCache() // Invalidate cache when data changes
+    invalidateCache()
   }
 
   return {
@@ -301,12 +161,9 @@ export const useBookingStore = defineStore('booking', () => {
     standardBookings,
 
     // Actions
-    addBooking,
-    updateBooking,
+    setBookings,
+    setBooking,
     removeBooking,
-    updateBookingStatus,
-    assignCleaner,
-    fetchBookings,
     clearAll,
 
     // Cache management
