@@ -42,6 +42,7 @@
 
   import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+  import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
   import { useBookingStore } from '@/stores/booking'
   import { usePropertyStore } from '@/stores/property'
 
@@ -51,6 +52,7 @@
   const bookingStore = useBookingStore()
   const propertyStore = usePropertyStore()
   const { users: _allUsers, fetchAllUsers } = useAdminUserManagement()
+  const { init: initRealtimeSync } = useRealtimeSync()
 
   // Initialize state
   const currentView = ref('month')
@@ -129,17 +131,14 @@
 
   // Initialize data on mount
   onMounted(async () => {
-    console.log('🎛️ [AdminLayout] Loading admin layout data...')
     loading.value = true
     try {
       await Promise.all([
         fetchAllUsers(),
-        bookingStore.fetchBookings(),
-        propertyStore.fetchProperties(),
+        initRealtimeSync(),
       ])
-      console.log('✅ [AdminLayout] Admin layout data loaded')
     } catch (error) {
-      console.error('❌ [AdminLayout] Failed to fetch admin layout data:', error)
+      console.error('[AdminLayout] Failed to initialize:', error)
     } finally {
       loading.value = false
     }

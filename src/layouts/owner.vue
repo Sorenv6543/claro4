@@ -192,12 +192,13 @@
 
 <script setup lang="ts">
   import { useAuthStore } from '@stores/auth'
-  import { computed, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useDisplay, useTheme } from 'vuetify'
   import OwnerBottomNav from '@/components/smart/owner/OwnerBottomNav.vue'
   import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
   import { useCalendarState } from '@/composables/shared/useCalendarState'
+  import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
   import { THEMES } from '@/layouts/ownerThemes'
 
   const isDev = import.meta.env.DEV
@@ -207,9 +208,14 @@
   const route = useRoute()
   const authStore = useAuthStore()
   const calendarState = useCalendarState()
+  const { init: initRealtimeSync } = useRealtimeSync()
 
   const sidebarOpen = ref(mdAndUp.value)
   const viewMode = calendarState.viewMode
+
+  onMounted(() => {
+    initRealtimeSync()
+  })
 
   // Show calendar controls only on the schedule/dashboard page
   const isCalendarPage = computed(() => route.path === '/owner/dashboard')
