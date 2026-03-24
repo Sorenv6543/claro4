@@ -1,6 +1,6 @@
 import type { PricingTier, Property, PropertyFormData } from '@/types'
 import { computed, ref } from 'vue'
-import { useProperties } from '@/composables/shared/useProperties'
+import { useSupabaseProperties } from '@/composables/supabase/useSupabaseProperties'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
@@ -8,7 +8,7 @@ import { canDeactivateProperty } from '@/utils/businessLogic'
 
 /**
  * Owner-specific property composable
- * Extends shared useProperties functionality with owner data filtering
+ * Delegates CRUD to useSupabaseProperties; reads from property store.
  *
  * Key Features:
  * - All operations filtered to current owner's properties only
@@ -19,8 +19,12 @@ import { canDeactivateProperty } from '@/utils/businessLogic'
  * - Removes admin-only property management functions
  */
 export function useOwnerProperties () {
-  // Get shared functionality and stores
-  const baseProperties = useProperties()
+  // Supabase CRUD + stores
+  const {
+    createProperty: supaCreate,
+    updateProperty: supaUpdate,
+    deleteProperty: supaDelete,
+  } = useSupabaseProperties()
   const authStore = useAuthStore()
   const propertyStore = usePropertyStore()
   const bookingStore = useBookingStore()
@@ -72,6 +76,66 @@ export function useOwnerProperties () {
     return tierGroups
   })
 
+  // LOCAL HELPERS
+
+  /**
+   * Calculate property metrics (utilization, revenue, cleaning load)
+   */
+  function calculatePropertyMetrics (id: string) {
+    const property = propertyStore.getPropertyById(id)
+    if (!property) return null
+
+    const propertyBookings = Array.from(bookingStore.bookingsByProperty(id).values())
+
+    // Utilization rate (booked days / 30-day window)
+    const totalDays = 30
+    const bookedDays = new Set<string>()
+
+    for (const booking of propertyBookings) {
+      const checkinDate = new Date(booking.checkin_date)
+      const checkoutDate = new Date(booking.checkout_date)
+      const currentDate = new Date(checkinDate)
+      while (currentDate <= checkoutDate) {
+        bookedDays.add(currentDate.toISOString().split('T')[0])
+        currentDate.setDate(currentDate.getDate() + 1)
+      }
+    }
+
+    const utilizationRate = bookedDays.size / totalDays
+
+    // Turn percentage
+    const turnBookings = propertyBookings.filter(b => b.booking_type === 'turn')
+    const turnPercentage = propertyBookings.length > 0 ? turnBookings.length / propertyBookings.length : 0
+
+    // Average gap between bookings
+    let totalGapDays = 0
+    let gapCount = 0
+    const sorted = propertyBookings.toSorted((a, b) =>
+      new Date(a.checkin_date).getTime() - new Date(b.checkin_date).getTime(),
+    )
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const currentEnd = new Date(sorted[i].checkout_date)
+      const nextStart = new Date(sorted[i + 1].checkin_date)
+      if (nextStart > currentEnd) {
+        totalGapDays += Math.round((nextStart.getTime() - currentEnd.getTime()) / (1000 * 60 * 60 * 24))
+        gapCount++
+      }
+    }
+    const averageGapBetweenBookings = gapCount > 0 ? totalGapDays / gapCount : 0
+
+    // Revenue projection
+    const revenueMultipliers: Record<PricingTier, number> = { basic: 1, standard: 1.2, premium: 1.5, luxury: 2.5 }
+    const baseRevenue = 100
+    const projectedBookings = Math.round(utilizationRate * 30)
+    const revenueProjection = projectedBookings * baseRevenue * revenueMultipliers[property.pricing_tier]
+
+    // Cleaning load
+    const cleaningLoad: 'light' | 'moderate' | 'heavy' =
+      utilizationRate < 0.3 ? 'light' : utilizationRate < 0.7 ? 'moderate' : 'heavy'
+
+    return { utilizationRate, averageGapBetweenBookings, turnPercentage, revenueProjection, cleaningLoad }
+  }
+
   /**
    * Get aggregated metrics for all owner's properties
    */
@@ -95,13 +159,12 @@ export function useOwnerProperties () {
     const totalProperties = myProperties.value.length
     const activeProperties = myActiveProperties.value.length
 
-    // Calculate average utilization across all properties
     let totalUtilization = 0
     let totalRevenue = 0
     let totalCleaningDuration = 0
 
     for (const property of myProperties.value) {
-      const metrics = baseProperties.calculatePropertyMetrics(property.id)
+      const metrics = calculatePropertyMetrics(property.id)
       if (metrics) {
         totalUtilization += metrics.utilizationRate
         totalRevenue += metrics.revenueProjection
@@ -112,7 +175,6 @@ export function useOwnerProperties () {
     const averageUtilization = totalProperties > 0 ? totalUtilization / totalProperties : 0
     const averageCleaningDuration = totalProperties > 0 ? totalCleaningDuration / totalProperties : 0
 
-    // Calculate pricing tier distribution
     const pricingTierDistribution = {
       basic: myPropertiesByPricingTier.value.basic.length,
       standard: myPropertiesByPricingTier.value.standard.length,
@@ -133,27 +195,11 @@ export function useOwnerProperties () {
   // OWNER-SPECIFIC CRUD OPERATIONS
 
   /**
-   * Fetch current owner's properties only
+   * No-op — data loaded by layout via useSupabaseProperties.fetchAndSubscribe()
    */
   async function fetchMyProperties (): Promise<boolean> {
-    if (!currentUserId.value) {
-      error.value = 'Please log in to view your properties'
-      return false
-    }
-
-    loading.value = true
-    error.value = null
-
-    try {
-      await propertyStore.fetchProperties()
-      success.value = `Loaded ${myProperties.value.length} of your properties`
-      loading.value = false
-      return true
-    } catch (error_) {
-      error.value = 'Unable to load your properties. Please try again.'
-      loading.value = false
-      throw error_
-    }
+    // Data is loaded by the layout; nothing to do here.
+    return true
   }
 
   /**
@@ -170,22 +216,16 @@ export function useOwnerProperties () {
     success.value = null
 
     try {
-      // Create property data with owner_id automatically set
       const ownerPropertyData: PropertyFormData = {
         ...formData,
         owner_id: currentUserId.value,
       }
 
-      // Use base composable's create function
-      const propertyId = await baseProperties.createProperty(ownerPropertyData)
+      const property = await supaCreate(ownerPropertyData)
 
-      if (propertyId) {
-        success.value = 'Your property has been created successfully'
-        loading.value = false
-        return propertyId
-      } else {
-        throw new Error('Failed to create property')
-      }
+      success.value = 'Your property has been created successfully'
+      loading.value = false
+      return property.id
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Unable to create your property. Please try again.'
       loading.value = false
@@ -207,26 +247,15 @@ export function useOwnerProperties () {
     success.value = null
 
     try {
-      // Check if property exists and belongs to current user
       const property = propertyStore.getPropertyById(id)
-      if (!property) {
-        throw new Error('Property not found')
-      }
+      if (!property) throw new Error('Property not found')
+      if (property.owner_id !== currentUserId.value) throw new Error('You can only update your own properties')
 
-      if (property.owner_id !== currentUserId.value) {
-        throw new Error('You can only update your own properties')
-      }
+      await supaUpdate(id, updates)
 
-      // Use base composable's update function
-      const updateSuccess = await baseProperties.updateProperty(id, updates)
-
-      if (updateSuccess) {
-        success.value = 'Your property has been updated successfully'
-        loading.value = false
-        return true
-      } else {
-        throw new Error('Failed to update property')
-      }
+      success.value = 'Your property has been updated successfully'
+      loading.value = false
+      return true
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Unable to update your property. Please try again.'
       loading.value = false
@@ -248,32 +277,20 @@ export function useOwnerProperties () {
     success.value = null
 
     try {
-      // Check if property exists and belongs to current user
       const property = propertyStore.getPropertyById(id)
-      if (!property) {
-        throw new Error('Property not found')
-      }
+      if (!property) throw new Error('Property not found')
+      if (property.owner_id !== currentUserId.value) throw new Error('You can only delete your own properties')
 
-      if (property.owner_id !== currentUserId.value) {
-        throw new Error('You can only delete your own properties')
-      }
-
-      // Check if property has bookings
       const propertyBookings = bookingStore.bookingsByProperty(id)
       if (propertyBookings.size > 0) {
         throw new Error('Cannot delete property with existing bookings. Please cancel or complete all bookings first.')
       }
 
-      // Use base composable's delete function
-      const deleteSuccess = await baseProperties.deleteProperty(id)
+      await supaDelete(id)
 
-      if (deleteSuccess) {
-        success.value = 'Your property has been deleted successfully'
-        loading.value = false
-        return true
-      } else {
-        throw new Error('Failed to delete property')
-      }
+      success.value = 'Your property has been deleted successfully'
+      loading.value = false
+      return true
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Unable to delete your property. Please try again.'
       loading.value = false
@@ -295,17 +312,10 @@ export function useOwnerProperties () {
     success.value = null
 
     try {
-      // Check if property exists and belongs to current user
       const property = propertyStore.getPropertyById(id)
-      if (!property) {
-        throw new Error('Property not found')
-      }
+      if (!property) throw new Error('Property not found')
+      if (property.owner_id !== currentUserId.value) throw new Error('You can only manage your own properties')
 
-      if (property.owner_id !== currentUserId.value) {
-        throw new Error('You can only manage your own properties')
-      }
-
-      // If deactivating, check for upcoming bookings using shared validation
       if (!active) {
         const check = canDeactivateProperty(id, bookingStore.bookingsByProperty(id).values())
         if (!check.canDeactivate) {
@@ -313,16 +323,11 @@ export function useOwnerProperties () {
         }
       }
 
-      // Use base composable's toggle function
-      const toggleSuccess = await baseProperties.togglePropertyStatus(id, active)
+      await supaUpdate(id, { active })
 
-      if (toggleSuccess) {
-        success.value = `Your property has been ${active ? 'activated' : 'deactivated'} successfully`
-        loading.value = false
-        return true
-      } else {
-        throw new Error(`Failed to ${active ? 'activate' : 'deactivate'} property`)
-      }
+      success.value = `Your property has been ${active ? 'activated' : 'deactivated'} successfully`
+      loading.value = false
+      return true
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : `Unable to ${active ? 'activate' : 'deactivate'} your property. Please try again.`
       loading.value = false
@@ -334,18 +339,12 @@ export function useOwnerProperties () {
    * Get detailed metrics for a specific property (only if owned by current user)
    */
   function getMyPropertyMetrics (id: string) {
-    if (!currentUserId.value) {
-      return null
-    }
+    if (!currentUserId.value) return null
 
-    // Check if property belongs to current user
     const property = propertyStore.getPropertyById(id)
-    if (!property || property.owner_id !== currentUserId.value) {
-      return null
-    }
+    if (!property || property.owner_id !== currentUserId.value) return null
 
-    // Use base composable's metrics calculation
-    return baseProperties.calculatePropertyMetrics(id)
+    return calculatePropertyMetrics(id)
   }
 
   return {

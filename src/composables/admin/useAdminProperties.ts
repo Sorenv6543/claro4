@@ -1,6 +1,6 @@
 import type { PricingTier, Property, PropertyFormData } from '@/types/property.ts'
 import { computed, ref } from 'vue'
-import { useProperties } from '@/composables/shared/useProperties.ts'
+import { useSupabaseProperties } from '@/composables/supabase/useSupabaseProperties'
 import { useAuthStore } from '@/stores/auth.ts'
 import { useBookingStore } from '@/stores/booking.ts'
 import { usePropertyStore } from '@/stores/property.ts'
@@ -8,7 +8,7 @@ import { canDeactivateProperty } from '@/utils/businessLogic'
 
 /**
  * Admin-specific property composable
- * Extends shared useProperties functionality with admin system-wide access
+ * Delegates CRUD to useSupabaseProperties; reads from property store.
  *
  * Key Features:
  * - NO filtering - access ALL properties across all owners (key difference from owner version)
@@ -18,8 +18,12 @@ import { canDeactivateProperty } from '@/utils/businessLogic'
  * - Business insights across all clients
  */
 export function useAdminProperties () {
-  // Get shared functionality and stores
-  const baseProperties = useProperties()
+  // Supabase CRUD + stores
+  const {
+    createProperty: supaCreate,
+    updateProperty: supaUpdate,
+    deleteProperty: supaDelete,
+  } = useSupabaseProperties()
   const authStore = useAuthStore()
   const propertyStore = usePropertyStore()
   const bookingStore = useBookingStore()
@@ -100,6 +104,66 @@ export function useAdminProperties () {
     }
   })
 
+  // LOCAL HELPERS
+
+  /**
+   * Calculate property metrics (utilization, revenue, cleaning load)
+   */
+  function calculatePropertyMetrics (id: string) {
+    const property = propertyStore.getPropertyById(id)
+    if (!property) return null
+
+    const propertyBookings = Array.from(bookingStore.bookingsByProperty(id).values())
+
+    // Utilization rate (booked days / 30-day window)
+    const totalDays = 30
+    const bookedDays = new Set<string>()
+
+    for (const booking of propertyBookings) {
+      const checkinDate = new Date(booking.checkin_date)
+      const checkoutDate = new Date(booking.checkout_date)
+      const currentDate = new Date(checkinDate)
+      while (currentDate <= checkoutDate) {
+        bookedDays.add(currentDate.toISOString().split('T')[0])
+        currentDate.setDate(currentDate.getDate() + 1)
+      }
+    }
+
+    const utilizationRate = bookedDays.size / totalDays
+
+    // Turn percentage
+    const turnBookings = propertyBookings.filter(b => b.booking_type === 'turn')
+    const turnPercentage = propertyBookings.length > 0 ? turnBookings.length / propertyBookings.length : 0
+
+    // Average gap between bookings
+    let totalGapDays = 0
+    let gapCount = 0
+    const sorted = propertyBookings.toSorted((a, b) =>
+      new Date(a.checkin_date).getTime() - new Date(b.checkin_date).getTime(),
+    )
+    for (let i = 0; i < sorted.length - 1; i++) {
+      const currentEnd = new Date(sorted[i].checkout_date)
+      const nextStart = new Date(sorted[i + 1].checkin_date)
+      if (nextStart > currentEnd) {
+        totalGapDays += Math.round((nextStart.getTime() - currentEnd.getTime()) / (1000 * 60 * 60 * 24))
+        gapCount++
+      }
+    }
+    const averageGapBetweenBookings = gapCount > 0 ? totalGapDays / gapCount : 0
+
+    // Revenue projection
+    const revenueMultipliers: Record<PricingTier, number> = { basic: 1, standard: 1.2, premium: 1.5, luxury: 2.5 }
+    const baseRevenue = 100
+    const projectedBookings = Math.round(utilizationRate * 30)
+    const revenueProjection = projectedBookings * baseRevenue * revenueMultipliers[property.pricing_tier]
+
+    // Cleaning load
+    const cleaningLoad: 'light' | 'moderate' | 'heavy' =
+      utilizationRate < 0.3 ? 'light' : utilizationRate < 0.7 ? 'moderate' : 'heavy'
+
+    return { utilizationRate, averageGapBetweenBookings, turnPercentage, revenueProjection, cleaningLoad }
+  }
+
   /**
    * Get system-wide property metrics and analytics
    */
@@ -138,7 +202,6 @@ export function useAdminProperties () {
 
   /**
    * Get property utilization data (booking frequency per property)
-   * Delegates to shared calculatePropertyMetrics to avoid duplication
    */
   const propertyUtilizationData = computed(() => {
     const utilizationMap: Record<string, {
@@ -153,10 +216,8 @@ export function useAdminProperties () {
     }> = {}
 
     for (const property of allProperties.value) {
-      const metrics = baseProperties.calculatePropertyMetrics(property.id)
-      if (!metrics) {
-        continue
-      }
+      const metrics = calculatePropertyMetrics(property.id)
+      if (!metrics) continue
 
       const propertyBookings = Array.from(bookingStore.bookings.values())
         .filter(booking => booking.property_id === property.id)
@@ -179,25 +240,83 @@ export function useAdminProperties () {
   // ADMIN-SPECIFIC CRUD OPERATIONS
 
   /**
-   * Fetch ALL properties (no owner filter) - admin system-wide access
+   * No-op — data loaded by layout via useSupabaseProperties.fetchAndSubscribe()
    */
   async function fetchAllProperties (): Promise<boolean> {
+    // Data is loaded by the layout; nothing to do here.
+    return true
+  }
+
+  /**
+   * Create a property (admin can create for any owner)
+   */
+  async function createProperty (formData: PropertyFormData): Promise<string | null> {
     if (!currentAdminId.value) {
-      error.value = 'Admin authentication required to access system property data'
+      error.value = 'Admin authentication required'
+      return null
+    }
+
+    loading.value = true
+    error.value = null
+    success.value = null
+
+    try {
+      const property = await supaCreate(formData)
+      success.value = 'Property created successfully'
+      loading.value = false
+      return property.id
+    } catch (error_) {
+      error.value = error_ instanceof Error ? error_.message : 'Failed to create property'
+      loading.value = false
+      return null
+    }
+  }
+
+  /**
+   * Update a property (admin can update any property)
+   */
+  async function updateProperty (id: string, updates: Partial<PropertyFormData>): Promise<boolean> {
+    if (!currentAdminId.value) {
+      error.value = 'Admin authentication required'
       return false
     }
 
     loading.value = true
     error.value = null
+    success.value = null
 
     try {
-      await propertyStore.fetchProperties()
-
-      success.value = `Loaded ${allProperties.value.length} properties across all owners`
+      await supaUpdate(id, updates)
+      success.value = 'Property updated successfully'
       loading.value = false
       return true
-    } catch {
-      error.value = 'Unable to load system properties. This may impact business operations.'
+    } catch (error_) {
+      error.value = error_ instanceof Error ? error_.message : 'Failed to update property'
+      loading.value = false
+      return false
+    }
+  }
+
+  /**
+   * Delete a property (admin soft-delete)
+   */
+  async function deleteProperty (id: string): Promise<boolean> {
+    if (!currentAdminId.value) {
+      error.value = 'Admin authentication required'
+      return false
+    }
+
+    loading.value = true
+    error.value = null
+    success.value = null
+
+    try {
+      await supaDelete(id)
+      success.value = 'Property deleted successfully'
+      loading.value = false
+      return true
+    } catch (error_) {
+      error.value = error_ instanceof Error ? error_.message : 'Failed to delete property'
       loading.value = false
       return false
     }
@@ -252,8 +371,7 @@ export function useAdminProperties () {
             continue
           }
 
-          // Update property (calls Supabase with optimistic update + rollback)
-          await propertyStore.updateProperty(propertyId, updates)
+          await supaUpdate(propertyId, updates)
           results.success.push(propertyId)
         } catch (error_) {
           console.error(`Failed to update property ${propertyId}:`, error_)
@@ -316,8 +434,7 @@ export function useAdminProperties () {
             }
           }
 
-          // Update property status (calls Supabase with optimistic update + rollback)
-          await propertyStore.updateProperty(propertyId, { active })
+          await supaUpdate(propertyId, { active })
           results.success.push(propertyId)
         } catch (error_) {
           console.error(`Failed to toggle property ${propertyId}:`, error_)
@@ -563,13 +680,10 @@ export function useAdminProperties () {
   }
 
   return {
-    // Extend shared functionality
-    ...baseProperties,
-
     // Admin-specific state
-    loading: computed(() => loading.value || baseProperties.loading.value),
-    error: computed(() => error.value || baseProperties.error.value),
-    success: computed(() => success.value || baseProperties.success.value),
+    loading,
+    error,
+    success,
 
     // Admin system-wide computed properties (NO filtering)
     allProperties,
@@ -582,6 +696,9 @@ export function useAdminProperties () {
     propertyUtilizationData,
 
     // Admin-specific CRUD operations
+    createProperty,
+    updateProperty,
+    deleteProperty,
     fetchAllProperties,
     getPropertiesByOwner,
     bulkUpdateProperties,
