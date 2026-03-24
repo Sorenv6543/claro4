@@ -49,13 +49,6 @@ dist-ssr
 /playwright-report/
 /playwright/.cache/
 
-
-
-
-
-
-
-
 .vercel
 
 # Visual brainstorming mockups

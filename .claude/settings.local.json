@@ -48,7 +48,10 @@
       "Bash(find . -path ./node_modules -prune -o -name vitest.config.* -print)",
       "Bash(wmic datafile:*)",
       "WebFetch(domain:raf.dev)",
-      "WebFetch(domain:www.xugj520.cn)"
+      "WebFetch(domain:www.xugj520.cn)",
+      "Bash(find /Users/Soren/claro4 -path */migrations/*.sql -type f)",
+      "Bash(npx vitest:*)",
+      "mcp__chrome-devtools__emulate"
     ]
   },
   "enableAllProjectMcpServers": true
