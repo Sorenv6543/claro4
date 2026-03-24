@@ -28,7 +28,7 @@ interface MockAuthStore {
 
 // Booking store interface for testing
 interface MockBookingStore {
-  addBooking: (booking: Record<string, unknown>) => void
+  setBooking: (id: string, booking: Record<string, unknown>) => void
 }
 
 /**
@@ -149,8 +149,9 @@ export function setAdminUser (authStore: MockAuthStore, id = 'admin1') {
  */
 export function addOwnerBookings (bookingStore: MockBookingStore, ownerId: string, count: number) {
   for (let i = 1; i <= count; i++) {
-    bookingStore.addBooking({
-      id: `${ownerId}-booking${i}`, // Make IDs unique per owner
+    const id = `${ownerId}-booking${i}`
+    bookingStore.setBooking(id, {
+      id,
       property_id: `${ownerId}-prop${i}`,
       owner_id: ownerId,
       checkout_date: '2023-06-01T11:00:00Z',
@@ -166,8 +167,9 @@ export function addOwnerBookings (bookingStore: MockBookingStore, ownerId: strin
  */
 export function addAdminBookings (bookingStore: MockBookingStore, count: number) {
   for (let i = 1; i <= count; i++) {
-    bookingStore.addBooking({
-      id: `adminBooking${i}`,
+    const id = `adminBooking${i}`
+    bookingStore.setBooking(id, {
+      id,
       property_id: `adminProp${i}`,
       owner_id: `owner${i}`,
       checkout_date: '2023-06-01T11:00:00Z',

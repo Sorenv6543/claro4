@@ -161,7 +161,7 @@ describe('User Store', () => {
     store.setUser(user)
 
     // Add bookings
-    bookingStore.addBooking({
+    bookingStore.setBooking('booking1', {
       id: 'booking1',
       property_id: 'prop1',
       owner_id: 'owner1',
@@ -171,7 +171,7 @@ describe('User Store', () => {
       status: 'pending',
     })
 
-    bookingStore.addBooking({
+    bookingStore.setBooking('booking2', {
       id: 'booking2',
       property_id: 'prop2',
       owner_id: 'other_owner',

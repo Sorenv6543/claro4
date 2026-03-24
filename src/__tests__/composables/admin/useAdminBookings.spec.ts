@@ -64,8 +64,8 @@ describe('useAdminBookings (Role-Based)', () => {
       status: 'scheduled',
     }
 
-    bookingStore.addBooking(owner1Booking)
-    bookingStore.addBooking(owner2Booking)
+    bookingStore.setBooking(owner1Booking.id, owner1Booking)
+    bookingStore.setBooking(owner2Booking.id, owner2Booking)
 
     const { allBookings } = useAdminBookings()
 
@@ -125,9 +125,9 @@ describe('useAdminBookings (Role-Based)', () => {
       status: 'pending',
     }
 
-    bookingStore.addBooking(turnBooking1)
-    bookingStore.addBooking(turnBooking2)
-    bookingStore.addBooking(standardBooking)
+    bookingStore.setBooking(turnBooking1.id, turnBooking1)
+    bookingStore.setBooking(turnBooking2.id, turnBooking2)
+    bookingStore.setBooking(standardBooking.id, standardBooking)
 
     const { systemTurnAlerts, allTurnBookings } = useAdminBookings()
 
@@ -207,7 +207,7 @@ describe('useAdminBookings (Role-Based)', () => {
     ]
 
     for (const booking of bookings) {
-      bookingStore.addBooking(booking)
+      bookingStore.setBooking(booking.id, booking)
     }
 
     const { businessMetrics, getBookingsByStatus } = useAdminBookings()
@@ -225,7 +225,7 @@ describe('useAdminBookings (Role-Based)', () => {
     expect(getBookingsByStatus('cancelled')).toHaveLength(1)
   })
 
-  it('should handle cleaner assignment across all properties', () => {
+  it('should handle cleaner assignment across all properties', async () => {
     const bookingStore = useBookingStore()
     const userStore = useAuthStore()
 
@@ -265,8 +265,8 @@ describe('useAdminBookings (Role-Based)', () => {
       status: 'pending',
     }
 
-    bookingStore.addBooking(booking1)
-    bookingStore.addBooking(booking2)
+    bookingStore.setBooking(booking1.id, booking1)
+    bookingStore.setBooking(booking2.id, booking2)
 
     const { unassignedBookings, assignCleanerToBooking } = useAdminBookings()
 
@@ -274,7 +274,7 @@ describe('useAdminBookings (Role-Based)', () => {
     expect(unassignedBookings.value).toHaveLength(2)
 
     // Should be able to assign cleaners to any booking
-    const success = assignCleanerToBooking('unassigned1', 'cleaner1')
+    const success = await assignCleanerToBooking('unassigned1', 'cleaner1')
     expect(success).toBe(true)
   })
 
@@ -331,9 +331,9 @@ describe('useAdminBookings (Role-Based)', () => {
       status: 'pending',
     }
 
-    bookingStore.addBooking(todayTurn1)
-    bookingStore.addBooking(todayTurn2)
-    bookingStore.addBooking(tomorrowTurn)
+    bookingStore.setBooking(todayTurn1.id, todayTurn1)
+    bookingStore.setBooking(todayTurn2.id, todayTurn2)
+    bookingStore.setBooking(tomorrowTurn.id, tomorrowTurn)
 
     const { todayUrgentTurns } = useAdminBookings()
 

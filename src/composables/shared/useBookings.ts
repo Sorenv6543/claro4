@@ -74,7 +74,7 @@ export function useBookings () {
       }
 
       // Add to store
-      await bookingStore.addBooking(newBooking)
+      bookingStore.setBooking(newBooking.id, newBooking)
 
       success.value = 'Booking created successfully'
       loading.value = false
@@ -140,7 +140,10 @@ export function useBookings () {
       }
 
       // Update booking in store
-      await bookingStore.updateBooking(id, updates)
+      const existing = bookingStore.getBookingById(id)
+      if (existing) {
+        bookingStore.setBooking(id, { ...existing, ...updates, updated_at: new Date().toISOString() })
+      }
 
       success.value = 'Booking updated successfully'
       loading.value = false
@@ -166,7 +169,7 @@ export function useBookings () {
       }
 
       // Remove from store
-      await bookingStore.removeBooking(id)
+      bookingStore.removeBooking(id)
 
       success.value = 'Booking deleted successfully'
       loading.value = false
@@ -197,7 +200,7 @@ export function useBookings () {
       }
 
       // Update status in store
-      await bookingStore.updateBooking(id, { status })
+      bookingStore.setBooking(id, { ...booking, status, updated_at: new Date().toISOString() })
 
       success.value = 'Booking status updated successfully'
       loading.value = false
@@ -226,7 +229,7 @@ export function useBookings () {
       // For now, we'll just update the booking
 
       // Update cleaner assignment in store
-      await bookingStore.updateBooking(bookingId, { assigned_cleaner_id: cleanerId })
+      bookingStore.setBooking(bookingId, { ...booking, assigned_cleaner_id: cleanerId, updated_at: new Date().toISOString() })
 
       success.value = 'Cleaner assigned successfully'
       loading.value = false
@@ -316,19 +319,10 @@ export function useBookings () {
   }
 
   // FETCHALLBOOKINGS
+  /** @deprecated Data is now loaded via useRealtimeSync().init() at layout level. Kept as no-op. */
   async function fetchAllBookings (): Promise<boolean> {
-    loading.value = true
-    error.value = null
-
-    try {
-      await bookingStore.fetchBookings()
-      loading.value = false
-      return true
-    } catch (error_) {
-      error.value = error_ instanceof Error ? error_.message : 'Failed to fetch bookings'
-      loading.value = false
-      return false
-    }
+    // No-op: data is now loaded via useRealtimeSync().init() at layout level
+    return true
   }
 
   return {

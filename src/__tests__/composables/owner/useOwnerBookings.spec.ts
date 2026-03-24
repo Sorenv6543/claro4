@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
+import { usePropertyStore } from '@/stores/property'
 import { addOwnerBookings, setOwnerUser } from '../../utils/test-utils'
 
 describe('useOwnerBookings (Role-Based)', () => {
@@ -55,8 +56,8 @@ describe('useOwnerBookings (Role-Based)', () => {
       status: 'pending',
     }
 
-    bookingStore.addBooking(turnBooking)
-    bookingStore.addBooking(standardBooking)
+    bookingStore.setBooking(turnBooking.id, turnBooking)
+    bookingStore.setBooking(standardBooking.id, standardBooking)
 
     const { myTurnBookings, myStandardBookings } = useOwnerBookings()
 
@@ -73,22 +74,36 @@ describe('useOwnerBookings (Role-Based)', () => {
     // Set up owner user
     setOwnerUser(authStore, 'owner1')
 
-    const { createOwnerBooking } = useOwnerBookings()
+    const { createMyBooking } = useOwnerBookings()
+
+    // createMyBooking requires a property that belongs to the owner in the property store
+    const propertyStore = usePropertyStore()
+    propertyStore.addProperty({
+      id: 'prop1',
+      owner_id: 'owner1',
+      name: 'Owner House',
+      address: '123 Owner St',
+      cleaning_duration: 120,
+      pricing_tier: 'standard',
+      active: true,
+      color: '#5c6bc0',
+    })
 
     const newBookingData = {
       property_id: 'prop1',
+      owner_id: 'owner1',
       checkout_date: '2023-06-01T11:00:00Z',
       checkin_date: '2023-06-03T15:00:00Z',
       booking_type: 'standard' as const,
       status: 'pending' as const,
     }
 
-    const result = await createOwnerBooking(newBookingData)
+    // createMyBooking returns string | null (the booking id)
+    const result = await createMyBooking(newBookingData)
 
-    // Should automatically set owner_id and return booking
+    // Should return a booking ID on success
     expect(result).toBeDefined()
-    expect(result?.owner_id).toBe('owner1')
-    expect(result?.property_id).toBe('prop1')
+    expect(typeof result).toBe('string')
   })
 
   it('should enforce owner-only data access', () => {
@@ -100,8 +115,9 @@ describe('useOwnerBookings (Role-Based)', () => {
 
     // Add multiple bookings from different owners
     for (let i = 1; i <= 10; i++) {
-      bookingStore.addBooking({
-        id: `booking${i}`,
+      const id = `booking${i}`
+      bookingStore.setBooking(id, {
+        id,
         property_id: `prop${i}`,
         owner_id: i <= 3 ? 'owner1' : 'other_owner',
         checkout_date: '2023-06-01T11:00:00Z',
@@ -152,8 +168,8 @@ describe('useOwnerBookings (Role-Based)', () => {
       status: 'pending',
     }
 
-    bookingStore.addBooking(todayBooking)
-    bookingStore.addBooking(tomorrowBooking)
+    bookingStore.setBooking(todayBooking.id, todayBooking)
+    bookingStore.setBooking(tomorrowBooking.id, tomorrowBooking)
 
     const { myTodayBookings } = useOwnerBookings()
 
@@ -190,8 +206,8 @@ describe('useOwnerBookings (Role-Based)', () => {
       status: 'pending',
     }
 
-    bookingStore.addBooking(ownerBooking)
-    bookingStore.addBooking(otherOwnerBooking)
+    bookingStore.setBooking(ownerBooking.id, ownerBooking)
+    bookingStore.setBooking(otherOwnerBooking.id, otherOwnerBooking)
 
     const { canEditBooking, canDeleteBooking } = useOwnerBookings()
 

@@ -213,7 +213,7 @@
     try {
       await Promise.all([
         propertyStore.fetchProperties(),
-        bookingStore.fetchBookings(),
+        // bookingStore.fetchBookings() removed — data loaded via realtime sync
         fetchAllUsers(),
       ])
       console.log('✅ [HomeAdmin] System data loaded successfully')

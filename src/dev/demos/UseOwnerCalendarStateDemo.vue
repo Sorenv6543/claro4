@@ -679,7 +679,7 @@
     ]
 
     for (const booking of sampleBookings) {
-      bookingStore.addBooking(booking)
+      bookingStore.setBooking(booking.id, booking)
     }
 
     ownerSuccess.value = `Generated ${sampleProperties.length} properties and ${sampleBookings.length} bookings for testing`

@@ -253,10 +253,9 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
   // Actions
   const refreshOwnerData = async (): Promise<void> => {
     invalidateCache()
-    // Force refresh of base stores
+    // Force refresh of base stores (booking data loaded via realtime sync)
     await Promise.allSettled([
       propertyStore.fetchProperties?.() || Promise.resolve(),
-      bookingStore.fetchBookings?.() || Promise.resolve(),
     ])
   }
 
@@ -289,7 +288,7 @@ export const useOwnerDataStore = defineStore('ownerData', () => {
       owner_id: authStore.user.id,
     } as Booking
 
-    bookingStore.addBooking(newBooking)
+    bookingStore.setBooking(id, newBooking)
     invalidateCache()
     return bookingStore.bookings.get(id) || newBooking
   }
