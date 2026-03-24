@@ -1,9 +1,9 @@
 <template>
   <PropertySectionCard
+    :editing="editing"
     :error="error"
     icon="mdi-broom"
     icon-color="warning"
-    :editing="editing"
     :loading="loading"
     :save-disabled="!isDirty || !formValid"
     title="Cleaning"
@@ -29,43 +29,43 @@
     <!-- Edit mode -->
     <template #edit>
       <v-form v-model="formValid">
-      <v-row density="comfortable">
-        <v-col cols="12" md="6">
-          <v-text-field
-            v-model.number="form.cleaning_duration"
-            label="Cleaning Duration"
-            :max="480"
-            :min="30"
-            :rules="[requiredRule, durationRule]"
-            :step="15"
-            suffix="min"
-            type="number"
-          />
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-select
-            v-model="form.pricing_tier"
-            :items="pricingTierItems"
-            label="Pricing Tier"
-            :rules="[requiredRule]"
-          />
-        </v-col>
-        <v-col cols="12">
-          <v-textarea
-            v-model="form.linens_location"
-            label="Linens Location"
-            :rows="2"
-          />
-        </v-col>
-      </v-row>
+        <v-row density="comfortable">
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model.number="form.cleaning_duration"
+              label="Cleaning Duration"
+              :max="480"
+              :min="30"
+              :rules="[requiredRule, durationRule]"
+              :step="15"
+              suffix="min"
+              type="number"
+            />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-select
+              v-model="form.pricing_tier"
+              :items="pricingTierItems"
+              label="Pricing Tier"
+              :rules="[requiredRule]"
+            />
+          </v-col>
+          <v-col cols="12">
+            <v-textarea
+              v-model="form.linens_location"
+              label="Linens Location"
+              :rows="2"
+            />
+          </v-col>
+        </v-row>
       </v-form>
     </template>
   </PropertySectionCard>
 </template>
 
 <script setup lang="ts">
+  import type { PricingTier, Property } from '@/types'
   import { computed, reactive, ref, watch } from 'vue'
-  import type { Property, PricingTier } from '@/types'
   import PropertySectionCard from '@/components/dumb/owner/PropertySectionCard.vue'
 
   const props = defineProps<{
@@ -95,8 +95,9 @@
   ]
 
   const requiredRule = (v: unknown) => !!v || 'Required'
-  const durationRule = (v: number) =>
-    (v >= 30 && v <= 480) || 'Duration must be between 30 and 480 minutes'
+  function durationRule (v: number) {
+    return (v >= 30 && v <= 480) || 'Duration must be between 30 and 480 minutes'
+  }
 
   function capitalize (str: string) {
     if (!str) return ''
@@ -129,7 +130,7 @@
     })
   }
 
-  watch(editing, (val) => {
+  watch(editing, val => {
     if (val) resetForm()
   })
 

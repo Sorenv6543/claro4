@@ -324,12 +324,12 @@
   import type { Booking, Property } from '@/types'
   import { computed, onMounted, reactive, ref } from 'vue'
   import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
-  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import PropertyAccessSection from '@/components/dumb/owner/PropertyAccessSection.vue'
   import PropertyCleaningSection from '@/components/dumb/owner/PropertyCleaningSection.vue'
   import PropertyContactSection from '@/components/dumb/owner/PropertyContactSection.vue'
   import PropertyInfoSection from '@/components/dumb/owner/PropertyInfoSection.vue'
   import PropertyPhotosSection from '@/components/dumb/owner/PropertyPhotosSection.vue'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { formatPropertyAddress } from '@/types/property'
@@ -400,7 +400,7 @@
   const contactRef = ref()
 
   // Per-section state
-  const sectionState = reactive<Record<string, { loading: boolean; error: string | null }>>({
+  const sectionState = reactive<Record<string, { loading: boolean, error: string | null }>>({
     info: { loading: false, error: null },
     cleaning: { loading: false, error: null },
     access: { loading: false, error: null },
@@ -423,14 +423,12 @@
   }
 
   // Navigation guard — warn about unsaved section edits
-  onBeforeRouteLeave((_to, _from, next) => {
+  onBeforeRouteLeave(() => {
     const dirtySections = [infoRef, cleaningRef, accessRef, contactRef]
       .filter(r => r.value?.editing && r.value?.isDirty)
     if (dirtySections.length > 0) {
       const leave = window.confirm('You have unsaved changes. Discard?')
-      next(leave)
-    } else {
-      next()
+      if (!leave) return false
     }
   })
 

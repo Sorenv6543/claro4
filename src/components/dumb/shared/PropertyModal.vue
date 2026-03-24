@@ -504,9 +504,8 @@
 
   interface Emits {
     (e: 'close'): void
-    (e: 'save', property: PropertyFormData): void
+    (e: 'save' | 'skip', property: PropertyFormData): void
     (e: 'delete', id: string): void
-    (e: 'skip', property: PropertyFormData): void
   }
 
   const props = withDefaults(defineProps<Props>(), {

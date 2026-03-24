@@ -414,9 +414,9 @@
         }
       }
       uiStore.closeModal('propertyModal')
-    } catch (err) {
-      const message = propertyError.value || (err instanceof Error ? err.message : 'Failed to save your property')
-      console.error('[OwnerProperties] Failed to save property:', err)
+    } catch (error) {
+      const message = propertyError.value || (error instanceof Error ? error.message : 'Failed to save your property')
+      console.error('[OwnerProperties] Failed to save property:', error)
       uiStore.addNotification('error', 'Save Failed', message)
     }
   }
@@ -467,9 +467,9 @@
           console.error('[OwnerProperties] Failed to delete property:', message)
           uiStore.addNotification('error', 'Delete Failed', message)
         }
-      } catch (err) {
-        const message = propertyError.value || (err instanceof Error ? err.message : 'Failed to delete your property')
-        console.error('[OwnerProperties] Failed to delete property:', err)
+      } catch (error) {
+        const message = propertyError.value || (error instanceof Error ? error.message : 'Failed to delete your property')
+        console.error('[OwnerProperties] Failed to delete property:', error)
         uiStore.addNotification('error', 'Delete Failed', message)
       }
     }
@@ -622,7 +622,6 @@
   padding: 2px 6px;
   border-radius: 4px;
 }
-
 
 .owner-properties-container {
   --owner-primary: rgb(var(--v-theme-primary));

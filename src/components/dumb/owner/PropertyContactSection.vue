@@ -1,9 +1,9 @@
 <template>
   <PropertySectionCard
+    :editing="editing"
     :error="error"
     icon="mdi-account-box"
     icon-color="info"
-    :editing="editing"
     :loading="loading"
     :save-disabled="!isDirty"
     title="Contact & Instructions"
@@ -36,45 +36,45 @@
     <!-- Edit mode -->
     <template #edit>
       <v-form v-model="formValid">
-      <v-row density="comfortable">
-        <v-col cols="12" md="6">
-          <v-text-field
-            v-model="form.contact_name"
-            label="Contact Name"
-          />
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            v-model="form.contact_phone"
-            label="Contact Phone"
-          />
-        </v-col>
-        <v-col cols="12">
-          <v-textarea
-            v-model="form.special_instructions"
-            :counter="1000"
-            label="Special Instructions"
-            :maxlength="1000"
-            :rows="3"
-          />
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            v-model="form.trash_day"
-            hint="e.g. Tuesday or Mon/Thu"
-            label="Trash Day"
-            persistent-hint
-          />
-        </v-col>
-      </v-row>
+        <v-row density="comfortable">
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="form.contact_name"
+              label="Contact Name"
+            />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="form.contact_phone"
+              label="Contact Phone"
+            />
+          </v-col>
+          <v-col cols="12">
+            <v-textarea
+              v-model="form.special_instructions"
+              :counter="1000"
+              label="Special Instructions"
+              :maxlength="1000"
+              :rows="3"
+            />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model="form.trash_day"
+              hint="e.g. Tuesday or Mon/Thu"
+              label="Trash Day"
+              persistent-hint
+            />
+          </v-col>
+        </v-row>
       </v-form>
     </template>
   </PropertySectionCard>
 </template>
 
 <script setup lang="ts">
-  import { computed, reactive, ref, watch } from 'vue'
   import type { Property } from '@/types'
+  import { computed, reactive, ref, watch } from 'vue'
   import PropertySectionCard from '@/components/dumb/owner/PropertySectionCard.vue'
 
   const props = defineProps<{
@@ -126,7 +126,7 @@
     })
   }
 
-  watch(editing, (val) => {
+  watch(editing, val => {
     if (val) resetForm()
   })
 

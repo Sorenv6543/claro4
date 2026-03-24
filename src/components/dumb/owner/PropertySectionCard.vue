@@ -69,8 +69,6 @@
   })
 
   defineEmits<{
-    (e: 'edit'): void
-    (e: 'save'): void
-    (e: 'cancel'): void
+    (e: 'edit' | 'save' | 'cancel'): void
   }>()
 </script>

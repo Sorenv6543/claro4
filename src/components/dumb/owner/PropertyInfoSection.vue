@@ -51,101 +51,101 @@
     <!-- Edit mode -->
     <template #edit>
       <v-form v-model="formValid">
-      <v-row density="comfortable">
-        <v-col cols="12" md="8">
-          <v-text-field
-            v-model="form.address_street"
-            label="Street Address"
-            :maxlength="150"
-            :rules="[requiredRule]"
-          />
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-text-field
-            v-model="form.address_unit"
-            label="Unit / Apt"
-          />
-        </v-col>
-        <v-col cols="12" md="5">
-          <v-text-field
-            v-model="form.address_city"
-            label="City"
-            :rules="[requiredRule]"
-          />
-        </v-col>
-        <v-col cols="12" md="3">
-          <v-text-field
-            v-model="form.address_state"
-            label="State"
-            :rules="[requiredRule]"
-          />
-        </v-col>
-        <v-col cols="12" md="4">
-          <v-text-field
-            v-model="form.address_zip"
-            label="ZIP Code"
-            :rules="[requiredRule, zipRule]"
-          />
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-select
-            v-model="form.property_type"
-            clearable
-            :items="propertyTypeItems"
-            label="Property Type"
-          />
-        </v-col>
-        <v-col cols="6" md="3">
-          <v-text-field
-            v-model.number="form.bedrooms"
-            label="Bedrooms"
-            :max="20"
-            :min="0"
-            type="number"
-          />
-        </v-col>
-        <v-col cols="6" md="3">
-          <v-text-field
-            v-model.number="form.bathrooms"
-            label="Bathrooms"
-            :max="20"
-            :min="0"
-            :step="0.5"
-            type="number"
-          />
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-text-field
-            v-model.number="form.square_feet"
-            label="Square Feet"
-            :min="0"
-            type="number"
-          />
-        </v-col>
-        <v-col cols="12" md="6">
-          <v-select
-            v-model="form.floor_type"
-            clearable
-            :items="floorTypeItems"
-            label="Floor Type"
-          />
-        </v-col>
-        <v-col cols="12">
-          <div class="field-label mb-2">Color</div>
-          <PropertyColorPicker v-model="form.color" />
-        </v-col>
-      </v-row>
+        <v-row density="comfortable">
+          <v-col cols="12" md="8">
+            <v-text-field
+              v-model="form.address_street"
+              label="Street Address"
+              :maxlength="150"
+              :rules="[requiredRule]"
+            />
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-text-field
+              v-model="form.address_unit"
+              label="Unit / Apt"
+            />
+          </v-col>
+          <v-col cols="12" md="5">
+            <v-text-field
+              v-model="form.address_city"
+              label="City"
+              :rules="[requiredRule]"
+            />
+          </v-col>
+          <v-col cols="12" md="3">
+            <v-text-field
+              v-model="form.address_state"
+              label="State"
+              :rules="[requiredRule]"
+            />
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-text-field
+              v-model="form.address_zip"
+              label="ZIP Code"
+              :rules="[requiredRule, zipRule]"
+            />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-select
+              v-model="form.property_type"
+              clearable
+              :items="propertyTypeItems"
+              label="Property Type"
+            />
+          </v-col>
+          <v-col cols="6" md="3">
+            <v-text-field
+              v-model.number="form.bedrooms"
+              label="Bedrooms"
+              :max="20"
+              :min="0"
+              type="number"
+            />
+          </v-col>
+          <v-col cols="6" md="3">
+            <v-text-field
+              v-model.number="form.bathrooms"
+              label="Bathrooms"
+              :max="20"
+              :min="0"
+              :step="0.5"
+              type="number"
+            />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-text-field
+              v-model.number="form.square_feet"
+              label="Square Feet"
+              :min="0"
+              type="number"
+            />
+          </v-col>
+          <v-col cols="12" md="6">
+            <v-select
+              v-model="form.floor_type"
+              clearable
+              :items="floorTypeItems"
+              label="Floor Type"
+            />
+          </v-col>
+          <v-col cols="12">
+            <div class="field-label mb-2">Color</div>
+            <PropertyColorPicker v-model="form.color" />
+          </v-col>
+        </v-row>
       </v-form>
     </template>
   </PropertySectionCard>
 </template>
 
 <script setup lang="ts">
-import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
-import PropertySectionCard from '@/components/dumb/owner/PropertySectionCard.vue'
-import type { Property } from '@/types'
-import { formatPropertyAddress } from '@/types/property'
-import { computed, reactive, ref, watch } from 'vue'
+  import type { Property } from '@/types'
+  import { computed, reactive, ref, watch } from 'vue'
+  import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
+  import PropertySectionCard from '@/components/dumb/owner/PropertySectionCard.vue'
+  import { formatPropertyAddress } from '@/types/property'
 
   const props = defineProps<{
     property: Property
