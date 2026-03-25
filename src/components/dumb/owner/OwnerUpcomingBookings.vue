@@ -1,0 +1,140 @@
+<template>
+  <v-card>
+    <v-card-title class="d-flex align-center">
+      <v-icon class="mr-2" size="20">mdi-calendar-clock</v-icon>
+      Upcoming Bookings
+    </v-card-title>
+    <v-divider />
+    <v-card-text class="pa-0">
+      <div v-if="bookings.length === 0" class="text-center text-medium-emphasis py-6">
+        <v-icon class="mb-2" size="48">mdi-calendar-blank-outline</v-icon>
+        <div class="text-body-2">No upcoming bookings</div>
+      </div>
+
+      <v-list v-else class="py-0" density="comfortable">
+        <template v-for="(booking, index) in bookings" :key="index">
+          <v-divider v-if="index > 0" />
+          <v-list-item class="px-4 py-2">
+            <template #prepend>
+              <div
+                class="date-badge d-flex flex-column align-center justify-center mr-3 rounded-lg"
+                :style="{ background: `${booking.propertyColor}18` }"
+              >
+                <div class="text-caption font-weight-bold" :style="{ color: booking.propertyColor }">
+                  {{ formatMonth(booking.checkinDate) }}
+                </div>
+                <div class="text-h6 font-weight-bold" :style="{ color: booking.propertyColor }">
+                  {{ formatDay(booking.checkinDate) }}
+                </div>
+              </div>
+            </template>
+
+            <v-list-item-title class="text-body-2 font-weight-medium">
+              {{ booking.property }}
+            </v-list-item-title>
+            <v-list-item-subtitle class="text-caption">
+              {{ formatDateRange(booking.checkinDate, booking.checkoutDate) }}
+            </v-list-item-subtitle>
+
+            <template #append>
+              <div class="d-flex flex-column align-end ga-1">
+                <v-chip
+                  :color="typeColor(booking.type)"
+                  size="x-small"
+                  variant="tonal"
+                >
+                  {{ booking.type }}
+                </v-chip>
+                <v-chip
+                  :color="statusColor(booking.status)"
+                  size="x-small"
+                  variant="flat"
+                >
+                  {{ formatStatus(booking.status) }}
+                </v-chip>
+              </div>
+            </template>
+          </v-list-item>
+        </template>
+      </v-list>
+    </v-card-text>
+    <v-divider />
+    <v-card-actions>
+      <v-btn
+        block
+        color="primary"
+        size="small"
+        to="/owner/dashboard"
+        variant="text"
+      >
+        <v-icon class="mr-1" size="16">mdi-calendar</v-icon>
+        View Calendar
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+</template>
+
+<script setup lang="ts">
+  import type { BookingStatus, BookingType } from '@/types'
+
+  interface UpcomingBooking {
+    property: string
+    propertyColor: string
+    checkinDate: string
+    checkoutDate: string
+    type: BookingType
+    status: BookingStatus
+  }
+
+  defineProps<{
+    bookings: UpcomingBooking[]
+  }>()
+
+  function formatMonth (dateStr: string): string {
+    return new Date(dateStr).toLocaleDateString('en-US', { month: 'short' }).toUpperCase()
+  }
+
+  function formatDay (dateStr: string): string {
+    return new Date(dateStr).getDate().toString()
+  }
+
+  function formatDateRange (checkin: string, checkout: string): string {
+    const start = new Date(checkin)
+    const end = new Date(checkout)
+    const startStr = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    const endStr = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    return `${startStr} - ${endStr}`
+  }
+
+  function formatStatus (status: string): string {
+    return status.replace(/_/g, ' ')
+  }
+
+  function typeColor (type: string): string {
+    return type === 'turn' ? 'warning' : 'info'
+  }
+
+  function statusColor (status: string): string {
+    switch (status) {
+      case 'completed': { return 'success'
+      }
+      case 'in_progress': { return 'info'
+      }
+      case 'scheduled': { return 'primary'
+      }
+      case 'cancelled': { return 'error'
+      }
+      case 'pending':
+      default: { return 'warning'
+      }
+    }
+  }
+</script>
+
+<style scoped>
+.date-badge {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+}
+</style>
