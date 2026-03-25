@@ -44,8 +44,8 @@ export function useRealtimeSync () {
           filter: `id=eq.${authStore.user?.id}`,
         },
         () => {
-          authStore.checkAuth().catch((err: unknown) =>
-            console.error('[useRealtimeSync] profile checkAuth failed:', err),
+          authStore.checkAuth().catch((error: unknown) =>
+            console.error('[useRealtimeSync] profile checkAuth failed:', error),
           )
         },
       )
@@ -83,7 +83,7 @@ export function useRealtimeSync () {
 
   function onOnline () {
     isOnline.value = true
-    init().catch(err => console.error('[useRealtimeSync] reconnection failed:', err))
+    init().catch(error => console.error('[useRealtimeSync] reconnection failed:', error))
   }
   function onOffline () {
     isOnline.value = false

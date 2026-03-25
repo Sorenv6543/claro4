@@ -378,7 +378,9 @@ describe('useSupabaseProperties', () => {
     it('skips realtime INSERT for an optimistically-created property while CRUD in-flight', async () => {
       // Use a controlled promise so we can fire the realtime event DURING the insert
       let resolveInsert!: (value: any) => void
-      const insertPromise = new Promise(resolve => { resolveInsert = resolve })
+      const insertPromise = new Promise(resolve => {
+        resolveInsert = resolve
+      })
       let realtimeCallback: ((payload: any) => void) | null = null
 
       supabaseMock.from.mockReturnValue({

@@ -214,8 +214,8 @@
   const viewMode = calendarState.viewMode
 
   onMounted(() => {
-    initRealtimeSync().catch((err: unknown) => {
-      console.error('[OwnerLayout] Failed to initialize realtime sync:', err)
+    initRealtimeSync().catch((error: unknown) => {
+      console.error('[OwnerLayout] Failed to initialize realtime sync:', error)
     })
   })
 
