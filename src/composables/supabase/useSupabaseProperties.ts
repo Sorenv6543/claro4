@@ -99,14 +99,16 @@ export function useSupabaseProperties () {
           break
         }
         case 'DELETE': {
-          if (!oldRecord?.id) return
+          if (!oldRecord?.id) {
+            return
+          }
           optimisticIds.delete(id)
           propertyStore.removeProperty(oldRecord.id)
           break
         }
       }
-    } catch (err) {
-      console.error('[useSupabaseProperties] realtime event error:', err, payload)
+    } catch (error) {
+      console.error('[useSupabaseProperties] realtime event error:', error, payload)
     }
   }
 

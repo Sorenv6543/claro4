@@ -90,14 +90,16 @@ export function useSupabaseBookings () {
           break
         }
         case 'DELETE': {
-          if (!oldRecord?.id) return
+          if (!oldRecord?.id) {
+            return
+          }
           optimisticIds.delete(id)
           bookingStore.removeBooking(oldRecord.id)
           break
         }
       }
-    } catch (err) {
-      console.error('[useSupabaseBookings] realtime event error:', err, payload)
+    } catch (error) {
+      console.error('[useSupabaseBookings] realtime event error:', error, payload)
     }
   }
 
