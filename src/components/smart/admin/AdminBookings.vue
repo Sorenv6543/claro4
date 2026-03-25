@@ -1,459 +1,264 @@
 <template>
   <div class="admin-bookings-page">
-    <!-- Page Header -->
-    <div class="page-header">
-      <v-container fluid>
-        <v-row align="center">
-          <v-col>
-            <h1 class="text-h4 font-weight-bold">
-              All Bookings
-            </h1>
-            <p class="text-subtitle-1 text-medium-emphasis">
-              Manage all bookings across all properties and clients
-            </p>
-          </v-col>
-          <v-col cols="auto">
-            <v-btn
-              color="primary"
-              prepend-icon="mdi-plus"
-              @click="openCreateBookingDialog"
-            >
-              New Booking
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
+    <!-- Header -->
+    <div class="d-flex align-center justify-space-between pa-5 pb-3">
+      <div>
+        <h3 class="text-h5 font-weight-bold">All Bookings</h3>
+        <p class="text-body-2 text-medium-emphasis mt-1">
+          Manage all bookings across all properties and clients
+        </p>
+      </div>
+      <div class="d-flex align-center ga-2">
+        <v-btn
+          :icon="showFilters ? 'mdi-filter-off' : 'mdi-filter-variant'"
+          size="small"
+          variant="text"
+          @click="showFilters = !showFilters"
+        />
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-plus"
+          @click="openCreateBookingDialog"
+        >
+          New Booking
+        </v-btn>
+      </div>
     </div>
 
-    <!-- Filters and Search -->
-    <div class="filters-section">
-      <v-container fluid>
-        <v-row align="center">
-          <v-col
-            cols="12"
-            md="3"
-          >
+    <!-- Collapsible Filter Bar -->
+    <v-expand-transition>
+      <div v-if="showFilters" class="px-5 pb-4">
+        <v-row align="center" dense>
+          <v-col cols="12" md="3" sm="6">
             <v-text-field
               v-model="searchQuery"
               clearable
               density="compact"
-              label="Search bookings..."
+              hide-details
+              placeholder="Search bookings..."
               prepend-inner-icon="mdi-magnify"
               variant="outlined"
             />
           </v-col>
-          <v-col
-            cols="12"
-            md="2"
-          >
+          <v-col cols="6" md="2" sm="3">
             <v-select
               v-model="statusFilter"
               clearable
               density="compact"
+              hide-details
               :items="statusOptions"
-              label="Status"
+              placeholder="Status"
               variant="outlined"
             />
           </v-col>
-          <v-col
-            cols="12"
-            md="2"
-          >
+          <v-col cols="6" md="2" sm="3">
             <v-select
               v-model="typeFilter"
               clearable
               density="compact"
+              hide-details
               :items="typeOptions"
-              label="Type"
+              placeholder="Type"
               variant="outlined"
             />
           </v-col>
-          <v-col
-            cols="12"
-            md="2"
-          >
+          <v-col cols="12" md="2" sm="6">
             <v-select
               v-model="propertyFilter"
               clearable
               density="compact"
+              hide-details
               :items="propertyOptions"
-              label="Property"
+              placeholder="Property"
               variant="outlined"
             />
           </v-col>
-          <v-col
-            cols="12"
-            md="3"
-          >
-            <div class="d-flex gap-2">
-              <v-text-field
-                v-model="dateFrom"
-                density="compact"
-                label="From"
-                type="date"
-                variant="outlined"
+          <v-col cols="6" md="1.5" sm="3">
+            <v-text-field
+              v-model="dateFrom"
+              density="compact"
+              hide-details
+              placeholder="From"
+              type="date"
+              variant="outlined"
+            />
+          </v-col>
+          <v-col cols="6" md="1.5" sm="3">
+            <v-text-field
+              v-model="dateTo"
+              density="compact"
+              hide-details
+              placeholder="To"
+              type="date"
+              variant="outlined"
+            />
+          </v-col>
+        </v-row>
+      </div>
+    </v-expand-transition>
+
+    <!-- Bookings Data Table -->
+    <MaterioDataTable
+      expandable
+      :headers="tableHeaders"
+      :items="tableItems"
+      :items-per-page="25"
+      :loading="false"
+      :search-keys="['propertyName', 'ownerName', 'cleanerName', 'status', 'booking_type']"
+      searchable
+    >
+      <!-- Property Column -->
+      <template #[`item.propertyName`]="{ item }">
+        <div class="d-flex align-center ga-2">
+          <div
+            class="property-color-dot"
+            :style="{ background: getPropertyColor(item.property_id as string) }"
+          />
+          <div>
+            <div class="text-body-2 font-weight-medium">
+              {{ item.propertyName }}
+            </div>
+            <div class="text-caption text-medium-emphasis">
+              {{ item.ownerName }}
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Dates Column -->
+      <template #[`item.dates`]="{ item }">
+        <div class="text-body-2">
+          <div>{{ formatDate(item.checkout_date as string) }}</div>
+          <div class="text-caption text-medium-emphasis">
+            &rarr; {{ formatDate(item.checkin_date as string) }}
+          </div>
+        </div>
+      </template>
+
+      <!-- Type Column (chip) -->
+      <template #[`item.booking_type`]="{ item }">
+        <v-chip
+          class="text-capitalize"
+          :color="item.booking_type === 'turn' ? 'warning' : 'primary'"
+          size="small"
+          variant="outlined"
+        >
+          {{ item.booking_type }}
+        </v-chip>
+      </template>
+
+      <!-- Status Column (chip) -->
+      <template #[`item.status`]="{ item }">
+        <v-chip
+          class="text-capitalize"
+          :color="getStatusColor(item.status as string)"
+          size="small"
+          variant="flat"
+        >
+          {{ (item.status as string).replace('_', ' ') }}
+        </v-chip>
+      </template>
+
+      <!-- Priority Column (badge) -->
+      <template #[`item.priority`]="{ item }">
+        <v-chip
+          v-if="item.priority !== 'normal'"
+          class="text-capitalize font-weight-bold"
+          :color="getPriorityColor(item.priority as string)"
+          size="x-small"
+          variant="flat"
+        >
+          {{ item.priority }}
+        </v-chip>
+        <span v-else class="text-caption text-medium-emphasis">&mdash;</span>
+      </template>
+
+      <!-- Cleaner Column -->
+      <template #[`item.cleanerName`]="{ item }">
+        <span v-if="item.assigned_cleaner_id" class="text-body-2">
+          {{ item.cleanerName }}
+        </span>
+        <span v-else class="text-caption text-medium-emphasis font-italic">Unassigned</span>
+      </template>
+
+      <!-- Actions Column -->
+      <template #[`item.actions`]="{ item }">
+        <div class="d-flex align-center ga-1">
+          <v-tooltip v-if="!item.assigned_cleaner_id" location="top" text="Assign cleaner">
+            <template #activator="{ props: tooltipProps }">
+              <v-btn
+                color="primary"
+                icon="mdi-account-plus"
+                size="small"
+                variant="text"
+                v-bind="tooltipProps"
+                @click.stop="assignCleaner(item as unknown as Booking)"
               />
-              <v-text-field
-                v-model="dateTo"
-                density="compact"
-                label="To"
-                type="date"
-                variant="outlined"
+            </template>
+          </v-tooltip>
+          <v-tooltip location="top" text="Edit">
+            <template #activator="{ props: tooltipProps }">
+              <v-btn
+                icon="mdi-pencil-outline"
+                size="small"
+                variant="text"
+                v-bind="tooltipProps"
+                @click.stop="editBooking(item as unknown as Booking)"
               />
+            </template>
+          </v-tooltip>
+          <v-tooltip location="top" text="Cancel booking">
+            <template #activator="{ props: tooltipProps }">
+              <v-btn
+                color="error"
+                icon="mdi-close-circle-outline"
+                size="small"
+                variant="text"
+                v-bind="tooltipProps"
+                @click.stop="cancelBooking(item as unknown as Booking)"
+              />
+            </template>
+          </v-tooltip>
+        </div>
+      </template>
+
+      <!-- Expanded Row -->
+      <template #expand-content="{ item }">
+        <v-row class="pa-2" dense>
+          <v-col cols="12" sm="4">
+            <div class="text-caption text-uppercase text-medium-emphasis mb-1">Guest Info</div>
+            <div class="text-body-2">
+              <v-icon class="mr-1" size="14">mdi-account-group</v-icon>
+              {{ item.guest_count || 'N/A' }} guests
+            </div>
+            <div v-if="item.notes" class="text-body-2 mt-1">
+              <v-icon class="mr-1" size="14">mdi-note-text</v-icon>
+              {{ item.notes }}
+            </div>
+          </v-col>
+          <v-col cols="12" sm="4">
+            <div class="text-caption text-uppercase text-medium-emphasis mb-1">Property Details</div>
+            <div class="text-body-2">
+              <v-icon class="mr-1" size="14">mdi-map-marker</v-icon>
+              {{ getPropertyAddress(item.property_id as string) }}
+            </div>
+            <div class="text-body-2 mt-1">
+              <v-icon class="mr-1" size="14">mdi-account</v-icon>
+              Owner: {{ item.ownerName }}
+            </div>
+          </v-col>
+          <v-col cols="12" sm="4">
+            <div class="text-caption text-uppercase text-medium-emphasis mb-1">Timestamps</div>
+            <div class="text-body-2">
+              Created: {{ formatDateTime(item.created_at as string) }}
+            </div>
+            <div v-if="item.updated_at" class="text-body-2 mt-1">
+              Modified: {{ formatDateTime(item.updated_at as string) }}
             </div>
           </v-col>
         </v-row>
-      </v-container>
-    </div>
-
-    <!-- Main Content -->
-    <div class="page-content">
-      <v-container fluid>
-        <!-- Bookings Table -->
-        <v-card>
-          <v-card-title class="d-flex justify-space-between align-center">
-            <span>All Bookings ({{ filteredBookings.length }})</span>
-            <div class="d-flex align-center gap-2">
-              <v-select
-                v-model="itemsPerPage"
-                density="compact"
-                :items="[10, 25, 50, 100]"
-                label="Items per page"
-                style="width: 140px;"
-                variant="outlined"
-              />
-              <v-btn-toggle
-                v-model="tableView"
-                density="compact"
-                variant="outlined"
-              >
-                <v-btn
-                  icon="mdi-table"
-                  value="table"
-                />
-                <v-btn
-                  icon="mdi-view-grid"
-                  value="cards"
-                />
-              </v-btn-toggle>
-            </div>
-          </v-card-title>
-
-          <div
-            v-if="filteredBookings.length === 0"
-            class="text-center py-8"
-          >
-            <v-icon
-              color="grey-lighten-1"
-              size="64"
-            >
-              mdi-calendar-search
-            </v-icon>
-            <p class="text-h6 text-medium-emphasis mt-4">
-              No bookings found
-            </p>
-            <p class="text-body-2 text-medium-emphasis">
-              Try adjusting your filters or create a new booking
-            </p>
-          </div>
-
-          <!-- Table View -->
-          <v-data-table
-            v-else-if="tableView === 'table'"
-            class="bookings-table"
-            :headers="tableHeaders"
-            hide-default-footer
-            :items="paginatedBookings"
-            :items-per-page="itemsPerPage"
-            :search="searchQuery"
-            :sort-by="sortBy"
-            @click:row="openBookingDetails"
-          >
-            <template #[`item.status`]="{ item }">
-              <v-chip
-                :color="getStatusColor(item.status)"
-                size="small"
-                variant="flat"
-              >
-                {{ item.status }}
-              </v-chip>
-            </template>
-
-            <template #[`item.booking_type`]="{ item }">
-              <div class="d-flex align-center gap-1">
-                <v-chip
-                  :color="item.booking_type === 'turn' ? 'warning' : 'primary'"
-                  size="small"
-                  variant="outlined"
-                >
-                  {{ item.booking_type === 'turn' ? 'Turn' : 'Standard' }}
-                </v-chip>
-                <v-chip
-                  v-if="item.priority && item.priority !== 'normal'"
-                  :color="getPriorityColor(item.priority)"
-                  size="x-small"
-                  variant="flat"
-                >
-                  {{ item.priority }}
-                </v-chip>
-              </div>
-            </template>
-
-            <template #[`item.property`]="{ item }">
-              <div class="text-body-2">
-                <div class="font-weight-medium">
-                  {{ getPropertyName(item.property_id) }}
-                </div>
-                <div class="text-caption text-medium-emphasis">
-                  {{ getPropertyAddress(item.property_id) }}
-                </div>
-              </div>
-            </template>
-
-            <template #[`item.dates`]="{ item }">
-              <div class="text-body-2">
-                <div>{{ formatDate(item.checkout_date) }}</div>
-                <div class="text-caption text-medium-emphasis">
-                  → {{ formatDate(item.checkin_date) }}
-                </div>
-              </div>
-            </template>
-
-            <template #[`item.cleaner`]="{ item }">
-              <div
-                v-if="item.assigned_cleaner_id"
-                class="text-body-2"
-              >
-                {{ getCleanerName(item.assigned_cleaner_id) }}
-              </div>
-              <v-chip
-                v-else
-                color="warning"
-                size="small"
-                variant="outlined"
-              >
-                Unassigned
-              </v-chip>
-            </template>
-
-            <template #[`item.guest_count`]="{ item }">
-              <div class="d-flex align-center">
-                <v-icon
-                  class="mr-1"
-                  size="16"
-                >
-                  mdi-account-group
-                </v-icon>
-                {{ item.guest_count || '—' }}
-              </div>
-            </template>
-
-            <template #[`item.created_at`]="{ item }">
-              <span class="text-body-2">{{ formatDateTime(item.created_at!) }}</span>
-            </template>
-
-            <template #[`item.actions`]="{ item }">
-              <div class="d-flex align-center gap-1">
-                <v-btn
-                  v-if="!item.assigned_cleaner_id"
-                  color="primary"
-                  size="small"
-                  variant="outlined"
-                  @click.stop="assignCleaner(item)"
-                >
-                  Assign
-                </v-btn>
-
-                <v-menu>
-                  <template #activator="{ props }">
-                    <v-btn
-                      icon="mdi-dots-vertical"
-                      size="small"
-                      variant="text"
-                      v-bind="props"
-                      @click.stop
-                    />
-                  </template>
-                  <v-list>
-                    <v-list-item @click="editBooking(item)">
-                      <v-list-item-title>Edit</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="duplicateBooking(item)">
-                      <v-list-item-title>Duplicate</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item
-                      class="text-error"
-                      @click="cancelBooking(item)"
-                    >
-                      <v-list-item-title>Cancel</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </div>
-            </template>
-          </v-data-table>
-
-          <!-- Card View -->
-          <div
-            v-else
-            class="bookings-list pa-4"
-          >
-            <div
-              v-for="booking in paginatedBookings"
-              :key="booking.id"
-              class="booking-item"
-              @click="openBookingDetails(booking)"
-            >
-              <div class="booking-main">
-                <div class="booking-info">
-                  <div class="d-flex align-center gap-2 mb-1">
-                    <v-chip
-                      :color="getStatusColor(booking.status)"
-                      size="small"
-                      variant="flat"
-                    >
-                      {{ booking.status }}
-                    </v-chip>
-                    <v-chip
-                      :color="booking.booking_type === 'turn' ? 'warning' : 'primary'"
-                      size="small"
-                      variant="outlined"
-                    >
-                      {{ booking.booking_type === 'turn' ? 'Turn' : 'Standard' }}
-                    </v-chip>
-                    <v-chip
-                      v-if="booking.priority && booking.priority !== 'normal'"
-                      :color="getPriorityColor(booking.priority)"
-                      size="small"
-                      variant="flat"
-                    >
-                      {{ booking.priority }}
-                    </v-chip>
-                  </div>
-
-                  <h3 class="text-h6 font-weight-medium mb-1">
-                    {{ getPropertyName(booking.property_id) }}
-                  </h3>
-
-                  <div class="text-body-2 text-medium-emphasis mb-2">
-                    <v-icon
-                      class="mr-1"
-                      size="16"
-                    >
-                      mdi-calendar
-                    </v-icon>
-                    {{ formatDate(booking.checkout_date) }}
-                    <v-icon
-                      class="ml-3 mr-1"
-                      size="16"
-                    >
-                      mdi-arrow-right
-                    </v-icon>
-                    {{ formatDate(booking.checkin_date) }}
-                  </div>
-
-                  <div class="d-flex align-center gap-4 mb-2">
-                    <div
-                      v-if="booking.assigned_cleaner_id"
-                      class="text-body-2"
-                    >
-                      <v-icon
-                        class="mr-1"
-                        size="16"
-                      >
-                        mdi-account
-                      </v-icon>
-                      {{ getCleanerName(booking.assigned_cleaner_id) }}
-                    </div>
-                    <div
-                      v-else
-                      class="text-body-2 text-warning"
-                    >
-                      <v-icon
-                        class="mr-1"
-                        size="16"
-                      >
-                        mdi-account-alert
-                      </v-icon>
-                      No cleaner assigned
-                    </div>
-
-                    <div
-                      v-if="booking.guest_count"
-                      class="text-body-2"
-                    >
-                      <v-icon
-                        class="mr-1"
-                        size="16"
-                      >
-                        mdi-account-group
-                      </v-icon>
-                      {{ booking.guest_count }} guests
-                    </div>
-                  </div>
-
-                  <div class="text-caption text-medium-emphasis">
-                    Created: {{ formatDateTime(booking.created_at!) }}
-                  </div>
-                </div>
-
-                <div class="booking-actions">
-                  <v-btn
-                    v-if="!booking.assigned_cleaner_id"
-                    color="primary"
-                    size="small"
-                    variant="outlined"
-                    @click.stop="assignCleaner(booking)"
-                  >
-                    Assign Cleaner
-                  </v-btn>
-
-                  <v-menu>
-                    <template #activator="{ props }">
-                      <v-btn
-                        icon="mdi-dots-vertical"
-                        size="small"
-                        variant="text"
-                        v-bind="props"
-                        @click.stop
-                      />
-                    </template>
-                    <v-list>
-                      <v-list-item @click="editBooking(booking)">
-                        <v-list-item-title>Edit</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item @click="duplicateBooking(booking)">
-                        <v-list-item-title>Duplicate</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item
-                        class="text-error"
-                        @click="cancelBooking(booking)"
-                      >
-                        <v-list-item-title>Cancel</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Pagination -->
-          <v-card-actions v-if="filteredBookings.length > 0">
-            <v-pagination
-              v-model="currentPage"
-              :length="Math.ceil(filteredBookings.length / itemsPerPage)"
-              :total-visible="7"
-            />
-            <v-spacer />
-            <span class="text-body-2 text-medium-emphasis">
-              {{ ((currentPage - 1) * itemsPerPage) + 1 }}-{{ Math.min(currentPage * itemsPerPage, filteredBookings.length) }}
-              of {{ filteredBookings.length }} bookings
-            </span>
-          </v-card-actions>
-        </v-card>
-      </v-container>
-    </div>
+      </template>
+    </MaterioDataTable>
 
     <!-- Create/Edit Booking Dialog -->
     <v-dialog
@@ -532,6 +337,7 @@
 <script setup lang="ts">
   import type { Booking } from '@/types/booking'
   import { computed, ref } from 'vue'
+  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import { useAdminBookings } from '@/composables/admin/useAdminBookings'
   import { useAdminProperties } from '@/composables/admin/useAdminProperties'
   import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
@@ -549,12 +355,7 @@
   const propertyFilter = ref('')
   const dateFrom = ref('')
   const dateTo = ref('')
-
-  // Table state
-  const tableView = ref('table')
-  const itemsPerPage = ref(25)
-  const currentPage = ref(1)
-  const sortBy = ref([{ key: 'created_at', order: 'desc' as const }])
+  const showFilters = ref(false)
 
   // Dialog state
   const showBookingDialog = ref(false)
@@ -577,17 +378,16 @@
     { title: 'Turn', value: 'turn' },
   ]
 
-  // Table headers
+  // Table headers for MaterioDataTable
   const tableHeaders = [
+    { title: 'Property', key: 'propertyName', sortable: true },
+    { title: 'Dates', key: 'dates', sortable: false, width: '160px' },
+    { title: 'Type', key: 'booking_type', sortable: true, width: '110px' },
     { title: 'Status', key: 'status', sortable: true, width: '120px' },
-    { title: 'Type', key: 'booking_type', sortable: true, width: '140px' },
-    { title: 'Property', key: 'property', sortable: false, width: '200px' },
-    { title: 'Dates', key: 'dates', sortable: true, width: '150px' },
-    { title: 'Cleaner', key: 'cleaner', sortable: false, width: '140px' },
-    { title: 'Guests', key: 'guest_count', sortable: true, width: '80px' },
-    { title: 'Created', key: 'created_at', sortable: true, width: '120px' },
-    { title: 'Actions', key: 'actions', sortable: false, width: '120px', align: 'end' as const },
-  ] as const
+    { title: 'Priority', key: 'priority', sortable: true, width: '100px' },
+    { title: 'Cleaner', key: 'cleanerName', sortable: true, width: '140px' },
+    { title: 'Actions', key: 'actions', sortable: false, width: '130px', align: 'end' as const },
+  ]
 
   // Computed properties
   const propertyOptions = computed(() => {
@@ -602,12 +402,6 @@
       id: cleaner.id,
       name: cleaner.name,
     }))
-  })
-
-  const paginatedBookings = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage.value
-    const end = start + itemsPerPage.value
-    return filteredBookings.value.slice(start, end)
   })
 
   const filteredBookings = computed(() => {
@@ -656,10 +450,27 @@
     })
   })
 
+  // Transform bookings into table-friendly items with extra display fields
+  const tableItems = computed(() => {
+    return filteredBookings.value.map(booking => ({
+      ...booking,
+      propertyName: getPropertyName(booking.property_id),
+      ownerName: getOwnerName(booking.owner_id),
+      cleanerName: booking.assigned_cleaner_id
+        ? getCleanerName(booking.assigned_cleaner_id)
+        : '',
+    }))
+  })
+
   // Helper methods
   function getPropertyName (propertyId: string): string {
     const property = allProperties.value.find(p => p.id === propertyId)
     return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
+  }
+
+  function getOwnerName (_ownerId: string): string {
+    // Owner name lookup would come from a users store; placeholder for now
+    return 'Owner'
   }
 
   function getCleanerName (cleanerId: string): string {
@@ -670,6 +481,11 @@
   function getPropertyAddress (propertyId: string): string {
     const property = allProperties.value.find(p => p.id === propertyId)
     return property ? formatPropertyAddress(property) : 'Unknown Address'
+  }
+
+  function getPropertyColor (propertyId: string): string {
+    const property = allProperties.value.find(p => p.id === propertyId)
+    return property?.color || '#9E9E9E'
   }
 
   function getStatusColor (status: string): string {
@@ -717,10 +533,6 @@
   function openCreateBookingDialog () {
     editingBooking.value = null
     showBookingDialog.value = true
-  }
-
-  function openBookingDetails (booking: Booking) {
-    console.log('Opening booking details:', booking.id)
   }
 
   function editBooking (booking: Booking) {
@@ -779,101 +591,23 @@
       console.error('Failed to cancel booking:', error)
     }
   }
+
+  // Keep duplicateBooking accessible for potential future use
+  void duplicateBooking
 </script>
 
 <style scoped>
 .admin-bookings-page {
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.page-header {
+.property-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   flex-shrink: 0;
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-  background: rgb(var(--v-theme-surface));
-}
-
-.filters-section {
-  flex-shrink: 0;
-  background: rgb(var(--v-theme-surface));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-}
-
-.page-content {
-  flex: 1;
-  overflow-y: auto;
-  background: rgb(var(--v-theme-background));
-}
-
-.bookings-list {
-  max-height: calc(100vh - 400px);
-  overflow-y: auto;
-}
-
-.bookings-table {
-  max-height: calc(100vh - 400px);
-}
-
-.bookings-table .v-data-table__tbody tr {
-  cursor: pointer;
-}
-
-.bookings-table .v-data-table__tbody tr:hover {
-  background: rgb(var(--v-theme-surface-variant));
-}
-
-.booking-item {
-  padding: 16px;
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.booking-item:hover {
-  background: rgb(var(--v-theme-surface-variant));
-}
-
-.booking-main {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: 16px;
-}
-
-.booking-info {
-  flex: 1;
-}
-
-.booking-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-@media (max-width: 960px) {
-  .admin-bookings-page {
-    height: auto;
-  }
-
-  .page-content {
-    overflow-y: visible;
-  }
-
-  .bookings-list {
-    max-height: none;
-    overflow-y: visible;
-  }
-
-  .booking-main {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .booking-actions {
-    justify-content: flex-end;
-    margin-top: 12px;
-  }
 }
 </style>

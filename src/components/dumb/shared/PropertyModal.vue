@@ -2,7 +2,7 @@
   <v-dialog
     v-model="isOpen"
     max-height="90vh"
-    max-width="700px"
+    max-width="750px"
     persistent
     scrollable
     @keydown.esc="handleClose"
@@ -30,253 +30,271 @@
 
       <v-divider />
 
-      <!-- TWO-STEP CREATION FLOW -->
+      <!-- THREE-STEP WIZARD (create mode with stepper) -->
       <template v-if="stepper && mode === 'create'">
-        <v-stepper v-model="currentStep" flat>
-          <v-stepper-header>
-            <v-stepper-item
-              :complete="currentStep === '2'"
-              title="Property Details"
-              value="1"
-            />
-            <v-divider />
-            <v-stepper-item
-              title="Cleaning Settings"
-              value="2"
-            />
-          </v-stepper-header>
+        <MaterioFormWizard
+          v-model="wizardStep"
+          :steps="wizardSteps"
+          :submit-loading="loading"
+          submit-text="Create Property"
+          @step-change="handleStepChange"
+          @submit="handleSubmit"
+        >
+          <!-- Step 0: Property Details -->
+          <template #step-0>
+            <v-form ref="step1FormRef" v-model="step1Valid">
+              <v-container>
+                <v-row>
+                  <v-col cols="12">
+                    <v-text-field
+                      v-model="form.address_street"
+                      :disabled="loading"
+                      :error-messages="errors.get('address_street')"
+                      label="Street Address"
+                      placeholder="123 Main St"
+                      prepend-inner-icon="mdi-home"
+                      required
+                      :rules="streetRules"
+                      variant="outlined"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" sm="4">
+                    <v-text-field
+                      v-model="form.address_unit"
+                      :disabled="loading"
+                      :error-messages="errors.get('address_unit')"
+                      label="Unit / Apt"
+                      placeholder="Apt 4B"
+                      prepend-inner-icon="mdi-door"
+                      variant="outlined"
+                    />
+                  </v-col>
+                  <v-col cols="12" sm="8">
+                    <v-text-field
+                      v-model="form.address_city"
+                      :disabled="loading"
+                      :error-messages="errors.get('address_city')"
+                      label="City"
+                      prepend-inner-icon="mdi-city"
+                      required
+                      :rules="cityRules"
+                      variant="outlined"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="6">
+                    <v-text-field
+                      v-model="form.address_state"
+                      :disabled="loading"
+                      :error-messages="errors.get('address_state')"
+                      label="State"
+                      placeholder="TX"
+                      prepend-inner-icon="mdi-map-marker"
+                      required
+                      :rules="stateRules"
+                      variant="outlined"
+                    />
+                  </v-col>
+                  <v-col cols="6">
+                    <v-text-field
+                      v-model="form.address_zip"
+                      :disabled="loading"
+                      :error-messages="errors.get('address_zip')"
+                      label="ZIP Code"
+                      placeholder="78701"
+                      prepend-inner-icon="mdi-mailbox"
+                      required
+                      :rules="zipRules"
+                      variant="outlined"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <v-select
+                      v-model="form.property_type"
+                      :disabled="loading"
+                      :items="propertyTypeItems"
+                      label="Property Type"
+                      prepend-inner-icon="mdi-home-city"
+                      variant="outlined"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <div class="text-body-2 mb-2">Property Color</div>
+                    <PropertyColorPicker
+                      :model-value="form.color ?? PROPERTY_COLORS[0]"
+                      @update:model-value="form.color = $event"
+                    />
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </template>
 
-          <v-stepper-window>
-            <!-- Step 1: Address, bedrooms, bathrooms, color -->
-            <v-stepper-window-item value="1">
-              <v-card-text class="modal-content">
-                <v-form
-                  ref="step1FormRef"
-                  v-model="step1Valid"
-                >
-                  <v-container>
-                    <!-- Property Address -->
-                    <v-row>
-                      <v-col cols="12">
-                        <v-text-field
-                          v-model="form.address_street"
-                          :disabled="loading"
-                          :error-messages="errors.get('address_street')"
-                          label="Street Address"
-                          placeholder="123 Main St"
-                          prepend-inner-icon="mdi-home"
-                          required
-                          :rules="streetRules"
-                          variant="outlined"
-                        />
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12" sm="4">
-                        <v-text-field
-                          v-model="form.address_unit"
-                          :disabled="loading"
-                          :error-messages="errors.get('address_unit')"
-                          label="Unit / Apt"
-                          placeholder="Apt 4B"
-                          prepend-inner-icon="mdi-door"
-                          variant="outlined"
-                        />
-                      </v-col>
-                      <v-col cols="12" sm="8">
-                        <v-text-field
-                          v-model="form.address_city"
-                          :disabled="loading"
-                          :error-messages="errors.get('address_city')"
-                          label="City"
-                          prepend-inner-icon="mdi-city"
-                          required
-                          :rules="cityRules"
-                          variant="outlined"
-                        />
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="6" sm="6">
-                        <v-text-field
-                          v-model="form.address_state"
-                          :disabled="loading"
-                          :error-messages="errors.get('address_state')"
-                          label="State"
-                          placeholder="TX"
-                          prepend-inner-icon="mdi-map-marker"
-                          required
-                          :rules="stateRules"
-                          variant="outlined"
-                        />
-                      </v-col>
-                      <v-col cols="6" sm="6">
-                        <v-text-field
-                          v-model="form.address_zip"
-                          :disabled="loading"
-                          :error-messages="errors.get('address_zip')"
-                          label="ZIP Code"
-                          placeholder="78701"
-                          prepend-inner-icon="mdi-mailbox"
-                          required
-                          :rules="zipRules"
-                          variant="outlined"
-                        />
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="6">
-                        <v-text-field
-                          v-model.number="form.bedrooms"
-                          :disabled="loading"
-                          label="Bedrooms"
-                          min="0"
-                          prepend-inner-icon="mdi-bed"
-                          type="number"
-                          variant="outlined"
-                        />
-                      </v-col>
-                      <v-col cols="6">
-                        <v-text-field
-                          v-model.number="form.bathrooms"
-                          :disabled="loading"
-                          label="Bathrooms"
-                          min="0"
-                          prepend-inner-icon="mdi-shower"
-                          type="number"
-                          variant="outlined"
-                        />
-                      </v-col>
-                    </v-row>
-                    <v-row>
-                      <v-col cols="12">
-                        <div class="text-body-2 mb-2">
-                          Property Color
-                        </div>
-                        <PropertyColorPicker :model-value="form.color ?? PROPERTY_COLORS[0]" @update:model-value="form.color = $event" />
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-form>
-              </v-card-text>
+          <!-- Step 1: Rooms & Amenities -->
+          <template #step-1>
+            <v-form ref="step2FormRef" v-model="step2Valid">
+              <v-container>
+                <v-row>
+                  <v-col cols="6">
+                    <v-text-field
+                      v-model.number="form.bedrooms"
+                      :disabled="loading"
+                      label="Bedrooms"
+                      min="0"
+                      prepend-inner-icon="mdi-bed"
+                      type="number"
+                      variant="outlined"
+                    />
+                  </v-col>
+                  <v-col cols="6">
+                    <v-text-field
+                      v-model.number="form.bathrooms"
+                      :disabled="loading"
+                      label="Bathrooms"
+                      min="0"
+                      prepend-inner-icon="mdi-shower"
+                      type="number"
+                      variant="outlined"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="6">
+                    <v-text-field
+                      v-model.number="form.max_guests"
+                      :disabled="loading"
+                      label="Max Guests"
+                      min="1"
+                      prepend-inner-icon="mdi-account-group"
+                      type="number"
+                      variant="outlined"
+                    />
+                  </v-col>
+                  <v-col cols="6">
+                    <v-text-field
+                      v-model.number="form.square_feet"
+                      :disabled="loading"
+                      label="Square Feet"
+                      min="0"
+                      prepend-inner-icon="mdi-ruler-square"
+                      type="number"
+                      variant="outlined"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <v-select
+                      v-model="form.floor_type"
+                      :disabled="loading"
+                      :items="floorTypeItems"
+                      label="Floor Type"
+                      prepend-inner-icon="mdi-texture-box"
+                      variant="outlined"
+                    />
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </template>
 
-              <v-divider />
-
-              <v-card-actions>
-                <v-btn
-                  color="grey-darken-1"
-                  :disabled="loading"
-                  variant="text"
-                  @click="handleClose"
-                >
-                  Cancel
-                </v-btn>
-                <v-spacer />
-                <v-btn
-                  color="primary"
-                  :disabled="loading"
-                  :loading="loading"
-                  variant="text"
-                  @click="handleNextStep"
-                >
-                  Next
-                </v-btn>
-              </v-card-actions>
-            </v-stepper-window-item>
-
-            <!-- Step 2: property_type, cleaning_duration, pricing_tier -->
-            <v-stepper-window-item value="2">
-              <v-card-text class="modal-content">
-                <v-form
-                  ref="step2FormRef"
-                  v-model="step2Valid"
-                  @submit.prevent="handleSubmit"
-                >
-                  <v-container>
-                    <!-- Property Type -->
-                    <v-row>
-                      <v-col cols="12">
-                        <v-select
-                          v-model="form.property_type"
-                          :disabled="loading"
-                          :items="propertyTypeItems"
-                          label="Property Type"
-                          prepend-inner-icon="mdi-home-city"
-                          variant="outlined"
-                        />
-                      </v-col>
-                    </v-row>
-
-                    <!-- Cleaning Duration and Pricing Tier -->
-                    <v-row>
-                      <v-col cols="12" md="6">
-                        <v-text-field
-                          v-model.number="form.cleaning_duration"
-                          :disabled="loading"
-                          :error-messages="errors.get('cleaning_duration')"
-                          hint="Time required for standard cleaning"
-                          label="Cleaning Duration (minutes)"
-                          min="1"
-                          persistent-hint
-                          prepend-inner-icon="mdi-clock-outline"
-                          required
-                          :rules="durationRules"
-                          type="number"
-                          variant="outlined"
-                        />
-                      </v-col>
-                      <v-col cols="12" md="6">
-                        <v-select
-                          v-model="form.pricing_tier"
-                          :disabled="loading"
-                          :error-messages="errors.get('pricing_tier')"
-                          hint="Determines pricing and service level"
-                          :items="pricingTierItems"
-                          label="Pricing Tier"
-                          persistent-hint
-                          prepend-inner-icon="mdi-currency-usd"
-                          required
-                          :rules="pricingTierRules"
-                          variant="outlined"
-                        />
-                      </v-col>
-                    </v-row>
-                  </v-container>
-                </v-form>
-              </v-card-text>
-
-              <v-divider />
-
-              <v-card-actions>
-                <v-btn
-                  color="grey-darken-1"
-                  :disabled="loading"
-                  variant="text"
-                  @click="currentStep = '1'"
-                >
-                  Back
-                </v-btn>
-                <v-spacer />
-                <v-btn
-                  :disabled="loading"
-                  variant="text"
-                  @click="handleSkip"
-                >
-                  Skip for now
-                </v-btn>
-                <v-btn
-                  color="primary"
-                  :disabled="!step2Valid || loading"
-                  :loading="loading"
-                  variant="text"
-                  @click="handleSubmit"
-                >
-                  Save
-                </v-btn>
-              </v-card-actions>
-            </v-stepper-window-item>
-          </v-stepper-window>
-        </v-stepper>
+          <!-- Step 2: Cleaning & Access -->
+          <template #step-2>
+            <v-form ref="step3FormRef" v-model="step3Valid">
+              <v-container>
+                <v-row>
+                  <v-col cols="12">
+                    <v-textarea
+                      v-model="form.special_instructions"
+                      :counter="1000"
+                      :disabled="loading"
+                      hint="Any special cleaning requirements or notes"
+                      label="Cleaning Instructions"
+                      persistent-hint
+                      prepend-inner-icon="mdi-note-text"
+                      rows="3"
+                      variant="outlined"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12">
+                    <v-textarea
+                      v-model="form.access_info"
+                      :disabled="loading"
+                      hint="Lockbox codes, key location, gate codes, etc."
+                      label="Access Notes"
+                      persistent-hint
+                      prepend-inner-icon="mdi-key"
+                      rows="2"
+                      variant="outlined"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model.number="form.cleaning_duration"
+                      :disabled="loading"
+                      :error-messages="errors.get('cleaning_duration')"
+                      hint="Time required for standard cleaning"
+                      label="Cleaning Duration (minutes)"
+                      min="1"
+                      persistent-hint
+                      prepend-inner-icon="mdi-clock-outline"
+                      required
+                      :rules="durationRules"
+                      type="number"
+                      variant="outlined"
+                    />
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-select
+                      v-model="form.pricing_tier"
+                      :disabled="loading"
+                      :error-messages="errors.get('pricing_tier')"
+                      hint="Determines pricing and service level"
+                      :items="pricingTierItems"
+                      label="Pricing Tier"
+                      persistent-hint
+                      prepend-inner-icon="mdi-currency-usd"
+                      required
+                      :rules="pricingTierRules"
+                      variant="outlined"
+                    />
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="form.contact_name"
+                      :disabled="loading"
+                      label="Contact Name"
+                      prepend-inner-icon="mdi-account"
+                      variant="outlined"
+                    />
+                  </v-col>
+                  <v-col cols="12" md="6">
+                    <v-text-field
+                      v-model="form.contact_phone"
+                      :disabled="loading"
+                      label="Contact Phone"
+                      prepend-inner-icon="mdi-phone"
+                      variant="outlined"
+                    />
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-form>
+          </template>
+        </MaterioFormWizard>
       </template>
 
       <!-- SINGLE-FORM (edit mode or stepper=false) -->
@@ -490,6 +508,7 @@
   import type { PricingTier, Property, PropertyFormData } from '@/types'
   import { computed, onMounted, reactive, ref, watch } from 'vue'
   import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
+  import MaterioFormWizard from '@/components/dumb/shared/MaterioFormWizard.vue'
   import { useAuthStore } from '@/stores/auth'
   import { PROPERTY_COLORS } from '@/utils/constants'
 
@@ -525,27 +544,44 @@
   const formRef = ref<VForm | null>(null)
   const step1FormRef = ref<VForm | null>(null)
   const step2FormRef = ref<VForm | null>(null)
+  const step3FormRef = ref<VForm | null>(null)
   const formValid = ref<boolean>(false)
   const step1Valid = ref<boolean>(false)
   const step2Valid = ref<boolean>(false)
+  const step3Valid = ref<boolean>(false)
   const loading = ref<boolean>(false)
   const errors = ref<Map<string, string>>(new Map())
 
-  // STEPPER STATE
-  const currentStep = ref<string>('1')
+  // WIZARD STATE
+  const wizardStep = ref(0)
+
+  const wizardSteps = [
+    { title: 'Property Details', subtitle: 'Name, address, type & color' },
+    { title: 'Rooms & Amenities', subtitle: 'Bedrooms, bathrooms, guests' },
+    { title: 'Cleaning & Access', subtitle: 'Instructions, access, contact' },
+  ]
 
   // FORM DATA
-  const form = reactive<Partial<PropertyFormData>>({
+  const form = reactive<Partial<PropertyFormData> & { max_guests?: number, square_feet?: number, floor_type?: string }>({
     address_street: '',
     address_unit: '',
     address_city: '',
     address_state: '',
     address_zip: '',
-    cleaning_duration: 120, // Default to 2 hours
+    property_type: undefined,
+    bedrooms: undefined,
+    bathrooms: undefined,
+    max_guests: undefined,
+    square_feet: undefined,
+    floor_type: undefined,
+    cleaning_duration: 120,
     pricing_tier: 'standard',
     special_instructions: '',
+    access_info: '',
+    contact_name: '',
+    contact_phone: '',
     active: true,
-    owner_id: '', // Will be set by the parent component or from auth store
+    owner_id: '',
     color: PROPERTY_COLORS[0],
   })
 
@@ -571,6 +607,13 @@
     { title: 'Apartment', value: 'apartment' },
     { title: 'Condo', value: 'condo' },
     { title: 'Townhouse', value: 'townhouse' },
+  ]
+
+  const floorTypeItems = [
+    { title: 'Hardwood', value: 'hardwood' },
+    { title: 'Carpet', value: 'carpet' },
+    { title: 'Tile', value: 'tile' },
+    { title: 'Mixed', value: 'mixed' },
   ]
 
   const pricingTierItems = [
@@ -613,10 +656,23 @@
   ]
 
   // METHODS
+
+  // Handle wizard step changes with validation
+  async function handleStepChange (from: number, to: number) {
+    // Only validate when moving forward
+    if (to > from && from === 0) {
+      const valid = await validateStep1()
+      if (!valid) {
+        // Revert step
+        wizardStep.value = from
+      }
+    }
+  }
+
   // Reset form to default or to property data
   function resetForm (): void {
     errors.value.clear()
-    currentStep.value = '1'
+    wizardStep.value = 0
 
     if (props.mode === 'edit' && props.property) {
       // Populate form with existing property data
@@ -626,16 +682,23 @@
         address_city: props.property.address_city,
         address_state: props.property.address_state,
         address_zip: props.property.address_zip,
+        property_type: props.property.property_type,
+        bedrooms: props.property.bedrooms,
+        bathrooms: props.property.bathrooms,
+        square_feet: props.property.square_feet,
+        floor_type: props.property.floor_type,
         cleaning_duration: props.property.cleaning_duration,
         pricing_tier: props.property.pricing_tier,
         special_instructions: props.property.special_instructions || '',
+        access_info: props.property.access_info || '',
+        contact_name: props.property.contact_name || '',
+        contact_phone: props.property.contact_phone || '',
         active: props.property.active,
         owner_id: props.property.owner_id,
         color: props.property.color || PROPERTY_COLORS[0],
       })
     } else {
       // Reset to defaults for create mode
-      // Auto-assign color based on how many properties the owner has (cycling)
       const assignedColor = PROPERTY_COLORS[props.existingPropertyCount % PROPERTY_COLORS.length]
       Object.assign(form, {
         address_street: '',
@@ -643,9 +706,18 @@
         address_city: '',
         address_state: '',
         address_zip: '',
+        property_type: undefined,
+        bedrooms: undefined,
+        bathrooms: undefined,
+        max_guests: undefined,
+        square_feet: undefined,
+        floor_type: undefined,
         cleaning_duration: 120,
         pricing_tier: 'standard',
         special_instructions: '',
+        access_info: '',
+        contact_name: '',
+        contact_phone: '',
         active: true,
         owner_id: authStore.user?.id || '',
         color: assignedColor,
@@ -693,7 +765,6 @@
       return false
     }
 
-    // All validation passed
     return true
   }
 
@@ -704,19 +775,6 @@
     return valid
   }
 
-  // Handle advancing to step 2
-  async function handleNextStep (): Promise<void> {
-    loading.value = true
-    try {
-      const valid = await validateStep1()
-      if (valid) {
-        currentStep.value = '2'
-      }
-    } finally {
-      loading.value = false
-    }
-  }
-
   // Build the property data payload
   function buildPropertyData (): PropertyFormData {
     return {
@@ -725,9 +783,17 @@
       address_city: form.address_city!,
       address_state: form.address_state!,
       address_zip: form.address_zip!,
+      property_type: form.property_type as PropertyFormData['property_type'],
+      bedrooms: form.bedrooms,
+      bathrooms: form.bathrooms,
+      square_feet: form.square_feet,
+      floor_type: form.floor_type as PropertyFormData['floor_type'],
       cleaning_duration: form.cleaning_duration!,
       pricing_tier: form.pricing_tier as PricingTier,
       special_instructions: form.special_instructions,
+      access_info: form.access_info,
+      contact_name: form.contact_name,
+      contact_phone: form.contact_phone,
       active: form.active!,
       owner_id: form.owner_id || authStore.user?.id || '',
       color: form.color || PROPERTY_COLORS[0],
@@ -739,16 +805,14 @@
     loading.value = true
 
     try {
-      // For stepper create mode, validate step 2 form
+      // For wizard create mode, validate the final step
       if (props.stepper && props.mode === 'create') {
-        if (!step2FormRef.value) {
-          loading.value = false
-          return
-        }
-        const { valid } = await step2FormRef.value.validate()
-        if (!valid) {
-          loading.value = false
-          return
+        if (step3FormRef.value) {
+          const { valid } = await step3FormRef.value.validate()
+          if (!valid) {
+            loading.value = false
+            return
+          }
         }
         // Ensure required fields are present
         if (!form.address_street || !form.address_city || !form.address_state || !form.address_zip || !form.cleaning_duration || !form.pricing_tier || form.active === undefined) {
@@ -776,10 +840,8 @@
         return
       }
 
-      // Emit save event with property data
       emit('save', buildPropertyData())
 
-      // Reset and close (parent component will handle actual saving)
       loading.value = false
       resetForm()
       isOpen.value = false
@@ -790,26 +852,6 @@
     }
   }
 
-  // Handle "Skip for now" — emit skip with defaults for step 2 fields
-  function handleSkip (): void {
-    const skipData: PropertyFormData = {
-      address_street: form.address_street!,
-      address_unit: form.address_unit || '',
-      address_city: form.address_city!,
-      address_state: form.address_state!,
-      address_zip: form.address_zip!,
-      cleaning_duration: 120,
-      pricing_tier: 'standard' as PricingTier,
-      special_instructions: form.special_instructions,
-      active: form.active ?? true,
-      owner_id: form.owner_id || authStore.user?.id || '',
-      color: form.color || PROPERTY_COLORS[0],
-    }
-    emit('skip', skipData)
-    resetForm()
-    isOpen.value = false
-  }
-
   // Handle property deletion
   function handleDelete (): void {
     if (props.mode !== 'edit' || !props.property) return
@@ -817,7 +859,6 @@
     loading.value = true
     emit('delete', props.property.id)
 
-    // Parent component will handle actual deletion
     loading.value = false
     isOpen.value = false
   }
@@ -969,6 +1010,6 @@
 .modal-content {
   overflow-y: auto;
   flex: 1;
-  max-height: calc(90vh - 120px); /* Subtract header and footer space */
+  max-height: calc(90vh - 120px);
 }
 </style>

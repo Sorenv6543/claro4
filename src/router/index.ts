@@ -44,6 +44,16 @@ const router = createRouter({
       },
     },
     {
+      path: '/owner/overview',
+      name: 'owner-overview',
+      component: () => import('@/pages/owner/overview.vue'),
+      meta: {
+        layout: 'owner',
+        role: 'owner',
+        requiresAuth: true,
+      },
+    },
+    {
       path: '/owner/calendar',
       redirect: '/owner/dashboard',
     },
