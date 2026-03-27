@@ -1,0 +1,62 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/dashboards/ecommerce",
+  "title": "eCommerce Dashboard",
+  "category": "dashboards",
+  "screenshot": "dashboards/ecommerce.png",
+  "summary": "eCommerce dashboard featuring a welcome banner with greeting and illustration at top-left, four stat pills for transactions (orders, profit, expenses, income), total profit area chart with year-over-year legend, and total sales card with prominent dollar amount, buy-now button, and mini bar chart. Second row has transaction summary cards with payment method icons, new visitors line chart with total count, and a transaction breakdown donut chart with category percentages. Bottom section includes a full-width data table of recent orders (ID, status, client, total, date columns) and a meeting schedule sidebar with upcoming events.",
+  "components": [
+    "v-card",
+    "v-chip",
+    "v-btn",
+    "v-avatar",
+    "v-table",
+    "v-list",
+    "v-list-item",
+    "v-icon",
+    "v-divider",
+    "v-img",
+    "v-progress-linear"
+  ],
+  "layout": {
+    "type": "grid",
+    "columns": "12-column grid: top row has welcome banner (4 cols), stat pills (4 cols), total profit chart (4 cols), and total sales card (4 cols) wrapped; middle row has transactions list (4 cols), new visitors chart (4 cols), transaction donut (4 cols); bottom row has orders table (8 cols) and meeting schedule (4 cols)",
+    "sections": [
+      "welcome-banner",
+      "transaction-stat-pills",
+      "total-profit-chart",
+      "total-sales-card",
+      "transactions-by-method",
+      "new-visitors-chart",
+      "transactions-donut",
+      "recent-orders-table",
+      "meeting-schedule"
+    ]
+  },
+  "patterns": [
+    "welcome-banner",
+    "stat-pill",
+    "line-chart",
+    "bar-chart",
+    "donut-chart",
+    "data-table-with-search",
+    "payment-method-list",
+    "meeting-schedule-list",
+    "stat-card-with-icon",
+    "cta-button-card"
+  ],
+  "colors": [
+    "primary",
+    "success",
+    "warning",
+    "info",
+    "error",
+    "secondary"
+  ],
+  "interactions": [
+    "hover-elevation",
+    "dropdown-menu",
+    "sortable-table",
+    "button-cta",
+    "status-chip"
+  ]
+}

@@ -1,0 +1,61 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/dashboards/logistics",
+  "title": "Logistics Dashboard",
+  "category": "dashboards",
+  "screenshot": "dashboards/logistics.png",
+  "summary": "Logistics dashboard with four stat cards across the top row showing vehicle counts (on route, unloading, loading, waiting) with colored icon backgrounds. Second row has a vehicle overview card with tabbed status table (on the way, unloading, loading, waiting counts per category) and a shipment statistics grouped bar chart showing dispatched vs delivered over months. Third row features delivery performance list with icon-coded metrics and percentages, a delivery exceptions donut chart with legend breakdown, and an orders-by-country list with flag icons and category chips. Bottom section has a full-width data table for on-route vehicles with columns for location, start/end routes, warnings, and progress indicators.",
+  "components": [
+    "v-card",
+    "v-chip",
+    "v-btn",
+    "v-avatar",
+    "v-table",
+    "v-list",
+    "v-list-item",
+    "v-icon",
+    "v-divider",
+    "v-tabs",
+    "v-tab",
+    "v-progress-linear"
+  ],
+  "layout": {
+    "type": "grid",
+    "columns": "12-column grid: top row has 4 equal stat cards (3 cols each); second row has vehicle overview table (6 cols) and shipment statistics chart (6 cols); third row has delivery performance (4 cols), delivery exceptions donut (4 cols), orders-by-country (4 cols); bottom row is full-width on-route vehicles table (12 cols)",
+    "sections": [
+      "vehicle-stat-cards",
+      "vehicle-overview-table",
+      "shipment-statistics-chart",
+      "delivery-performance",
+      "delivery-exceptions-donut",
+      "orders-by-country",
+      "on-route-vehicles-table"
+    ]
+  },
+  "patterns": [
+    "stat-card-with-icon",
+    "tab-panel",
+    "bar-chart",
+    "donut-chart",
+    "progress-list",
+    "country-flag-list",
+    "data-table-with-search",
+    "category-chip-list",
+    "status-indicator-list"
+  ],
+  "colors": [
+    "primary",
+    "success",
+    "warning",
+    "info",
+    "error",
+    "secondary"
+  ],
+  "interactions": [
+    "hover-elevation",
+    "tab-switching",
+    "sortable-table",
+    "pagination",
+    "status-chip",
+    "warning-indicator"
+  ]
+}

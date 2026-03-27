@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/access-control",
+  "title": "Access Control",
+  "category": "access-control",
+  "screenshot": "access-control/access-control.png",
+  "summary": "Role-based access control demo with two cards showing visibility rules. 'Common' card visible to both user and admin roles, 'Analytics' card visible to admin only. Demonstrates RBAC UI patterns with ability-based card rendering. Theme customizer panel visible on right side.",
+  "components": ["v-card", "v-card-title", "v-card-text"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column equal",
+    "sections": ["role-based-cards"]
+  },
+  "patterns": ["card-grid", "role-based-visibility"],
+  "colors": ["primary"],
+  "interactions": ["theme-customizer-panel"]
+}
