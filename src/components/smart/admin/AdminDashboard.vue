@@ -77,6 +77,7 @@
   import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
   import { useAuthStore } from '@/stores/auth'
+  import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { calculateBookingPriority } from '@/utils/businessLogic'
 
@@ -84,6 +85,7 @@
   const router = useRouter()
   const { mobile } = useDisplay()
   const authStore = useAuthStore()
+  const uiStore = useUIStore()
   const {
     allBookings,
     fetchAllBookings,
@@ -452,15 +454,20 @@
   }
 
   // Actions
-  function refreshDashboard () {
+  async function refreshDashboard () {
     loading.value = true
-    Promise.all([
-      fetchAllBookings(),
-      fetchAllProperties(),
-      fetchAllUsers(),
-    ]).finally(() => {
+    try {
+      await Promise.all([
+        fetchAllBookings(),
+        fetchAllProperties(),
+        fetchAllUsers(),
+      ])
+    } catch (error: unknown) {
+      console.error('Failed to refresh dashboard:', error)
+      uiStore.addNotification('error', 'Error', 'Failed to load dashboard data. Please try again.')
+    } finally {
       loading.value = false
-    })
+    }
   }
 
   function goToMasterSchedule () {

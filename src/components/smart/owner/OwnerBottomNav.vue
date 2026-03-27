@@ -7,9 +7,9 @@
     grow
     :model-value="activeTab"
   >
-    <v-btn :to="'/owner/dashboard'" value="/owner/dashboard">
-      <v-icon>mdi-calendar-month-outline</v-icon>
-      <span>Schedule</span>
+    <v-btn :to="'/owner/overview'" value="/owner/overview">
+      <v-icon>mdi-view-dashboard-outline</v-icon>
+      <span>Home</span>
     </v-btn>
     <v-btn :to="'/owner/bookings'" value="/owner/bookings">
       <v-icon>mdi-format-list-bulleted</v-icon>
@@ -40,6 +40,7 @@
     const path = route.path
     if (path.startsWith('/owner/bookings')) return '/owner/bookings'
     if (path.startsWith('/owner/properties')) return '/owner/properties'
+    if (path === '/owner/overview') return '/owner/overview'
     if (path === '/owner/dashboard') return '/owner/dashboard'
     return undefined
   })

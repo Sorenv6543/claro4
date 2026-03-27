@@ -115,6 +115,7 @@
 
   // ── Nav items ──────────────────────────────────────────────────
   const navItems = [
+    { label: 'Overview', icon: 'mdi-view-dashboard-outline', to: '/owner/overview' },
     { label: 'Schedule', icon: 'mdi-calendar-month-outline', to: '/owner/dashboard' },
     { label: 'Check-ins & Turns', icon: 'mdi-clipboard-check-outline', to: '/owner/checkins', disabled: true, soon: true },
     { label: 'Bookings', icon: 'mdi-format-list-bulleted', to: '/owner/bookings' },
