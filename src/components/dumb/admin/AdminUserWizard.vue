@@ -2,6 +2,7 @@
   <v-dialog v-model="dialogOpen" max-width="700" persistent>
     <MaterioFormWizard
       v-model="currentStep"
+      :before-next="validateCurrentStep"
       :steps="steps"
       :submit-loading="loading"
       submit-text="Create User"
@@ -235,7 +236,25 @@
     })
   }
 
+  async function validateCurrentStep (from: number): Promise<boolean> {
+    if (from === 0 && step1FormRef.value) {
+      const { valid } = await step1FormRef.value.validate()
+      return valid
+    }
+    if (from === 1 && step2FormRef.value) {
+      const { valid } = await step2FormRef.value.validate()
+      return valid
+    }
+    return true
+  }
+
   async function handleSubmit () {
+    // Final validation of both steps before emitting
+    if (step1FormRef.value) {
+      const { valid } = await step1FormRef.value.validate()
+      if (!valid) return
+    }
+
     loading.value = true
     try {
       emit('created', { ...form })

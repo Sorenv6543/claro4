@@ -64,6 +64,8 @@
     status: string
   }
 
+  import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/constants'
+
   defineProps<{
     cleanings: CleaningInfo[]
   }>()
@@ -75,26 +77,6 @@
       month: 'short',
       day: 'numeric',
     })
-  }
-
-  function formatStatus (status: string): string {
-    return status.replace(/_/g, ' ')
-  }
-
-  function statusColor (status: string): string {
-    switch (status) {
-      case 'completed': { return 'success'
-      }
-      case 'in_progress': { return 'info'
-      }
-      case 'scheduled': { return 'primary'
-      }
-      case 'cancelled': { return 'error'
-      }
-      case 'pending':
-      default: { return 'warning'
-      }
-    }
   }
 </script>
 
