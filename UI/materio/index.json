@@ -1,0 +1,823 @@
+{
+  "source": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/",
+  "captured": "2026-03-27",
+  "total_pages": 113,
+  "categories": {
+    "access-control": [
+      "access-control"
+    ],
+    "apps": [
+      "academy-course-details",
+      "academy-dashboard",
+      "academy-my-course",
+      "calendar",
+      "chat",
+      "ecommerce-customer-details-478426",
+      "ecommerce-customer-list",
+      "ecommerce-dashboard",
+      "ecommerce-manage-review",
+      "ecommerce-order-details-9042",
+      "ecommerce-order-list",
+      "ecommerce-product-add",
+      "ecommerce-product-category-list",
+      "ecommerce-product-list",
+      "ecommerce-referrals",
+      "ecommerce-settings",
+      "email",
+      "invoice-add",
+      "invoice-edit-5036",
+      "invoice-list",
+      "invoice-preview-5036",
+      "kanban",
+      "logistics-dashboard",
+      "logistics-fleet",
+      "permissions",
+      "roles",
+      "user-list",
+      "user-view-21"
+    ],
+    "charts": [
+      "apex-chart",
+      "chartjs"
+    ],
+    "components": [
+      "alert",
+      "avatar",
+      "badge",
+      "button",
+      "chip",
+      "dialog",
+      "expansion-panel",
+      "list",
+      "menu",
+      "pagination",
+      "progress-circular",
+      "progress-linear",
+      "snackbar",
+      "tabs",
+      "timeline",
+      "tooltip"
+    ],
+    "dashboards": [
+      "academy",
+      "analytics",
+      "crm",
+      "ecommerce",
+      "logistics"
+    ],
+    "extensions": [
+      "swiper",
+      "tour"
+    ],
+    "forms": [
+      "autocomplete",
+      "checkbox",
+      "combobox",
+      "custom-input",
+      "date-time-picker",
+      "editors",
+      "file-input",
+      "form-layouts",
+      "form-validation",
+      "form-wizard-icons",
+      "form-wizard-numbered",
+      "radio",
+      "range-slider",
+      "rating",
+      "select",
+      "slider",
+      "switch",
+      "textarea",
+      "textfield"
+    ],
+    "front-pages": [
+      "checkout",
+      "help-center",
+      "landing-page",
+      "payment",
+      "pricing"
+    ],
+    "pages": [
+      "account-settings-account",
+      "authentication-forgot-password-v1",
+      "authentication-forgot-password-v2",
+      "authentication-login-v1",
+      "authentication-login-v2",
+      "authentication-register-multi-steps",
+      "authentication-register-v1",
+      "authentication-register-v2",
+      "authentication-reset-password-v1",
+      "authentication-reset-password-v2",
+      "authentication-two-steps-v1",
+      "authentication-two-steps-v2",
+      "authentication-verify-email-v1",
+      "authentication-verify-email-v2",
+      "cards-card-actions",
+      "cards-card-advance",
+      "cards-card-basic",
+      "cards-card-gamification",
+      "cards-card-statistics",
+      "cards-card-widgets",
+      "dialog-examples",
+      "faq",
+      "icons",
+      "misc-coming-soon",
+      "misc-not-authorized",
+      "misc-not-found",
+      "misc-under-maintenance",
+      "pricing",
+      "typography",
+      "user-profile-profile"
+    ],
+    "tables": [
+      "data-table",
+      "simple-table"
+    ],
+    "wizard-examples": [
+      "checkout",
+      "create-deal",
+      "property-listing"
+    ]
+  },
+  "pages": [
+    {
+      "slug": "access-control",
+      "category": "access-control",
+      "title": "Access Control",
+      "file": "access-control/access-control.json"
+    },
+    {
+      "slug": "academy-course-details",
+      "category": "apps",
+      "title": "Academy Course Details",
+      "file": "apps/academy-course-details.json"
+    },
+    {
+      "slug": "academy-dashboard",
+      "category": "apps",
+      "title": "Academy Dashboard",
+      "file": "apps/academy-dashboard.json"
+    },
+    {
+      "slug": "academy-my-course",
+      "category": "apps",
+      "title": "Academy My Courses",
+      "file": "apps/academy-my-course.json"
+    },
+    {
+      "slug": "calendar",
+      "category": "apps",
+      "title": "Calendar",
+      "file": "apps/calendar.json"
+    },
+    {
+      "slug": "chat",
+      "category": "apps",
+      "title": "Chat",
+      "file": "apps/chat.json"
+    },
+    {
+      "slug": "ecommerce-customer-details-478426",
+      "category": "apps",
+      "title": "E-commerce Customer Details",
+      "file": "apps/ecommerce-customer-details-478426.json"
+    },
+    {
+      "slug": "ecommerce-customer-list",
+      "category": "apps",
+      "title": "E-commerce Customer List",
+      "file": "apps/ecommerce-customer-list.json"
+    },
+    {
+      "slug": "ecommerce-dashboard",
+      "category": "apps",
+      "title": "E-commerce Dashboard",
+      "file": "apps/ecommerce-dashboard.json"
+    },
+    {
+      "slug": "ecommerce-manage-review",
+      "category": "apps",
+      "title": "E-commerce Manage Reviews",
+      "file": "apps/ecommerce-manage-review.json"
+    },
+    {
+      "slug": "ecommerce-order-details-9042",
+      "category": "apps",
+      "title": "E-commerce Order Details",
+      "file": "apps/ecommerce-order-details-9042.json"
+    },
+    {
+      "slug": "ecommerce-order-list",
+      "category": "apps",
+      "title": "E-commerce Order List",
+      "file": "apps/ecommerce-order-list.json"
+    },
+    {
+      "slug": "ecommerce-product-add",
+      "category": "apps",
+      "title": "E-commerce Add Product",
+      "file": "apps/ecommerce-product-add.json"
+    },
+    {
+      "slug": "ecommerce-product-category-list",
+      "category": "apps",
+      "title": "E-commerce Product Category List",
+      "file": "apps/ecommerce-product-category-list.json"
+    },
+    {
+      "slug": "ecommerce-product-list",
+      "category": "apps",
+      "title": "E-commerce Product List",
+      "file": "apps/ecommerce-product-list.json"
+    },
+    {
+      "slug": "ecommerce-referrals",
+      "category": "apps",
+      "title": "E-commerce Referrals",
+      "file": "apps/ecommerce-referrals.json"
+    },
+    {
+      "slug": "ecommerce-settings",
+      "category": "apps",
+      "title": "E-commerce Settings",
+      "file": "apps/ecommerce-settings.json"
+    },
+    {
+      "slug": "email",
+      "category": "apps",
+      "title": "Email",
+      "file": "apps/email.json"
+    },
+    {
+      "slug": "invoice-add",
+      "category": "apps",
+      "title": "Invoice Add",
+      "file": "apps/invoice-add.json"
+    },
+    {
+      "slug": "invoice-edit-5036",
+      "category": "apps",
+      "title": "Invoice Edit",
+      "file": "apps/invoice-edit-5036.json"
+    },
+    {
+      "slug": "invoice-list",
+      "category": "apps",
+      "title": "Invoice List",
+      "file": "apps/invoice-list.json"
+    },
+    {
+      "slug": "invoice-preview-5036",
+      "category": "apps",
+      "title": "Invoice Preview",
+      "file": "apps/invoice-preview-5036.json"
+    },
+    {
+      "slug": "kanban",
+      "category": "apps",
+      "title": "Kanban Board",
+      "file": "apps/kanban.json"
+    },
+    {
+      "slug": "logistics-dashboard",
+      "category": "apps",
+      "title": "Logistics Dashboard",
+      "file": "apps/logistics-dashboard.json"
+    },
+    {
+      "slug": "logistics-fleet",
+      "category": "apps",
+      "title": "Logistics Fleet",
+      "file": "apps/logistics-fleet.json"
+    },
+    {
+      "slug": "permissions",
+      "category": "apps",
+      "title": "Permissions",
+      "file": "apps/permissions.json"
+    },
+    {
+      "slug": "roles",
+      "category": "apps",
+      "title": "Roles",
+      "file": "apps/roles.json"
+    },
+    {
+      "slug": "user-list",
+      "category": "apps",
+      "title": "User List",
+      "file": "apps/user-list.json"
+    },
+    {
+      "slug": "user-view-21",
+      "category": "apps",
+      "title": "User View",
+      "file": "apps/user-view-21.json"
+    },
+    {
+      "slug": "apex-chart",
+      "category": "charts",
+      "title": "Apex Charts",
+      "file": "charts/apex-chart.json"
+    },
+    {
+      "slug": "chartjs",
+      "category": "charts",
+      "title": "Chart.js Charts",
+      "file": "charts/chartjs.json"
+    },
+    {
+      "slug": "alert",
+      "category": "components",
+      "title": "Alert",
+      "file": "components/alert.json"
+    },
+    {
+      "slug": "avatar",
+      "category": "components",
+      "title": "Avatar",
+      "file": "components/avatar.json"
+    },
+    {
+      "slug": "badge",
+      "category": "components",
+      "title": "Badge",
+      "file": "components/badge.json"
+    },
+    {
+      "slug": "button",
+      "category": "components",
+      "title": "Button",
+      "file": "components/button.json"
+    },
+    {
+      "slug": "chip",
+      "category": "components",
+      "title": "Chip",
+      "file": "components/chip.json"
+    },
+    {
+      "slug": "dialog",
+      "category": "components",
+      "title": "Dialog",
+      "file": "components/dialog.json"
+    },
+    {
+      "slug": "expansion-panel",
+      "category": "components",
+      "title": "Expansion Panel",
+      "file": "components/expansion-panel.json"
+    },
+    {
+      "slug": "list",
+      "category": "components",
+      "title": "List",
+      "file": "components/list.json"
+    },
+    {
+      "slug": "menu",
+      "category": "components",
+      "title": "Menu",
+      "file": "components/menu.json"
+    },
+    {
+      "slug": "pagination",
+      "category": "components",
+      "title": "Pagination",
+      "file": "components/pagination.json"
+    },
+    {
+      "slug": "progress-circular",
+      "category": "components",
+      "title": "Progress Circular",
+      "file": "components/progress-circular.json"
+    },
+    {
+      "slug": "progress-linear",
+      "category": "components",
+      "title": "Progress Linear",
+      "file": "components/progress-linear.json"
+    },
+    {
+      "slug": "snackbar",
+      "category": "components",
+      "title": "Snackbar",
+      "file": "components/snackbar.json"
+    },
+    {
+      "slug": "tabs",
+      "category": "components",
+      "title": "Tabs",
+      "file": "components/tabs.json"
+    },
+    {
+      "slug": "timeline",
+      "category": "components",
+      "title": "Timeline",
+      "file": "components/timeline.json"
+    },
+    {
+      "slug": "tooltip",
+      "category": "components",
+      "title": "Tooltip",
+      "file": "components/tooltip.json"
+    },
+    {
+      "slug": "academy",
+      "category": "dashboards",
+      "title": "Academy Dashboard",
+      "file": "dashboards/academy.json"
+    },
+    {
+      "slug": "analytics",
+      "category": "dashboards",
+      "title": "Analytics Dashboard",
+      "file": "dashboards/analytics.json"
+    },
+    {
+      "slug": "crm",
+      "category": "dashboards",
+      "title": "CRM Dashboard",
+      "file": "dashboards/crm.json"
+    },
+    {
+      "slug": "ecommerce",
+      "category": "dashboards",
+      "title": "eCommerce Dashboard",
+      "file": "dashboards/ecommerce.json"
+    },
+    {
+      "slug": "logistics",
+      "category": "dashboards",
+      "title": "Logistics Dashboard",
+      "file": "dashboards/logistics.json"
+    },
+    {
+      "slug": "swiper",
+      "category": "extensions",
+      "title": "Swiper",
+      "file": "extensions/swiper.json"
+    },
+    {
+      "slug": "tour",
+      "category": "extensions",
+      "title": "Tour",
+      "file": "extensions/tour.json"
+    },
+    {
+      "slug": "autocomplete",
+      "category": "forms",
+      "title": "Autocomplete",
+      "file": "forms/autocomplete.json"
+    },
+    {
+      "slug": "checkbox",
+      "category": "forms",
+      "title": "Checkbox",
+      "file": "forms/checkbox.json"
+    },
+    {
+      "slug": "combobox",
+      "category": "forms",
+      "title": "Combobox",
+      "file": "forms/combobox.json"
+    },
+    {
+      "slug": "custom-input",
+      "category": "forms",
+      "title": "Custom Input",
+      "file": "forms/custom-input.json"
+    },
+    {
+      "slug": "date-time-picker",
+      "category": "forms",
+      "title": "Date Time Picker",
+      "file": "forms/date-time-picker.json"
+    },
+    {
+      "slug": "editors",
+      "category": "forms",
+      "title": "Editors",
+      "file": "forms/editors.json"
+    },
+    {
+      "slug": "file-input",
+      "category": "forms",
+      "title": "File Input",
+      "file": "forms/file-input.json"
+    },
+    {
+      "slug": "form-layouts",
+      "category": "forms",
+      "title": "Form Layouts",
+      "file": "forms/form-layouts.json"
+    },
+    {
+      "slug": "form-validation",
+      "category": "forms",
+      "title": "Form Validation",
+      "file": "forms/form-validation.json"
+    },
+    {
+      "slug": "form-wizard-icons",
+      "category": "forms",
+      "title": "Form Wizard Icons",
+      "file": "forms/form-wizard-icons.json"
+    },
+    {
+      "slug": "form-wizard-numbered",
+      "category": "forms",
+      "title": "Form Wizard Numbered",
+      "file": "forms/form-wizard-numbered.json"
+    },
+    {
+      "slug": "radio",
+      "category": "forms",
+      "title": "Radio",
+      "file": "forms/radio.json"
+    },
+    {
+      "slug": "range-slider",
+      "category": "forms",
+      "title": "Range Slider",
+      "file": "forms/range-slider.json"
+    },
+    {
+      "slug": "rating",
+      "category": "forms",
+      "title": "Rating",
+      "file": "forms/rating.json"
+    },
+    {
+      "slug": "select",
+      "category": "forms",
+      "title": "Select",
+      "file": "forms/select.json"
+    },
+    {
+      "slug": "slider",
+      "category": "forms",
+      "title": "Slider",
+      "file": "forms/slider.json"
+    },
+    {
+      "slug": "switch",
+      "category": "forms",
+      "title": "Switch",
+      "file": "forms/switch.json"
+    },
+    {
+      "slug": "textarea",
+      "category": "forms",
+      "title": "Textarea",
+      "file": "forms/textarea.json"
+    },
+    {
+      "slug": "textfield",
+      "category": "forms",
+      "title": "Text Field",
+      "file": "forms/textfield.json"
+    },
+    {
+      "slug": "checkout",
+      "category": "front-pages",
+      "title": "Checkout",
+      "file": "front-pages/checkout.json"
+    },
+    {
+      "slug": "help-center",
+      "category": "front-pages",
+      "title": "Help Center",
+      "file": "front-pages/help-center.json"
+    },
+    {
+      "slug": "landing-page",
+      "category": "front-pages",
+      "title": "Landing Page",
+      "file": "front-pages/landing-page.json"
+    },
+    {
+      "slug": "payment",
+      "category": "front-pages",
+      "title": "Payment",
+      "file": "front-pages/payment.json"
+    },
+    {
+      "slug": "pricing",
+      "category": "front-pages",
+      "title": "Pricing",
+      "file": "front-pages/pricing.json"
+    },
+    {
+      "slug": "account-settings-account",
+      "category": "pages",
+      "title": "Account Settings",
+      "file": "pages/account-settings-account.json"
+    },
+    {
+      "slug": "authentication-forgot-password-v1",
+      "category": "pages",
+      "title": "Forgot Password V1",
+      "file": "pages/authentication-forgot-password-v1.json"
+    },
+    {
+      "slug": "authentication-forgot-password-v2",
+      "category": "pages",
+      "title": "Forgot Password V2",
+      "file": "pages/authentication-forgot-password-v2.json"
+    },
+    {
+      "slug": "authentication-login-v1",
+      "category": "pages",
+      "title": "Login V1",
+      "file": "pages/authentication-login-v1.json"
+    },
+    {
+      "slug": "authentication-login-v2",
+      "category": "pages",
+      "title": "Login V2",
+      "file": "pages/authentication-login-v2.json"
+    },
+    {
+      "slug": "authentication-register-multi-steps",
+      "category": "pages",
+      "title": "Register Multi Steps",
+      "file": "pages/authentication-register-multi-steps.json"
+    },
+    {
+      "slug": "authentication-register-v1",
+      "category": "pages",
+      "title": "Register V1",
+      "file": "pages/authentication-register-v1.json"
+    },
+    {
+      "slug": "authentication-register-v2",
+      "category": "pages",
+      "title": "Register V2",
+      "file": "pages/authentication-register-v2.json"
+    },
+    {
+      "slug": "authentication-reset-password-v1",
+      "category": "pages",
+      "title": "Reset Password V1",
+      "file": "pages/authentication-reset-password-v1.json"
+    },
+    {
+      "slug": "authentication-reset-password-v2",
+      "category": "pages",
+      "title": "Reset Password V2",
+      "file": "pages/authentication-reset-password-v2.json"
+    },
+    {
+      "slug": "authentication-two-steps-v1",
+      "category": "pages",
+      "title": "Two Steps Verification V1",
+      "file": "pages/authentication-two-steps-v1.json"
+    },
+    {
+      "slug": "authentication-two-steps-v2",
+      "category": "pages",
+      "title": "Two Steps Verification V2",
+      "file": "pages/authentication-two-steps-v2.json"
+    },
+    {
+      "slug": "authentication-verify-email-v1",
+      "category": "pages",
+      "title": "Verify Email V1",
+      "file": "pages/authentication-verify-email-v1.json"
+    },
+    {
+      "slug": "authentication-verify-email-v2",
+      "category": "pages",
+      "title": "Verify Email V2",
+      "file": "pages/authentication-verify-email-v2.json"
+    },
+    {
+      "slug": "cards-card-actions",
+      "category": "pages",
+      "title": "Card Actions",
+      "file": "pages/cards-card-actions.json"
+    },
+    {
+      "slug": "cards-card-advance",
+      "category": "pages",
+      "title": "Card Advance",
+      "file": "pages/cards-card-advance.json"
+    },
+    {
+      "slug": "cards-card-basic",
+      "category": "pages",
+      "title": "Card Basic",
+      "file": "pages/cards-card-basic.json"
+    },
+    {
+      "slug": "cards-card-gamification",
+      "category": "pages",
+      "title": "Card Gamification",
+      "file": "pages/cards-card-gamification.json"
+    },
+    {
+      "slug": "cards-card-statistics",
+      "category": "pages",
+      "title": "Card Statistics",
+      "file": "pages/cards-card-statistics.json"
+    },
+    {
+      "slug": "cards-card-widgets",
+      "category": "pages",
+      "title": "Card Widgets",
+      "file": "pages/cards-card-widgets.json"
+    },
+    {
+      "slug": "dialog-examples",
+      "category": "pages",
+      "title": "Dialog Examples",
+      "file": "pages/dialog-examples.json"
+    },
+    {
+      "slug": "faq",
+      "category": "pages",
+      "title": "FAQ",
+      "file": "pages/faq.json"
+    },
+    {
+      "slug": "icons",
+      "category": "pages",
+      "title": "Icons",
+      "file": "pages/icons.json"
+    },
+    {
+      "slug": "misc-coming-soon",
+      "category": "pages",
+      "title": "Coming Soon",
+      "file": "pages/misc-coming-soon.json"
+    },
+    {
+      "slug": "misc-not-authorized",
+      "category": "pages",
+      "title": "Not Authorized (401)",
+      "file": "pages/misc-not-authorized.json"
+    },
+    {
+      "slug": "misc-not-found",
+      "category": "pages",
+      "title": "Not Found (404)",
+      "file": "pages/misc-not-found.json"
+    },
+    {
+      "slug": "misc-under-maintenance",
+      "category": "pages",
+      "title": "Under Maintenance",
+      "file": "pages/misc-under-maintenance.json"
+    },
+    {
+      "slug": "pricing",
+      "category": "pages",
+      "title": "Pricing",
+      "file": "pages/pricing.json"
+    },
+    {
+      "slug": "typography",
+      "category": "pages",
+      "title": "Typography",
+      "file": "pages/typography.json"
+    },
+    {
+      "slug": "user-profile-profile",
+      "category": "pages",
+      "title": "User Profile",
+      "file": "pages/user-profile-profile.json"
+    },
+    {
+      "slug": "data-table",
+      "category": "tables",
+      "title": "Data Table",
+      "file": "tables/data-table.json"
+    },
+    {
+      "slug": "simple-table",
+      "category": "tables",
+      "title": "Simple Table",
+      "file": "tables/simple-table.json"
+    },
+    {
+      "slug": "checkout",
+      "category": "wizard-examples",
+      "title": "Checkout Wizard",
+      "file": "wizard-examples/checkout.json"
+    },
+    {
+      "slug": "create-deal",
+      "category": "wizard-examples",
+      "title": "Create Deal Wizard",
+      "file": "wizard-examples/create-deal.json"
+    },
+    {
+      "slug": "property-listing",
+      "category": "wizard-examples",
+      "title": "Property Listing Wizard",
+      "file": "wizard-examples/property-listing.json"
+    }
+  ],
+  "skipped": []
+}
