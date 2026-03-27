@@ -287,7 +287,35 @@ Check `src/components/dumb/shared/` before creating new UI:
 
 ## Vuetify Reference
 
-For Vuetify 4 API questions, use the Context7 MCP (`mcp__claude_ai_Context7__query-docs`) with library ID `/vuetifyjs/vuetify` to look up component props, events, and slots.
+For Vuetify 4 API questions, use the `vuetify-mcp` server directly — it has dedicated tools for component API, directives, feature guides, and breaking changes. Do not use Context7 for Vuetify.
+
+## MCP Workflow for UI/UX Development
+
+When working on visual/UI changes, follow this tool workflow automatically:
+
+### Explore Phase (before writing code)
+- Take a Chrome DevTools screenshot of the current page state before making changes
+- If the user hasn't specified which page, ask
+
+### Research Phase (before writing code)
+- **Vuetify components**: Use `vuetify-mcp` to look up component API (props, slots, events) — never guess Vuetify 4 API details
+- **FullCalendar**: Use Context7 with library `/fullcalendar/fullcalendar-docs` to look up event props, view config, styling customization
+- **Vue 3 patterns**: Use Context7 with `/vuejs/core` for composable patterns, slot syntax, lifecycle questions
+- Only look up what's needed for the current task — don't pre-fetch everything
+
+### Code Phase
+- Write changes, then proactively take a Chrome DevTools screenshot to verify the result
+- If the screenshot reveals issues, fix them before presenting to the user
+
+### Debug Phase (when something looks off)
+- Check console messages via Chrome DevTools for runtime errors
+- Check network requests if data isn't rendering
+- Use Vuetify MCP to verify correct prop usage if a component isn't behaving as expected
+
+### Context7 Library Quick Reference
+- **Vuetify 4**: Use `vuetify-mcp` directly (not Context7)
+- **FullCalendar**: `/fullcalendar/fullcalendar-docs`
+- **Vue 3**: `/vuejs/core`
 
 ## Fixing Type Errors
 
