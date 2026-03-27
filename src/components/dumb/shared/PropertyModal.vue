@@ -37,7 +37,7 @@
           :steps="wizardSteps"
           :submit-loading="loading"
           submit-text="Create Property"
-          @step-change="handleStepChange"
+          :before-next="handleBeforeNext"
           @submit="handleSubmit"
         >
           <!-- Step 0: Property Details -->
@@ -657,16 +657,12 @@
 
   // METHODS
 
-  // Handle wizard step changes with validation
-  async function handleStepChange (from: number, to: number) {
-    // Only validate when moving forward
-    if (to > from && from === 0) {
-      const valid = await validateStep1()
-      if (!valid) {
-        // Revert step
-        wizardStep.value = from
-      }
+  // Validate before allowing the wizard to advance
+  async function handleBeforeNext (from: number, _to: number): Promise<boolean> {
+    if (from === 0) {
+      return await validateStep1()
     }
+    return true
   }
 
   // Reset form to default or to property data
