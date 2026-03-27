@@ -1,0 +1,63 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/dashboards/academy",
+  "title": "Academy Dashboard",
+  "category": "dashboards",
+  "screenshot": "dashboards/academy.png",
+  "summary": "Academy/LMS dashboard with a welcome banner showing user greeting, total courses and course completions stats with a circular time-spending donut chart at top-right. Second row features a topic interest horizontal bar chart with colored category bars, and a popular instructors avatar list with course counts. Third row has top courses list with icons and ratings, an upcoming webinar card with countdown timer and join button, and an assignment progress list with circular progress indicators. Bottom section contains a full-width data table of enrolled courses with columns for name, time, progress bar, and status chip.",
+  "components": [
+    "v-card",
+    "v-chip",
+    "v-btn",
+    "v-avatar",
+    "v-table",
+    "v-list",
+    "v-list-item",
+    "v-icon",
+    "v-divider",
+    "v-progress-linear",
+    "v-progress-circular",
+    "v-img"
+  ],
+  "layout": {
+    "type": "grid",
+    "columns": "12-column grid: top row has welcome banner (8 cols) and time-spending donut (4 cols); second row has topic-interest chart (6 cols) and popular instructors (6 cols); third row has top-courses (4 cols), upcoming-webinar (4 cols), assignment-progress (4 cols); bottom row is full-width courses table (12 cols)",
+    "sections": [
+      "welcome-banner-with-stats",
+      "time-spending-donut",
+      "topic-interest-chart",
+      "popular-instructors",
+      "top-courses",
+      "upcoming-webinar",
+      "assignment-progress",
+      "courses-data-table"
+    ]
+  },
+  "patterns": [
+    "welcome-banner",
+    "stat-pill",
+    "donut-chart",
+    "bar-chart",
+    "avatar-list",
+    "progress-list",
+    "countdown-timer-card",
+    "data-table-with-search",
+    "course-list-with-ratings",
+    "circular-progress-list"
+  ],
+  "colors": [
+    "primary",
+    "success",
+    "warning",
+    "info",
+    "error",
+    "secondary"
+  ],
+  "interactions": [
+    "hover-elevation",
+    "sortable-table",
+    "pagination",
+    "button-cta",
+    "status-chip",
+    "progress-bar-inline"
+  ]
+}
