@@ -65,8 +65,6 @@
   import type { Booking } from '@/types/booking.ts'
   import type { Property } from '@/types/property.ts'
   import { computed, onMounted, ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { useDisplay } from 'vuetify'
   import AdminWelcomeBanner from '@/components/dumb/admin/AdminWelcomeBanner.vue'
   import CleanerAvailabilityCard from '@/components/dumb/admin/CleanerAvailabilityCard.vue'
   import TopPropertiesCard from '@/components/dumb/admin/TopPropertiesCard.vue'
@@ -82,8 +80,6 @@
   import { calculateBookingPriority } from '@/utils/businessLogic'
 
   // Composables
-  const router = useRouter()
-  const { mobile } = useDisplay()
   const authStore = useAuthStore()
   const uiStore = useUIStore()
   const {
@@ -101,10 +97,7 @@
     fetchAllUsers,
   } = useAdminUserManagement()
 
-  // Reactive state
-  const selectedTimeFilter = ref('today')
   const loading = ref(false)
-  const currentViewingDate = ref(new Date())
 
   const allPropertiesArray = computed<Property[]>(() => allProperties.value as Property[])
   const allBookingsArray = computed<Booking[]>(() => allBookings.value as Booking[])
@@ -130,24 +123,6 @@
       totalProperties: total,
       activeProperties: active,
       bookedProperties: booked,
-    }
-  })
-
-  const clientsData = computed(() => {
-    const propertyOwners = users.value.filter(u => u.role === 'owner')
-    const now = new Date()
-    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString().split('T')[0]
-
-    const activeThisMonth = allBookingsArray.value
-      .filter(b => b.checkout_date >= firstDayOfMonth)
-      .map(b => allPropertiesArray.value.find(p => p.id === b.property_id)?.owner_id)
-      .filter(Boolean)
-      .reduce((acc, ownerId) => acc.add(ownerId), new Set())
-      .size
-
-    return {
-      totalClients: propertyOwners.length,
-      activeThisMonth,
     }
   })
 
@@ -321,138 +296,6 @@
     })
   })
 
-  // Time filter computed (kept for potential future use)
-  const timeFilterLabel = computed(() => {
-    switch (selectedTimeFilter.value) {
-      case 'today': { return 'Today'
-      }
-      case 'tomorrow': { return 'Tomorrow'
-      }
-      case 'week': { return 'Next 7 Days'
-      }
-      default: { return 'Today'
-      }
-    }
-  })
-
-  // Filtered bookings (kept for potential future use)
-  const filteredCheckouts = computed(() => {
-    const filter = getDateFilter(selectedTimeFilter.value)
-    return allBookingsArray.value
-      .filter(booking =>
-        booking.booking_type !== 'turn'
-        && booking.checkout_date >= filter.start
-        && booking.checkout_date <= filter.end
-        && booking.status !== 'completed',
-      )
-      .toSorted((a, b) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
-  })
-
-  const filteredTurns = computed(() => {
-    const filter = getDateFilter(selectedTimeFilter.value)
-    return allBookingsArray.value
-      .filter(booking =>
-        booking.booking_type === 'turn'
-        && booking.checkout_date >= filter.start
-        && booking.checkout_date <= filter.end
-        && booking.status !== 'completed',
-      )
-      .toSorted((a, b) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
-  })
-
-  // Helper functions
-  function getDateFilter (filter: string) {
-    const now = new Date()
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-
-    switch (filter) {
-      case 'today': {
-        return {
-          start: today.toISOString().split('T')[0],
-          end: today.toISOString().split('T')[0],
-        }
-      }
-      case 'tomorrow': {
-        const tomorrow = new Date(today)
-        tomorrow.setDate(today.getDate() + 1)
-        return {
-          start: tomorrow.toISOString().split('T')[0],
-          end: tomorrow.toISOString().split('T')[0],
-        }
-      }
-      case 'week': {
-        const weekEnd = new Date(today)
-        weekEnd.setDate(today.getDate() + 6)
-        return {
-          start: today.toISOString().split('T')[0],
-          end: weekEnd.toISOString().split('T')[0],
-        }
-      }
-      default: {
-        return {
-          start: today.toISOString().split('T')[0],
-          end: today.toISOString().split('T')[0],
-        }
-      }
-    }
-  }
-
-  function getPropertyName (propertyId: string): string {
-    const property = allPropertiesArray.value.find(p => p.id === propertyId)
-    return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
-  }
-
-  function getPropertyAddress (propertyId: string): string {
-    const property = allPropertiesArray.value.find(p => p.id === propertyId)
-    return property ? formatPropertyAddress(property) : 'Address not available'
-  }
-
-  function formatTime (dateString: string): string {
-    const date = new Date(dateString)
-    return date.toLocaleTimeString('en-US', {
-      hour: 'numeric',
-      minute: '2-digit',
-      hour12: true,
-    })
-  }
-
-  function getNextCheckinDays (booking: Booking): string {
-    if (booking.checkin_date) {
-      const checkinDate = new Date(booking.checkin_date)
-      const checkoutDate = new Date(booking.checkout_date)
-      const diffTime = checkinDate.getTime() - checkoutDate.getTime()
-      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-
-      if (diffDays === 0) return 'Same day'
-      if (diffDays === 1) return 'Next day'
-      return `${diffDays} days`
-    }
-    return 'Not set'
-  }
-
-  function getCleaningWindow (turn: Booking): string {
-    const checkoutTime = new Date(turn.checkout_date)
-    const checkinTime = turn.checkin_date ? new Date(turn.checkin_date) : null
-
-    if (!checkinTime) return 'TBD'
-
-    const diffHours = (checkinTime.getTime() - checkoutTime.getTime()) / (1000 * 60 * 60)
-
-    if (diffHours <= 2) return 'URGENT'
-    if (diffHours <= 4) return 'TIGHT'
-    return `${Math.round(diffHours)}h window`
-  }
-
-  function getTurnUrgencyColor (turn: Booking): string {
-    const now = new Date()
-    const checkoutTime = new Date(turn.checkout_date)
-    const hoursUntil = (checkoutTime.getTime() - now.getTime()) / (1000 * 60 * 60)
-
-    if (hoursUntil <= 2) return 'error'
-    if (hoursUntil <= 6) return 'warning'
-    return 'orange'
-  }
-
   // Actions
   async function refreshDashboard () {
     loading.value = true
@@ -469,106 +312,6 @@
       loading.value = false
     }
   }
-
-  function goToMasterSchedule () {
-    router.push('/admin/schedule')
-  }
-
-  function viewBooking (booking: Booking) {
-    router.push(`/admin/bookings/${booking.id}`)
-  }
-
-  function assignCleaner (turn: Booking) {
-    // TODO: Open cleaner assignment modal
-    console.log('Assign cleaner to turn:', turn.id)
-  }
-
-  // Calendar preview methods
-  function getCurrentMonthYear () {
-    return currentViewingDate.value.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-  }
-
-  function navigateToPreviousMonth () {
-    const newDate = new Date(currentViewingDate.value)
-    newDate.setMonth(newDate.getMonth() - 1)
-    currentViewingDate.value = newDate
-  }
-
-  function navigateToNextMonth () {
-    const newDate = new Date(currentViewingDate.value)
-    newDate.setMonth(newDate.getMonth() + 1)
-    currentViewingDate.value = newDate
-  }
-
-  function getCalendarDays () {
-    const year = currentViewingDate.value.getFullYear()
-    const month = currentViewingDate.value.getMonth()
-
-    const firstDay = new Date(year, month, 1)
-    const startDate = new Date(firstDay)
-    startDate.setDate(startDate.getDate() - firstDay.getDay())
-
-    const days = []
-    const currentDate = new Date(startDate)
-    const today = new Date().toISOString().split('T')[0]
-
-    for (let i = 0; i < 42; i++) {
-      const dateStr = currentDate.toISOString().split('T')[0]
-      const dayBookings = allBookings.value.filter(b => b.checkout_date.startsWith(dateStr))
-      const turns = dayBookings.filter(b => b.booking_type === 'turn')
-
-      days.push({
-        day: currentDate.getDate(),
-        date: dateStr,
-        isToday: dateStr === today,
-        isCurrentMonth: currentDate.getMonth() === month,
-        bookingCount: dayBookings.length,
-        turnCount: turns.length,
-      })
-
-      currentDate.setDate(currentDate.getDate() + 1)
-    }
-
-    return days
-  }
-
-  function getWeeklyStats () {
-    const now = new Date()
-    const startOfWeek = new Date(now)
-    startOfWeek.setDate(now.getDate() - now.getDay())
-    const endOfWeek = new Date(startOfWeek)
-    endOfWeek.setDate(startOfWeek.getDate() + 6)
-
-    const weekStart = startOfWeek.toISOString().split('T')[0]
-    const weekEnd = endOfWeek.toISOString().split('T')[0]
-
-    const weekBookings = allBookings.value.filter(b =>
-      b.checkout_date >= weekStart && b.checkout_date <= weekEnd,
-    )
-
-    return {
-      totalBookings: weekBookings.length,
-      turns: weekBookings.filter(b => b.booking_type === 'turn').length,
-      completed: weekBookings.filter(b => b.status === 'completed').length,
-      upcoming: weekBookings.filter(b => b.status !== 'completed' && b.status !== 'cancelled').length,
-    }
-  }
-
-  function getTodaySchedule () {
-    const today = new Date().toISOString().split('T')[0]
-    return allBookings.value
-      .filter(booking => booking.checkout_date.startsWith(today) && booking.status !== 'completed')
-      .toSorted((a, b) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
-  }
-
-  // Suppress unused warnings for functions kept for backward compat / future use
-  void [
-    mobile, clientsData, timeFilterLabel, filteredCheckouts, filteredTurns,
-    getPropertyName, getPropertyAddress, formatTime, getNextCheckinDays,
-    getCleaningWindow, getTurnUrgencyColor, goToMasterSchedule, viewBooking,
-    assignCleaner, getCurrentMonthYear, navigateToPreviousMonth, navigateToNextMonth,
-    getCalendarDays, getWeeklyStats, getTodaySchedule,
-  ]
 
   // Initialize
   onMounted(() => {

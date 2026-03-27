@@ -76,6 +76,7 @@
 
 <script setup lang="ts">
   import type { BookingStatus, BookingType } from '@/types'
+  import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/constants'
 
   interface UpcomingBooking {
     property: string
@@ -106,28 +107,8 @@
     return `${startStr} - ${endStr}`
   }
 
-  function formatStatus (status: string): string {
-    return status.replace(/_/g, ' ')
-  }
-
   function typeColor (type: string): string {
     return type === 'turn' ? 'warning' : 'info'
-  }
-
-  function statusColor (status: string): string {
-    switch (status) {
-      case 'completed': { return 'success'
-      }
-      case 'in_progress': { return 'info'
-      }
-      case 'scheduled': { return 'primary'
-      }
-      case 'cancelled': { return 'error'
-      }
-      case 'pending':
-      default: { return 'warning'
-      }
-    }
   }
 </script>
 

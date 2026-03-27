@@ -497,10 +497,15 @@
 
   onMounted(async () => {
     if (authStore.isAuthenticated && authStore.user?.role === 'owner') {
-      await Promise.all([
-        fetchMyProperties(),
-        fetchMyBookings(),
-      ])
+      try {
+        await Promise.all([
+          fetchMyProperties(),
+          fetchMyBookings(),
+        ])
+      } catch (error: unknown) {
+        console.error('Failed to load properties data:', error)
+        uiStore.addNotification('error', 'Error', 'Failed to load properties. Please refresh.')
+      }
     }
   })
 </script>

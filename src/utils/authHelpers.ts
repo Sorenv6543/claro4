@@ -178,11 +178,11 @@ export function validateRoleNavigation (userRole: UserRole | undefined, targetPa
     }
   }
 
-  // Cleaner trying to access owner/admin routes
+  // Cleaner trying to access owner/admin routes — no cleaner UI yet
   if (userRole === 'cleaner' && (targetPath.startsWith('/admin') || targetPath.startsWith('/owner'))) {
     return {
       allowed: false,
-      redirectTo: '/cleaner/dashboard',
+      redirectTo: '/',
       message: 'Access denied. Insufficient privileges.',
     }
   }
