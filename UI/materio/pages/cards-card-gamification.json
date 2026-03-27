@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/cards/card-gamification",
+  "title": "Card Gamification",
+  "category": "pages",
+  "screenshot": "pages/cards-card-gamification.png",
+  "summary": "Row of gamification-style welcome/congratulations banner cards. Each features a greeting message with user name, achievement stats (revenue, ratings), decorative illustrations (trophy, character), and CTA buttons. Used as dashboard hero cards with celebration/achievement themes.",
+  "components": ["v-card", "v-card-text", "v-btn", "v-img", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of gamification cards",
+    "sections": ["congratulations-card", "welcome-back-card", "upgrade-card"]
+  },
+  "patterns": ["welcome-banner", "card-grid"],
+  "colors": ["primary", "warning"],
+  "interactions": ["cta-button"]
+}

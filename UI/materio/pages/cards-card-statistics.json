@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/cards/card-statistics",
+  "title": "Card Statistics",
+  "category": "pages",
+  "screenshot": "pages/cards-card-statistics.png",
+  "summary": "Dense grid of statistics card patterns. Top row shows grouped stat cards (4-in-1 with icons). Below are individual stat cards with colored icon avatars showing metrics (transactions, revenue, profit, etc.) with trend arrows. Also includes cards with mini sparkline charts (line, bar, area), progress bars, and rating-style stat displays.",
+  "components": ["v-card", "v-card-text", "v-avatar", "v-icon", "v-chip", "v-progress-linear", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "4-column top row, 2-3 column below",
+    "sections": ["grouped-stats", "icon-stat-cards", "sparkline-stat-cards", "progress-stat-cards", "trend-stat-cards"]
+  },
+  "patterns": ["stat-card-with-icon", "stat-pill", "line-chart", "bar-chart", "card-grid"],
+  "colors": ["primary", "success", "warning", "error", "info", "secondary"],
+  "interactions": ["menu-dropdown"]
+}

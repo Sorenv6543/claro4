@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/wizard-examples/property-listing",
+  "title": "Property Listing Wizard",
+  "category": "wizard-examples",
+  "screenshot": "wizard-examples/property-listing.png",
+  "summary": "Multi-step property listing wizard with 5 steps listed vertically on the left (Personal Details, Property Details, Property Features, Property Area, Price Details). Right side shows the current step with 3 selectable cards (house icon options) and form fields. Vertical stepper layout with icon indicators.",
+  "components": ["v-stepper", "v-card", "v-card-text", "v-btn", "v-text-field", "v-select", "v-icon", "v-row", "v-col"],
+  "layout": {
+    "type": "split",
+    "columns": "vertical step list (left) + form content (right)",
+    "sections": ["vertical-stepper-nav", "selectable-type-cards", "form-fields", "step-navigation"]
+  },
+  "patterns": ["form-wizard-icon", "selectable-card-input"],
+  "colors": ["primary"],
+  "interactions": ["card-selection", "step-navigation"]
+}

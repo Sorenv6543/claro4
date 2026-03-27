@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/cards/card-advance",
+  "title": "Card Advance",
+  "category": "pages",
+  "screenshot": "pages/cards-card-advance.png",
+  "summary": "Rich collection of advanced card patterns in a multi-column grid. Includes cards with charts (bar, line, donut), data tables, avatar lists, transaction lists, progress indicators, timeline items, meeting schedules, payment summaries, activity feeds, and stat cards with sparklines. Dense layout showcasing real-world dashboard card patterns.",
+  "components": ["v-card", "v-card-title", "v-card-text", "v-avatar", "v-chip", "v-list", "v-list-item", "v-progress-linear", "v-btn", "v-icon", "v-divider", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-3 column responsive grid of advanced cards",
+    "sections": ["chart-cards", "data-list-cards", "transaction-cards", "progress-cards", "timeline-cards", "stat-cards"]
+  },
+  "patterns": ["stat-card-with-icon", "avatar-list", "progress-list", "timeline", "line-chart", "bar-chart", "donut-chart", "card-grid"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["tab-switch", "menu-dropdown"]
+}

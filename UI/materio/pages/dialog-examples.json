@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/dialog-examples",
+  "title": "Dialog Examples",
+  "category": "pages",
+  "screenshot": "pages/dialog-examples.png",
+  "summary": "Grid of dialog trigger cards, each representing a common dialog use case. Includes share project, add new card, refer & earn, add new address, create app, two-factor auth, edit user info, payment providers, and add payment methods dialogs. Each card shows an icon, title, description, and button to open the dialog.",
+  "components": ["v-card", "v-card-text", "v-btn", "v-icon", "v-dialog", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "3-column grid of dialog trigger cards",
+    "sections": ["share-project", "add-card", "refer-earn", "add-address", "create-app", "two-factor-auth", "edit-user-info", "payment-providers", "add-payment"]
+  },
+  "patterns": ["card-grid"],
+  "colors": ["primary"],
+  "interactions": ["dialog-open-close", "form-submit"]
+}

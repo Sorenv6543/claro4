@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/rating",
+  "title": "Rating",
+  "category": "forms",
+  "screenshot": "forms/rating.png",
+  "summary": "Showcase of v-rating in a 2-column grid. Demonstrates basic star rating, density, color variants, size variations, length (number of stars), clearable, readonly, hover feedback, incremented (half stars), and item-slot customization with emoji ratings.",
+  "components": ["v-rating", "v-card", "v-card-title", "v-card-text", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "density", "colors", "size", "length", "clearable", "readonly", "hover", "incremented", "item-slot"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary", "warning", "error"],
+  "interactions": ["star-click", "hover-preview", "half-star-select"]
+}

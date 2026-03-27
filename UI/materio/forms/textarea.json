@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/textarea",
+  "title": "Textarea",
+  "category": "forms",
+  "screenshot": "forms/textarea.png",
+  "summary": "Showcase of v-textarea in a 2-column grid. Demonstrates basic usage, auto-grow, variant styles, states (disabled, readonly), browser autocomplete, clearable, counter with character limit, no-resize, rows configuration, and validation with error messages.",
+  "components": ["v-textarea", "v-card", "v-card-title", "v-card-text", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "auto-grow", "variant", "states", "browser-autocomplete", "clearable", "counter", "no-resize", "rows", "validation"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary"],
+  "interactions": ["auto-grow-resize", "clearable-action", "counter-limit"]
+}

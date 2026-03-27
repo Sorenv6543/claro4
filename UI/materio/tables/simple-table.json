@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/tables/simple-table",
+  "title": "Simple Table",
+  "category": "tables",
+  "screenshot": "tables/simple-table.png",
+  "summary": "Showcase of v-table (simple HTML-style table) variants stacked vertically. Demonstrates basic table with dessert nutrition data, themed rows with dark header, dense/compact mode, height-constrained with scroll, and fixed-header with scrollable body. Each in its own card.",
+  "components": ["v-table", "v-card", "v-card-title", "v-card-text"],
+  "layout": {
+    "type": "single-column",
+    "columns": "full-width stacked table cards",
+    "sections": ["basic", "theme", "dense", "height", "fixed-header"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary"],
+  "interactions": ["scroll-table"]
+}

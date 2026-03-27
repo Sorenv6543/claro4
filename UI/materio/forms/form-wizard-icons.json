@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/form-wizard-icons",
+  "title": "Form Wizard Icons",
+  "category": "forms",
+  "screenshot": "forms/form-wizard-icons.png",
+  "summary": "Three multi-step form wizard variants using icon-based step indicators. Basic wizard with 4 icon steps (Account Details, Personal Info, Address, Social Links) with form fields per step. Validation wizard showing inline errors. Vertical wizard with steps listed on the left side. Each wizard in its own card with Next/Previous navigation.",
+  "components": ["v-stepper", "v-stepper-header", "v-stepper-item", "v-stepper-window", "v-text-field", "v-select", "v-btn", "v-card", "v-icon", "v-row", "v-col"],
+  "layout": {
+    "type": "single-column",
+    "columns": "full-width stacked wizard cards",
+    "sections": ["basic-icon-wizard", "validation-wizard", "vertical-wizard"]
+  },
+  "patterns": ["form-wizard-icon"],
+  "colors": ["primary", "error"],
+  "interactions": ["step-navigation", "step-validation", "next-previous"]
+}

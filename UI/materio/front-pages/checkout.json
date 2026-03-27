@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/front-pages/checkout",
+  "title": "Checkout",
+  "category": "front-pages",
+  "screenshot": "front-pages/checkout.png",
+  "summary": "Multi-step checkout wizard with 4 icon steps (Cart, Address, Payment, Confirmation). Current step shows shopping bag with product cards (images, ratings, quantity controls), alongside an order summary sidebar with price breakdown, gift card promo field, and place-order button. Public front-page layout with top navbar and dark footer.",
+  "components": ["v-stepper", "v-card", "v-card-text", "v-btn", "v-text-field", "v-rating", "v-chip", "v-divider", "v-img", "v-row", "v-col"],
+  "layout": {
+    "type": "split",
+    "columns": "2-column: cart items (left, wider) + order summary sidebar (right)",
+    "sections": ["stepper-header", "shopping-bag", "order-summary", "footer"]
+  },
+  "patterns": ["checkout-wizard", "cart-item-list", "order-summary-sidebar"],
+  "colors": ["primary", "success", "warning"],
+  "interactions": ["step-navigation", "quantity-adjust", "promo-code-apply", "place-order"]
+}

@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/form-wizard-numbered",
+  "title": "Form Wizard Numbered",
+  "category": "forms",
+  "screenshot": "forms/form-wizard-numbered.png",
+  "summary": "Three multi-step form wizard variants using numbered step indicators. Basic wizard with numbered circle steps (1-Account Details, 2-Personal Info, 3-Social Links). Validation wizard with inline error messages. Vertical wizard with numbered steps listed on the left. Each has form fields and Next/Previous navigation.",
+  "components": ["v-stepper", "v-stepper-header", "v-stepper-item", "v-stepper-window", "v-text-field", "v-select", "v-btn", "v-card", "v-row", "v-col"],
+  "layout": {
+    "type": "single-column",
+    "columns": "full-width stacked wizard cards",
+    "sections": ["basic-numbered-wizard", "validation-wizard", "vertical-wizard"]
+  },
+  "patterns": ["form-wizard-numbered"],
+  "colors": ["primary", "error"],
+  "interactions": ["step-navigation", "step-validation", "next-previous"]
+}
