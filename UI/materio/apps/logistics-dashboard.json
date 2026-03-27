@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/logistics/dashboard",
+  "title": "Logistics Dashboard",
+  "category": "apps",
+  "screenshot": "apps/logistics-dashboard.png",
+  "summary": "Logistics dashboard with top stat cards (on-route vehicles, vehicles with errors, departed trucks, late vehicles). Vehicle overview card with tab navigation (On the way, Unloading, Loading, Waiting) and a vehicle list with progress indicators. Shipment statistics grouped bar chart. Delivery performance list with colored progress bars. Delivery exceptions donut chart with legend. Orders by countries table. Bottom section has on-route vehicles data table with license plate, location, and status chips.",
+  "components": ["v-card", "v-chip", "v-tabs", "v-tab", "v-data-table", "v-avatar", "v-btn", "v-icon", "v-progress-linear", "v-list", "v-list-item"],
+  "layout": {
+    "type": "grid",
+    "columns": "4-column stat cards at top, 2-column middle (vehicle overview + shipment stats), 3-column row (delivery performance + exceptions donut + orders by country), full-width vehicles table at bottom",
+    "sections": ["stat-cards", "vehicle-overview", "shipment-statistics", "delivery-performance", "delivery-exceptions", "orders-by-country", "on-route-vehicles-table"]
+  },
+  "patterns": ["stat-card-with-icon", "tab-panel", "bar-chart", "donut-chart", "progress-list", "data-table-with-search"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["tab-switching", "chart-hover", "sortable-table", "pagination"]
+}

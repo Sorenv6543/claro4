@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/chat",
+  "title": "Chat",
+  "category": "apps",
+  "screenshot": "apps/chat.png",
+  "summary": "Chat application with left sidebar showing search bar and contact list with avatars, online status dots, and last message preview. Main area shows an empty state with chat illustration and 'Start Conversation' prompt when no chat is selected. Top bar has user info and action icons.",
+  "components": ["v-card", "v-avatar", "v-badge", "v-text-field", "v-list", "v-list-item", "v-btn", "v-icon", "v-img"],
+  "layout": {
+    "type": "split",
+    "columns": "Left contact sidebar (~25%) with search and contact list, main chat area (~75%) with empty state",
+    "sections": ["search-bar", "contact-list", "chat-area", "message-input"]
+  },
+  "patterns": ["chat-interface", "avatar-list"],
+  "colors": ["primary", "success"],
+  "interactions": ["contact-selection", "message-send", "search-filter"]
+}

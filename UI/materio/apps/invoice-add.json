@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/invoice/add",
+  "title": "Invoice Add",
+  "category": "apps",
+  "screenshot": "apps/invoice-add.png",
+  "summary": "Invoice creation form with a print-ready invoice card on the left showing company logo, invoice number, date fields, 'Invoice To' and 'Bill To' sections with selects, a line items table with item/cost/qty/price columns and add-item button, salesperson field, and notes textarea. Right sidebar has 'Send Invoice' card with email field and send button, plus payment details card with accepted payment methods and terms.",
+  "components": ["v-card", "v-text-field", "v-select", "v-btn", "v-table", "v-textarea", "v-divider", "v-icon"],
+  "layout": {
+    "type": "split",
+    "columns": "Left invoice form (~70%) with document-style layout, right action sidebar (~30%) with send and payment cards",
+    "sections": ["invoice-header", "invoice-to-bill-to", "line-items-table", "salesperson-notes", "send-invoice-card", "payment-details"]
+  },
+  "patterns": ["invoice-template", "form-standard"],
+  "colors": ["primary", "success"],
+  "interactions": ["add-line-item", "select-customer", "send-invoice"]
+}
