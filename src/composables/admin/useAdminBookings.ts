@@ -98,6 +98,56 @@ export function useAdminBookings () {
     )
   })
 
+  const todayBookingsByTime = computed(() => {
+    const today = new Date()
+    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
+    return allBookings.value
+      .filter((b: Booking) => b.checkout_date === todayStr || b.checkin_date === todayStr)
+      .sort((a: Booking, b: Booking) => {
+        const timeA = a.checkout_time || a.checkin_time || '00:00'
+        const timeB = b.checkout_time || b.checkin_time || '00:00'
+        return timeA.localeCompare(timeB)
+      })
+  })
+
+  const tomorrowBookings = computed(() => {
+    const tomorrow = new Date()
+    tomorrow.setDate(tomorrow.getDate() + 1)
+    const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`
+    return allBookings.value
+      .filter((b: Booking) => b.checkout_date === tomorrowStr || b.checkin_date === tomorrowStr)
+      .sort((a: Booking, b: Booking) => {
+        const timeA = a.checkout_time || a.checkin_time || '00:00'
+        const timeB = b.checkout_time || b.checkin_time || '00:00'
+        return timeA.localeCompare(timeB)
+      })
+  })
+
+  const unassignedToday = computed(() => {
+    return todayBookingsByTime.value.filter(
+      (b: Booking) => !b.assigned_cleaner_id && !b.assigned_team_id && (!b.assigned_group_ids || b.assigned_group_ids.length === 0)
+    )
+  })
+
+  const unassignedTomorrow = computed(() => {
+    return tomorrowBookings.value.filter(
+      (b: Booking) => !b.assigned_cleaner_id && !b.assigned_team_id && (!b.assigned_group_ids || b.assigned_group_ids.length === 0)
+    )
+  })
+
+  const urgentTurnsToday = computed(() => {
+    const now = new Date()
+    return todayBookingsByTime.value.filter((b: Booking) => {
+      if (b.booking_type !== 'turn') return false
+      if (b.status === 'completed' || b.status === 'cancelled') return false
+      const checkoutTime = b.checkout_time || '11:00'
+      const [hours, minutes] = checkoutTime.split(':').map(Number)
+      const checkoutDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes)
+      const hoursUntil = (checkoutDate.getTime() - now.getTime()) / (1000 * 60 * 60)
+      return hoursUntil <= 6 && hoursUntil > -2
+    })
+  })
+
   /**
    * Get bookings grouped by status (system-wide)
    */
@@ -634,6 +684,11 @@ export function useAdminBookings () {
     systemTurns,
     systemTodayTurns,
     unassignedBookings,
+    todayBookingsByTime,
+    tomorrowBookings,
+    unassignedToday,
+    unassignedTomorrow,
+    urgentTurnsToday,
     systemBookingsByStatus,
     bookingsByOwner,
     bookingsByCleaner,
@@ -650,6 +705,42 @@ export function useAdminBookings () {
         error.value = `Failed to assign cleaner: ${error_ instanceof Error ? error_.message : String(error_)}`
         console.error('[useAdminBookings] assignCleanerToBooking error:', error_)
         return false
+      }
+    },
+    assignTeamToBooking: async (bookingId: string, teamId: string): Promise<boolean> => {
+      loading.value = true
+      error.value = null
+      try {
+        await supaUpdate(bookingId, {
+          assigned_team_id: teamId,
+          assigned_cleaner_id: null,
+          assigned_group_ids: null,
+        } as Partial<Booking>)
+        success.value = 'Team assigned successfully'
+        return true
+      } catch (e) {
+        error.value = e instanceof Error ? e.message : 'Failed to assign team'
+        return false
+      } finally {
+        loading.value = false
+      }
+    },
+    assignGroupToBooking: async (bookingId: string, cleanerIds: string[]): Promise<boolean> => {
+      loading.value = true
+      error.value = null
+      try {
+        await supaUpdate(bookingId, {
+          assigned_group_ids: cleanerIds,
+          assigned_cleaner_id: null,
+          assigned_team_id: null,
+        } as Partial<Booking>)
+        success.value = 'Group assigned successfully'
+        return true
+      } catch (e) {
+        error.value = e instanceof Error ? e.message : 'Failed to assign group'
+        return false
+      } finally {
+        loading.value = false
       }
     },
     updateBookingStatus,
