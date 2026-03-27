@@ -11,6 +11,10 @@ export * from './booking'
 // Property types
 export * from './property'
 
+// Team types
+export type { CleanerTeam, CleanerTeamFormData } from './team'
+export { isCleanerTeam } from './team'
+
 // Router types
 export * from './router'
 
