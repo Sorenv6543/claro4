@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/user-profile/profile",
+  "title": "User Profile",
+  "category": "pages",
+  "screenshot": "pages/user-profile-profile.png",
+  "summary": "User profile page with a cover image banner, large avatar, name, role, and location. Tabbed sections below (Profile, Teams, Projects, Connections). Profile tab shows left sidebar with About info (contact, skills, stats) and right side with Activity Timeline, Connections grid with avatars and role chips, and a Project List data table.",
+  "components": ["v-card", "v-avatar", "v-img", "v-tabs", "v-tab", "v-chip", "v-btn", "v-icon", "v-list", "v-list-item", "v-timeline", "v-data-table", "v-row", "v-col"],
+  "layout": {
+    "type": "single-column",
+    "columns": "full-width header, then 2-column: sidebar (left) + content (right)",
+    "sections": ["profile-header-banner", "tab-navigation", "about-sidebar", "activity-timeline", "connections-grid", "project-list-table"]
+  },
+  "patterns": ["profile-header", "tab-panel", "timeline", "avatar-list", "data-table-with-search"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["tab-switch", "follow-button", "connection-link"]
+}

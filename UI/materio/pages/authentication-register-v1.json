@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/authentication/register-v1",
+  "title": "Register V1",
+  "category": "pages",
+  "screenshot": "pages/authentication-register-v1.png",
+  "summary": "Centered registration form on blank page with decorative illustrations. Contains Materio logo, heading, username/email/password fields, privacy policy checkbox, Sign Up button, 'Sign in instead' link, divider, and social login icons.",
+  "components": ["v-card", "v-text-field", "v-checkbox", "v-btn", "v-icon", "v-divider"],
+  "layout": {
+    "type": "single-column",
+    "columns": "centered card on blank background",
+    "sections": ["logo", "registration-form", "social-login"]
+  },
+  "patterns": ["registration-form"],
+  "colors": ["primary"],
+  "interactions": ["password-toggle", "form-submit", "social-auth"]
+}

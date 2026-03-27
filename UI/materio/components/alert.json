@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/components/alert",
+  "title": "Alert",
+  "category": "components",
+  "screenshot": "components/alert.png",
+  "summary": "Comprehensive showcase of v-alert variants in a single-column layout. Demonstrates colored alerts (success, info, warning, error), tonal, outlined, border-positioned, closable, colored-border, elevation, density, prominent, and type variants. Each section in its own card with description text.",
+  "components": ["v-alert", "v-card", "v-card-title", "v-card-text"],
+  "layout": {
+    "type": "single-column",
+    "columns": "full-width stacked cards",
+    "sections": ["basic-colors", "tonal", "outlined", "colorful-alerts", "closable", "border", "elevation", "density", "prominent", "type", "variants"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary", "secondary", "success", "info", "warning", "error"],
+  "interactions": ["closable-dismiss"]
+}

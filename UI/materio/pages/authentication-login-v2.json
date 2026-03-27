@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/authentication/login-v2",
+  "title": "Login V2",
+  "category": "pages",
+  "screenshot": "pages/authentication-login-v2.png",
+  "summary": "Split-screen login page. Left half shows 3D character illustration with floating dashboard cards (revenue, profit). Right half has login form with email, password, remember me, forgot password link, login button, sign-up link, and social login icons.",
+  "components": ["v-card", "v-text-field", "v-checkbox", "v-btn", "v-icon", "v-img", "v-row", "v-col"],
+  "layout": {
+    "type": "split",
+    "columns": "2-column: illustration (left) + form (right)",
+    "sections": ["illustration-panel", "login-form", "social-login"]
+  },
+  "patterns": ["login-form"],
+  "colors": ["primary"],
+  "interactions": ["password-toggle", "form-submit", "social-auth"]
+}

@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/pricing",
+  "title": "Pricing",
+  "category": "pages",
+  "screenshot": "pages/pricing.png",
+  "summary": "In-app pricing page with admin sidebar. Shows 3-tier pricing cards (Basic $0, Standard, Enterprise $57) with monthly/annually toggle, feature bullet lists, and upgrade buttons. Standard plan highlighted as 'Popular'. Part of the admin dashboard layout.",
+  "components": ["v-card", "v-btn", "v-switch", "v-icon", "v-chip", "v-row", "v-col"],
+  "layout": {
+    "type": "single-column",
+    "columns": "3 pricing cards in a centered row",
+    "sections": ["billing-toggle", "pricing-cards"]
+  },
+  "patterns": ["pricing-table"],
+  "colors": ["primary"],
+  "interactions": ["monthly-annual-toggle", "plan-upgrade"]
+}

@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/components/menu",
+  "title": "Menu",
+  "category": "components",
+  "screenshot": "components/menu.png",
+  "summary": "Showcase of v-menu component in a 2-column grid. Demonstrates basic dropdown, custom transitions, location positioning, open-on-hover, popover style, and activator-with-tooltip patterns. Each card has trigger buttons that open menu overlays.",
+  "components": ["v-menu", "v-list", "v-list-item", "v-btn", "v-card", "v-card-title", "v-card-text", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "custom-transitions", "location", "open-on-hover", "popover", "activator-tooltip"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["dropdown-open", "hover-trigger", "menu-positioning"]
+}

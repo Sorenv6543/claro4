@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/authentication/verify-email-v1",
+  "title": "Verify Email V1",
+  "category": "pages",
+  "screenshot": "pages/authentication-verify-email-v1.png",
+  "summary": "Centered verify email page on blank background with decorative illustrations. Shows Materio logo, heading, instruction text with email address, 'Skip For Now' button, and 'Resend' link for activation email.",
+  "components": ["v-card", "v-btn"],
+  "layout": {
+    "type": "single-column",
+    "columns": "centered card on blank background",
+    "sections": ["logo", "verify-email-message", "skip-button", "resend-link"]
+  },
+  "patterns": ["email-verification"],
+  "colors": ["primary"],
+  "interactions": ["skip-action", "resend-email"]
+}

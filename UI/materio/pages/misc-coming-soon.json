@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/misc/coming-soon",
+  "title": "Coming Soon",
+  "category": "pages",
+  "screenshot": "pages/misc-coming-soon.png",
+  "summary": "Full-page coming soon splash with centered heading, subtitle text, email input with 'Notify' button, and a large 3D character illustration. Decorative plant illustrations on sides. No sidebar or navigation.",
+  "components": ["v-text-field", "v-btn", "v-img"],
+  "layout": {
+    "type": "single-column",
+    "columns": "centered content, full-page layout",
+    "sections": ["heading", "email-notify-form", "illustration"]
+  },
+  "patterns": ["coming-soon-page"],
+  "colors": ["primary"],
+  "interactions": ["email-subscribe"]
+}

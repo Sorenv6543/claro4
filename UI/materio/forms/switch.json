@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/switch",
+  "title": "Switch",
+  "category": "forms",
+  "screenshot": "forms/switch.png",
+  "summary": "Showcase of v-switch in a 2-column grid. Demonstrates basic toggle, inset style, color variants, model-as-array binding, label slot, true/false value customization, and states (disabled, loading).",
+  "components": ["v-switch", "v-card", "v-card-title", "v-card-text", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "inset", "colors", "model-as-array", "label-slot", "true-false-value", "states"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary", "secondary", "success", "info", "warning", "error"],
+  "interactions": ["toggle-switch"]
+}

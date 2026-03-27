@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/wizard-examples/create-deal",
+  "title": "Create Deal Wizard",
+  "category": "wizard-examples",
+  "screenshot": "wizard-examples/create-deal.png",
+  "summary": "Multi-step deal creation wizard with 5 numbered steps (Deal Type, Deal Usage, Deal Duration, Review & Complete) shown as a horizontal stepper. Current step shows 3 selectable deal type cards with illustrations (Percentage, Flat Amount, Prime member). Bottom has Previous/Next navigation buttons.",
+  "components": ["v-stepper", "v-card", "v-card-text", "v-btn", "v-text-field", "v-select", "v-img", "v-row", "v-col"],
+  "layout": {
+    "type": "single-column",
+    "columns": "full-width wizard card",
+    "sections": ["stepper-header", "deal-type-cards", "step-navigation"]
+  },
+  "patterns": ["form-wizard-numbered", "selectable-card-input"],
+  "colors": ["primary"],
+  "interactions": ["card-selection", "step-navigation"]
+}

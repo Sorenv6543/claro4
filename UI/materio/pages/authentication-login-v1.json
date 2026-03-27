@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/authentication/login-v1",
+  "title": "Login V1",
+  "category": "pages",
+  "screenshot": "pages/authentication-login-v1.png",
+  "summary": "Centered login form on blank page with decorative illustrations. Contains Materio logo, welcome heading, email and password fields with visibility toggle, 'Remember me' checkbox, 'Forgot Password?' link, Login button, 'Create an account' link, divider, and social login icons (Facebook, Twitter, GitHub, Google).",
+  "components": ["v-card", "v-text-field", "v-checkbox", "v-btn", "v-icon", "v-divider"],
+  "layout": {
+    "type": "single-column",
+    "columns": "centered card on blank background",
+    "sections": ["logo", "login-form", "social-login"]
+  },
+  "patterns": ["login-form"],
+  "colors": ["primary"],
+  "interactions": ["password-toggle", "form-submit", "social-auth"]
+}

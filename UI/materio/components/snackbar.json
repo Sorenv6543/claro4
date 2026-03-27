@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/components/snackbar",
+  "title": "Snackbar",
+  "category": "components",
+  "screenshot": "components/snackbar.png",
+  "summary": "Showcase of v-snackbar component in a 2-column grid. Demonstrates basic snackbar, with-action button, multi-line, timeout control, vertical layout, position (top/bottom/left/right), variants (flat, tonal, outlined), and transition animations. Each card has a trigger button to display the snackbar.",
+  "components": ["v-snackbar", "v-btn", "v-card", "v-card-title", "v-card-text", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "with-action", "multi-line", "timeout", "vertical", "position", "variants", "transition"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary"],
+  "interactions": ["snackbar-trigger", "dismiss-action"]
+}

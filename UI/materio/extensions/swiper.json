@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/extensions/swiper",
+  "title": "Swiper",
+  "category": "extensions",
+  "screenshot": "extensions/swiper.png",
+  "summary": "Showcase of Swiper.js carousel/slider integration with multiple demo sections. Includes basic slide, navigation arrows, pagination dots, progress bar, autoplay, responsive multi-slide, centered slides with effect previews (cube, coverflow, creative, fade, flip), gallery thumbs, and virtual slides. Each section stacked vertically.",
+  "components": ["v-card", "v-card-title", "v-card-text", "v-img"],
+  "layout": {
+    "type": "single-column",
+    "columns": "full-width stacked demo sections",
+    "sections": ["basic", "navigation", "pagination", "progress", "autoplay", "responsive", "centered", "cube-effect", "coverflow-effect", "creative-effect", "fade-effect", "flip-effect", "gallery-thumbs", "virtual-slides"]
+  },
+  "patterns": ["component-showcase", "image-carousel"],
+  "colors": ["primary"],
+  "interactions": ["swipe-navigation", "pagination-dots", "autoplay", "thumbnail-selection"]
+}

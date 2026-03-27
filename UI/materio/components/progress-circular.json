@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/components/progress-circular",
+  "title": "Progress Circular",
+  "category": "components",
+  "screenshot": "components/progress-circular.png",
+  "summary": "Showcase of v-progress-circular in a 2-column grid. Demonstrates colored rings, indeterminate spinning, rotate offset, and size variations. Each card shows a row of circular progress indicators at various percentages and states.",
+  "components": ["v-progress-circular", "v-card", "v-card-title", "v-card-text", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["color", "indeterminate", "rotate", "size"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary", "secondary", "success", "info", "warning", "error"],
+  "interactions": []
+}

@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/authentication/register-multi-steps",
+  "title": "Register Multi Steps",
+  "category": "pages",
+  "screenshot": "pages/authentication-register-multi-steps.png",
+  "summary": "Multi-step registration wizard with 3 numbered steps (Account, Personal, Billing). Left panel has 3D character illustration. Right panel shows horizontal stepper with Account Information form (username, email, password, confirm password, profile link) and Previous/Next navigation buttons.",
+  "components": ["v-stepper", "v-text-field", "v-btn", "v-img", "v-row", "v-col"],
+  "layout": {
+    "type": "split",
+    "columns": "2-column: illustration (left) + wizard form (right)",
+    "sections": ["illustration-panel", "stepper-header", "registration-form", "step-navigation"]
+  },
+  "patterns": ["registration-form", "form-wizard-numbered"],
+  "colors": ["primary"],
+  "interactions": ["step-navigation", "form-submit"]
+}

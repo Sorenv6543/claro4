@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/file-input",
+  "title": "File Input",
+  "category": "forms",
+  "screenshot": "forms/file-input.png",
+  "summary": "Showcase of v-file-input in a 2-column grid. Demonstrates basic usage, density, variant styles, accept (file type filtering), chips display, counter, multiple file selection, prepend-icon customization, show-size, selection slot, loading state, and validation.",
+  "components": ["v-file-input", "v-card", "v-card-title", "v-card-text", "v-row", "v-col", "v-chip"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "density", "variant", "accept", "chips", "counter", "multiple", "prepend-icon", "show-size", "selection-slot", "loading", "validation"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary"],
+  "interactions": ["file-browse", "chip-remove"]
+}

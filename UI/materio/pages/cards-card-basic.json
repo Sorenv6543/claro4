@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/pages/cards/card-basic",
+  "title": "Card Basic",
+  "category": "pages",
+  "screenshot": "pages/cards-card-basic.png",
+  "summary": "Showcase of basic v-card patterns in a responsive grid. Includes cards with images (horizontal/vertical), text content, action buttons, navigation tabs, pricing cards, social media cards (Twitter, Facebook, LinkedIn) with colored backgrounds. Demonstrates various card layouts: media above/beside text, overlays, and card groups.",
+  "components": ["v-card", "v-card-title", "v-card-subtitle", "v-card-text", "v-card-actions", "v-img", "v-btn", "v-chip", "v-avatar", "v-tabs", "v-divider", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-3 column responsive grid",
+    "sections": ["image-cards", "text-cards", "horizontal-cards", "navigation-cards", "pricing-card", "social-cards"]
+  },
+  "patterns": ["card-grid", "component-showcase"],
+  "colors": ["primary", "info", "success"],
+  "interactions": ["tab-switch", "button-click"]
+}

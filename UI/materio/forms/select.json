@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/select",
+  "title": "Select",
+  "category": "forms",
+  "screenshot": "forms/select.png",
+  "summary": "Showcase of v-select in a 2-column grid. Demonstrates basic usage, density, variant styles (outlined, filled, solo, underlined, plain), custom text and value fields, icons/chips display, menu-props, multiple selection, and selection-slot customization.",
+  "components": ["v-select", "v-card", "v-card-title", "v-card-text", "v-row", "v-col", "v-chip"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "density", "variant", "custom-text-value", "icons", "chips", "menu-props", "multiple", "selection-slot"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary"],
+  "interactions": ["dropdown-select", "chip-remove", "multiple-select"]
+}
