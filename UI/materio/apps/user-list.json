@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/user/list",
+  "title": "User List",
+  "category": "apps",
+  "screenshot": "apps/user-list.png",
+  "summary": "User management page with top stat cards showing total users, paid users, active users, and pending users with colored trend indicators. Filter section with select dropdowns for role, plan, and status. Below is a data table with user avatar and name, email, role with icon, plan name, status chip (Active/Pending/Inactive), and three-dot action menu. Right-side drawer for adding a new user with form fields. Pagination at bottom.",
+  "components": ["v-card", "v-chip", "v-data-table", "v-avatar", "v-select", "v-text-field", "v-btn", "v-icon", "v-navigation-drawer"],
+  "layout": {
+    "type": "single-column",
+    "columns": "4 stat cards at top, filter row, full-width user data table, add-user drawer on right",
+    "sections": ["stat-cards", "filters", "user-table", "add-user-drawer"]
+  },
+  "patterns": ["stat-card-with-icon", "data-table-with-search", "filter-bar", "form-standard"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["sortable-table", "pagination", "filter-select", "row-action-menu", "add-user-drawer"]
+}

@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/ecommerce/product/list",
+  "title": "E-commerce Product List",
+  "category": "apps",
+  "screenshot": "apps/ecommerce-product-list.png",
+  "summary": "Product list page with top stat cards showing total metrics (in-store, checkout, pitching, etc.) with trend indicators. Filter section with select dropdowns for stock status, category, and search. Data table with product image thumbnail, product name, category, stock status chip, SKU, price, quantity, and three-dot action menu. Pagination at bottom.",
+  "components": ["v-card", "v-chip", "v-data-table", "v-select", "v-text-field", "v-avatar", "v-btn", "v-icon", "v-img"],
+  "layout": {
+    "type": "single-column",
+    "columns": "Stat cards row at top, filter row, then full-width product data table",
+    "sections": ["stat-cards", "filters", "product-table"]
+  },
+  "patterns": ["stat-card-with-icon", "data-table-with-search", "filter-bar"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["sortable-table", "pagination", "filter-select", "row-action-menu"]
+}

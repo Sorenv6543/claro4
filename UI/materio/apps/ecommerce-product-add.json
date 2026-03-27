@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/ecommerce/product/add",
+  "title": "E-commerce Add Product",
+  "category": "apps",
+  "screenshot": "apps/ecommerce-product-add.png",
+  "summary": "Product creation form with two-column layout: left side has product information card (name, SKU, barcode, description rich text editor), product image dropzone, and variants section with selectable options. Right side has pricing card (base price, discounted price, tax toggle), organize card (vendor, category, collection, status selects). Bottom section shows inventory with reorder point, shipping toggle, and stock status.",
+  "components": ["v-card", "v-text-field", "v-select", "v-textarea", "v-switch", "v-btn", "v-chip", "v-file-input", "v-checkbox", "v-radio-group"],
+  "layout": {
+    "type": "split",
+    "columns": "Left product info (~60%) with form fields and image upload, right pricing/organize (~40%) with selects and toggles",
+    "sections": ["product-information", "product-image", "variants", "pricing", "organize", "inventory"]
+  },
+  "patterns": ["form-standard", "file-dropzone", "variant-selector"],
+  "colors": ["primary", "success"],
+  "interactions": ["rich-text-editing", "image-upload", "variant-add", "form-submit"]
+}

@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/ecommerce/order/list",
+  "title": "E-commerce Order List",
+  "category": "apps",
+  "screenshot": "apps/ecommerce-order-list.png",
+  "summary": "Order list page with top stat pills showing counts for pending, completed, and failed orders. Below is a searchable data table with order ID, date, customer name with avatar, payment method, status chips (Delivered, Out for Delivery, Ready to Pick, Dispatched), and a three-dot action menu per row. Pagination at bottom.",
+  "components": ["v-card", "v-chip", "v-data-table", "v-avatar", "v-btn", "v-icon", "v-text-field"],
+  "layout": {
+    "type": "single-column",
+    "columns": "Full-width stat pills row, then full-width data table",
+    "sections": ["order-stat-pills", "search-bar", "orders-table"]
+  },
+  "patterns": ["stat-pill", "data-table-with-search", "avatar-list"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["sortable-table", "pagination", "row-action-menu", "status-filter"]
+}

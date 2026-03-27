@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/ecommerce/dashboard",
+  "title": "E-commerce Dashboard",
+  "category": "apps",
+  "screenshot": "apps/ecommerce-dashboard.png",
+  "summary": "Feature-rich e-commerce dashboard with welcome/congratulations banner with 3D illustration, stat cards (profit, sales, payments, revenue), total profit area chart, total sales line chart with stat pills, transactions list with colored icons, new visitors bar chart with stat, a data table of recent orders, and a meeting schedule timeline card on the right.",
+  "components": ["v-card", "v-chip", "v-avatar", "v-btn", "v-data-table", "v-list", "v-list-item", "v-icon", "v-img", "v-divider"],
+  "layout": {
+    "type": "grid",
+    "columns": "Multi-row dashboard grid: top row has welcome banner + stat cards, middle row has charts + transactions, bottom row has orders table + meeting schedule",
+    "sections": ["welcome-banner", "stat-cards", "total-profit-chart", "total-sales-chart", "transactions-list", "new-visitors-chart", "orders-table", "meeting-schedule"]
+  },
+  "patterns": ["welcome-banner", "stat-card-with-icon", "line-chart", "bar-chart", "data-table-with-search", "timeline", "stat-pill"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["sortable-table", "chart-hover", "pagination"]
+}
