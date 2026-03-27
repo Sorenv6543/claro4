@@ -5,14 +5,14 @@ import type { Admin, Cleaner, PropertyOwner, User, UserRole, UserSettings } from
 export function getDefaultRouteForRole (userRole: UserRole | undefined): string {
   switch (userRole) {
     case 'owner': {
-      return '/owner/dashboard'
+      return '/owner/overview'
     }
     case 'admin': {
       return '/admin'
     }
     case 'cleaner': {
-      return '/cleaner/dashboard'
-    } // Future implementation
+      return '/'
+    } // Future implementation — no cleaner UI yet
     default: {
       return '/auth/login'
     }
@@ -173,7 +173,7 @@ export function validateRoleNavigation (userRole: UserRole | undefined, targetPa
   if (userRole === 'owner' && targetPath.startsWith('/admin')) {
     return {
       allowed: false,
-      redirectTo: '/owner/dashboard',
+      redirectTo: '/owner/overview',
       message: 'Access denied. Admin privileges required.',
     }
   }

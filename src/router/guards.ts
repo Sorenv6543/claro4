@@ -38,8 +38,12 @@ export async function authGuard (
   }
 
   // Redirect authenticated users away from auth/login pages
+  // (skip for roles without a dedicated UI, e.g. cleaner)
   if ((to.path === '/' || to.path.startsWith('/auth')) && authStore.isAuthenticated) {
-    return getDefaultRouteForRole(authStore.user?.role)
+    const dest = getDefaultRouteForRole(authStore.user?.role)
+    if (dest !== '/' && dest !== to.path) {
+      return dest
+    }
   }
 }
 
