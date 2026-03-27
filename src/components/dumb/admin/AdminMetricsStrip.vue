@@ -19,7 +19,7 @@ const unassignedIcon = computed(() =>
 </script>
 
 <template>
-  <v-row class="metrics-strip mb-4" no-gutters align="center">
+  <v-row class="metrics-strip mb-4" density="compact" align="center">
     <v-col cols="auto" class="d-flex flex-wrap ga-2">
       <v-chip variant="tonal" color="info" size="small" prepend-icon="mdi-clipboard-text-outline">
         {{ totalCleanings }} cleanings {{ label || 'today' }}
