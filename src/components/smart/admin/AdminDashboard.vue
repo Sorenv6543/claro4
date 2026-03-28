@@ -242,9 +242,29 @@ onMounted(async () => {
   dashboardLoading.value = true
   dashboardError.value = null
   try {
-    await Promise.all([fetchAllBookings(), fetchAllProperties(), fetchCleaners(), fetchTeams()])
+    const [bookingsOk, propertiesOk, cleanersOk, teamsOk] = await Promise.all([
+      fetchAllBookings(),
+      fetchAllProperties(),
+      fetchCleaners(),
+      fetchTeams(),
+    ])
+
+    if (!bookingsOk || !propertiesOk || !cleanersOk || !teamsOk) {
+      const messages: string[] = []
+
+      if (!bookingsOk && error.value) {
+        messages.push(error.value)
+      }
+
+      if (!messages.length) {
+        messages.push('Failed to load one or more dashboard data sources')
+      }
+
+      dashboardError.value = messages.join(' | ')
+    }
   } catch (e) {
     dashboardError.value = e instanceof Error ? e.message : 'Failed to load dashboard data'
+    // eslint-disable-next-line no-console
     console.error('[AdminDashboard] fetch error:', e)
   } finally {
     dashboardLoading.value = false
