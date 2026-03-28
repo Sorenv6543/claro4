@@ -199,6 +199,7 @@
   import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
   import { useCalendarState } from '@/composables/shared/useCalendarState'
+  import { useUIStore } from '@/stores/ui'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when the schedule route is visited.
@@ -233,6 +234,9 @@
   // Additional composables for admin functionality
   const { updateBooking, deleteBooking, createBooking, assignCleanerToBooking } = useAdminBookings()
   const { users: allUsers } = useAdminUserManagement()
+
+  // UI store for notifications
+  const uiStore = useUIStore()
 
   // Calendar reference
   const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
@@ -471,16 +475,20 @@
       case 'complete': {
         try {
           await updateBooking(booking.id, { status: 'completed' })
-        } catch (error) {
-          console.error('Failed to complete booking:', error)
+          uiStore.addNotification('success', 'Updated', 'Booking marked as completed')
+        } catch (err) {
+          console.error('Failed to complete booking:', err)
+          uiStore.addNotification('error', 'Update Failed', err instanceof Error ? err.message : 'Could not complete booking')
         }
         break
       }
       case 'cancel': {
         try {
           await updateBooking(booking.id, { status: 'cancelled' })
-        } catch (error) {
-          console.error('Failed to cancel booking:', error)
+          uiStore.addNotification('success', 'Updated', 'Booking cancelled')
+        } catch (err) {
+          console.error('Failed to cancel booking:', err)
+          uiStore.addNotification('error', 'Update Failed', err instanceof Error ? err.message : 'Could not cancel booking')
         }
         break
       }
