@@ -62,11 +62,3 @@ dist-ssr
 
 # Git worktrees
 .worktrees/
-.claude/worktrees/
-
-# Performance traces
-perf-trace-*.json.gz
-
-# Screenshots and temp artifacts
-screenshots/
-_tmp_*
