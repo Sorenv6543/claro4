@@ -150,8 +150,9 @@
         }
       }
       uiStore.closeModal('propertyModal')
-    } catch (error) {
-      console.error('Failed to save property:', error)
+    } catch (err) {
+      console.error('Failed to save property:', err)
+      uiStore.addNotification('error', 'Save Failed', err instanceof Error ? err.message : 'Could not save property')
     }
   }
 
@@ -191,15 +192,19 @@
       try {
         await supaDeleteBooking(data.id as string)
         uiStore.closeModal('eventModal')
-      } catch (error) {
-        console.error('Failed to delete booking:', error)
+      } catch (err) {
+        console.error('Failed to delete booking:', err)
+        uiStore.addNotification('error', 'Delete Failed', err instanceof Error ? err.message : 'Could not delete booking')
+        return
       }
     } else if (data?.type === 'property' && data?.id) {
       try {
         await supaDeleteProperty(data.id as string)
         uiStore.closeModal('propertyModal')
-      } catch (error) {
-        console.error('Failed to delete property:', error)
+      } catch (err) {
+        console.error('Failed to delete property:', err)
+        uiStore.addNotification('error', 'Delete Failed', err instanceof Error ? err.message : 'Could not delete property')
+        return
       }
     }
 
