@@ -204,14 +204,14 @@
               <v-col cols="12" md="3" sm="6">
                 <div class="expanded-field">
                   <div class="text-caption text-medium-emphasis mb-1">Created</div>
-                  <div class="text-body-2">{{ item.created_at ? formatDate(item.created_at) : 'N/A' }}</div>
+                  <div class="text-body-2">{{ item.created_at ? formatDate(String(item.created_at)) : 'N/A' }}</div>
                 </div>
               </v-col>
               <v-col cols="12" md="3" sm="6">
                 <div class="expanded-field">
                   <div class="text-caption text-medium-emphasis mb-1">Priority</div>
                   <v-chip
-                    :color="getPriorityColor(item.priority)"
+                    :color="getPriorityColor(String(item.priority))"
                     size="small"
                     variant="tonal"
                   >
