@@ -200,16 +200,6 @@ const router = createRouter({
       },
     },
     {
-      path: '/admin/calendar',
-      name: 'admin-calendar',
-      component: () => import('@/pages/admin/schedule/index.vue'),
-      meta: {
-        layout: 'admin',
-        role: 'admin',
-        requiresAuth: true,
-      },
-    },
-    {
       path: '/admin/users',
       name: 'admin-users',
       component: () => import('@/pages/admin/users/index.vue'),

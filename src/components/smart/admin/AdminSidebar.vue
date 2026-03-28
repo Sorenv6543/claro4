@@ -76,7 +76,7 @@
 
           <v-list-item
             class="nav-item"
-            :class="{ 'active-nav-item': route.path === '/admin/schedule' || route.path === '/admin/calendar' }"
+            :class="{ 'active-nav-item': route.path === '/admin/schedule' }"
             prepend-icon="mdi-calendar-month"
             title="Master Schedule"
             @click="navigateTo('/admin/schedule')"

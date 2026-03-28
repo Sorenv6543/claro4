@@ -11,16 +11,6 @@
         fluid
       >
         <div class="d-flex align-center justify-center">
-          <!-- Today Button -->
-          <v-btn
-            class="text-none mr-2"
-            size="small"
-            variant="outlined"
-            @click="goToToday"
-          >
-            Today
-          </v-btn>
-
           <!-- Previous Month Button -->
           <v-btn
             color="primary"
@@ -45,65 +35,6 @@
             variant="elevated"
             @click="navigateToNextMonth"
           />
-
-          <v-divider
-            class="mx-3"
-            vertical
-          />
-
-          <!-- Range / Event View Toggle -->
-          <v-btn-toggle
-            v-model="viewMode"
-            class="mr-2"
-            color="primary"
-            density="compact"
-            mandatory
-            rounded="pill"
-          >
-            <v-btn
-              class="text-none"
-              size="small"
-              value="ranges"
-            >
-              Ranges
-            </v-btn>
-            <v-btn
-              class="text-none"
-              size="small"
-              value="events"
-            >
-              Events
-            </v-btn>
-          </v-btn-toggle>
-
-          <!-- View Switcher (Month/Week/Day/List) -->
-          <v-menu location="bottom end">
-            <template #activator="{ props: menuProps }">
-              <v-btn
-                v-bind="menuProps"
-                append-icon="mdi-chevron-down"
-                class="text-none"
-                size="small"
-                variant="outlined"
-              >
-                {{ viewLabels[activeViewKey] }}
-              </v-btn>
-            </template>
-            <v-list
-              density="compact"
-              min-width="140"
-            >
-              <v-list-item
-                v-for="opt in viewOptions"
-                :key="opt.value"
-                :active="activeViewKey === opt.value"
-                color="primary"
-                :prepend-icon="opt.icon"
-                :title="opt.label"
-                @click="switchView(opt.value)"
-              />
-            </v-list>
-          </v-menu>
         </div>
       </v-container>
     </div>
@@ -127,7 +58,6 @@
             class="admin-calendar"
             :loading="loading"
             :properties="calendarProperties"
-            :view-mode="viewMode"
             @date-select="handleDateSelect"
             @event-click="handleEventClick"
             @event-drop="handleEventDrop"
@@ -198,7 +128,6 @@
 
   import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
-  import { useCalendarState } from '@/composables/shared/useCalendarState'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when the schedule route is visited.
@@ -227,57 +156,12 @@
   const calendarBookings = computed(() => Array.from(allBookings.value.values()))
   const calendarProperties = computed(() => Array.from(allProperties.value.values()))
 
-  // Shared calendar state (singleton) — gives us viewMode
-  const { viewMode } = useCalendarState()
-
   // Additional composables for admin functionality
   const { updateBooking, deleteBooking, createBooking, assignCleanerToBooking } = useAdminBookings()
   const { users: allUsers } = useAdminUserManagement()
 
   // Calendar reference
   const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
-
-  // View switcher options (matching owner layout)
-  const viewOptions = [
-    { value: 'month', label: 'Month', icon: 'mdi-calendar-month-outline' },
-    { value: 'week', label: 'Week', icon: 'mdi-calendar-week-outline' },
-    { value: 'day', label: 'Day', icon: 'mdi-calendar-today-outline' },
-    { value: 'list', label: 'List', icon: 'mdi-format-list-bulleted' },
-  ] as const
-
-  const viewLabels: Record<string, string> = {
-    month: 'Month',
-    week: 'Week',
-    day: 'Day',
-    list: 'List',
-  }
-
-  const activeViewKey = computed(() => {
-    const v = currentView.value
-    if (v === 'timeGridWeek') return 'week'
-    if (v === 'timeGridDay') return 'day'
-    if (v === 'listWeek') return 'list'
-    return 'month'
-  })
-
-  function switchView (key: string) {
-    const viewMap: Record<string, 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'> = {
-      week: 'timeGridWeek',
-      day: 'timeGridDay',
-      list: 'listWeek',
-      month: 'dayGridMonth',
-    }
-    const newView = viewMap[key] ?? 'dayGridMonth'
-    setCalendarView(newView)
-    if (calendarRef.value) {
-      calendarRef.value.changeView(newView)
-    }
-  }
-
-  function goToToday () {
-    currentViewingDate.value = new Date()
-    goToDateInCalendar(new Date())
-  }
 
   // Component state
   const currentViewingDate = ref(new Date())
