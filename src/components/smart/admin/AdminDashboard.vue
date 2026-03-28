@@ -37,8 +37,8 @@ const {
 
 const uiStore = useUIStore()
 
-const { allCleaners, availableCleaners, cleanerWorkloads, allTeams, fetchCleaners, fetchTeams } = useCleanerManagement()
-const { fetchAllProperties } = useAdminProperties()
+const { allCleaners, availableCleaners, cleanerWorkloads, allTeams, fetchCleaners, fetchTeams, error: cleanerError } = useCleanerManagement()
+const { fetchAllProperties, error: propertyError } = useAdminProperties()
 const { isEveningMode, modeLabel } = useTimeAwareMode()
 
 // Assignment menu state
@@ -242,9 +242,26 @@ onMounted(async () => {
   dashboardLoading.value = true
   dashboardError.value = null
   try {
-    await Promise.all([fetchAllBookings(), fetchAllProperties(), fetchCleaners(), fetchTeams()])
+    const [bookingsOk, propertiesOk, cleanersOk, teamsOk] = await Promise.all([
+      fetchAllBookings(),
+      fetchAllProperties(),
+      fetchCleaners(),
+      fetchTeams(),
+    ])
+
+    if (!bookingsOk || !propertiesOk || !cleanersOk || !teamsOk) {
+      const messages: string[] = []
+
+      if (!bookingsOk) messages.push(error.value || 'Failed to load bookings')
+      if (!propertiesOk) messages.push(propertyError.value || 'Failed to load properties')
+      if (!cleanersOk) messages.push(cleanerError.value || 'Failed to load cleaners')
+      if (!teamsOk) messages.push(cleanerError.value || 'Failed to load teams')
+
+      dashboardError.value = messages.join(' | ')
+    }
   } catch (e) {
     dashboardError.value = e instanceof Error ? e.message : 'Failed to load dashboard data'
+    // eslint-disable-next-line no-console
     console.error('[AdminDashboard] fetch error:', e)
   } finally {
     dashboardLoading.value = false

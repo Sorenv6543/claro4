@@ -40,4 +40,44 @@ describe('AssignmentMenu', () => {
     expect(wrapper.text()).toContain('2/4')
     expect(wrapper.text()).toContain('4/4')
   })
+
+  it('emits assignCleaner when clicking an available cleaner', async () => {
+    const wrapper = mountMenu()
+    // Find the list item for Maria (available, 2/4)
+    const listItems = wrapper.findAll('.v-list-item')
+    const mariaItem = listItems.find(item => item.text().includes('Maria R.'))
+    expect(mariaItem).toBeTruthy()
+    await mariaItem!.trigger('click')
+    expect(wrapper.emitted('assignCleaner')).toBeTruthy()
+    expect(wrapper.emitted('assignCleaner')![0]).toEqual(['c1'])
+  })
+
+  it('does not emit assignCleaner for at-capacity cleaners', async () => {
+    const wrapper = mountMenu()
+    const listItems = wrapper.findAll('.v-list-item')
+    const carlosItem = listItems.find(item => item.text().includes('Carlos K.'))
+    expect(carlosItem).toBeTruthy()
+    await carlosItem!.trigger('click')
+    // Carlos is at capacity (4/4) — should not emit
+    expect(wrapper.emitted('assignCleaner')).toBeFalsy()
+  })
+
+  it('emits assignTeam when clicking a team', async () => {
+    const wrapper = mountMenu()
+    // Switch to Team tab
+    const tabs = wrapper.findAll('.v-tab')
+    const teamTab = tabs.find(t => t.text().includes('Team'))
+    if (teamTab) {
+      await teamTab.trigger('click')
+      await wrapper.vm.$nextTick()
+    }
+    // Find team list item
+    const listItems = wrapper.findAll('.v-list-item')
+    const teamItem = listItems.find(item => item.text().includes('Team A'))
+    if (teamItem) {
+      await teamItem.trigger('click')
+      expect(wrapper.emitted('assignTeam')).toBeTruthy()
+      expect(wrapper.emitted('assignTeam')![0]).toEqual(['t1'])
+    }
+  })
 })

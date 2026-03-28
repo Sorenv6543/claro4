@@ -53,7 +53,8 @@
 </template>
 
 <script setup lang="ts">
-  import type { Booking, Property } from '@/types'
+  import type { Booking } from '@/types'
+  import type { Property } from '@/types/property'
   import { computed, onMounted, ref } from 'vue'
   import OwnerCleaningStatus from '@/components/dumb/owner/OwnerCleaningStatus.vue'
   import OwnerMiniCalendar from '@/components/dumb/owner/OwnerMiniCalendar.vue'
@@ -84,6 +85,17 @@
   } = useOwnerBookings()
 
   const loading = ref(false)
+
+  // Property map for O(1) lookups
+  const propertyMap = computed(() => {
+    const map = new Map<string, Property>()
+    for (const p of myProperties.value) map.set(p.id, p)
+    return map
+  })
+
+  function getProperty (propertyId: string): Property | undefined {
+    return propertyMap.value.get(propertyId)
+  }
 
   onMounted(async () => {
     if (authStore.isAuthenticated && authStore.user?.role === 'owner') {
@@ -119,7 +131,7 @@
   // ── Urgent turns ────────────────────────────────────────────────
   const urgentTurns = computed(() => {
     return myTodayTurns.value.map(turn => {
-      const property = myProperties.value.find(p => p.id === turn.property_id)
+      const property = getProperty(turn.property_id)
       return {
         property: property ? formatPropertyAddress(property, 'short') : 'Unknown property',
         time: turn.checkout_time || '11:00',
@@ -172,7 +184,7 @@
       .toSorted((a, b) => new Date(a.checkin_date).getTime() - new Date(b.checkin_date).getTime())
       .slice(0, 8)
       .map((booking: Booking) => {
-        const property = myProperties.value.find(p => p.id === booking.property_id)
+        const property = getProperty(booking.property_id)
         return {
           property: property ? formatPropertyAddress(property, 'short') : 'Unknown property',
           propertyColor: property?.color || '#5c6bc0',
@@ -192,7 +204,7 @@
     const dates: Array<{ date: string, color: string, type: string }> = []
     for (const booking of myBookings.value) {
       if (booking.status === 'cancelled') continue
-      const property = myProperties.value.find(p => p.id === booking.property_id)
+      const property = getProperty(booking.property_id)
       const color = property?.color || '#5c6bc0'
       const start = new Date(booking.checkin_date)
       const end = new Date(booking.checkout_date)
@@ -220,7 +232,7 @@
 
     // Build activity list from bookings with timestamps
     for (const booking of myBookings.value) {
-      const property = myProperties.value.find(p => p.id === booking.property_id)
+      const property = getProperty(booking.property_id)
       const propertyName = property ? formatPropertyAddress(property, 'short') : 'Unknown property'
 
       if (booking.status === 'cancelled' && booking.updated_at) {
@@ -256,7 +268,7 @@
   // ── Cleaning status list ────────────────────────────────────────
   const cleaningStatusList = computed(() => {
     return myUpcomingCleanings.value.map((booking: Booking) => {
-      const property = myProperties.value.find(p => p.id === booking.property_id)
+      const property = getProperty(booking.property_id)
       return {
         property: property ? formatPropertyAddress(property, 'short') : 'Unknown property',
         propertyColor: property?.color || '#5c6bc0',

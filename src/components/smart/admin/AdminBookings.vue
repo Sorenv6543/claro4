@@ -331,22 +331,49 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <!-- Cancel Confirmation Dialog -->
+    <ConfirmationDialog
+      v-model="showCancelConfirm"
+      confirm-color="error"
+      confirm-text="Cancel Booking"
+      message="Are you sure you want to cancel this booking? This action cannot be undone."
+      title="Cancel Booking"
+      @confirm="confirmCancelBooking"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
   import type { Booking } from '@/types/booking'
-  import { computed, ref } from 'vue'
+  import { computed, onMounted, ref } from 'vue'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import { useAdminBookings } from '@/composables/admin/useAdminBookings'
   import { useAdminProperties } from '@/composables/admin/useAdminProperties'
   import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
+  import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
+  import { getBookingStatusColor } from '@/utils/constants'
 
   // Composables
-  const { allBookings, updateBooking } = useAdminBookings()
-  const { allProperties } = useAdminProperties()
-  const { availableCleaners } = useCleanerManagement()
+  const { allBookings, updateBooking, fetchAllBookings } = useAdminBookings()
+  const { allProperties, fetchAllProperties } = useAdminProperties()
+  const { availableCleaners, fetchCleaners } = useCleanerManagement()
+  const uiStore = useUIStore()
+
+  // Data fetching on mount
+  onMounted(async () => {
+    try {
+      await Promise.all([
+        fetchAllBookings(),
+        fetchAllProperties(),
+        fetchCleaners(),
+      ])
+    } catch (error) {
+      console.error('Failed to load bookings data:', error)
+      uiStore.addNotification('error', 'Error', 'Failed to load bookings data. Please refresh.')
+    }
+  })
 
   // Reactive state
   const searchQuery = ref('')
@@ -363,6 +390,10 @@
   const editingBooking = ref<Booking | null>(null)
   const selectedBookingForCleaner = ref<Booking | null>(null)
   const selectedCleaner = ref('')
+
+  // Cancel confirmation dialog state
+  const showCancelConfirm = ref(false)
+  const cancelTarget = ref<Booking | null>(null)
 
   // Filter options
   const statusOptions = [
@@ -488,16 +519,8 @@
     return property?.color || '#9E9E9E'
   }
 
-  function getStatusColor (status: string): string {
-    const colors: Record<string, string> = {
-      pending: 'warning',
-      scheduled: 'info',
-      in_progress: 'primary',
-      completed: 'success',
-      cancelled: 'error',
-    }
-    return colors[status] || 'grey'
-  }
+  // Use centralized status color from constants
+  const getStatusColor = getBookingStatusColor
 
   function getPriorityColor (priority: string): string {
     const colors: Record<string, string> = {
@@ -577,11 +600,22 @@
     }
   }
 
-  async function cancelBooking (booking: Booking) {
+  function cancelBooking (booking: Booking) {
+    cancelTarget.value = booking
+    showCancelConfirm.value = true
+  }
+
+  async function confirmCancelBooking () {
+    if (!cancelTarget.value) return
     try {
-      await updateBooking(booking.id, { status: 'cancelled' })
+      await updateBooking(cancelTarget.value.id, { status: 'cancelled' })
+      uiStore.addNotification('success', 'Cancelled', 'Booking has been cancelled')
     } catch (error) {
       console.error('Failed to cancel booking:', error)
+      uiStore.addNotification('error', 'Error', error instanceof Error ? error.message : 'Failed to cancel booking')
+    } finally {
+      showCancelConfirm.value = false
+      cancelTarget.value = null
     }
   }
 </script>

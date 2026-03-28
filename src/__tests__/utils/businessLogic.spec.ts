@@ -2,6 +2,7 @@ import type { Booking } from '@/types'
 import type { Property } from '@/types/property'
 import { describe, expect, it } from 'vitest'
 import {
+  buildAssignmentUpdate,
   detectBookingConflicts,
   validateBooking,
   validateTurnBooking,
@@ -198,6 +199,35 @@ describe('validateTurnBooking — warnings', () => {
     expect(result.valid).toBe(true)
     expect(result.errors).toHaveLength(0)
     expect(result.warnings).toHaveLength(0)
+  })
+})
+
+describe('buildAssignmentUpdate — mutual exclusivity', () => {
+  it('assigns cleaner and nulls team/group', () => {
+    const result = buildAssignmentUpdate('cleaner', 'cleaner-1')
+    expect(result).toEqual({
+      assigned_cleaner_id: 'cleaner-1',
+      assigned_team_id: null,
+      assigned_group_ids: null,
+    })
+  })
+
+  it('assigns team and nulls cleaner/group', () => {
+    const result = buildAssignmentUpdate('team', 'team-1')
+    expect(result).toEqual({
+      assigned_cleaner_id: null,
+      assigned_team_id: 'team-1',
+      assigned_group_ids: null,
+    })
+  })
+
+  it('assigns group and nulls cleaner/team', () => {
+    const result = buildAssignmentUpdate('group', ['c1', 'c2'])
+    expect(result).toEqual({
+      assigned_cleaner_id: null,
+      assigned_team_id: null,
+      assigned_group_ids: ['c1', 'c2'],
+    })
   })
 })
 

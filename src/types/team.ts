@@ -21,6 +21,7 @@ export function isCleanerTeam(obj: unknown): obj is CleanerTeam {
     typeof team.id === 'string' &&
     typeof team.name === 'string' &&
     Array.isArray(team.member_ids) &&
+    team.member_ids.every((id: unknown) => typeof id === 'string') &&
     typeof team.active === 'boolean'
   )
 }

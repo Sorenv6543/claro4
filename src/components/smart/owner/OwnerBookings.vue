@@ -255,6 +255,7 @@
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { getBookingStatusColor, formatStatus } from '@utils/constants'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
 
   defineOptions({
     name: 'OwnerBookingsComponent',

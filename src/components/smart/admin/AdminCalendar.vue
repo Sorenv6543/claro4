@@ -542,11 +542,13 @@
     try {
       const booking = cleanerAssignmentModal.value.booking
       if (booking) {
-        await assignCleanerToBooking(cleanerId, booking.id)
+        await assignCleanerToBooking(booking.id, cleanerId)
+        uiStore.addNotification('success', 'Assigned', 'Cleaner assigned successfully')
       }
       closeCleanerAssignmentModal()
     } catch (error) {
       console.error('Failed to assign cleaner:', error)
+      uiStore.addNotification('error', 'Assignment Failed', error instanceof Error ? error.message : 'Could not assign cleaner')
     } finally {
       cleanerAssignmentModal.value.loading = false
     }
@@ -558,12 +560,15 @@
     try {
       if (adminBookingFormModal.value.mode === 'create') {
         await createBooking(data)
+        uiStore.addNotification('success', 'Created', 'Booking created successfully')
       } else if (adminBookingFormModal.value.booking) {
         await updateBooking(adminBookingFormModal.value.booking.id, data)
+        uiStore.addNotification('success', 'Updated', 'Booking updated successfully')
       }
       closeAdminBookingFormModal()
     } catch (error) {
       console.error('Failed to save booking:', error)
+      uiStore.addNotification('error', 'Save Failed', error instanceof Error ? error.message : 'Could not save booking')
     } finally {
       adminBookingFormModal.value.loading = false
     }
@@ -573,9 +578,11 @@
     adminBookingFormModal.value.loading = true
     try {
       await deleteBooking(bookingId)
+      uiStore.addNotification('success', 'Deleted', 'Booking deleted successfully')
       closeAdminBookingFormModal()
     } catch (error) {
       console.error('Failed to delete booking:', error)
+      uiStore.addNotification('error', 'Delete Failed', error instanceof Error ? error.message : 'Could not delete booking')
     } finally {
       adminBookingFormModal.value.loading = false
     }
@@ -585,9 +592,11 @@
     adminBookingFormModal.value.loading = true
     try {
       await updateBooking(bookingId, { status: 'completed' })
+      uiStore.addNotification('success', 'Completed', 'Booking marked as completed')
       closeAdminBookingFormModal()
     } catch (error) {
       console.error('Failed to mark booking complete:', error)
+      uiStore.addNotification('error', 'Update Failed', error instanceof Error ? error.message : 'Could not complete booking')
     } finally {
       adminBookingFormModal.value.loading = false
     }
@@ -596,8 +605,10 @@
   async function handleAdminBookingFormAssignCleaner (bookingId: string, cleanerId: string): Promise<void> {
     try {
       await updateBooking(bookingId, { assigned_cleaner_id: cleanerId })
+      uiStore.addNotification('success', 'Assigned', 'Cleaner assigned successfully')
     } catch (error) {
       console.error('Failed to assign cleaner:', error)
+      uiStore.addNotification('error', 'Assignment Failed', error instanceof Error ? error.message : 'Could not assign cleaner')
     }
   }
 
