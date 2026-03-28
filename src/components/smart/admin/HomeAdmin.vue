@@ -11,10 +11,7 @@
 <template>
   <div class="home-admin-layout">
     <!-- Main Dashboard Content (sidebar and header are now in admin layout) -->
-    <AdminDashboard
-      @view-booking="handleViewBooking"
-      @status-change="handleStatusChange"
-    />
+    <AdminDashboard />
   </div>
 
   <!-- Owner-focused Modals -->
@@ -42,7 +39,6 @@
 </template>
 
 <script setup lang="ts">
-  import type { Booking } from '@/types/booking'
   import type { Property, PropertyFormData } from '@/types'
   import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
@@ -166,18 +162,6 @@
       dangerous: true,
       data: { type: 'property', id: propertyId },
     })
-  }
-
-  // ============================================================================
-  // ADMIN DASHBOARD EVENT HANDLERS
-  // ============================================================================
-
-  function handleViewBooking (booking: Booking): void {
-    uiStore.openModal('bookingDetails', 'view', { booking })
-  }
-
-  function handleStatusChange (booking: Booking): void {
-    uiStore.openModal('bookingStatus', 'view', { booking })
   }
 
   // ============================================================================
