@@ -509,8 +509,14 @@ export function useCleanerManagement () {
         throw new Error(`Cleaner ${cleaner.name} is not available on ${booking.checkout_date.split('T')[0]} (${availability.currentBookings}/${availability.maxBookings} bookings)`)
       }
 
-      // Update booking in store
-      const updatedBooking = { ...booking, assigned_cleaner_id: cleanerId, status: 'scheduled' as const }
+      // Update booking in store — clear other assignment types to maintain mutual exclusivity
+      const updatedBooking = {
+        ...booking,
+        assigned_cleaner_id: cleanerId,
+        assigned_team_id: null,
+        assigned_group_ids: null,
+        status: 'scheduled' as const,
+      }
       bookingStore.bookings.set(bookingId, updatedBooking)
 
       success.value = `Successfully assigned ${cleaner.name} to booking ${bookingId}`

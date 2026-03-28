@@ -37,8 +37,8 @@ const {
 
 const uiStore = useUIStore()
 
-const { allCleaners, availableCleaners, cleanerWorkloads, allTeams, fetchCleaners, fetchTeams } = useCleanerManagement()
-const { fetchAllProperties } = useAdminProperties()
+const { allCleaners, availableCleaners, cleanerWorkloads, allTeams, fetchCleaners, fetchTeams, error: cleanerError } = useCleanerManagement()
+const { fetchAllProperties, error: propertyError } = useAdminProperties()
 const { isEveningMode, modeLabel } = useTimeAwareMode()
 
 // Assignment menu state
@@ -252,13 +252,10 @@ onMounted(async () => {
     if (!bookingsOk || !propertiesOk || !cleanersOk || !teamsOk) {
       const messages: string[] = []
 
-      if (!bookingsOk && error.value) {
-        messages.push(error.value)
-      }
-
-      if (!messages.length) {
-        messages.push('Failed to load one or more dashboard data sources')
-      }
+      if (!bookingsOk) messages.push(error.value || 'Failed to load bookings')
+      if (!propertiesOk) messages.push(propertyError.value || 'Failed to load properties')
+      if (!cleanersOk) messages.push(cleanerError.value || 'Failed to load cleaners')
+      if (!teamsOk) messages.push(cleanerError.value || 'Failed to load teams')
 
       dashboardError.value = messages.join(' | ')
     }

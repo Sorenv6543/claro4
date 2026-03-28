@@ -23,7 +23,11 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 async function handleLogout () {
-  await authStore.logout()
+  try {
+    await authStore.logout()
+  } catch (error) {
+    console.error('Logout failed:', error)
+  }
   router.push('/')
 }
 </script>

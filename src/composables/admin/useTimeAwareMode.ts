@@ -10,12 +10,11 @@ export function useTimeAwareMode(options: TimeAwareModeOptions = {}) {
   const thresholdHour = options.thresholdHour ?? EVENING_THRESHOLD_HOUR
   const now = ref(new Date())
 
-  // Update every minute
-  const interval = setInterval(() => {
-    now.value = new Date()
-  }, 60_000)
-
+  // Update every minute — only start interval if there's an active scope to clean it up
   if (getCurrentScope()) {
+    const interval = setInterval(() => {
+      now.value = new Date()
+    }, 60_000)
     onScopeDispose(() => clearInterval(interval))
   }
 

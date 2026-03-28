@@ -411,3 +411,34 @@ export function canDeactivateProperty (propertyId: string,
 
   return { canDeactivate: true, upcomingCount: 0 }
 }
+
+/**
+ * Build a booking assignment update that enforces mutual exclusivity.
+ * Only one of cleaner/team/group can be set — the others are nulled out.
+ * Mirrors the `one_assignment_type` CHECK constraint in the database.
+ */
+export function buildAssignmentUpdate (
+  type: 'cleaner',
+  value: string,
+): Pick<Booking, 'assigned_cleaner_id' | 'assigned_team_id' | 'assigned_group_ids'>
+export function buildAssignmentUpdate (
+  type: 'team',
+  value: string,
+): Pick<Booking, 'assigned_cleaner_id' | 'assigned_team_id' | 'assigned_group_ids'>
+export function buildAssignmentUpdate (
+  type: 'group',
+  value: string[],
+): Pick<Booking, 'assigned_cleaner_id' | 'assigned_team_id' | 'assigned_group_ids'>
+export function buildAssignmentUpdate (
+  type: 'cleaner' | 'team' | 'group',
+  value: string | string[],
+): Pick<Booking, 'assigned_cleaner_id' | 'assigned_team_id' | 'assigned_group_ids'> {
+  switch (type) {
+    case 'cleaner':
+      return { assigned_cleaner_id: value as string, assigned_team_id: null, assigned_group_ids: null }
+    case 'team':
+      return { assigned_cleaner_id: null, assigned_team_id: value as string, assigned_group_ids: null }
+    case 'group':
+      return { assigned_cleaner_id: null, assigned_team_id: null, assigned_group_ids: value as string[] }
+  }
+}
