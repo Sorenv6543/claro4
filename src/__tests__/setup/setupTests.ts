@@ -46,11 +46,11 @@ vi.mock('vuetify/lib/components/VAlert/VAlert.css', () => ({}))
 // Global setup
 beforeAll(() => {
   // Mock window properties that aren't available in happy-dom
-  global.ResizeObserver = class ResizeObserver {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  }
+  global.ResizeObserver = vi.fn().mockImplementation(() => ({
+    observe: vi.fn(),
+    unobserve: vi.fn(),
+    disconnect: vi.fn(),
+  }))
 
   // Mock matchMedia
   global.matchMedia = vi.fn().mockImplementation(query => ({
