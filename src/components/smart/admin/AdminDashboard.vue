@@ -8,6 +8,7 @@ import { useAdminProperties } from '@/composables/admin/useAdminProperties'
 import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
 import { useTimeAwareMode } from '@/composables/admin/useTimeAwareMode'
 import { formatPropertyAddress } from '@/types/property'
+import { useUIStore } from '@/stores/ui'
 import AdminMetricsStrip from '@/components/dumb/admin/AdminMetricsStrip.vue'
 import AdminTimelineCard from '@/components/dumb/admin/AdminTimelineCard.vue'
 import AdminTimelineDivider from '@/components/dumb/admin/AdminTimelineDivider.vue'
@@ -31,7 +32,10 @@ const {
   assignCleanerToBooking,
   assignTeamToBooking,
   assignGroupToBooking,
+  error,
 } = useAdminBookings()
+
+const uiStore = useUIStore()
 
 const { allCleaners, availableCleaners, cleanerWorkloads, allTeams, fetchCleaners, fetchTeams } = useCleanerManagement()
 const { fetchAllProperties } = useAdminProperties()
@@ -40,6 +44,9 @@ const { isEveningMode, modeLabel } = useTimeAwareMode()
 // Assignment menu state
 const assignMenuOpen = ref(false)
 const assigningBooking = ref<Booking | null>(null)
+
+const dashboardLoading = ref(true)
+const dashboardError = ref<string | null>(null)
 
 // Property map for quick lookup
 const propertyMap = computed(() => {
@@ -171,23 +178,38 @@ function handleAssign(booking: Booking) {
 
 async function handleAssignCleaner(cleanerId: string) {
   if (!assigningBooking.value) return
-  await assignCleanerToBooking(assigningBooking.value.id, cleanerId)
-  assignMenuOpen.value = false
-  assigningBooking.value = null
+  const ok = await assignCleanerToBooking(assigningBooking.value.id, cleanerId)
+  if (ok) {
+    uiStore.addNotification('success', 'Assigned', 'Cleaner assigned successfully')
+    assignMenuOpen.value = false
+    assigningBooking.value = null
+  } else {
+    uiStore.addNotification('error', 'Assignment Failed', error.value || 'Could not assign cleaner')
+  }
 }
 
 async function handleAssignTeam(teamId: string) {
   if (!assigningBooking.value) return
-  await assignTeamToBooking(assigningBooking.value.id, teamId)
-  assignMenuOpen.value = false
-  assigningBooking.value = null
+  const ok = await assignTeamToBooking(assigningBooking.value.id, teamId)
+  if (ok) {
+    uiStore.addNotification('success', 'Assigned', 'Team assigned successfully')
+    assignMenuOpen.value = false
+    assigningBooking.value = null
+  } else {
+    uiStore.addNotification('error', 'Assignment Failed', error.value || 'Could not assign team')
+  }
 }
 
 async function handleAssignGroup(cleanerIds: string[]) {
   if (!assigningBooking.value) return
-  await assignGroupToBooking(assigningBooking.value.id, cleanerIds)
-  assignMenuOpen.value = false
-  assigningBooking.value = null
+  const ok = await assignGroupToBooking(assigningBooking.value.id, cleanerIds)
+  if (ok) {
+    uiStore.addNotification('success', 'Assigned', 'Group assigned successfully')
+    assignMenuOpen.value = false
+    assigningBooking.value = null
+  } else {
+    uiStore.addNotification('error', 'Assignment Failed', error.value || 'Could not assign group')
+  }
 }
 
 const emit = defineEmits<{
@@ -217,12 +239,26 @@ function getGroupNames(booking: Booking): string[] | null {
 }
 
 onMounted(async () => {
-  await Promise.all([fetchAllBookings(), fetchAllProperties(), fetchCleaners(), fetchTeams()])
+  dashboardLoading.value = true
+  dashboardError.value = null
+  try {
+    await Promise.all([fetchAllBookings(), fetchAllProperties(), fetchCleaners(), fetchTeams()])
+  } catch (e) {
+    dashboardError.value = e instanceof Error ? e.message : 'Failed to load dashboard data'
+    console.error('[AdminDashboard] fetch error:', e)
+  } finally {
+    dashboardLoading.value = false
+  }
 })
 </script>
 
 <template>
   <v-container fluid class="pa-4">
+    <v-progress-linear v-if="dashboardLoading" color="primary" indeterminate class="mb-4" />
+    <v-alert v-if="dashboardError" type="error" variant="tonal" class="mb-4" closable @click:close="dashboardError = null">
+      {{ dashboardError }}
+    </v-alert>
+
     <!-- Metrics Strip -->
     <AdminMetricsStrip
       :total-cleanings="currentBookings.length"
@@ -309,8 +345,8 @@ onMounted(async () => {
       </v-col>
     </v-row>
 
-    <!-- Assignment Menu (floating) -->
-    <v-menu v-model="assignMenuOpen" :close-on-content-click="false" location="bottom end">
+    <!-- Assignment Dialog -->
+    <v-dialog v-model="assignMenuOpen" max-width="360">
       <AssignmentMenu
         :cleaners="assignableCleaners"
         :teams="assignableTeams"
@@ -318,6 +354,6 @@ onMounted(async () => {
         @assign-team="handleAssignTeam"
         @assign-group="handleAssignGroup"
       />
-    </v-menu>
+    </v-dialog>
   </v-container>
 </template>
