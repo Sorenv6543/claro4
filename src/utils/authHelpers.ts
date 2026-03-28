@@ -11,8 +11,8 @@ export function getDefaultRouteForRole (userRole: UserRole | undefined): string 
       return '/admin'
     }
     case 'cleaner': {
-      return '/'
-    } // Future implementation — no cleaner UI yet
+      return '/auth/no-access'
+    }
     default: {
       return '/auth/login'
     }
@@ -182,7 +182,7 @@ export function validateRoleNavigation (userRole: UserRole | undefined, targetPa
   if (userRole === 'cleaner' && (targetPath.startsWith('/admin') || targetPath.startsWith('/owner'))) {
     return {
       allowed: false,
-      redirectTo: '/',
+      redirectTo: '/auth/no-access',
       message: 'Access denied. Insufficient privileges.',
     }
   }
