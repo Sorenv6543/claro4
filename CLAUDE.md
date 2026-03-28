@@ -13,7 +13,6 @@ Two user types: **Property Owners** (30-40 clients with personal property/bookin
 ```bash
 # Development
 pnpm dev                    # Start dev server (with --host)
-pnpm dev:local              # Start dev server (localhost only)
 
 # Testing
 pnpm test                   # Run tests in watch mode
@@ -53,7 +52,7 @@ Owner and Admin have separate component trees throughout:
 
 ### State Management
 
-- Domain stores in `src/stores/`: `auth.ts`, `booking.ts`, `property.ts`, `ui.ts`
+- Domain stores in `src/stores/`: `auth.ts`, `booking.ts`, `property.ts`, `ui.ts`, `user.ts`
 - Stores use `Map` collections with cached filtered Maps (TTL-based invalidation) for O(1) access
 - Optimistic updates with rollback on failure
 - Prefer derived computeds over cloning arrays
@@ -144,7 +143,7 @@ const { isAuthenticated, isOwner, isAdmin, user, session } = auth
 // Post-login redirect
 import { getDefaultRouteForRole } from '@utils/authHelpers'
 router.push(getDefaultRouteForRole(user.value?.role))
-// 'owner' → '/owner/dashboard' | 'admin' → '/admin' | else → '/auth/login'
+// 'owner' → '/owner/overview' | 'admin' → '/admin' | else → '/'
 ```
 
 ```typescript
@@ -282,8 +281,8 @@ Use semantic colors, not hex values:
 - Variants: `primary-darken-1`, `primary-lighten-2`
 
 ### Existing Dumb Components
-Check `src/components/dumb/shared/` before creating new UI:
-- `ConfirmationDialog.vue`, `LoadingSpinner.vue`, `ErrorAlert.vue`, `SkeletonLoader.vue`, `EnhancedToast.vue`
+Check `src/components/dumb/{shared,owner,admin}/` before creating new UI — there are 60+ existing dumb components.
+Key shared ones: `ConfirmationDialog.vue`, `LoadingSpinner.vue`, `ErrorAlert.vue`, `SkeletonLoader.vue`, `EnhancedToast.vue`, `BookingForm.vue`, `MaterioDataTable.vue`, `MaterioFormWizard.vue`, `PropertyCard.vue`, `PropertyModal.vue`
 
 ## Vuetify Reference
 
