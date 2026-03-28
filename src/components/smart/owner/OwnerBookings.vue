@@ -1,238 +1,268 @@
 <template>
   <div class="owner-bookings-page">
     <v-container fluid>
-      <!-- Header -->
-      <div class="d-flex justify-space-between align-center mb-5">
-        <div>
-          <h1 class="text-h4 font-weight-bold">My Bookings</h1>
-          <p class="text-body-2 text-medium-emphasis mt-1">Manage your property bookings and cleaning schedules</p>
-        </div>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-plus"
-          @click="handleCreateBooking"
-        >
-          New Booking
-        </v-btn>
-      </div>
-
-      <!-- Stat Pills Row -->
-      <v-row class="mb-5" dense>
-        <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--primary">
-              <v-icon color="primary" size="24">mdi-calendar-check</v-icon>
+      <v-row>
+        <v-col cols="12">
+          <div class="d-flex justify-space-between align-center mb-4">
+            <div class="d-flex align-center">
+              <v-btn
+                icon="mdi-arrow-left"
+                variant="text"
+                @click="$router.go(-1)"
+              />
+              <h1 class="text-h4 ml-4">
+                My Bookings
+              </h1>
             </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">Total</div>
-              <div class="text-h5 font-weight-bold text-primary">{{ ownerBookingsArray.length }}</div>
-            </div>
-          </div>
-        </v-col>
-        <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--warning">
-              <v-icon color="warning" size="24">mdi-swap-horizontal</v-icon>
-            </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">Turns</div>
-              <div class="text-h5 font-weight-bold text-warning">{{ turnBookings.length }}</div>
-            </div>
-          </div>
-        </v-col>
-        <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--success">
-              <v-icon color="success" size="24">mdi-calendar-today</v-icon>
-            </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">Today</div>
-              <div class="text-h5 font-weight-bold text-success">{{ todayBookings.length }}</div>
-            </div>
-          </div>
-        </v-col>
-        <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--info">
-              <v-icon color="info" size="24">mdi-calendar-week</v-icon>
-            </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">This Week</div>
-              <div class="text-h5 font-weight-bold text-info">{{ upcomingBookings.length }}</div>
-            </div>
+            <v-btn
+              color="primary"
+              prepend-icon="mdi-plus"
+              @click="handleCreateBooking"
+            >
+              New Booking
+            </v-btn>
           </div>
         </v-col>
       </v-row>
 
-      <!-- Data Table -->
-      <MaterioDataTable
-        expandable
-        :headers="tableHeaders"
-        :items="bookingItems"
-        :loading="loading"
-        :search-keys="['property_name', 'status', 'booking_type']"
-        searchable
-      >
-        <!-- Filters -->
-        <template #filters>
-          <v-row align="center" dense>
-            <v-col cols="12" sm="4">
-              <v-select
-                v-model="selectedProperty"
-                clearable
-                density="compact"
-                hide-details
-                :items="propertyOptions"
-                label="Property"
-                prepend-inner-icon="mdi-home-outline"
-                rounded="lg"
-                variant="outlined"
-              />
-            </v-col>
-            <v-col cols="6" sm="4">
-              <v-select
-                v-model="selectedStatus"
-                clearable
-                density="compact"
-                hide-details
-                :items="statusOptions"
-                label="Status"
-                prepend-inner-icon="mdi-filter-outline"
-                rounded="lg"
-                variant="outlined"
-              />
-            </v-col>
-            <v-col cols="6" sm="4">
-              <v-select
-                v-model="selectedType"
-                clearable
-                density="compact"
-                hide-details
-                :items="typeOptions"
-                label="Type"
-                prepend-inner-icon="mdi-tag-outline"
-                rounded="lg"
-                variant="outlined"
-              />
-            </v-col>
-          </v-row>
-        </template>
-
-        <!-- Property column with color dot -->
-        <template #[`item.property_name`]="{ item }">
-          <div class="d-flex align-center ga-2">
-            <div
-              class="property-color-dot"
-              :style="{ backgroundColor: getPropertyColor(item.property_id) }"
-            />
-            <span class="font-weight-medium">{{ item.property_name }}</span>
-          </div>
-        </template>
-
-        <!-- Dates column -->
-        <template #[`item.dates`]="{ item }">
-          <div class="text-body-2">
-            <span>{{ formatDate(item.checkin_date) }}</span>
-            <v-icon class="mx-1" size="14">mdi-arrow-right</v-icon>
-            <span>{{ formatDate(item.checkout_date) }}</span>
-          </div>
-        </template>
-
-        <!-- Type chip -->
-        <template #[`item.booking_type`]="{ item }">
-          <v-chip
-            :color="item.booking_type === 'turn' ? 'info' : 'primary'"
-            size="small"
-            variant="tonal"
+      <!-- Booking Stats - Compact -->
+      <v-row class="mb-2 compact-stats-row">
+        <v-col
+          class="pa-1"
+          cols="6"
+          md="3"
+        >
+          <v-card
+            class="compact-stat-card stat-card-primary"
+            elevation="1"
           >
-            {{ item.booking_type === 'turn' ? 'Turn' : 'Standard' }}
-          </v-chip>
-        </template>
-
-        <!-- Status chip -->
-        <template #[`item.status`]="{ item }">
-          <v-chip
-            :color="getStatusColor(item.status)"
-            size="small"
-            variant="tonal"
+            <v-card-text class="pa-2 text-center">
+              <div class="stat-number">
+                {{ ownerBookingsArray.length }}
+              </div>
+              <div class="stat-label">
+                Total
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col
+          class="pa-1"
+          cols="6"
+          md="3"
+        >
+          <v-card
+            class="compact-stat-card stat-card-warning"
+            elevation="1"
           >
-            {{ formatStatus(item.status) }}
-          </v-chip>
-        </template>
+            <v-card-text class="pa-2 text-center">
+              <div class="stat-number">
+                {{ turnBookings.length }}
+              </div>
+              <div class="stat-label">
+                Turns
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col
+          class="pa-1"
+          cols="6"
+          md="3"
+        >
+          <v-card
+            class="compact-stat-card stat-card-success"
+            elevation="1"
+          >
+            <v-card-text class="pa-2 text-center">
+              <div class="stat-number">
+                {{ todayBookings.length }}
+              </div>
+              <div class="stat-label">
+                Today
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col
+          class="pa-1"
+          cols="6"
+          md="3"
+        >
+          <v-card
+            class="compact-stat-card stat-card-info"
+            elevation="1"
+          >
+            <v-card-text class="pa-2 text-center">
+              <div class="stat-number">
+                {{ upcomingBookings.length }}
+              </div>
+              <div class="stat-label">
+                This Week
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
 
-        <!-- Guest count -->
-        <template #[`item.guest_count`]="{ item }">
-          <span class="text-body-2">{{ item.guest_count || '-' }}</span>
-        </template>
+      <!-- Filters - Compact -->
+      <v-row class="mb-2 compact-filters-row">
+        <v-col
+          class="pa-1"
+          cols="12"
+          md="4"
+        >
+          <v-select
+            v-model="selectedProperty"
+            clearable
+            density="compact"
+            hide-details
+            :items="propertyOptions"
+            label="Property"
+            prepend-inner-icon="mdi-home"
+            variant="outlined"
+          />
+        </v-col>
+        <v-col
+          class="pa-1"
+          cols="6"
+          md="4"
+        >
+          <v-select
+            v-model="selectedStatus"
+            clearable
+            density="compact"
+            hide-details
+            :items="statusOptions"
+            label="Status"
+            prepend-inner-icon="mdi-filter"
+            variant="outlined"
+          />
+        </v-col>
+        <v-col
+          class="pa-1"
+          cols="6"
+          md="4"
+        >
+          <v-select
+            v-model="selectedType"
+            clearable
+            density="compact"
+            hide-details
+            :items="typeOptions"
+            label="Type"
+            prepend-inner-icon="mdi-tag"
+            variant="outlined"
+          />
+        </v-col>
+      </v-row>
 
-        <!-- Actions -->
-        <template #[`item.actions`]="{ item }">
-          <div class="d-flex align-center ga-1">
-            <v-btn
-              color="primary"
-              icon="mdi-pencil-outline"
-              size="small"
-              variant="text"
-              @click.stop="handleEditBooking(item)"
-            />
-            <v-btn
-              color="error"
-              icon="mdi-delete-outline"
-              size="small"
-              variant="text"
-              @click.stop="handleDeleteBooking(item)"
-            />
-          </div>
-        </template>
+      <!-- Bookings List -->
+      <v-row>
+        <v-col cols="12">
+          <v-card>
+            <v-card-title>
+              Bookings ({{ ownerBookingsArray.length }})
+            </v-card-title>
 
-        <!-- Expanded row content -->
-        <template #expand-content="{ item }">
-          <div class="expanded-content pa-4">
-            <v-row dense>
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Guest Name</div>
-                  <div class="text-body-2">{{ item.notes || 'Not specified' }}</div>
-                </div>
-              </v-col>
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Notes</div>
-                  <div class="text-body-2">{{ item.notes || 'None' }}</div>
-                </div>
-              </v-col>
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Created</div>
-                  <div class="text-body-2">{{ item.created_at ? formatDate(item.created_at) : 'N/A' }}</div>
-                </div>
-              </v-col>
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Priority</div>
-                  <v-chip
-                    :color="getPriorityColor(item.priority)"
+            <v-data-table
+              class="elevation-0"
+              :headers="tableHeaders"
+              item-key="id"
+              :items="bookingItems"
+              :loading="loading"
+            >
+              <template #[`item.property_name`]="{ item }">
+                <div class="d-flex align-center">
+                  <v-icon
+                    class="mr-2"
                     size="small"
-                    variant="tonal"
                   >
-                    {{ item.priority }}
-                  </v-chip>
+                    mdi-home
+                  </v-icon>
+                  {{ item.property_name }}
                 </div>
-              </v-col>
-            </v-row>
-          </div>
-        </template>
-      </MaterioDataTable>
+              </template>
 
-      <!-- Empty State -->
-      <v-card v-if="!loading && ownerBookingsArray.length === 0" class="text-center pa-8 mt-4" variant="flat">
-        <v-icon class="mb-4" color="grey-lighten-1" size="64">mdi-calendar-blank</v-icon>
-        <h3 class="text-h6 mb-2">No Bookings Yet</h3>
-        <p class="text-body-2 text-medium-emphasis mb-4">Create your first booking to get started.</p>
-        <v-btn color="primary" prepend-icon="mdi-plus" @click="handleCreateBooking">
-          Create Booking
-        </v-btn>
-      </v-card>
+              <template #[`item.booking_type`]="{ item }">
+                <v-chip
+                  :color="item.booking_type === 'turn' ? 'warning' : 'primary'"
+                  size="small"
+                  variant="tonal"
+                >
+                  {{ item.booking_type === 'turn' ? 'Turn' : 'Standard' }}
+                </v-chip>
+              </template>
+
+              <template #[`item.status`]="{ item }">
+                <v-chip
+                  :color="getStatusColor(item.status)"
+                  size="small"
+                  variant="tonal"
+                >
+                  {{ item.status }}
+                </v-chip>
+              </template>
+
+              <template #[`item.dates`]="{ item }">
+                <div>
+                  <div class="text-body-2">
+                    <strong>Out:</strong> {{ formatDate(item.checkout_date) }}
+                  </div>
+                  <div class="text-body-2">
+                    <strong>In:</strong> {{ formatDate(item.checkin_date) }}
+                  </div>
+                </div>
+              </template>
+
+              <template #[`item.actions`]="{ item }">
+                <div class="d-flex gap-1">
+                  <v-btn
+                    icon="mdi-pencil"
+                    size="small"
+                    variant="text"
+                    @click="handleEditBooking(item)"
+                  />
+                  <v-btn
+                    color="error"
+                    icon="mdi-delete"
+                    size="small"
+                    variant="text"
+                    @click="handleDeleteBooking(item)"
+                  />
+                </div>
+              </template>
+            </v-data-table>
+
+            <!-- Empty State -->
+            <div
+              v-if="ownerBookingsArray.length === 0"
+              class="text-center py-8"
+            >
+              <v-icon
+                class="mb-4"
+                color="grey-lighten-1"
+                size="64"
+              >
+                mdi-calendar-blank
+              </v-icon>
+              <h3 class="text-h6 mb-2">
+                No Bookings Yet
+              </h3>
+              <p class="text-body-2 text-medium-emphasis mb-4">
+                Create your first booking to get started.
+              </p>
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-plus"
+                @click="handleCreateBooking"
+              >
+                Create Booking
+              </v-btn>
+            </div>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -240,7 +270,6 @@
 <script setup lang="ts">
   import type { Booking, ModalData } from '@/types'
   import { computed, onMounted, ref } from 'vue'
-  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useUIStore } from '@/stores/ui'
@@ -325,12 +354,11 @@
   })
 
   const tableHeaders = [
-    { title: 'Property', key: 'property_name', sortable: true },
-    { title: 'Dates', key: 'dates', sortable: false },
+    { title: 'Property', key: 'property_name', sortable: false },
     { title: 'Type', key: 'booking_type', sortable: true },
     { title: 'Status', key: 'status', sortable: true },
-    { title: 'Guests', key: 'guest_count', sortable: true, width: '90px' },
-    { title: 'Actions', key: 'actions', sortable: false, width: '100px', align: 'end' as const },
+    { title: 'Dates', key: 'dates', sortable: false },
+    { title: 'Actions', key: 'actions', sortable: false, width: '100px' },
   ]
 
   // Methods
@@ -339,34 +367,14 @@
     return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
   }
 
-  function getPropertyColor (propertyId: string): string {
-    const property = Array.from(ownerProperties.value.values()).find(p => p.id === propertyId)
-    return property?.color || '#9E9E9E'
-  }
-
   function getStatusColor (status: string): string {
     const colors: Record<string, string> = {
       pending: 'warning',
       scheduled: 'info',
       in_progress: 'primary',
       completed: 'success',
-      cancelled: 'error',
     }
     return colors[status] || 'grey'
-  }
-
-  function formatStatus (status: string): string {
-    return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-  }
-
-  function getPriorityColor (priority: string): string {
-    const colors: Record<string, string> = {
-      low: 'grey',
-      normal: 'info',
-      high: 'warning',
-      urgent: 'error',
-    }
-    return colors[priority] || 'grey'
   }
 
   function formatDate (dateString: string): string {
@@ -419,53 +427,89 @@
   min-height: calc(100vh - var(--app-bar-height, 64px));
 }
 
-/* Stat Pills - Materio Academy Style */
-.stat-pill {
-  background: rgb(var(--v-theme-surface));
-  border-radius: 8px;
-  border: thin solid rgba(var(--v-theme-on-surface), 0.08);
+.gap-1 {
+  gap: 0.25rem;
 }
 
-.stat-pill__icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+/* Compact stats row */
+.compact-stats-row {
+  max-height: 50px;
 }
 
-.stat-pill__icon--primary {
-  background: rgba(var(--v-theme-primary), 0.12);
+.compact-stat-card {
+  min-height: auto !important;
+  height: 50px !important;
+  cursor: default;
 }
 
-.stat-pill__icon--warning {
-  background: rgba(var(--v-theme-warning), 0.12);
+.compact-stat-card .v-card-text {
+  padding: 6px !important;
 }
 
-.stat-pill__icon--success {
-  background: rgba(var(--v-theme-success), 0.12);
+.stat-number {
+  font-size: 1.1rem !important;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 1px;
 }
 
-.stat-pill__icon--info {
-  background: rgba(var(--v-theme-info), 0.12);
+.stat-label {
+  font-size: 0.65rem !important;
+  line-height: 1;
+  opacity: 0.9;
 }
 
-/* Property color dot */
-.property-color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
+/* Stat card color themes */
+.stat-card-primary {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-left: 3px solid rgb(var(--v-theme-primary));
 }
 
-/* Expanded content */
-.expanded-content {
-  background: rgba(var(--v-theme-on-surface), 0.02);
+.stat-card-primary .stat-number {
+  color: rgb(var(--v-theme-primary));
 }
 
-.expanded-field {
-  padding: 8px 0;
+.stat-card-success {
+  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+  border-left: 3px solid rgb(var(--v-theme-success));
+}
+
+.stat-card-success .stat-number {
+  color: rgb(var(--v-theme-success));
+}
+
+.stat-card-info {
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  border-left: 3px solid rgb(var(--v-theme-secondary));
+}
+
+.stat-card-info .stat-number {
+  color: rgb(var(--v-theme-secondary));
+}
+
+.stat-card-warning {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%);
+  border-left: 3px solid rgb(var(--v-theme-warning));
+}
+
+.stat-card-warning .stat-number {
+  color: rgb(var(--v-theme-warning));
+}
+
+/* Compact filters row */
+.compact-filters-row {
+  max-height: 56px;
+}
+
+.compact-filters-row .v-select {
+  font-size: 0.9rem;
+}
+
+.compact-filters-row .v-field {
+  font-size: 0.9rem;
+}
+
+.compact-filters-row .v-field__input {
+  min-height: 40px;
 }
 </style>

@@ -4,203 +4,217 @@
      Do NOT bypass these composables to call stores directly. -->
 
 <template>
-  <div class="owner-properties-page">
+  <div class="owner-properties-container">
+    <!-- Property Management Interface -->
     <v-container fluid>
-      <!-- Header -->
-      <div class="d-flex justify-space-between align-center mb-5">
-        <div>
-          <h1 class="text-h4 font-weight-bold">My Properties</h1>
-          <p class="text-body-2 text-medium-emphasis mt-1">Manage your rental properties and settings</p>
-        </div>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-plus"
-          @click="handleCreateProperty"
-        >
-          Add Property
-        </v-btn>
-      </div>
-
-      <!-- Stat Pills Row -->
-      <v-row class="mb-5" dense>
-        <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--primary">
-              <v-icon color="primary" size="24">mdi-home-city</v-icon>
-            </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">Total Properties</div>
-              <div class="text-h5 font-weight-bold text-primary">{{ myProperties.length }}</div>
-            </div>
-          </div>
-        </v-col>
-        <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--success">
-              <v-icon color="success" size="24">mdi-check-circle</v-icon>
-            </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">Active</div>
-              <div class="text-h5 font-weight-bold text-success">{{ myActiveProperties.length }}</div>
-            </div>
-          </div>
-        </v-col>
-        <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--info">
-              <v-icon color="info" size="24">mdi-calendar-multiple</v-icon>
-            </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">Total Bookings</div>
-              <div class="text-h5 font-weight-bold text-info">{{ myBookings.length }}</div>
-            </div>
-          </div>
-        </v-col>
-        <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--warning">
-              <v-icon color="warning" size="24">mdi-swap-horizontal</v-icon>
-            </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">Today's Turns</div>
-              <div class="text-h5 font-weight-bold text-warning">{{ myTodayTurns.length }}</div>
-            </div>
+      <v-row>
+        <v-col cols="12">
+          <div class="d-flex justify-space-between align-center mb-4">
+            <h1 class="text-h4">
+              My Properties
+            </h1>
+            <v-btn
+              color="primary"
+              prepend-icon="mdi-plus"
+              @click="handleCreateProperty"
+            >
+              Add Property
+            </v-btn>
           </div>
         </v-col>
       </v-row>
 
-      <!-- Data Table -->
-      <MaterioDataTable
-        expandable
-        :headers="tableHeaders"
-        :items="propertyItems"
-        :loading="false"
-        :search-keys="['display_name', 'full_address', 'property_type']"
-        searchable
-      >
-        <!-- Property column with color dot and address -->
-        <template #[`item.display_name`]="{ item }">
-          <div class="d-flex align-center ga-2">
-            <div
-              class="property-color-dot"
-              :style="{ backgroundColor: item.color }"
-            />
-            <div>
-              <div class="font-weight-medium">{{ item.display_name }}</div>
-              <div class="text-caption text-medium-emphasis">{{ item.full_address }}</div>
-            </div>
-          </div>
-        </template>
-
-        <!-- Bedrooms -->
-        <template #[`item.bedrooms`]="{ item }">
-          <div class="d-flex align-center ga-1">
-            <v-icon color="medium-emphasis" size="16">mdi-bed-outline</v-icon>
-            <span class="text-body-2">{{ item.bedrooms || 0 }}</span>
-          </div>
-        </template>
-
-        <!-- Bathrooms -->
-        <template #[`item.bathrooms`]="{ item }">
-          <div class="d-flex align-center ga-1">
-            <v-icon color="medium-emphasis" size="16">mdi-shower</v-icon>
-            <span class="text-body-2">{{ item.bathrooms || 0 }}</span>
-          </div>
-        </template>
-
-        <!-- Type chip -->
-        <template #[`item.property_type`]="{ item }">
-          <v-chip color="secondary" size="small" variant="tonal">
-            <v-icon size="14" start>{{ getPropertyIcon(item.property_type) }}</v-icon>
-            {{ item.property_type || 'N/A' }}
-          </v-chip>
-        </template>
-
-        <!-- Status chip -->
-        <template #[`item.active`]="{ item }">
-          <v-chip
-            :color="item.active ? 'success' : 'error'"
-            size="small"
-            variant="tonal"
+      <v-row class="mb-2 compact-stats-row">
+        <v-col
+          class="pa-1"
+          cols="6"
+          sm="3"
+        >
+          <v-card
+            class="compact-stat-card stat-card-primary"
+            elevation="1"
           >
-            {{ item.active ? 'Active' : 'Inactive' }}
-          </v-chip>
-        </template>
+            <v-card-text class="pa-2 text-center">
+              <div class="stat-number">
+                {{ myProperties.length }}
+              </div>
+              <div class="stat-label">
+                Total Properties
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col
+          class="pa-1"
+          cols="6"
+          sm="3"
+        >
+          <v-card
+            class="compact-stat-card stat-card-success"
+            elevation="1"
+          >
+            <v-card-text class="pa-2 text-center">
+              <div class="stat-number">
+                {{ myActiveProperties.length }}
+              </div>
+              <div class="stat-label">
+                Active Properties
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col
+          class="pa-1"
+          cols="6"
+          sm="3"
+        >
+          <v-card
+            class="compact-stat-card stat-card-info"
+            elevation="1"
+          >
+            <v-card-text class="pa-2 text-center">
+              <div class="stat-number">
+                {{ myBookings.length }}
+              </div>
+              <div class="stat-label">
+                Total Bookings
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+        <v-col
+          class="pa-1"
+          cols="6"
+          sm="3"
+        >
+          <v-card
+            class="compact-stat-card stat-card-warning"
+            elevation="1"
+          >
+            <v-card-text class="pa-2 text-center">
+              <div class="stat-number">
+                {{ myTodayTurns.length }}
+              </div>
+              <div class="stat-label">
+                Today's Turns
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
 
-        <!-- Actions -->
-        <template #[`item.actions`]="{ item }">
-          <div class="d-flex align-center ga-1">
-            <v-btn
-              color="primary"
-              icon="mdi-eye-outline"
-              size="small"
-              variant="text"
-              @click.stop="viewProperty(item)"
-            />
-            <v-btn
-              color="primary"
-              icon="mdi-pencil-outline"
-              size="small"
-              variant="text"
-              @click.stop="editProperty(item)"
-            />
-            <v-btn
-              color="error"
-              icon="mdi-delete-outline"
-              size="small"
-              variant="text"
-              @click.stop="handleDeleteProperty(item.id)"
-            />
-          </div>
-        </template>
+      <!-- Property List -->
+      <v-row>
+        <v-col
+          v-for="property in myProperties"
+          :key="property.id"
+          class="pa-2"
+          cols="12"
+          lg="3"
+          md="4"
+          sm="6"
+        >
+          <v-card
+            class="compact-property-card"
+            elevation="2"
+            :style="{ borderLeft: '4px solid ' + property.color }"
+            @click="viewProperty(property)"
+          >
+            <v-card-text class="pa-3">
+              <div class="d-flex align-center justify-space-between mb-2">
+                <v-icon
+                  :color="property.color"
+                  size="20"
+                >
+                  {{ getPropertyIcon(property.property_type) }}
+                </v-icon>
+                <v-menu>
+                  <template #activator="{ props: menuProps }">
+                    <v-btn
+                      v-bind="menuProps"
+                      icon="mdi-dots-vertical"
+                      size="x-small"
+                      variant="text"
+                      @click.stop
+                    />
+                  </template>
+                  <v-list density="compact">
+                    <v-list-item @click="editProperty(property)">
+                      <v-list-item-title>Edit</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="viewProperty(property)">
+                      <v-list-item-title>View</v-list-item-title>
+                    </v-list-item>
+                    <v-list-item @click="handleDeleteProperty(property.id)">
+                      <v-list-item-title>Delete</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </div>
 
-        <!-- Expanded row content -->
-        <template #expand-content="{ item }">
-          <div class="expanded-content pa-4">
-            <v-row dense>
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Special Instructions</div>
-                  <div class="text-body-2">{{ item.special_instructions || 'None' }}</div>
-                </div>
-              </v-col>
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Access Info</div>
-                  <div class="text-body-2">{{ item.access_info || 'Not specified' }}</div>
-                </div>
-              </v-col>
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Contact</div>
-                  <div class="text-body-2">
-                    <template v-if="item.contact_name || item.contact_phone">
-                      {{ item.contact_name }}<br v-if="item.contact_name && item.contact_phone">{{ item.contact_phone }}
-                    </template>
-                    <template v-else>Not specified</template>
-                  </div>
-                </div>
-              </v-col>
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Cleaning Duration</div>
-                  <div class="text-body-2">{{ item.cleaning_duration }} min</div>
-                </div>
-              </v-col>
-            </v-row>
-          </div>
-        </template>
-      </MaterioDataTable>
+              <div class="property-name mb-1">
+                {{ formatPropertyAddress(property, 'short') }}
+              </div>
+              <div class="property-address mb-2">
+                {{ formatPropertyAddress(property) }}
+              </div>
+
+              <div class="property-details">
+                <span class="detail-item">
+                  <v-icon
+                    class="mr-1"
+                    size="12"
+                  >mdi-bed</v-icon>
+                  {{ property.bedrooms || 0 }}
+                </span>
+                <span class="detail-item">
+                  <v-icon
+                    class="mr-1"
+                    size="12"
+                  >mdi-shower</v-icon>
+                  {{ property.bathrooms || 0 }}
+                </span>
+                <span class="detail-item">
+                  <v-icon
+                    class="mr-1"
+                    size="12"
+                  >mdi-home</v-icon>
+                  {{ property.property_type || 'N/A' }}
+                </span>
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
 
       <!-- Empty State -->
-      <v-card v-if="myProperties.length === 0" class="text-center pa-8 mt-4" variant="flat">
-        <v-icon class="mb-4" color="grey-lighten-1" size="64">mdi-home-outline</v-icon>
-        <h3 class="text-h6 mb-2">No Properties Yet</h3>
-        <p class="text-body-2 text-medium-emphasis mb-4">Add your first property to start managing bookings and cleanings.</p>
-        <v-btn color="primary" prepend-icon="mdi-plus" @click="handleCreateProperty">
-          Add Your First Property
-        </v-btn>
-      </v-card>
+      <v-row v-if="myProperties.length === 0">
+        <v-col
+          class="text-center py-8"
+          cols="12"
+        >
+          <v-icon
+            class="mb-4"
+            color="grey-lighten-1"
+            size="64"
+          >
+            mdi-home-outline
+          </v-icon>
+          <h3 class="text-h6 mb-2">
+            No Properties Yet
+          </h3>
+          <p class="text-body-2 text-medium-emphasis mb-4">
+            Add your first property to start managing bookings and cleanings.
+          </p>
+          <v-btn
+            color="primary"
+            prepend-icon="mdi-plus"
+            @click="handleCreateProperty"
+          >
+            Add Your First Property
+          </v-btn>
+        </v-col>
+      </v-row>
     </v-container>
 
     <!-- Property Modal - Same modal system as HomeOwner -->
@@ -236,7 +250,6 @@
   import { computed, onMounted } from 'vue'
   import { useRouter } from 'vue-router'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
 
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
@@ -269,25 +282,6 @@
     myTodayTurns,
     fetchMyBookings,
   } = useOwnerBookings()
-
-  // Table headers
-  const tableHeaders = [
-    { title: 'Property', key: 'display_name', sortable: true },
-    { title: 'Beds', key: 'bedrooms', sortable: true, width: '80px' },
-    { title: 'Baths', key: 'bathrooms', sortable: true, width: '80px' },
-    { title: 'Type', key: 'property_type', sortable: true },
-    { title: 'Status', key: 'active', sortable: true },
-    { title: 'Actions', key: 'actions', sortable: false, width: '130px', align: 'end' as const },
-  ]
-
-  // Computed property items for the table
-  const propertyItems = computed(() =>
-    myProperties.value.map(property => ({
-      ...property,
-      display_name: formatPropertyAddress(property, 'short'),
-      full_address: formatPropertyAddress(property),
-    })),
-  )
 
   // ============================================================================
   // UI STATE - SAME MODAL MANAGEMENT AS HomeOwner
@@ -506,58 +500,133 @@
 </script>
 
 <style scoped>
-.owner-properties-page {
+.owner-properties-container {
   padding: 1rem;
   min-height: calc(100vh - var(--app-bar-height, 64px));
 }
 
-/* Stat Pills - Materio Academy Style */
-.stat-pill {
-  background: rgb(var(--v-theme-surface));
-  border-radius: 8px;
-  border: thin solid rgba(var(--v-theme-on-surface), 0.08);
+.v-card {
+  height: 100%;
 }
 
-.stat-pill__icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
+/* Compact stat cards */
+.compact-stats-row {
+  max-height: 60px;
+}
+
+.compact-stat-card {
+  min-height: auto !important;
+  height: 60px !important;
+  cursor: default;
+}
+
+.compact-stat-card .v-card-text {
+  padding: 8px !important;
+}
+
+.stat-number {
+  font-size: 1.25rem !important;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.stat-label {
+  font-size: 0.7rem !important;
+  line-height: 1;
+  opacity: 0.9;
+}
+
+/* Stat card color themes */
+.stat-card-primary {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border-left: 4px solid rgb(var(--v-theme-primary));
+}
+
+.stat-card-primary .stat-number {
+  color: rgb(var(--v-theme-primary));
+}
+
+.stat-card-success {
+  background: linear-gradient(135deg, #e8f5e8 0%, #c8e6c9 100%);
+  border-left: 4px solid rgb(var(--v-theme-success));
+}
+
+.stat-card-success .stat-number {
+  color: rgb(var(--v-theme-success));
+}
+
+.stat-card-info {
+  background: linear-gradient(135deg, #f3e5f5 0%, #e1bee7 100%);
+  border-left: 4px solid rgb(var(--v-theme-secondary));
+}
+
+.stat-card-info .stat-number {
+  color: rgb(var(--v-theme-secondary));
+}
+
+.stat-card-warning {
+  background: linear-gradient(135deg, #fff3e0 0%, #ffcc02 100%);
+  border-left: 4px solid rgb(var(--v-theme-warning));
+}
+
+.stat-card-warning .stat-number {
+  color: rgb(var(--v-theme-warning));
+}
+
+/* Compact property cards */
+.compact-property-card {
+  min-height: auto !important;
+  height: 140px !important;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 12px !important;
+}
+
+.compact-property-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.property-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: rgb(var(--v-theme-on-surface));
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.property-address {
+  font-size: 0.75rem;
+  color: rgb(var(--v-theme-on-surface-variant));
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.property-details {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.detail-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  font-size: 0.7rem;
+  color: rgb(var(--v-theme-on-surface-variant));
+  background: rgba(var(--v-theme-surface-variant), 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
 }
 
-.stat-pill__icon--primary {
-  background: rgba(var(--v-theme-primary), 0.12);
-}
-
-.stat-pill__icon--success {
-  background: rgba(var(--v-theme-success), 0.12);
-}
-
-.stat-pill__icon--info {
-  background: rgba(var(--v-theme-info), 0.12);
-}
-
-.stat-pill__icon--warning {
-  background: rgba(var(--v-theme-warning), 0.12);
-}
-
-/* Property color dot */
-.property-color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-/* Expanded content */
-.expanded-content {
-  background: rgba(var(--v-theme-on-surface), 0.02);
-}
-
-.expanded-field {
-  padding: 8px 0;
+.owner-properties-container {
+  --owner-primary: rgb(var(--v-theme-primary));
+  --owner-accent: rgb(var(--v-theme-secondary));
+  --owner-surface: rgb(var(--v-theme-surface));
+  --owner-border: rgb(var(--v-theme-on-surface), 0.12);
 }
 </style>

@@ -1,63 +1,725 @@
 <template>
   <div class="admin-dashboard">
-    <v-container fluid>
-      <!-- Welcome Banner (full width) -->
-      <v-row class="mb-4">
-        <v-col cols="12">
-          <AdminWelcomeBanner
-            :booking-count="bookingsData.totalCheckouts"
-            :cleanings-completed="bookingsData.completedCount"
-            :cleanings-total="bookingsData.totalCheckouts"
-            :property-count="propertiesData.totalProperties"
-            :turn-count="bookingsData.totalTurns"
-            :user-name="userName"
-          />
-        </v-col>
-      </v-row>
+    <!-- Main Content -->
+    <div class="dashboard-content">
+      <!-- Header (Desktop only) -->
+      <div
+        v-if="!mobile"
+        class="dashboard-header"
+      >
+        <v-container fluid>
+          <v-row align="center">
+            <v-col>
+              <h1 class="text-h4 font-weight-bold mb-2">
+                Admin Dashboard
+              </h1>
+              <p class="text-subtitle-1 text-medium-emphasis">
+                Business overview and upcoming schedule management
+              </p>
+            </v-col>
+            <v-col cols="auto">
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-refresh"
+                @click="refreshDashboard"
+              >
+                Refresh Data
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
 
-      <!-- Card Grid -->
-      <v-row>
-        <!-- Bookings This Week (wide) -->
-        <v-col
-          cols="12"
-          md="8"
-        >
-          <WeeklyBookingsChart :daily-counts="weeklyChartData" />
-        </v-col>
+      <!-- Overview Cards -->
+      <div class="overview-cards">
+        <v-container fluid>
+          <v-row>
+            <!-- Properties Card -->
+            <v-col
+              cols="12"
+              md="3"
+              sm="6"
+            >
+              <v-card
+                class="overview-card h-100"
+                elevation="2"
+              >
+                <v-card-text class="pa-4">
+                  <div class="d-flex align-center justify-space-between mb-3">
+                    <v-icon
+                      color="primary"
+                      size="40"
+                    >
+                      mdi-home-city
+                    </v-icon>
+                    <v-chip
+                      :color="propertiesData.activeProperties > 0 ? 'success' : 'warning'"
+                      size="small"
+                      variant="flat"
+                    >
+                      {{ propertiesData.activeProperties }} Active
+                    </v-chip>
+                  </div>
+                  <div class="mb-2">
+                    <div class="text-h5 font-weight-bold text-primary">
+                      {{ propertiesData.totalProperties }}
+                    </div>
+                    <div class="text-caption text-medium-emphasis">
+                      Total Properties
+                    </div>
+                  </div>
+                  <v-divider class="my-2" />
+                  <div class="d-flex justify-space-between">
+                    <span class="text-body-2">Currently Booked:</span>
+                    <span class="text-body-2 font-weight-bold">
+                      {{ propertiesData.bookedProperties }}
+                    </span>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-col>
 
-        <!-- Top Properties -->
-        <v-col
-          cols="12"
-          md="4"
-        >
-          <TopPropertiesCard :properties="topPropertiesData" />
-        </v-col>
+            <!-- Clients Card -->
+            <v-col
+              cols="12"
+              md="3"
+              sm="6"
+            >
+              <v-card
+                class="overview-card h-100"
+                elevation="2"
+              >
+                <v-card-text class="pa-4">
+                  <div class="d-flex align-center justify-space-between mb-3">
+                    <v-icon
+                      color="info"
+                      size="40"
+                    >
+                      mdi-account-group
+                    </v-icon>
+                    <v-chip
+                      color="info"
+                      size="small"
+                      variant="flat"
+                    >
+                      Property Owners
+                    </v-chip>
+                  </div>
+                  <div class="mb-2">
+                    <div class="text-h5 font-weight-bold text-info">
+                      {{ clientsData.totalClients }}
+                    </div>
+                    <div class="text-caption text-medium-emphasis">
+                      Total Clients
+                    </div>
+                  </div>
+                  <v-divider class="my-2" />
+                  <div class="d-flex justify-space-between">
+                    <span class="text-body-2">Active This Month:</span>
+                    <span class="text-body-2 font-weight-bold">
+                      {{ clientsData.activeThisMonth }}
+                    </span>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-col>
 
-        <!-- Upcoming Checkouts -->
-        <v-col
-          cols="12"
-          md="4"
-        >
-          <UpcomingCheckoutsCard :checkouts="upcomingCheckoutsData" />
-        </v-col>
+            <!-- Total Checkouts Card -->
+            <v-col
+              cols="12"
+              md="3"
+              sm="6"
+            >
+              <v-card
+                class="overview-card h-100"
+                elevation="2"
+              >
+                <v-card-text class="pa-4">
+                  <div class="d-flex align-center justify-space-between mb-3">
+                    <v-icon
+                      color="success"
+                      size="40"
+                    >
+                      mdi-calendar-check
+                    </v-icon>
+                    <v-chip
+                      color="success"
+                      size="small"
+                      variant="flat"
+                    >
+                      All Bookings
+                    </v-chip>
+                  </div>
+                  <div class="mb-2">
+                    <div class="text-h5 font-weight-bold text-success">
+                      {{ bookingsData.totalCheckouts }}
+                    </div>
+                    <div class="text-caption text-medium-emphasis">
+                      Total Checkouts
+                    </div>
+                  </div>
+                  <v-divider class="my-2" />
+                  <div class="d-flex justify-space-between">
+                    <span class="text-body-2">This Week:</span>
+                    <span class="text-body-2 font-weight-bold">
+                      {{ bookingsData.checkoutsThisWeek }}
+                    </span>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-col>
 
-        <!-- Urgent Turns -->
-        <v-col
-          cols="12"
-          md="4"
-        >
-          <UrgentTurnsCard :turns="urgentTurnsData" />
-        </v-col>
+            <!-- Total Turns Card -->
+            <v-col
+              cols="12"
+              md="3"
+              sm="6"
+            >
+              <v-card
+                class="overview-card h-100"
+                elevation="2"
+              >
+                <v-card-text class="pa-4">
+                  <div class="d-flex align-center justify-space-between mb-3">
+                    <v-icon
+                      color="warning"
+                      size="40"
+                    >
+                      mdi-fire
+                    </v-icon>
+                    <v-chip
+                      :color="bookingsData.urgentTurns > 0 ? 'error' : 'warning'"
+                      size="small"
+                      variant="flat"
+                    >
+                      {{ bookingsData.urgentTurns }} Urgent
+                    </v-chip>
+                  </div>
+                  <div class="mb-2">
+                    <div class="text-h5 font-weight-bold text-warning">
+                      {{ bookingsData.totalTurns }}
+                    </div>
+                    <div class="text-caption text-medium-emphasis">
+                      Total Turns
+                    </div>
+                  </div>
+                  <v-divider class="my-2" />
+                  <div class="d-flex justify-space-between">
+                    <span class="text-body-2">This Week:</span>
+                    <span class="text-body-2 font-weight-bold">
+                      {{ bookingsData.turnsThisWeek }}
+                    </span>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
 
-        <!-- Cleaner Availability -->
-        <v-col
-          cols="12"
-          md="4"
-        >
-          <CleanerAvailabilityCard :cleaners="cleanerAvailabilityData" />
-        </v-col>
-      </v-row>
-    </v-container>
+      <!-- Calendar Preview Section -->
+      <div class="calendar-preview-section">
+        <v-container fluid>
+          <v-row>
+            <v-col cols="12">
+              <v-card
+                class="calendar-preview-card"
+                elevation="2"
+              >
+                <v-card-title class="d-flex align-center justify-space-between pa-4">
+                  <!-- Calendar Navigation -->
+                  <div class="d-flex align-center justify-space-between grow">
+                    <!-- Previous Month Button -->
+                    <v-btn
+                      icon="mdi-chevron-left"
+                      size="small"
+                      variant="text"
+                      @click="navigateToPreviousMonth"
+                    />
+
+                    <!-- Month and Year Display -->
+                    <div class="calendar-month-year">
+                      <h3 class="text-h6 font-weight-bold">
+                        {{ getCurrentMonthYear() }}
+                      </h3>
+                    </div>
+
+                    <!-- Next Month Button -->
+                    <v-btn
+                      icon="mdi-chevron-right"
+                      size="small"
+                      variant="text"
+                      @click="navigateToNextMonth"
+                    />
+                  </div>
+
+                  <!-- Master Schedule Button -->
+                  <v-btn
+                    class="ms-4"
+                    color="primary"
+                    prepend-icon="mdi-calendar-search"
+                    size="small"
+                    variant="outlined"
+                    @click="goToMasterSchedule"
+                  >
+                    Open Full Calendar
+                  </v-btn>
+                </v-card-title>
+
+                <v-card-text>
+                  <v-row>
+                    <!-- Mini Calendar -->
+                    <v-col
+                      cols="12"
+                      md="4"
+                    >
+                      <div class="mini-calendar">
+                        <div class="calendar-grid">
+                          <div class="calendar-header">
+                            <div
+                              v-for="day in ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa']"
+                              :key="day"
+                              class="day-header"
+                            >
+                              {{ day }}
+                            </div>
+                          </div>
+                          <div class="calendar-body">
+                            <div
+                              v-for="day in getCalendarDays()"
+                              :key="day.date"
+                              class="calendar-day"
+                              :class="{
+                                'today': day.isToday,
+                                'has-bookings': day.bookingCount > 0,
+                                'has-turns': day.turnCount > 0,
+                                'other-month': !day.isCurrentMonth
+                              }"
+                            >
+                              <span class="day-number">{{ day.day }}</span>
+                              <div
+                                v-if="day.bookingCount > 0"
+                                class="booking-dots"
+                              >
+                                <div
+                                  v-for="n in Math.min(day.bookingCount, 3)"
+                                  :key="n"
+                                  class="booking-dot"
+                                  :class="{ 'turn-dot': day.turnCount > 0 && n <= day.turnCount }"
+                                />
+                                <span
+                                  v-if="day.bookingCount > 3"
+                                  class="more-indicator"
+                                >
+                                  +{{ day.bookingCount - 3 }}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </v-col>
+
+                    <!-- Schedule Insights -->
+                    <v-col
+                      cols="12"
+                      md="8"
+                    >
+                      <div class="schedule-insights">
+                        <h3 class="text-h6 font-weight-bold mb-3">
+                          Weekly Schedule Insights
+                        </h3>
+
+                        <!-- This Week Summary -->
+                        <v-row class="mb-4">
+                          <v-col
+                            cols="6"
+                            md="3"
+                          >
+                            <div class="insight-card">
+                              <div class="insight-value text-primary">
+                                {{ getWeeklyStats().totalBookings }}
+                              </div>
+                              <div class="insight-label">
+                                This Week
+                              </div>
+                            </div>
+                          </v-col>
+                          <v-col
+                            cols="6"
+                            md="3"
+                          >
+                            <div class="insight-card">
+                              <div class="insight-value text-warning">
+                                {{ getWeeklyStats().turns }}
+                              </div>
+                              <div class="insight-label">
+                                Turns
+                              </div>
+                            </div>
+                          </v-col>
+                          <v-col
+                            cols="6"
+                            md="3"
+                          >
+                            <div class="insight-card">
+                              <div class="insight-value text-success">
+                                {{ getWeeklyStats().completed }}
+                              </div>
+                              <div class="insight-label">
+                                Completed
+                              </div>
+                            </div>
+                          </v-col>
+                          <v-col
+                            cols="6"
+                            md="3"
+                          >
+                            <div class="insight-card">
+                              <div class="insight-value text-info">
+                                {{ getWeeklyStats().upcoming }}
+                              </div>
+                              <div class="insight-label">
+                                Upcoming
+                              </div>
+                            </div>
+                          </v-col>
+                        </v-row>
+
+                        <!-- Quick Schedule Overview -->
+                        <div class="schedule-overview">
+                          <h4 class="text-body-1 font-weight-medium mb-2">
+                            Today's Schedule
+                          </h4>
+                          <div
+                            v-if="getTodaySchedule().length === 0"
+                            class="text-body-2 text-medium-emphasis"
+                          >
+                            No bookings scheduled for today
+                          </div>
+                          <div
+                            v-else
+                            class="today-schedule"
+                          >
+                            <div
+                              v-for="booking in getTodaySchedule().slice(0, 3)"
+                              :key="booking.id"
+                              class="schedule-item"
+                            >
+                              <v-chip
+                                class="me-2"
+                                :color="booking.booking_type === 'turn' ? 'warning' : 'primary'"
+                                size="small"
+                                variant="flat"
+                              >
+                                {{ formatTime(booking.checkout_date) }}
+                              </v-chip>
+                              <span class="text-body-2">
+                                {{ getPropertyName(booking.property_id) }}
+                              </span>
+                              <v-chip
+                                v-if="booking.booking_type === 'turn'"
+                                class="ms-2"
+                                color="error"
+                                size="x-small"
+                                variant="flat"
+                              >
+                                TURN
+                              </v-chip>
+                            </div>
+                            <div
+                              v-if="getTodaySchedule().length > 3"
+                              class="text-caption text-medium-emphasis mt-2"
+                            >
+                              +{{ getTodaySchedule().length - 3 }} more bookings
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
+
+      <!-- Upcoming Bookings Section -->
+      <div class="upcoming-section">
+        <v-container fluid>
+          <!-- Section Header -->
+          <v-row>
+            <v-col>
+              <div class="d-flex align-center justify-space-between mb-4">
+                <h2 class="text-h5 font-weight-bold">
+                  Upcoming Bookings & Turns
+                </h2>
+                <v-btn-toggle
+                  v-model="selectedTimeFilter"
+                  density="compact"
+                  mandatory
+                  variant="outlined"
+                >
+                  <v-btn value="today">
+                    Today
+                  </v-btn>
+                  <v-btn value="tomorrow">
+                    Tomorrow
+                  </v-btn>
+                  <v-btn value="week">
+                    Next 7 Days
+                  </v-btn>
+                </v-btn-toggle>
+              </div>
+            </v-col>
+          </v-row>
+
+          <!-- Time Period Content -->
+          <v-row>
+            <!-- Checkouts Column -->
+            <v-col
+              cols="12"
+              md="6"
+            >
+              <v-card
+                class="upcoming-card"
+                elevation="1"
+              >
+                <v-card-title class="d-flex align-center">
+                  <v-icon
+                    class="me-2"
+                    color="success"
+                  >
+                    mdi-exit-to-app
+                  </v-icon>
+                  Checkouts {{ timeFilterLabel }}
+                  <v-spacer />
+                  <v-chip
+                    color="success"
+                    size="small"
+                    variant="flat"
+                  >
+                    {{ filteredCheckouts.length }}
+                  </v-chip>
+                </v-card-title>
+
+                <v-card-text class="pa-0">
+                  <div
+                    v-if="filteredCheckouts.length === 0"
+                    class="text-center py-6"
+                  >
+                    <v-icon
+                      color="grey-lighten-1"
+                      size="48"
+                    >
+                      mdi-calendar-blank
+                    </v-icon>
+                    <p class="text-body-1 text-medium-emphasis mt-2">
+                      No checkouts {{ timeFilterLabel.toLowerCase() }}
+                    </p>
+                  </div>
+
+                  <div
+                    v-else
+                    class="bookings-list"
+                  >
+                    <v-list density="compact">
+                      <v-list-item
+                        v-for="checkout in filteredCheckouts"
+                        :key="checkout.id"
+                        class="booking-item"
+                      >
+                        <template #prepend>
+                          <v-avatar
+                            color="success"
+                            size="40"
+                          >
+                            <v-icon color="white">
+                              mdi-exit-to-app
+                            </v-icon>
+                          </v-avatar>
+                        </template>
+
+                        <v-list-item-title class="font-weight-medium">
+                          {{ getPropertyName(checkout.property_id) }}
+                        </v-list-item-title>
+
+                        <v-list-item-subtitle class="booking-details">
+                          <div class="text-body-2 mb-1">
+                            📍 {{ getPropertyAddress(checkout.property_id) }}
+                          </div>
+                          <div class="d-flex align-center flex-wrap gap-2">
+                            <v-chip
+                              color="primary"
+                              size="x-small"
+                              variant="flat"
+                            >
+                              🕐 {{ formatTime(checkout.checkout_date) }}
+                            </v-chip>
+                            <v-chip
+                              color="info"
+                              size="x-small"
+                              variant="flat"
+                            >
+                              👥 {{ checkout.guest_count || 'N/A' }} guests
+                            </v-chip>
+                            <v-chip
+                              color="warning"
+                              size="x-small"
+                              variant="flat"
+                            >
+                              ➡️ Check-in: {{ getNextCheckinDays(checkout) }}
+                            </v-chip>
+                          </div>
+                        </v-list-item-subtitle>
+
+                        <template #append>
+                          <v-btn
+                            icon="mdi-eye"
+                            size="small"
+                            variant="text"
+                            @click="viewBooking(checkout)"
+                          />
+                        </template>
+                      </v-list-item>
+                    </v-list>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-col>
+
+            <!-- Turns Column -->
+            <v-col
+              cols="12"
+              md="6"
+            >
+              <v-card
+                class="upcoming-card"
+                elevation="1"
+              >
+                <v-card-title class="d-flex align-center">
+                  <v-icon
+                    class="me-2"
+                    color="warning"
+                  >
+                    mdi-fire
+                  </v-icon>
+                  Turns {{ timeFilterLabel }}
+                  <v-spacer />
+                  <v-chip
+                    :color="filteredTurns.length > 0 ? 'warning' : 'success'"
+                    size="small"
+                    variant="flat"
+                  >
+                    {{ filteredTurns.length }}
+                  </v-chip>
+                </v-card-title>
+
+                <v-card-text class="pa-0">
+                  <div
+                    v-if="filteredTurns.length === 0"
+                    class="text-center py-6"
+                  >
+                    <v-icon
+                      color="grey-lighten-1"
+                      size="48"
+                    >
+                      mdi-calendar-check
+                    </v-icon>
+                    <p class="text-body-1 text-medium-emphasis mt-2">
+                      No turns {{ timeFilterLabel.toLowerCase() }}
+                    </p>
+                  </div>
+
+                  <div
+                    v-else
+                    class="bookings-list"
+                  >
+                    <v-list density="compact">
+                      <v-list-item
+                        v-for="turn in filteredTurns"
+                        :key="turn.id"
+                        class="booking-item turn-item"
+                      >
+                        <template #prepend>
+                          <v-avatar
+                            :color="getTurnUrgencyColor(turn)"
+                            size="40"
+                          >
+                            <v-icon color="white">
+                              mdi-fire
+                            </v-icon>
+                          </v-avatar>
+                        </template>
+
+                        <v-list-item-title class="font-weight-medium">
+                          {{ getPropertyName(turn.property_id) }}
+                        </v-list-item-title>
+
+                        <v-list-item-subtitle class="booking-details">
+                          <div class="text-body-2 mb-1">
+                            📍 {{ getPropertyAddress(turn.property_id) }}
+                          </div>
+                          <div class="d-flex align-center flex-wrap gap-2">
+                            <v-chip
+                              color="error"
+                              size="x-small"
+                              variant="flat"
+                            >
+                              ⚡ {{ getCleaningWindow(turn) }}
+                            </v-chip>
+                            <v-chip
+                              color="primary"
+                              size="x-small"
+                              variant="flat"
+                            >
+                              🕐 {{ formatTime(turn.checkout_date) }}
+                            </v-chip>
+                            <v-chip
+                              color="info"
+                              size="x-small"
+                              variant="flat"
+                            >
+                              👥 {{ turn.guest_count || 'N/A' }} guests
+                            </v-chip>
+                            <v-chip
+                              color="warning"
+                              size="x-small"
+                              variant="flat"
+                            >
+                              ➡️ Check-in: {{ getNextCheckinDays(turn) }}
+                            </v-chip>
+                          </div>
+                        </v-list-item-subtitle>
+
+                        <template #append>
+                          <div class="d-flex align-center gap-1">
+                            <v-btn
+                              color="primary"
+                              icon="mdi-account-hard-hat"
+                              size="small"
+                              variant="text"
+                              @click="assignCleaner(turn)"
+                            />
+                            <v-btn
+                              icon="mdi-eye"
+                              size="small"
+                              variant="text"
+                              @click="viewBooking(turn)"
+                            />
+                          </div>
+                        </template>
+                      </v-list-item>
+                    </v-list>
+                  </div>
+                </v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -67,27 +729,17 @@
   import { computed, onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
-  import AdminWelcomeBanner from '@/components/dumb/admin/AdminWelcomeBanner.vue'
-  import CleanerAvailabilityCard from '@/components/dumb/admin/CleanerAvailabilityCard.vue'
-  import TopPropertiesCard from '@/components/dumb/admin/TopPropertiesCard.vue'
-  import UpcomingCheckoutsCard from '@/components/dumb/admin/UpcomingCheckoutsCard.vue'
-  import UrgentTurnsCard from '@/components/dumb/admin/UrgentTurnsCard.vue'
-  import WeeklyBookingsChart from '@/components/dumb/admin/WeeklyBookingsChart.vue'
   import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
   import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
-  import { useAuthStore } from '@/stores/auth'
   import { formatPropertyAddress } from '@/types/property'
-  import { calculateBookingPriority } from '@/utils/businessLogic'
 
   // Composables
   const router = useRouter()
   const { mobile } = useDisplay()
-  const authStore = useAuthStore()
   const {
     allBookings,
     fetchAllBookings,
-    bookingsByCleaner,
   } = useAdminBookings()
   const {
     allProperties,
@@ -102,18 +754,10 @@
   // Reactive state
   const selectedTimeFilter = ref('today')
   const loading = ref(false)
-  const currentViewingDate = ref(new Date())
+  const currentViewingDate = ref(new Date()) // For calendar navigation
 
   const allPropertiesArray = computed<Property[]>(() => allProperties.value as Property[])
   const allBookingsArray = computed<Booking[]>(() => allBookings.value as Booking[])
-
-  // --- Welcome Banner Data ---
-  const userName = computed(() => {
-    const name = authStore.user?.name
-    if (name) return name
-    const email = authStore.user?.email
-    return email ? email.split('@')[0] : 'Admin'
-  })
 
   // Computed data for overview cards
   const propertiesData = computed(() => {
@@ -167,8 +811,6 @@
       return hoursUntil <= 6 && b.status !== 'completed'
     })
 
-    const completedCount = allBookingsArray.value.filter(b => b.status === 'completed').length
-
     const checkoutsThisWeek = allBookingsArray.value.filter(b =>
       b.checkout_date >= weekStart && b.checkout_date <= weekEnd,
     ).length
@@ -181,145 +823,12 @@
       totalCheckouts: allBookingsCount,
       totalTurns: turns.length,
       urgentTurns: urgentTurns.length,
-      completedCount,
       checkoutsThisWeek,
       turnsThisWeek,
     }
   })
 
-  // --- Weekly Bookings Chart Data ---
-  const weeklyChartData = computed(() => {
-    const now = new Date()
-    const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    const colors = [
-      '#1976D2', '#1976D2', '#1976D2', '#1976D2', '#1976D2',
-      '#FF9800', '#FF9800',
-    ]
-
-    // Get Monday of the current week
-    const dayOfWeek = now.getDay()
-    const monday = new Date(now)
-    monday.setDate(now.getDate() - ((dayOfWeek + 6) % 7))
-
-    return dayNames.map((day, index) => {
-      const date = new Date(monday)
-      date.setDate(monday.getDate() + index)
-      const dateStr = date.toISOString().split('T')[0]
-
-      const count = allBookingsArray.value.filter(b =>
-        b.checkout_date.startsWith(dateStr),
-      ).length
-
-      return { day, count, color: colors[index] }
-    })
-  })
-
-  // --- Top Properties Data ---
-  const topPropertiesData = computed(() => {
-    const propertyCounts = new Map<string, number>()
-
-    for (const booking of allBookingsArray.value) {
-      const current = propertyCounts.get(booking.property_id) || 0
-      propertyCounts.set(booking.property_id, current + 1)
-    }
-
-    return Array.from(propertyCounts.entries())
-      .toSorted((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([propertyId, count]) => {
-        const property = allPropertiesArray.value.find(p => p.id === propertyId)
-        return {
-          name: property ? formatPropertyAddress(property, 'short') : 'Unknown',
-          color: property?.color || '#1976D2',
-          bookingCount: count,
-        }
-      })
-  })
-
-  // --- Upcoming Checkouts Data ---
-  const upcomingCheckoutsData = computed(() => {
-    const today = new Date().toISOString().split('T')[0]
-
-    return allBookingsArray.value
-      .filter(b =>
-        b.booking_type !== 'turn'
-        && b.checkout_date >= today
-        && b.status !== 'completed'
-        && b.status !== 'cancelled',
-      )
-      .toSorted((a, b) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
-      .slice(0, 5)
-      .map(b => {
-        const property = allPropertiesArray.value.find(p => p.id === b.property_id)
-        return {
-          property: property ? formatPropertyAddress(property, 'short') : 'Unknown',
-          date: new Date(b.checkout_date).toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-          }),
-          status: b.status,
-        }
-      })
-  })
-
-  // --- Urgent Turns Data ---
-  const urgentTurnsData = computed(() => {
-    const now = new Date()
-    const today = now.toISOString().split('T')[0]
-    const nextWeek = new Date(now)
-    nextWeek.setDate(now.getDate() + 7)
-    const nextWeekStr = nextWeek.toISOString().split('T')[0]
-
-    return allBookingsArray.value
-      .filter(b =>
-        b.booking_type === 'turn'
-        && b.checkout_date >= today
-        && b.checkout_date <= nextWeekStr
-        && b.status !== 'completed'
-        && b.status !== 'cancelled',
-      )
-      .toSorted((a, b) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
-      .slice(0, 5)
-      .map(b => {
-        const property = allPropertiesArray.value.find(p => p.id === b.property_id)
-        const priority = calculateBookingPriority(b)
-        return {
-          property: property ? formatPropertyAddress(property, 'short') : 'Unknown',
-          time: new Date(b.checkout_date).toLocaleDateString('en-US', {
-            weekday: 'short',
-            month: 'short',
-            day: 'numeric',
-          }),
-          priority,
-        }
-      })
-  })
-
-  // --- Cleaner Availability Data ---
-  const cleanerAvailabilityData = computed(() => {
-    const cleanerGroups = bookingsByCleaner.value
-    const cleanerUsers = users.value.filter(u => u.role === 'cleaner')
-
-    if (cleanerUsers.length === 0) return []
-
-    // Total bookings needing cleaning (not completed, not cancelled)
-    const activeBookingCount = allBookingsArray.value.filter(
-      b => b.status !== 'completed' && b.status !== 'cancelled',
-    ).length
-    const totalPerCleaner = Math.max(Math.ceil(activeBookingCount / cleanerUsers.length), 1)
-
-    return cleanerUsers.map(cleaner => {
-      const assigned = cleanerGroups[cleaner.id]?.length || 0
-      return {
-        name: cleaner.name || cleaner.email.split('@')[0],
-        assigned,
-        total: Math.max(totalPerCleaner, assigned),
-      }
-    })
-  })
-
-  // Time filter computed (kept for potential future use)
+  // Time filter computed
   const timeFilterLabel = computed(() => {
     switch (selectedTimeFilter.value) {
       case 'today': { return 'Today'
@@ -333,7 +842,7 @@
     }
   })
 
-  // Filtered bookings (kept for potential future use)
+  // Filtered bookings
   const filteredCheckouts = computed(() => {
     const filter = getDateFilter(selectedTimeFilter.value)
     return allBookingsArray.value
@@ -429,6 +938,7 @@
   }
 
   function getCleaningWindow (turn: Booking): string {
+    // Calculate cleaning window based on checkout and checkin times
     const checkoutTime = new Date(turn.checkout_date)
     const checkinTime = turn.checkin_date ? new Date(turn.checkin_date) : null
 
@@ -436,8 +946,8 @@
 
     const diffHours = (checkinTime.getTime() - checkoutTime.getTime()) / (1000 * 60 * 60)
 
-    if (diffHours <= 2) return 'URGENT'
-    if (diffHours <= 4) return 'TIGHT'
+    if (diffHours <= 2) return '⚡ URGENT'
+    if (diffHours <= 4) return '🔥 TIGHT'
     return `${Math.round(diffHours)}h window`
   }
 
@@ -497,6 +1007,7 @@
     const year = currentViewingDate.value.getFullYear()
     const month = currentViewingDate.value.getMonth()
 
+    // Get first day of month and calculate starting point
     const firstDay = new Date(year, month, 1)
     const startDate = new Date(firstDay)
     startDate.setDate(startDate.getDate() - firstDay.getDay())
@@ -505,6 +1016,7 @@
     const currentDate = new Date(startDate)
     const today = new Date().toISOString().split('T')[0]
 
+    // Generate 42 days (6 weeks)
     for (let i = 0; i < 42; i++) {
       const dateStr = currentDate.toISOString().split('T')[0]
       const dayBookings = allBookings.value.filter(b => b.checkout_date.startsWith(dateStr))
@@ -554,15 +1066,6 @@
       .toSorted((a, b) => new Date(a.checkout_date).getTime() - new Date(b.checkout_date).getTime())
   }
 
-  // Suppress unused warnings for functions kept for backward compat / future use
-  void [
-    mobile, clientsData, timeFilterLabel, filteredCheckouts, filteredTurns,
-    getPropertyName, getPropertyAddress, formatTime, getNextCheckinDays,
-    getCleaningWindow, getTurnUrgencyColor, goToMasterSchedule, viewBooking,
-    assignCleaner, getCurrentMonthYear, navigateToPreviousMonth, navigateToNextMonth,
-    getCalendarDays, getWeeklyStats, getTodaySchedule,
-  ]
-
   // Initialize
   onMounted(() => {
     refreshDashboard()
@@ -573,7 +1076,305 @@
 .admin-dashboard {
   min-height: 100vh;
   background: rgb(var(--v-theme-background));
-  padding-top: 8px;
-  padding-bottom: 24px;
+}
+
+.dashboard-content {
+  min-height: 100vh;
+}
+
+.dashboard-header {
+  background: rgb(var(--v-theme-surface));
+  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
+  padding: 24px 0;
+}
+
+.overview-cards {
+  background: rgb(var(--v-theme-surface));
+  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
+  padding: 24px 0;
+}
+
+.overview-card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border-radius: 12px;
+}
+
+.overview-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+.upcoming-section {
+  padding: 24px 0;
+}
+
+.calendar-preview-section {
+  background: rgb(var(--v-theme-surface));
+  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
+  padding: 24px 0;
+}
+
+.calendar-preview-card {
+  border-radius: 12px;
+}
+
+/* Calendar Navigation Header */
+.calendar-month-year {
+  flex: 1;
+  text-align: center;
+}
+
+.calendar-month-year h3 {
+  margin: 0;
+  color: rgb(var(--v-theme-primary));
+}
+
+/* Mini Calendar Styles */
+.mini-calendar {
+  background: rgb(var(--v-theme-surface-variant));
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.calendar-grid {
+  width: 100%;
+}
+
+.calendar-header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.day-header {
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: rgb(var(--v-theme-on-surface-variant));
+  padding: 4px;
+}
+
+.calendar-body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+}
+
+.calendar-day {
+  position: relative;
+  aspect-ratio: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2px;
+  border-radius: 4px;
+  background: rgb(var(--v-theme-surface));
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendar-day:hover {
+  border-color: rgb(var(--v-theme-primary));
+  transform: scale(1.05);
+}
+
+.calendar-day.today {
+  background: rgb(var(--v-theme-primary));
+  color: white;
+}
+
+.calendar-day.today .day-number {
+  color: white;
+  font-weight: 700;
+}
+
+.calendar-day.other-month {
+  opacity: 0.3;
+}
+
+.calendar-day.has-bookings {
+  border-color: rgb(var(--v-theme-success));
+}
+
+.calendar-day.has-turns {
+  border-color: rgb(var(--v-theme-warning));
+  border-width: 2px;
+}
+
+.day-number {
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.booking-dots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1px;
+  margin-top: 2px;
+  justify-content: center;
+}
+
+.booking-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgb(var(--v-theme-success));
+}
+
+.booking-dot.turn-dot {
+  background: rgb(var(--v-theme-warning));
+}
+
+.more-indicator {
+  font-size: 0.6rem;
+  color: rgb(var(--v-theme-primary));
+  font-weight: 600;
+}
+
+/* Schedule Insights Styles */
+.schedule-insights {
+  height: 100%;
+}
+
+.insight-card {
+  text-align: center;
+  padding: 12px;
+  background: rgb(var(--v-theme-surface-variant));
+  border-radius: 8px;
+}
+
+.insight-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.insight-label {
+  font-size: 0.75rem;
+  color: rgb(var(--v-theme-on-surface-variant));
+  margin-top: 4px;
+}
+
+.schedule-overview {
+  background: rgb(var(--v-theme-surface-variant));
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.today-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.schedule-item {
+  display: flex;
+  align-items: center;
+  background: rgb(var(--v-theme-surface));
+  padding: 8px;
+  border-radius: 6px;
+}
+
+.upcoming-card {
+  border-radius: 12px;
+  height: 100%;
+}
+
+.bookings-list {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.booking-item {
+  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
+  padding: 12px 16px;
+}
+
+.booking-item:last-child {
+  border-bottom: none;
+}
+
+.turn-item {
+  background: rgba(var(--v-theme-warning), 0.05);
+}
+
+.booking-details {
+  margin-top: 4px;
+}
+
+@media (max-width: 599px) {
+  .dashboard-header,
+  .overview-cards,
+  .calendar-preview-section,
+  .upcoming-section {
+    padding: 16px 0;
+  }
+
+  .overview-card .v-card-text {
+    padding: 16px !important;
+  }
+
+  .bookings-list {
+    max-height: 300px;
+  }
+
+  .booking-item {
+    padding: 8px 12px;
+  }
+
+  /* Mobile calendar adjustments */
+  .mini-calendar {
+    padding: 12px;
+  }
+
+  .calendar-day {
+    padding: 1px;
+  }
+
+  .day-number {
+    font-size: 0.7rem;
+  }
+
+  .booking-dot {
+    width: 3px;
+    height: 3px;
+  }
+
+  .insight-card {
+    padding: 8px;
+  }
+
+  .insight-value {
+    font-size: 1.25rem;
+  }
+
+  .insight-label {
+    font-size: 0.7rem;
+  }
+
+  .schedule-overview {
+    padding: 12px;
+  }
+
+  .schedule-item {
+    padding: 6px;
+  }
+
+  /* Mobile calendar navigation */
+  .calendar-month-year h3 {
+    font-size: 1.1rem;
+  }
+
+  .calendar-preview-card .v-card-title {
+    padding: 12px !important;
+  }
+
+  .calendar-preview-card .v-btn {
+    min-width: 32px !important;
+  }
 }
 </style>

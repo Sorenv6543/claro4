@@ -1,180 +1,281 @@
 <template>
   <div class="profile-page">
     <v-container fluid>
-      <!-- Loading State -->
-      <div v-if="!user" class="d-flex justify-center align-center" style="min-height: 400px">
-        <v-progress-circular color="primary" indeterminate size="48" />
-      </div>
-
-      <template v-else>
-        <!-- Profile Header Card -->
-        <v-card class="mb-5 pa-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
-          <div class="d-flex align-center ga-4 flex-wrap">
-            <v-avatar color="primary" size="80">
-              <v-icon color="white" size="40">mdi-account</v-icon>
-            </v-avatar>
-            <div class="flex-grow-1">
-              <h1 class="text-h5 font-weight-bold">{{ user.name || 'User' }}</h1>
-              <p class="text-body-2 text-medium-emphasis mt-1">{{ user.email }}</p>
-              <div class="d-flex align-center ga-2 mt-2">
-                <v-chip color="primary" size="small" variant="tonal">
-                  <v-icon size="14" start>mdi-shield-account</v-icon>
-                  {{ user.role }}
-                </v-chip>
-                <v-chip v-if="user.created_at" color="grey" size="small" variant="tonal">
-                  <v-icon size="14" start>mdi-calendar</v-icon>
-                  Member since {{ formatDate(user.created_at) }}
-                </v-chip>
-              </div>
-            </div>
+      <v-row>
+        <v-col cols="12">
+          <div class="d-flex align-center mb-4">
             <v-btn
-              color="primary"
-              prepend-icon="mdi-pencil-outline"
-              variant="outlined"
-              @click="handleEditProfile"
-            >
-              Edit Profile
-            </v-btn>
+              icon="mdi-arrow-left"
+              variant="text"
+              @click="$router.go(-1)"
+            />
+            <h1 class="text-h4 ml-4">
+              Profile
+            </h1>
           </div>
-        </v-card>
+        </v-col>
+      </v-row>
 
-        <v-row>
-          <!-- Info Card -->
-          <v-col cols="12" md="8">
-            <v-card class="mb-5 pa-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
-              <h3 class="text-h6 font-weight-medium mb-4">Personal Information</h3>
-              <v-row dense>
-                <v-col cols="12" sm="6">
-                  <div class="info-row">
-                    <div class="text-caption text-medium-emphasis">Full Name</div>
-                    <div class="text-body-1 font-weight-medium mt-1">{{ user.name || 'Not specified' }}</div>
+      <v-row v-if="user">
+        <v-col
+          cols="12"
+          md="8"
+        >
+          <!-- Profile Information Card -->
+          <v-card class="mb-4">
+            <v-card-title>
+              <v-icon
+                class="mr-2"
+                color="primary"
+              >
+                mdi-account
+              </v-icon>
+              Personal Information
+            </v-card-title>
+
+            <v-card-text>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                >
+                  <div class="profile-field">
+                    <strong>Full Name:</strong>
+                    <div>{{ user.name || 'Not specified' }}</div>
                   </div>
                 </v-col>
-                <v-col cols="12" sm="6">
-                  <div class="info-row">
-                    <div class="text-caption text-medium-emphasis">Email</div>
-                    <div class="text-body-1 font-weight-medium mt-1">{{ user.email }}</div>
+                <v-col
+                  cols="12"
+                  sm="6"
+                >
+                  <div class="profile-field">
+                    <strong>Email:</strong>
+                    <div>{{ user.email }}</div>
                   </div>
                 </v-col>
-                <v-col cols="12" sm="6">
-                  <div class="info-row">
-                    <div class="text-caption text-medium-emphasis">Role</div>
-                    <div class="text-body-1 font-weight-medium mt-1 text-capitalize">{{ user.role }}</div>
+                <v-col
+                  cols="12"
+                  sm="6"
+                >
+                  <div class="profile-field">
+                    <strong>Role:</strong>
+                    <div class="text-capitalize">
+                      {{ user.role }}
+                    </div>
                   </div>
                 </v-col>
-                <v-col v-if="user.company_name" cols="12" sm="6">
-                  <div class="info-row">
-                    <div class="text-caption text-medium-emphasis">Company</div>
-                    <div class="text-body-1 font-weight-medium mt-1">{{ user.company_name }}</div>
+                <v-col
+                  v-if="user.company_name"
+                  cols="12"
+                  sm="6"
+                >
+                  <div class="profile-field">
+                    <strong>Company:</strong>
+                    <div>{{ user.company_name }}</div>
                   </div>
                 </v-col>
-                <v-col cols="12" sm="6">
-                  <div class="info-row">
-                    <div class="text-caption text-medium-emphasis">Timezone</div>
-                    <div class="text-body-1 font-weight-medium mt-1">{{ user.timezone || 'Not specified' }}</div>
-                  </div>
-                </v-col>
-                <v-col cols="12" sm="6">
-                  <div class="info-row">
-                    <div class="text-caption text-medium-emphasis">Language</div>
-                    <div class="text-body-1 font-weight-medium mt-1">{{ user.language || 'English' }}</div>
+                <v-col
+                  cols="12"
+                  sm="6"
+                >
+                  <div class="profile-field">
+                    <strong>Timezone:</strong>
+                    <div>{{ user.timezone || 'Not specified' }}</div>
                   </div>
                 </v-col>
               </v-row>
-            </v-card>
+            </v-card-text>
+          </v-card>
 
-            <!-- Account Settings Card -->
-            <v-card class="pa-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
-              <h3 class="text-h6 font-weight-medium mb-4">Account Settings</h3>
-              <v-row dense>
-                <v-col cols="12" sm="6">
-                  <div class="info-row">
-                    <div class="text-caption text-medium-emphasis">Theme</div>
-                    <div class="text-body-1 font-weight-medium mt-1 text-capitalize">{{ user.theme || 'System' }}</div>
+          <!-- Account Settings Card -->
+          <v-card class="mb-4">
+            <v-card-title>
+              <v-icon
+                class="mr-2"
+                color="info"
+              >
+                mdi-cog
+              </v-icon>
+              Account Settings
+            </v-card-title>
+
+            <v-card-text>
+              <v-row>
+                <v-col
+                  cols="12"
+                  sm="6"
+                >
+                  <div class="profile-field">
+                    <strong>Theme:</strong>
+                    <div class="text-capitalize">
+                      {{ user.theme || 'System' }}
+                    </div>
                   </div>
                 </v-col>
-                <v-col cols="12" sm="6">
-                  <div class="info-row">
-                    <div class="text-caption text-medium-emphasis">Notifications</div>
-                    <div class="text-body-1 font-weight-medium mt-1">{{ user.notifications_enabled ? 'Enabled' : 'Disabled' }}</div>
+                <v-col
+                  cols="12"
+                  sm="6"
+                >
+                  <div class="profile-field">
+                    <strong>Notifications:</strong>
+                    <div>{{ user.notifications_enabled ? 'Enabled' : 'Disabled' }}</div>
+                  </div>
+                </v-col>
+                <v-col
+                  cols="12"
+                  sm="6"
+                >
+                  <div class="profile-field">
+                    <strong>Language:</strong>
+                    <div>{{ user.language || 'English' }}</div>
                   </div>
                 </v-col>
               </v-row>
-            </v-card>
-          </v-col>
+            </v-card-text>
+          </v-card>
 
-          <!-- Stats Card -->
-          <v-col cols="12" md="4">
-            <v-card class="pa-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
-              <h3 class="text-h6 font-weight-medium mb-4">Account Stats</h3>
+          <!-- Actions Card -->
+          <v-card>
+            <v-card-title>
+              <v-icon
+                class="mr-2"
+                color="warning"
+              >
+                mdi-cog
+              </v-icon>
+              Actions
+            </v-card-title>
 
-              <div class="stat-item d-flex align-center ga-3 mb-4">
-                <div class="stat-item__icon stat-item__icon--primary">
-                  <v-icon color="primary" size="20">mdi-calendar-check</v-icon>
-                </div>
-                <div>
-                  <div class="text-caption text-medium-emphasis">Member Since</div>
-                  <div class="text-body-1 font-weight-medium">{{ user.created_at ? formatDate(user.created_at) : 'N/A' }}</div>
-                </div>
-              </div>
-
-              <div class="stat-item d-flex align-center ga-3 mb-4">
-                <div class="stat-item__icon stat-item__icon--info">
-                  <v-icon color="info" size="20">mdi-login</v-icon>
-                </div>
-                <div>
-                  <div class="text-caption text-medium-emphasis">Last Sign In</div>
-                  <div class="text-body-1 font-weight-medium">{{ user.last_sign_in_at ? formatDate(user.last_sign_in_at) : 'N/A' }}</div>
-                </div>
-              </div>
-
-              <div class="stat-item d-flex align-center ga-3">
-                <div class="stat-item__icon stat-item__icon--success">
-                  <v-icon color="success" size="20">mdi-email-check</v-icon>
-                </div>
-                <div>
-                  <div class="text-caption text-medium-emphasis">Email Status</div>
-                  <div class="text-body-1 font-weight-medium">Verified</div>
-                </div>
-              </div>
-            </v-card>
-
-            <!-- Actions Card -->
-            <v-card class="pa-5 mt-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
-              <h3 class="text-h6 font-weight-medium mb-4">Quick Actions</h3>
-              <div class="d-flex flex-column ga-2">
+            <v-card-text>
+              <div class="d-flex gap-3 flex-wrap">
                 <v-btn
-                  block
                   color="primary"
-                  prepend-icon="mdi-pencil-outline"
-                  variant="tonal"
+                  prepend-icon="mdi-pencil"
                   @click="handleEditProfile"
                 >
                   Edit Profile
                 </v-btn>
                 <v-btn
-                  block
                   color="secondary"
-                  prepend-icon="mdi-key-outline"
-                  variant="tonal"
+                  prepend-icon="mdi-key"
                   @click="handleChangePassword"
                 >
                   Change Password
                 </v-btn>
                 <v-btn
-                  block
                   color="info"
-                  prepend-icon="mdi-cog-outline"
-                  variant="tonal"
+                  prepend-icon="mdi-cog"
                   @click="handleSettings"
                 >
                   Settings
                 </v-btn>
               </div>
-            </v-card>
-          </v-col>
-        </v-row>
-      </template>
+            </v-card-text>
+          </v-card>
+        </v-col>
+
+        <v-col
+          cols="12"
+          md="4"
+        >
+          <!-- Profile Stats -->
+          <v-card class="mb-4">
+            <v-card-title>
+              <v-icon
+                class="mr-2"
+                color="success"
+              >
+                mdi-chart-line
+              </v-icon>
+              Account Statistics
+            </v-card-title>
+            <v-card-text>
+              <div class="stat-item">
+                <div class="stat-value">
+                  {{ formatDate(user.created_at!) }}
+                </div>
+                <div class="stat-label">
+                  Member Since
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">
+                  {{ formatDate(user.last_sign_in_at!) }}
+                </div>
+                <div class="stat-label">
+                  Last Sign In
+                </div>
+              </div>
+              <div class="stat-item">
+                <div class="stat-value">
+                  Verified
+                </div>
+                <div class="stat-label">
+                  Email Status
+                </div>
+              </div>
+            </v-card-text>
+          </v-card>
+
+          <!-- Profile Avatar -->
+          <v-card>
+            <v-card-title>
+              <v-icon
+                class="mr-2"
+                color="info"
+              >
+                mdi-account-circle
+              </v-icon>
+              Profile Picture
+            </v-card-title>
+            <v-card-text class="text-center">
+              <v-avatar
+                class="mb-4"
+                color="primary"
+                size="120"
+              >
+                <v-icon
+                  color="white"
+                  size="60"
+                >
+                  mdi-account
+                </v-icon>
+              </v-avatar>
+              <div class="text-body-1 mb-2">
+                {{ user.name || 'User' }}
+              </div>
+              <div class="text-body-2 text-medium-emphasis">
+                {{ user.email }}
+              </div>
+              <v-btn
+                class="mt-3"
+                color="primary"
+                size="small"
+                variant="outlined"
+                @click="handleChangeAvatar"
+              >
+                Change Avatar
+              </v-btn>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+
+      <v-row v-else>
+        <v-col cols="12">
+          <v-card>
+            <v-card-text class="text-center">
+              <v-progress-circular
+                color="primary"
+                indeterminate
+              />
+              <div class="mt-4">
+                Loading profile...
+              </div>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
     </v-container>
   </div>
 </template>
@@ -205,6 +306,10 @@
     router.push('/owner/settings')
   }
 
+  function handleChangeAvatar () {
+    console.log('Change avatar clicked')
+  }
+
   function formatDate (dateString: string) {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -216,40 +321,49 @@
 
 <style scoped>
 .profile-page {
-  padding: 1rem;
-  min-height: calc(100vh - var(--app-bar-height, 64px));
+  min-height: 100vh;
+  background: #f8f9fa;
 }
 
-/* Info rows */
-.info-row {
-  padding: 12px 0;
-  border-bottom: thin solid rgba(var(--v-theme-on-surface), 0.06);
+.profile-field {
+  margin-bottom: 16px;
 }
 
-.info-row:last-child {
+.profile-field strong {
+  color: rgb(var(--v-theme-primary));
+  font-weight: 600;
+}
+
+.profile-field div {
+  margin-top: 4px;
+  font-size: 0.95rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.stat-item:last-child {
   border-bottom: none;
 }
 
-/* Stat items */
-.stat-item__icon {
-  width: 40px;
-  height: 40px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+.stat-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: rgb(var(--v-theme-primary));
 }
 
-.stat-item__icon--primary {
-  background: rgba(var(--v-theme-primary), 0.12);
+.stat-label {
+  font-size: 0.875rem;
+  color: rgb(var(--v-theme-info));
+  margin-top: 4px;
 }
 
-.stat-item__icon--info {
-  background: rgba(var(--v-theme-info), 0.12);
-}
-
-.stat-item__icon--success {
-  background: rgba(var(--v-theme-success), 0.12);
+.gap-3 {
+  gap: 12px;
 }
 </style>
