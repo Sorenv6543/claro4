@@ -1,5 +1,4 @@
 import type { Cleaner } from '@/types/user.ts'
-import type { CleanerTeam } from '@/types/team'
 import { computed, ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
 import { useAuthStore } from '@/stores/auth.ts'
@@ -85,9 +84,6 @@ export function useCleanerManagement () {
 
   // State — populated by fetchCleaners()
   const cleaners = ref<Cleaner[]>([])
-
-  // State — populated by fetchTeams()
-  const teams = ref<CleanerTeam[]>([])
 
   /**
    * All cleaners in the system (admin-only access)
@@ -263,30 +259,6 @@ export function useCleanerManagement () {
       loading.value = false
     }
   }
-
-  /**
-   * Fetch all cleaner teams (admin-only operation)
-   */
-  async function fetchTeams (): Promise<boolean> {
-    try {
-      const { data, error: fetchError } = await supabase
-        .from('cleaner_teams')
-        .select('*')
-        .eq('active', true)
-        .order('name')
-      if (fetchError) throw fetchError
-      teams.value = (data ?? []) as CleanerTeam[]
-      return true
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to fetch teams'
-      return false
-    }
-  }
-
-  /**
-   * All cleaner teams in the system (admin-only access)
-   */
-  const allTeams = computed(() => teams.value)
 
   /**
    * Create new cleaner (admin-only operation)
@@ -872,11 +844,9 @@ export function useCleanerManagement () {
     // cleanersBySkill,
     cleanerWorkloads,
     systemCleanerMetrics,
-    allTeams,
 
     // CRUD operations
     fetchCleaners,
-    fetchTeams,
     createCleaner,
     updateCleaner,
     deleteCleaner,
