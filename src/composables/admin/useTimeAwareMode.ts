@@ -1,4 +1,4 @@
-import { computed, onUnmounted, ref } from 'vue'
+import { computed, getCurrentScope, onScopeDispose, ref } from 'vue'
 
 const EVENING_THRESHOLD_HOUR = 16
 
@@ -15,7 +15,9 @@ export function useTimeAwareMode(options: TimeAwareModeOptions = {}) {
     now.value = new Date()
   }, 60_000)
 
-  onUnmounted(() => clearInterval(interval))
+  if (getCurrentScope()) {
+    onScopeDispose(() => clearInterval(interval))
+  }
 
   const isEveningMode = computed(() => now.value.getHours() >= thresholdHour)
 
