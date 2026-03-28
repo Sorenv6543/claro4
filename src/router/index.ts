@@ -31,6 +31,12 @@ const router = createRouter({
         layout: 'auth',
       },
     },
+    {
+      path: '/auth/no-access',
+      name: 'no-access',
+      component: () => import('@pages/auth/no-access.vue'),
+      meta: { layout: 'auth' },
+    },
 
     // Owner routes - only accessible to owner users
     {
