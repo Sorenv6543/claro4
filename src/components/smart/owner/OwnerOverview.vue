@@ -1,7 +1,5 @@
 <template>
   <v-container class="owner-overview pa-4" fluid>
-    <v-progress-linear v-if="loading" color="primary" indeterminate class="mb-4" />
-
     <!-- Welcome Banner -->
     <v-row>
       <v-col cols="12">
@@ -54,7 +52,7 @@
 
 <script setup lang="ts">
   import type { Booking, Property } from '@/types'
-  import { computed, onMounted, ref } from 'vue'
+  import { computed } from 'vue'
   import OwnerCleaningStatus from '@/components/dumb/owner/OwnerCleaningStatus.vue'
   import OwnerMiniCalendar from '@/components/dumb/owner/OwnerMiniCalendar.vue'
   import OwnerPropertySummaryCards from '@/components/dumb/owner/OwnerPropertySummaryCards.vue'
@@ -65,7 +63,6 @@
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useAuthStore } from '@/stores/auth'
-  import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { calculateBookingPriority } from '@/utils/businessLogic'
 
@@ -73,34 +70,13 @@
 
   // ── Data sources ────────────────────────────────────────────────
   const authStore = useAuthStore()
-  const uiStore = useUIStore()
-  const { myProperties, fetchMyProperties } = useOwnerProperties()
+  const { myProperties } = useOwnerProperties()
   const {
     myBookings,
     myBookingStats: bookingStats,
     myTodayTurns,
     myUpcomingCleanings,
-    fetchMyBookings,
   } = useOwnerBookings()
-
-  const loading = ref(false)
-
-  onMounted(async () => {
-    if (authStore.isAuthenticated && authStore.user?.role === 'owner') {
-      loading.value = true
-      try {
-        await Promise.all([
-          fetchMyProperties(),
-          fetchMyBookings(),
-        ])
-      } catch (error: unknown) {
-        console.error('Failed to load overview data:', error)
-        uiStore.addNotification('error', 'Error', 'Failed to load dashboard data. Please refresh.')
-      } finally {
-        loading.value = false
-      }
-    }
-  })
 
   // ── User name ───────────────────────────────────────────────────
   const userName = computed(() => {

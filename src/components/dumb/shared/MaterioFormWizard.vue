@@ -85,13 +85,10 @@
     submitText?: string
     submitLoading?: boolean
     elevation?: number | string
-    /** Async validation callback. Return true to allow step advance, false to block. */
-    beforeNext?: (from: number, to: number) => Promise<boolean> | boolean
   }>(), {
     submitText: 'Submit',
     submitLoading: false,
     elevation: 0,
-    beforeNext: undefined,
   })
 
   const emit = defineEmits<{
@@ -100,19 +97,11 @@
     'step-change': [from: number, to: number]
   }>()
 
-  async function nextStep () {
+  function nextStep () {
     if (props.modelValue < props.steps.length - 1) {
       const from = props.modelValue
-      const to = from + 1
-
-      // If a validation callback is provided, wait for it before advancing
-      if (props.beforeNext) {
-        const allowed = await props.beforeNext(from, to)
-        if (!allowed) return
-      }
-
-      emit('update:modelValue', to)
-      emit('step-change', from, to)
+      emit('update:modelValue', from + 1)
+      emit('step-change', from, from + 1)
     }
   }
 
