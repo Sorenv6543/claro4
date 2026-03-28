@@ -140,6 +140,7 @@ The `skipped` array logs any pages that failed to load or screenshot, with reaso
 
 ### Step 3: Screenshot Loop (Chrome DevTools)
 
+
 For each URL, sequentially:
 
 1. Navigate Chrome to the page
