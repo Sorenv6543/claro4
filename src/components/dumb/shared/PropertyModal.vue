@@ -139,7 +139,7 @@
 
           <!-- Step 1: Rooms & Amenities -->
           <template #step-1>
-            <v-form ref="step2FormRef" v-model="step2Valid">
+            <v-form v-model="step2Valid">
               <v-container>
                 <v-row>
                   <v-col cols="6">
@@ -532,7 +532,6 @@
   // FORM REFS
   const formRef = ref<VForm | null>(null)
   const step1FormRef = ref<VForm | null>(null)
-  const step2FormRef = ref<VForm | null>(null)
   const step3FormRef = ref<VForm | null>(null)
   const formValid = ref<boolean>(false)
   const step1Valid = ref<boolean>(false)
