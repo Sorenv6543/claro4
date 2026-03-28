@@ -34,9 +34,7 @@
     "mcp:browser-tools": "node scripts/start-browser-tools-mcp.js",
     "mcp:browser-tools:basic": "npx browser-tools-mcp",
     "mcp:browser-tools:enhanced": "npx @eqiz/browser-tools-mcp-enhanced",
-    "mcp:browser-tools:test": "node scripts/test-browser-tools.js",
-    "mcp": "ruler apply",
-    "mcp:revert": "ruler revert"
+    "mcp:browser-tools:test": "node scripts/test-browser-tools.js"
   },
   "keywords": [],
   "author": "",
@@ -59,7 +57,6 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
-    "@intellectronica/ruler": "^0.3.37",
     "@testing-library/vue": "^8.1.0",
     "@types/node": "^25.4.0",
     "@types/uuid": "^11.0.0",

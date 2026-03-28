@@ -14,5 +14,3 @@
   "colors": ["primary", "success", "warning", "error", "info"],
   "interactions": ["sortable-table", "search-filter", "pagination", "row-expand", "per-page-select"]
 }
-
-

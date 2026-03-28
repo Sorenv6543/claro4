@@ -1,4 +1,3 @@
-y
 # Unified Realtime Sync Architecture
 
 ## Problem
