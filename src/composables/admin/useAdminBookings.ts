@@ -697,14 +697,23 @@ export function useAdminBookings () {
     // Admin CRUD operations
     fetchAllBookings,
     assignCleaner,
-    assignCleanerToBooking: async (bookingId: string, cleanerId: string) => {
+    assignCleanerToBooking: async (bookingId: string, cleanerId: string): Promise<boolean> => {
+      loading.value = true
+      error.value = null
       try {
-        await supaUpdate(bookingId, { assigned_cleaner_id: cleanerId })
+        await supaUpdate(bookingId, {
+          assigned_cleaner_id: cleanerId,
+          assigned_team_id: null,
+          assigned_group_ids: null,
+        } as Partial<Booking>)
+        success.value = 'Cleaner assigned successfully'
         return true
-      } catch (error_) {
-        error.value = `Failed to assign cleaner: ${error_ instanceof Error ? error_.message : String(error_)}`
-        console.error('[useAdminBookings] assignCleanerToBooking error:', error_)
+      } catch (e) {
+        error.value = e instanceof Error ? e.message : 'Failed to assign cleaner'
+        console.error('[useAdminBookings] assignCleanerToBooking error:', e)
         return false
+      } finally {
+        loading.value = false
       }
     },
     assignTeamToBooking: async (bookingId: string, teamId: string): Promise<boolean> => {
