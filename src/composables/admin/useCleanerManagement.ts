@@ -268,6 +268,8 @@ export function useCleanerManagement () {
    * Fetch all cleaner teams (admin-only operation)
    */
   async function fetchTeams (): Promise<boolean> {
+    loading.value = true
+    error.value = null
     try {
       const { data, error: fetchError } = await supabase
         .from('cleaner_teams')
@@ -276,10 +278,14 @@ export function useCleanerManagement () {
         .order('name')
       if (fetchError) throw fetchError
       teams.value = (data ?? []) as CleanerTeam[]
+      success.value = `Loaded ${teams.value.length} teams`
       return true
     } catch (e) {
       error.value = e instanceof Error ? e.message : 'Failed to fetch teams'
+      console.error('[useCleanerManagement] fetchTeams error:', e)
       return false
+    } finally {
+      loading.value = false
     }
   }
 
