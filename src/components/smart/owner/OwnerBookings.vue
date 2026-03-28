@@ -152,11 +152,11 @@
         <!-- Status chip -->
         <template #[`item.status`]="{ item }">
           <v-chip
-            :color="getStatusColor(item.status)"
+            :color="getBookingStatusColor(item.status)"
             size="small"
             variant="tonal"
           >
-            {{ formatStatus(item.status) }}
+            {{ formatStatusDisplay(item.status) }}
           </v-chip>
         </template>
 
@@ -233,6 +233,15 @@
           Create Booking
         </v-btn>
       </v-card>
+      <ConfirmationDialog
+        :open="deleteConfirmOpen"
+        title="Delete Booking"
+        :message="`Are you sure you want to delete this booking for ${bookingToDelete ? getPropertyName(bookingToDelete.property_id) : ''}?`"
+        confirm-text="Delete"
+        dangerous
+        @confirm="confirmDeleteBooking"
+        @cancel="deleteConfirmOpen = false"
+      />
     </v-container>
   </div>
 </template>
@@ -245,6 +254,7 @@
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
+  import { getBookingStatusColor, formatStatus } from '@utils/constants'
 
   defineOptions({
     name: 'OwnerBookingsComponent',
@@ -272,18 +282,18 @@
   const selectedStatus = ref<string | null>(null)
   const selectedType = ref<string | null>(null)
   const loading = ref(false)
+  const deleteConfirmOpen = ref(false)
+  const bookingToDelete = ref<Booking | null>(null)
 
   // Computed
-  const ownerBookingsArray = computed(() =>
-    Array.from(ownerBookings.value.values()),
-  )
+  const ownerBookingsArray = computed(() => ownerBookings.value)
 
   const turnBookings = computed(() =>
     ownerBookingsArray.value.filter(b => b.booking_type === 'turn'),
   )
 
   const propertyOptions = computed(() =>
-    Array.from(ownerProperties.value.values()).map(p => ({
+    ownerProperties.value.map(p => ({
       title: formatPropertyAddress(p, 'short'),
       value: p.id,
     })),
@@ -335,28 +345,17 @@
 
   // Methods
   function getPropertyName (propertyId: string): string {
-    const property = Array.from(ownerProperties.value.values()).find(p => p.id === propertyId)
+    const property = ownerProperties.value.find(p => p.id === propertyId)
     return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
   }
 
   function getPropertyColor (propertyId: string): string {
-    const property = Array.from(ownerProperties.value.values()).find(p => p.id === propertyId)
+    const property = ownerProperties.value.find(p => p.id === propertyId)
     return property?.color || '#9E9E9E'
   }
 
-  function getStatusColor (status: string): string {
-    const colors: Record<string, string> = {
-      pending: 'warning',
-      scheduled: 'info',
-      in_progress: 'primary',
-      completed: 'success',
-      cancelled: 'error',
-    }
-    return colors[status] || 'grey'
-  }
-
-  function formatStatus (status: string): string {
-    return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+  function formatStatusDisplay (status: string): string {
+    return formatStatus(status).replace(/\b\w/g, c => c.toUpperCase())
   }
 
   function getPriorityColor (priority: string): string {
@@ -387,15 +386,22 @@
     uiStore.openModal('eventModal', 'edit', { booking: booking as unknown as ModalData })
   }
 
-  async function handleDeleteBooking (booking: Booking): Promise<void> {
-    if (confirm(`Are you sure you want to delete this booking for ${getPropertyName(booking.property_id)}?`)) {
-      try {
-        await deleteMyBooking(booking.id)
-        uiStore.addNotification('success', 'Success', 'Booking deleted successfully')
-      } catch (error: unknown) {
-        console.error('Error deleting booking:', error)
-        uiStore.addNotification('error', 'Error', 'Failed to delete booking')
-      }
+  function handleDeleteBooking (booking: Booking): void {
+    bookingToDelete.value = booking
+    deleteConfirmOpen.value = true
+  }
+
+  async function confirmDeleteBooking (): Promise<void> {
+    if (!bookingToDelete.value) return
+    try {
+      await deleteMyBooking(bookingToDelete.value.id)
+      uiStore.addNotification('success', 'Deleted', 'Booking deleted successfully')
+    } catch (err) {
+      console.error('Failed to delete booking:', err)
+      uiStore.addNotification('error', 'Delete Failed', err instanceof Error ? err.message : 'Could not delete booking')
+    } finally {
+      deleteConfirmOpen.value = false
+      bookingToDelete.value = null
     }
   }
 
