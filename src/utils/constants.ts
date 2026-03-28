@@ -12,24 +12,3 @@ export const PROPERTY_COLORS = [
 ] as const
 
 export type PropertyColor = typeof PROPERTY_COLORS[number]
-
-/**
- * Maps a booking status string to a Vuetify semantic color.
- */
-export function getBookingStatusColor (status: string): string {
-  switch (status) {
-    case 'completed': return 'success'
-    case 'in_progress': return 'info'
-    case 'scheduled': return 'primary'
-    case 'cancelled': return 'error'
-    case 'pending':
-    default: return 'warning'
-  }
-}
-
-/**
- * Formats a snake_case status string for display (e.g. "in_progress" → "in progress").
- */
-export function formatStatus (status: string): string {
-  return status.replace(/_/g, ' ')
-}

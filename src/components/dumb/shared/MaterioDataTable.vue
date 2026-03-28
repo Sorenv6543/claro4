@@ -37,7 +37,7 @@
     <v-data-table
       v-model:expanded="expandedRows"
       class="materio-table"
-      :headers="headers"
+      :headers="computedHeaders"
       item-value="id"
       :items="filteredItems"
       :items-per-page="itemsPerPage"
@@ -111,12 +111,21 @@
     elevation: 0,
   })
 
+  defineEmits<{
+    edit: [item: Record<string, unknown>]
+    delete: [item: Record<string, unknown>]
+  }>()
+
   const searchQuery = ref('')
   const expandedRows = ref<string[]>([])
   const itemsPerPageLocal = ref(props.itemsPerPage)
 
   watch(() => props.itemsPerPage, val => {
     itemsPerPageLocal.value = val
+  })
+
+  const computedHeaders = computed(() => {
+    return props.headers
   })
 
   const filteredItems = computed(() => {

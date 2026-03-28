@@ -282,11 +282,7 @@
   })
 
   async function handleSignOut () {
-    try {
-      await authStore.logout()
-    } catch (error) {
-      console.error('Logout failed:', error)
-    }
+    await authStore.logout()
     router.push('/')
   }
 </script>

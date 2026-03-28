@@ -168,6 +168,17 @@
                 <v-row>
                   <v-col cols="6">
                     <v-text-field
+                      v-model.number="form.max_guests"
+                      :disabled="loading"
+                      label="Max Guests"
+                      min="1"
+                      prepend-inner-icon="mdi-account-group"
+                      type="number"
+                      variant="outlined"
+                    />
+                  </v-col>
+                  <v-col cols="6">
+                    <v-text-field
                       v-model.number="form.square_feet"
                       :disabled="loading"
                       label="Square Feet"
@@ -551,7 +562,7 @@
   ]
 
   // FORM DATA
-  const form = reactive<Partial<PropertyFormData> & { square_feet?: number, floor_type?: string }>({
+  const form = reactive<Partial<PropertyFormData> & { max_guests?: number, square_feet?: number, floor_type?: string }>({
     address_street: '',
     address_unit: '',
     address_city: '',
@@ -560,6 +571,7 @@
     property_type: undefined,
     bedrooms: undefined,
     bathrooms: undefined,
+    max_guests: undefined,
     square_feet: undefined,
     floor_type: undefined,
     cleaning_duration: 120,
@@ -693,6 +705,7 @@
         property_type: undefined,
         bedrooms: undefined,
         bathrooms: undefined,
+        max_guests: undefined,
         square_feet: undefined,
         floor_type: undefined,
         cleaning_duration: 120,

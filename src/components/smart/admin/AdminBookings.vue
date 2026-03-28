@@ -128,9 +128,9 @@
       <!-- Dates Column -->
       <template #[`item.dates`]="{ item }">
         <div class="text-body-2">
-          <div>{{ formatDate(item.checkin_date as string) }}</div>
+          <div>{{ formatDate(item.checkout_date as string) }}</div>
           <div class="text-caption text-medium-emphasis">
-            &rarr; {{ formatDate(item.checkout_date as string) }}
+            &rarr; {{ formatDate(item.checkin_date as string) }}
           </div>
         </div>
       </template>
@@ -570,20 +570,30 @@
           assigned_cleaner_id: selectedCleaner.value,
           status: 'scheduled',
         })
-        closeCleanerDialog()
+        console.log('Cleaner assigned successfully')
       } catch (error) {
         console.error('Failed to assign cleaner:', error)
       }
     }
+    closeCleanerDialog()
+  }
+
+  // Booking actions
+  function duplicateBooking (booking: Booking) {
+    console.log('Duplicating booking:', booking.id)
   }
 
   async function cancelBooking (booking: Booking) {
     try {
       await updateBooking(booking.id, { status: 'cancelled' })
+      console.log('Booking cancelled successfully')
     } catch (error) {
       console.error('Failed to cancel booking:', error)
     }
   }
+
+  // Keep duplicateBooking accessible for potential future use
+  void duplicateBooking
 </script>
 
 <style scoped>

@@ -451,7 +451,7 @@
   }
 
   // Context menu handlers
-  async function handleContextAction (action: string): Promise<void> {
+  function handleContextAction (action: string): void {
     const booking = contextMenu.value.booking
     if (!booking) return
 
@@ -469,19 +469,11 @@
         break
       }
       case 'complete': {
-        try {
-          await updateBooking(booking.id, { status: 'completed' })
-        } catch (error) {
-          console.error('Failed to complete booking:', error)
-        }
+        updateBooking(booking.id, { status: 'completed' })
         break
       }
       case 'cancel': {
-        try {
-          await updateBooking(booking.id, { status: 'cancelled' })
-        } catch (error) {
-          console.error('Failed to cancel booking:', error)
-        }
+        updateBooking(booking.id, { status: 'cancelled' })
         break
       }
     }
