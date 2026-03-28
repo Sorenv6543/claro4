@@ -48,23 +48,14 @@ export function useAdminBookings () {
    * This is the key difference from owner version
    */
   const allBookings = computed((): Booking[] => {
-    return measureRolePerformance('admin', 'fetch-all-bookings', () => {
-      // Track cache performance for admin data access
-      const bookings = Array.from(bookingStore.bookings.values())
-      trackCachePerformance('admin-all-bookings', bookings.length > 0)
-      return bookings
-    })
+    return Array.from(bookingStore.bookings.values())
   })
 
   /**
    * Get ALL properties across all owners (no filtering)
    */
   const allProperties = computed(() => {
-    return measureRolePerformance('admin', 'fetch-all-properties', () => {
-      const properties = Array.from(propertyStore.properties.values())
-      trackCachePerformance('admin-all-properties', properties.length > 0)
-      return properties
-    })
+    return Array.from(propertyStore.properties.values())
   })
 
   /**
@@ -98,12 +89,22 @@ export function useAdminBookings () {
     )
   })
 
+  // Stable date strings for today/tomorrow — avoids new Date() in computeds
+  const todayStr = computed(() => {
+    const d = new Date()
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  })
+
+  const tomorrowStr = computed(() => {
+    const d = new Date()
+    d.setDate(d.getDate() + 1)
+    return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+  })
+
   const todayBookingsByTime = computed(() => {
-    const today = new Date()
-    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
     return allBookings.value
-      .filter((b: Booking) => b.checkout_date === todayStr || b.checkin_date === todayStr)
-      .sort((a: Booking, b: Booking) => {
+      .filter((b: Booking) => b.checkout_date === todayStr.value || b.checkin_date === todayStr.value)
+      .toSorted((a: Booking, b: Booking) => {
         const timeA = a.checkout_time || a.checkin_time || '00:00'
         const timeB = b.checkout_time || b.checkin_time || '00:00'
         return timeA.localeCompare(timeB)
@@ -111,12 +112,9 @@ export function useAdminBookings () {
   })
 
   const tomorrowBookings = computed(() => {
-    const tomorrow = new Date()
-    tomorrow.setDate(tomorrow.getDate() + 1)
-    const tomorrowStr = `${tomorrow.getFullYear()}-${String(tomorrow.getMonth() + 1).padStart(2, '0')}-${String(tomorrow.getDate()).padStart(2, '0')}`
     return allBookings.value
-      .filter((b: Booking) => b.checkout_date === tomorrowStr || b.checkin_date === tomorrowStr)
-      .sort((a: Booking, b: Booking) => {
+      .filter((b: Booking) => b.checkout_date === tomorrowStr.value || b.checkin_date === tomorrowStr.value)
+      .toSorted((a: Booking, b: Booking) => {
         const timeA = a.checkout_time || a.checkin_time || '00:00'
         const timeB = b.checkout_time || b.checkin_time || '00:00'
         return timeA.localeCompare(timeB)
