@@ -542,7 +542,7 @@
     try {
       const booking = cleanerAssignmentModal.value.booking
       if (booking) {
-        await assignCleanerToBooking(cleanerId, booking.id)
+        await assignCleanerToBooking(booking.id, cleanerId)
       }
       closeCleanerAssignmentModal()
     } catch (error) {
