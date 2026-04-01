@@ -1,12 +1,12 @@
 import type { Booking, BookingFormData, BookingStatus, BookingType } from '@/types'
 
-import { computed, ref } from 'vue'
 import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
 import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
-import { buildAssignmentUpdate, calculateBookingPriority } from '@/utils/businessLogic'
+import { calculateBookingPriority } from '@/utils/businessLogic'
+import { computed, ref } from 'vue'
 
 /**
  * Admin-specific booking composable
@@ -723,7 +723,6 @@ export function useAdminBookings () {
         return true
       } catch (error_) {
         error.value = error_ instanceof Error ? error_.message : 'Failed to assign team'
-        console.error('[useAdminBookings] assignTeamToBooking error:', error_)
         return false
       } finally {
         loading.value = false
@@ -738,7 +737,6 @@ export function useAdminBookings () {
         return true
       } catch (error_) {
         error.value = error_ instanceof Error ? error_.message : 'Failed to assign group'
-        console.error('[useAdminBookings] assignGroupToBooking error:', error_)
         return false
       } finally {
         loading.value = false

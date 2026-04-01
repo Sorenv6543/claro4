@@ -94,7 +94,17 @@
       "mcp__pencil__export_nodes",
       "mcp__pencil__snapshot_layout",
       "mcp__pencil__search_all_unique_properties",
-      "mcp__pencil__replace_all_matching_properties"
+      "mcp__pencil__replace_all_matching_properties",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" --version)",
+      "Bash(\"/c/Program Files \\(x86\\)/GitHub CLI/gh.exe\" --version)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr view --repo Sorenv6543/claro4)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr list --head feature/materio-ui-restyle --json number,state,title)",
+      "Bash('/c/Program Files/GitHub CLI/gh.exe' pr create --title 'feat: Materio UI restyle and admin component cleanup' --body ':*)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr view 20 --json state,isDraft,title,body,reviews,comments)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr view 20 --json title,body,files)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr diff 20 --patch)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr view 20 --json state,isDraft,reviews)",
+      "Bash('/c/Program Files/GitHub CLI/gh.exe' pr comment 20 --body ':*)"
     ],
     "deny": [
       "Bash(rm -rf:*)",

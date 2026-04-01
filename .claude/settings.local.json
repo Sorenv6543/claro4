@@ -1,4 +1,7 @@
 {
+  "env": {
+    "CLAUDE_CODE_GIT_BASH_PATH": "C:\\Program Files\\Git\\bin\\bash.exe"
+  },
   "permissions": {
     "allow": [
       "Bash(python3:*)",
@@ -9,12 +12,12 @@
       "mcp__chrome-devtools__resize_page",
       "Bash(grep -E \"\\\\.\\(ts|sql|js\\)$\")",
       "Bash(grep -r cleaner_teams /c/Users/Soren/claro4/src --include=*.ts --include=*.sql)",
-      "Bash(grep -r team /c/Users/Soren/claro4/src/types --include=*.ts)"
+      "Bash(grep -r team /c/Users/Soren/claro4/src/types --include=*.ts)",
+      "Bash(code --list-extensions)",
+      "Bash(\"/c/Users/Soren/.vscode/extensions/highagency.pencildev-0.6.37/out/mcp-server-windows-x64.exe\" --help)",
+      "Bash(bash:*)"
     ]
   },
   "enableAllProjectMcpServers": true,
-  "prefersReducedMotion": true,
-  "env": {
-    "CLAUDE_CODE_GIT_BASH_PATH": "C:\\Program Files\\Git\\bin\\bash.exe"
-  }
+  "prefersReducedMotion": true
 }

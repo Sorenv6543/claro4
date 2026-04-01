@@ -48,7 +48,7 @@ Owner and Admin have separate component trees throughout:
 - `src/components/dumb/{admin,owner,shared}/`
 - `src/pages/{admin,owner,auth}/`
 - `src/composables/{owner,admin,shared,supabase}/`
-- `src/layouts/{admin,owner,auth,default}.vue`
+- `src/layouts/{admin,owner,auth,default,bare}.vue`
 
 ### State Management
 
@@ -61,9 +61,9 @@ Owner and Admin have separate component trees throughout:
 ### Composables Organization
 
 - `src/composables/owner/` - Owner-specific data access (useOwnerBookings, useOwnerProperties, etc.)
-- `src/composables/admin/` - Admin-specific data access (useAdminBookings, useCleanerManagement, etc.)
-- `src/composables/shared/` - Cross-cutting concerns (useCalendarState, usePerformanceMonitor, etc.)
-- `src/composables/supabase/` - Supabase integration (useSupabaseAuth, useRealtimeSync, etc.)
+- `src/composables/admin/` - Admin-specific data access (useAdminBookings, useCleanerManagement, useAdminProperties, useAdminUserManagement, useTimeAwareMode, etc.)
+- `src/composables/shared/` - Cross-cutting concerns (useCalendarState, usePerformanceMonitor, usePWA, useResponsiveLayout, useSwipeNavigation, usePushNotifications, etc.)
+- `src/composables/supabase/` - Supabase integration (useSupabaseAuth, useSupabaseBookings, useSupabaseProperties, useRealtimeSync)
 - Reuse existing composables before adding new Supabase calls
 - `useOwnerProperties()` returns `myProperties` (not `properties`): `const { myProperties } = useOwnerProperties()`
 
@@ -76,6 +76,7 @@ Owner and Admin have separate component trees throughout:
 - `src/utils/typeHelpers.ts` - TypeScript type helper utilities (`safeDate`, `safeString`, `safeBookingField`)
 - `src/utils/cachedMapFilter.ts` - Reusable TTL-based cache for store Map computeds (`createMapCache`)
 - `src/utils/calendarHelpers.ts` - Booking → FullCalendar event conversion (`bookingToCalendarEvent`)
+- `src/utils/mobileViewport.ts` - Dynamic viewport height calculations for mobile devices (safe area, available height)
 
 ```typescript
 // Business logic helpers - use these, never reimplement ad-hoc date math
@@ -90,6 +91,26 @@ const priority = calculateBookingPriority(booking)
 
 const conflicts = detectBookingConflicts(booking, allPropertyBookings)
 // → Booking[] of overlapping bookings for same property
+
+// Status transition helpers
+import { getAvailableStatusTransitions, canTransitionBookingStatus } from '@utils/businessLogic'
+const nextStatuses = getAvailableStatusTransitions(booking)
+// → BookingStatus[] of valid next states
+
+// Filtering & querying
+import { filterBookingsByDateRange, getRecentBookings, getUrgentTurns, getUpcomingBookings } from '@utils/businessLogic'
+
+// System metrics
+import { calculateSystemMetrics } from '@utils/businessLogic'
+// → Aggregate metrics across properties and bookings
+
+// Assignment updates
+import { buildAssignmentUpdate } from '@utils/businessLogic'
+// → Build cleaner assignment update payloads (multiple overloads)
+
+// Property deactivation guard
+import { canDeactivateProperty } from '@utils/businessLogic'
+// → Check if property has active bookings before deactivating
 ```
 
 ### Path Aliases
@@ -119,14 +140,14 @@ const { valid, errors, warnings } = validateTurnBooking(bookingData, property)
 - `getCleaningWindow` / `canScheduleCleaning` in businessLogic.ts are deprecated
 
 ### Time Validation
-Use system default times for booking forms; don't hard-code time strings in components:
+Standard vacation rental defaults used in booking forms; these are currently hardcoded in components (e.g. `AdminBookingForm.vue`) rather than defined as named constants:
 
 ```typescript
-// Standard vacation rental defaults
-const DEFAULT_CHECKOUT_TIME = '11:00'  // 11:00 AM checkout (guests depart)
-const DEFAULT_CHECKIN_TIME  = '15:00'  // 3:00 PM checkin (guests arrive)
+// Standard vacation rental defaults (hardcoded in form components)
+// checkout_time: '11:00'   — 11:00 AM checkout (guests depart)
+// checkin_time:  '15:00'   — 3:00 PM checkin (guests arrive)
 
-// Pre-populate form fields with these defaults; property-specific overrides take precedence
+// Property-specific overrides take precedence when available
 // For same-day (turn) bookings: checkout_time must be after checkin_time
 // Warn if checkout > 14:00 or checkin < 14:00 (tight cleaning window)
 ```
@@ -165,7 +186,7 @@ router.push(getDefaultRouteForRole(user.value?.role))
 - Guards in `src/router/guards.ts` and `src/router/index.ts`
 - Use `meta.requiresAuth` / `meta.role` on routes
 - `getDefaultRouteForRole` handles post-login redirects
-- Layout selection: `App.vue` reads `route.meta.layout` and renders `src/layouts/{name}.vue` — all owner routes use `meta: { layout: 'owner' }`
+- Layout selection: `App.vue` reads `route.meta.layout` and renders `src/layouts/{name}.vue` — owner routes use `meta: { layout: 'owner' }`, admin routes use `meta: { layout: 'admin' }`, dev/demo routes use `meta: { layout: 'bare' }`
 
 ## Supabase Integration
 
@@ -194,6 +215,18 @@ onMounted(() => {
   })
 })
 ```
+
+## PWA
+
+The app is a Progressive Web App configured via `vite-plugin-pwa` (production builds only):
+- **App name**: "Property Cleaning Scheduler" / short name "Claro"
+- **Manifest**: `public/manifest.webmanifest` — standalone display, theme color `#1976d2`
+- **Service Worker**: Workbox-powered, auto-update with `skipWaiting` + `clientsClaim`
+- **Caching strategies**: StaleWhileRevalidate for role-based chunks (50 entries, 30-day), NetworkFirst for API (100 entries, 24h, 3s timeout), CacheFirst for images (60 entries, 30-day)
+- **Composables**: `usePWA` (install/update lifecycle), `usePushNotifications` (push notification handling)
+- **Components**: `PWANotifications.vue`, `PWANotificationsEnhanced.vue`, `PWAStatusCard.vue` in `src/components/dumb/shared/`
+- **Icons**: `public/pwa-icon.svg` source, generated at 192×192 and 512×512 (standard + maskable)
+- **PWA-specific scripts**: `pnpm build:pwa`, `pnpm test:pwa`, `pnpm analyze:pwa`
 
 ## Performance
 
@@ -281,8 +314,10 @@ Use semantic colors, not hex values:
 - Variants: `primary-darken-1`, `primary-lighten-2`
 
 ### Existing Dumb Components
-Check `src/components/dumb/{shared,owner,admin}/` before creating new UI — there are 60+ existing dumb components.
-Key shared ones: `ConfirmationDialog.vue`, `LoadingSpinner.vue`, `ErrorAlert.vue`, `SkeletonLoader.vue`, `EnhancedToast.vue`, `BookingForm.vue`, `MaterioDataTable.vue`, `MaterioFormWizard.vue`, `PropertyCard.vue`, `PropertyModal.vue`
+Check `src/components/dumb/{shared,owner,admin}/` before creating new UI — there are 70 existing dumb components (25 shared, 19 owner, 26 admin).
+Key shared ones: `ConfirmationDialog.vue`, `LoadingSpinner.vue`, `ErrorAlert.vue`, `SkeletonLoader.vue`, `EnhancedToast.vue`, `BookingForm.vue`, `MaterioDataTable.vue`, `MaterioFormWizard.vue`, `PropertyCard.vue`, `PropertyModal.vue`, `MobileBottomNav.vue`, `QuickActionsFab.vue`, `SmartNavigationPanel.vue`, `TurnPriorityBadge.vue`
+Key admin ones: `CleanerAssignmentModal.vue`, `AdminBookingForm.vue`, `UrgentTurnsCard.vue`, `PerformanceMetricsDashboard.vue`, `AdminUserWizard.vue`
+Key owner ones: `OwnerBookingForm.vue`, `OwnerCalendarControls.vue`, `OwnerCleaningStatus.vue`
 
 ## Vuetify Reference
 
@@ -360,9 +395,10 @@ const bookings = (data ?? []) as Booking[]
 3. Run `pnpm build` to find all affected code
 
 ## ESLint Rules
-- Vue components: `multi-word-component-names` off, `define-props-declaration` type-based, `define-emits-declaration` type-based, `component-definition-name-casing` PascalCase
-- TypeScript: strict, unused vars warn with `_` prefix ignore pattern
-- Parser: `vue-eslint-parser` with `@typescript-eslint/parser` for `<script>` blocks
+- Extends: `eslint:recommended`, `plugin:@typescript-eslint/recommended`, `plugin:vue/vue3-recommended`
+- Parser: `@typescript-eslint/parser` within `vue-eslint-parser` for `<script>` blocks
+- Custom rules: none currently configured (relies on extended config defaults)
+- Plugins: `@typescript-eslint`, `vue`
 
 ## Critical Files
 
@@ -382,5 +418,5 @@ These areas require careful modification - extend existing patterns rather than 
 - Before finishing changes: run `pnpm test:run` and `pnpm build`
 - For auth/routing or subscription changes: also run `pnpm test:performance`
 - Build flags `__ENABLE_OWNER_FEATURES__` and `__ENABLE_ADMIN_FEATURES__` control role-specific code inclusion
-- Vite chunk strategy splits: `vue-core`, `vuetify`, `calendar`, `supabase`, `vendor` (node_modules), `app-core` (stores/utils/shared composables), `owner-app`, `admin-app`
+- Vite chunk strategy splits: `vue-core`, `vuetify`, `calendar`, `supabase`, `vendor` (node_modules), `app-core` (stores/utils/shared composables), `owner-app`, `admin-app`. Additional named chunks defined but unused in manualChunks: `admin-components`, `owner-components`, `shared-ui`, `admin-logic`, `owner-logic`, `shared-logic`
 - CSS custom property `--app-bar-height` (from `src/styles/responsive.scss`) — use `var(--app-bar-height, 64px)` instead of hardcoding `64px`
