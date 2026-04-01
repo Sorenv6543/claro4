@@ -1,7 +1,7 @@
+import AdminTimelineCard from '@components/dumb/admin/AdminTimelineCard.vue'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
-import AdminTimelineCard from '@components/dumb/admin/AdminTimelineCard.vue'
 
 const vuetify = createVuetify()
 
@@ -22,7 +22,7 @@ const baseBooking = {
 const baseProperty = { id: 'p1', name: 'Oceanview Condo', color: '#5c6bc0' }
 const baseCleaner = { id: 'c1', name: 'Maria R.' }
 
-function mountCard(props = {}) {
+function mountCard (props = {}) {
   return mount(AdminTimelineCard, {
     props: { booking: baseBooking, property: baseProperty, cleaner: baseCleaner, ...props },
     global: { plugins: [vuetify] },

@@ -1,11 +1,11 @@
+import AdminMetricsStrip from '@components/dumb/admin/AdminMetricsStrip.vue'
 import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
-import AdminMetricsStrip from '@components/dumb/admin/AdminMetricsStrip.vue'
 
 const vuetify = createVuetify()
 
-function mountStrip(props = {}) {
+function mountStrip (props = {}) {
   return mount(AdminMetricsStrip, {
     props: {
       totalCleanings: 14,

@@ -34,10 +34,10 @@
       <template v-if="stepper && mode === 'create'">
         <MaterioFormWizard
           v-model="wizardStep"
+          :before-next="handleBeforeNext"
           :steps="wizardSteps"
           :submit-loading="loading"
           submit-text="Create Property"
-          :before-next="handleBeforeNext"
           @submit="handleSubmit"
         >
           <!-- Step 0: Property Details -->

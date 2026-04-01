@@ -1,5 +1,5 @@
-import type { Cleaner } from '@/types/user.ts'
 import type { CleanerTeam } from '@/types/team'
+import type { Cleaner } from '@/types/user.ts'
 import { computed, ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
 import { useAuthStore } from '@/stores/auth.ts'
@@ -276,13 +276,15 @@ export function useCleanerManagement () {
         .select('*')
         .eq('active', true)
         .order('name')
-      if (fetchError) throw fetchError
+      if (fetchError) {
+        throw fetchError
+      }
       teams.value = (data ?? []) as CleanerTeam[]
       success.value = `Loaded ${teams.value.length} teams`
       return true
-    } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Failed to fetch teams'
-      console.error('[useCleanerManagement] fetchTeams error:', e)
+    } catch (error_) {
+      error.value = error_ instanceof Error ? error_.message : 'Failed to fetch teams'
+      console.error('[useCleanerManagement] fetchTeams error:', error_)
       return false
     } finally {
       loading.value = false

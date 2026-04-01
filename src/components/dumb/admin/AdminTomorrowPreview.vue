@@ -1,35 +1,35 @@
 <script setup lang="ts">
-import type { Booking } from '@/types/booking'
+  import type { Booking } from '@/types/booking'
 
-const props = defineProps<{
-  totalBookings: number
-  turnCount: number
-  unassignedCount: number
-  isEveningMode: boolean
-  unassignedBookings?: Booking[]
-  propertyMap?: Map<string, { id: string; name: string; color: string }>
-}>()
+  const props = defineProps<{
+    totalBookings: number
+    turnCount: number
+    unassignedCount: number
+    isEveningMode: boolean
+    unassignedBookings?: Booking[]
+    propertyMap?: Map<string, { id: string, name: string, color: string }>
+  }>()
 
-const emit = defineEmits<{
-  assign: [booking: Booking]
-}>()
+  const emit = defineEmits<{
+    assign: [booking: Booking]
+  }>()
 
-function formatTime(booking: Booking): string {
-  return (booking.checkout_time || booking.checkin_time || '').substring(0, 5)
-}
+  function formatTime (booking: Booking): string {
+    return (booking.checkout_time || booking.checkin_time || '').substring(0, 5)
+  }
 </script>
 
 <template>
   <v-card
-    variant="outlined"
-    rounded="lg"
-    class="mb-3"
     :border="isEveningMode ? 'info' : undefined"
+    class="mb-3"
+    rounded="lg"
     :style="isEveningMode ? {} : { opacity: 0.7 }"
+    variant="outlined"
   >
     <v-card-text>
       <div class="text-subtitle-2 font-weight-bold mb-2" :class="isEveningMode ? 'text-info' : 'text-medium-emphasis'">
-        <v-icon icon="mdi-calendar-arrow-right" size="18" class="mr-1" />
+        <v-icon class="mr-1" icon="mdi-calendar-arrow-right" size="18" />
         Tomorrow Preview
       </div>
 
@@ -56,10 +56,10 @@ function formatTime(booking: Booking): string {
             </div>
           </div>
           <v-btn
-            size="small"
-            color="primary"
-            variant="tonal"
             append-icon="mdi-chevron-down"
+            color="primary"
+            size="small"
+            variant="tonal"
             @click="emit('assign', booking)"
           >
             Assign

@@ -1,5 +1,5 @@
-import { describe, expect, it } from 'vitest'
 import { getDefaultRouteForRole, validateRoleNavigation } from '@utils/authHelpers'
+import { describe, expect, it } from 'vitest'
 
 describe('getDefaultRouteForRole', () => {
   it('routes owner to /owner/overview', () => {

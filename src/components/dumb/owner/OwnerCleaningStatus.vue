@@ -56,6 +56,8 @@
 </template>
 
 <script setup lang="ts">
+  import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/constants'
+
   interface CleaningInfo {
     property: string
     propertyColor: string
@@ -63,8 +65,6 @@
     cleanerName: string
     status: string
   }
-
-  import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/constants'
 
   defineProps<{
     cleanings: CleaningInfo[]

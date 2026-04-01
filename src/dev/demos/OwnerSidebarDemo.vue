@@ -141,7 +141,7 @@
   import { computed, ref } from 'vue'
 
   // Demo state
-  const loading = ref(false)
+  const _loading = ref(false)
   const eventLog = ref<Array<{
     action: string
     details: string
@@ -266,26 +266,26 @@
   )
 
   // Event handlers
-  function handleNavigateToBooking (bookingId: string) {
+  function _handleNavigateToBooking (bookingId: string) {
     addEventLog('Navigate to Booking', `Booking ID: ${bookingId}`)
   }
 
-  function handleNavigateToDate (date: Date) {
+  function _handleNavigateToDate (date: Date) {
     addEventLog('Navigate to Date', `Date: ${date.toLocaleDateString()}`)
   }
 
-  function handleFilterByProperty (propertyId: string | null) {
+  function _handleFilterByProperty (propertyId: string | null) {
     const propertyName = propertyId
       ? sampleOwnerProperties.value.get(propertyId)?.name || 'Unknown Property'
       : 'All Properties'
     addEventLog('Filter by Property', `Property: ${propertyName}`)
   }
 
-  function handleCreateBooking () {
+  function _handleCreateBooking () {
     addEventLog('Create Booking', 'Owner wants to create a new booking')
   }
 
-  function handleCreateProperty () {
+  function _handleCreateProperty () {
     addEventLog('Create Property', 'Owner wants to add a new property')
   }
 

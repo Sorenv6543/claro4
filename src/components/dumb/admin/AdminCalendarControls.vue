@@ -470,7 +470,7 @@
 
 <script setup lang="ts">
   import type { Cleaner } from '@/types/user'
-import { computed, ref, watch } from 'vue'
+  import { computed, ref, watch } from 'vue'
 
   // Props
   interface Props {

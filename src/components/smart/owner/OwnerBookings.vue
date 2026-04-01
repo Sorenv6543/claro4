@@ -234,13 +234,13 @@
         </v-btn>
       </v-card>
       <ConfirmationDialog
-        :open="deleteConfirmOpen"
-        title="Delete Booking"
-        :message="`Are you sure you want to delete this booking for ${bookingToDelete ? getPropertyName(bookingToDelete.property_id) : ''}?`"
         confirm-text="Delete"
         dangerous
-        @confirm="confirmDeleteBooking"
+        :message="`Are you sure you want to delete this booking for ${bookingToDelete ? getPropertyName(bookingToDelete.property_id) : ''}?`"
+        :open="deleteConfirmOpen"
+        title="Delete Booking"
         @cancel="deleteConfirmOpen = false"
+        @confirm="confirmDeleteBooking"
       />
     </v-container>
   </div>
@@ -248,14 +248,14 @@
 
 <script setup lang="ts">
   import type { Booking, ModalData } from '@/types'
+  import { formatStatus, getBookingStatusColor } from '@utils/constants'
   import { computed, onMounted, ref } from 'vue'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
-  import { getBookingStatusColor, formatStatus } from '@utils/constants'
-  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
 
   defineOptions({
     name: 'OwnerBookingsComponent',
@@ -397,9 +397,9 @@
     try {
       await deleteMyBooking(bookingToDelete.value.id)
       uiStore.addNotification('success', 'Deleted', 'Booking deleted successfully')
-    } catch (err) {
-      console.error('Failed to delete booking:', err)
-      uiStore.addNotification('error', 'Delete Failed', err instanceof Error ? err.message : 'Could not delete booking')
+    } catch (error) {
+      console.error('Failed to delete booking:', error)
+      uiStore.addNotification('error', 'Delete Failed', error instanceof Error ? error.message : 'Could not delete booking')
     } finally {
       deleteConfirmOpen.value = false
       bookingToDelete.value = null
