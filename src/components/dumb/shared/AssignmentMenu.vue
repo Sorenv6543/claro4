@@ -1,58 +1,57 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+  import { ref } from 'vue'
 
-export interface AssignableCleaner {
-  id: string
-  name: string
-  assigned: number
-  total: number
-}
-
-export interface AssignableTeam {
-  id: string
-  name: string
-  member_ids: string[]
-  assigned: number
-  total: number
-}
-
-const props = defineProps<{
-  cleaners: AssignableCleaner[]
-  teams: AssignableTeam[]
-}>()
-
-const emit = defineEmits<{
-  assignCleaner: [cleanerId: string]
-  assignTeam: [teamId: string]
-  assignGroup: [cleanerIds: string[]]
-}>()
-
-const activeTab = ref(0)
-const selectedGroupIds = ref<string[]>([])
-
-function toggleGroupMember(cleanerId: string) {
-  const idx = selectedGroupIds.value.indexOf(cleanerId)
-  if (idx >= 0) {
-    selectedGroupIds.value.splice(idx, 1)
-  } else {
-    selectedGroupIds.value.push(cleanerId)
+  export interface AssignableCleaner {
+    id: string
+    name: string
+    assigned: number
+    total: number
   }
-}
 
-function submitGroup() {
-  if (selectedGroupIds.value.length >= 2) {
-    emit('assignGroup', [...selectedGroupIds.value])
-    selectedGroupIds.value = []
+  export interface AssignableTeam {
+    id: string
+    name: string
+    member_ids: string[]
+    assigned: number
+    total: number
   }
-}
 
-function initials(name: string): string {
-  return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()
-}
+  defineProps<{
+    cleaners: AssignableCleaner[]
+    teams: AssignableTeam[]
+  }>()
+
+  const emit = defineEmits<{
+    (e: 'assign-cleaner' | 'assign-team', id: string): void
+    (e: 'assign-group', cleanerIds: string[]): void
+  }>()
+
+  const activeTab = ref(0)
+  const selectedGroupIds = ref<string[]>([])
+
+  function toggleGroupMember (cleanerId: string) {
+    const idx = selectedGroupIds.value.indexOf(cleanerId)
+    if (idx === -1) {
+      selectedGroupIds.value.push(cleanerId)
+    } else {
+      selectedGroupIds.value.splice(idx, 1)
+    }
+  }
+
+  function submitGroup () {
+    if (selectedGroupIds.value.length >= 2) {
+      emit('assign-group', [...selectedGroupIds.value])
+      selectedGroupIds.value = []
+    }
+  }
+
+  function initials (name: string): string {
+    return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()
+  }
 </script>
 
 <template>
-  <v-card width="320" rounded="lg" elevation="4">
+  <v-card elevation="4" rounded="lg" width="320">
     <v-tabs v-model="activeTab" density="compact" grow>
       <v-tab :value="0">Cleaner</v-tab>
       <v-tab :value="1">Team</v-tab>
@@ -61,16 +60,16 @@ function initials(name: string): string {
 
     <v-window v-model="activeTab">
       <v-window-item :value="0">
-        <v-list density="compact" max-height="240" class="overflow-y-auto">
+        <v-list class="overflow-y-auto" density="compact" max-height="240">
           <v-list-item
             v-for="c in cleaners"
             :key="c.id"
             :data-testid="'cleaner-item'"
             :disabled="c.assigned >= c.total"
-            @click="c.assigned < c.total && emit('assignCleaner', c.id)"
+            @click="c.assigned < c.total && emit('assign-cleaner', c.id)"
           >
             <template #prepend>
-              <v-avatar size="28" color="primary" variant="tonal">
+              <v-avatar color="primary" size="28" variant="tonal">
                 <span class="text-caption">{{ initials(c.name) }}</span>
               </v-avatar>
             </template>
@@ -78,10 +77,10 @@ function initials(name: string): string {
             <template #append>
               <div class="d-flex align-center ga-2">
                 <v-progress-linear
-                  :model-value="c.total ? (c.assigned / c.total) * 100 : 0"
                   :color="c.assigned >= c.total ? 'error' : c.assigned / c.total >= 0.5 ? 'warning' : 'success'"
-                  rounded
                   height="4"
+                  :model-value="c.total ? (c.assigned / c.total) * 100 : 0"
+                  rounded
                   style="width: 50px;"
                 />
                 <span class="text-caption text-medium-emphasis">{{ c.assigned }}/{{ c.total }}</span>
@@ -92,14 +91,14 @@ function initials(name: string): string {
       </v-window-item>
 
       <v-window-item :value="1">
-        <v-list density="compact" max-height="240" class="overflow-y-auto">
+        <v-list class="overflow-y-auto" density="compact" max-height="240">
           <v-list-item
             v-for="t in teams"
             :key="t.id"
-            @click="emit('assignTeam', t.id)"
+            @click="emit('assign-team', t.id)"
           >
             <template #prepend>
-              <v-avatar size="28" color="blue-grey" variant="tonal">
+              <v-avatar color="blue-grey" size="28" variant="tonal">
                 <v-icon size="16">mdi-account-multiple</v-icon>
               </v-avatar>
             </template>
@@ -120,7 +119,7 @@ function initials(name: string): string {
       </v-window-item>
 
       <v-window-item :value="2">
-        <v-list density="compact" max-height="200" class="overflow-y-auto">
+        <v-list class="overflow-y-auto" density="compact" max-height="200">
           <v-list-item
             v-for="c in cleaners"
             :key="c.id"
@@ -129,10 +128,10 @@ function initials(name: string): string {
           >
             <template #prepend>
               <v-checkbox-btn
-                :model-value="selectedGroupIds.includes(c.id)"
                 density="compact"
-                hide-details
                 :disabled="c.assigned >= c.total"
+                hide-details
+                :model-value="selectedGroupIds.includes(c.id)"
                 @click.stop="c.assigned < c.total && toggleGroupMember(c.id)"
               />
             </template>
@@ -145,9 +144,9 @@ function initials(name: string): string {
         <v-divider />
         <div class="pa-2 text-center">
           <v-btn
-            size="small"
             color="primary"
             :disabled="selectedGroupIds.length < 2"
+            size="small"
             @click="submitGroup"
           >
             Assign Group ({{ selectedGroupIds.length }})

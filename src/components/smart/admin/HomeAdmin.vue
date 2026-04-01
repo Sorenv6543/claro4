@@ -12,8 +12,8 @@
   <div class="home-admin-layout">
     <!-- Main Dashboard Content (sidebar and header are now in admin layout) -->
     <AdminDashboard
-      @view-booking="handleViewBooking"
       @status-change="handleStatusChange"
+      @view-booking="handleViewBooking"
     />
   </div>
 
@@ -42,8 +42,8 @@
 </template>
 
 <script setup lang="ts">
-  import type { Booking } from '@/types/booking'
   import type { Property, PropertyFormData } from '@/types'
+  import type { Booking } from '@/types/booking'
   import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 
   import { useDisplay } from 'vuetify'
@@ -150,9 +150,9 @@
         }
       }
       uiStore.closeModal('propertyModal')
-    } catch (err) {
-      console.error('Failed to save property:', err)
-      uiStore.addNotification('error', 'Save Failed', err instanceof Error ? err.message : 'Could not save property')
+    } catch (error) {
+      console.error('Failed to save property:', error)
+      uiStore.addNotification('error', 'Save Failed', error instanceof Error ? error.message : 'Could not save property')
     }
   }
 
@@ -192,18 +192,18 @@
       try {
         await supaDeleteBooking(data.id as string)
         uiStore.closeModal('eventModal')
-      } catch (err) {
-        console.error('Failed to delete booking:', err)
-        uiStore.addNotification('error', 'Delete Failed', err instanceof Error ? err.message : 'Could not delete booking')
+      } catch (error) {
+        console.error('Failed to delete booking:', error)
+        uiStore.addNotification('error', 'Delete Failed', error instanceof Error ? error.message : 'Could not delete booking')
         return
       }
     } else if (data?.type === 'property' && data?.id) {
       try {
         await supaDeleteProperty(data.id as string)
         uiStore.closeModal('propertyModal')
-      } catch (err) {
-        console.error('Failed to delete property:', err)
-        uiStore.addNotification('error', 'Delete Failed', err instanceof Error ? err.message : 'Could not delete property')
+      } catch (error) {
+        console.error('Failed to delete property:', error)
+        uiStore.addNotification('error', 'Delete Failed', error instanceof Error ? error.message : 'Could not delete property')
         return
       }
     }

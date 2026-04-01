@@ -6,7 +6,7 @@ interface TimeAwareModeOptions {
   thresholdHour?: number
 }
 
-export function useTimeAwareMode(options: TimeAwareModeOptions = {}) {
+export function useTimeAwareMode (options: TimeAwareModeOptions = {}) {
   const thresholdHour = options.thresholdHour ?? EVENING_THRESHOLD_HOUR
   const now = ref(new Date())
 
@@ -21,7 +21,7 @@ export function useTimeAwareMode(options: TimeAwareModeOptions = {}) {
   const isEveningMode = computed(() => now.value.getHours() >= thresholdHour)
 
   const modeLabel = computed(() =>
-    isEveningMode.value ? "Tomorrow's Prep" : "Today's Schedule"
+    isEveningMode.value ? 'Tomorrow\'s Prep' : 'Today\'s Schedule',
   )
 
   const todayDateString = computed(() => {
