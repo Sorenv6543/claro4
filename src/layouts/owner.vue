@@ -69,8 +69,8 @@
           mandatory
           rounded="pill"
         >
-          <v-btn class="text-none" size="small" value="ranges">Ranges</v-btn>
-          <v-btn class="text-none" size="small" value="events">Events</v-btn>
+          <v-btn class="text-none" size="small" value="ranges">Range</v-btn>
+          <v-btn class="text-none" size="small" value="events">Event</v-btn>
         </v-btn-toggle>
       </template>
 

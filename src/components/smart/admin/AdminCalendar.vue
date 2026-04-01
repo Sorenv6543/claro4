@@ -59,51 +59,33 @@
             density="compact"
             mandatory
             rounded="pill"
+            selected-class="bg-primary text-white"
           >
             <v-btn
               class="text-none"
               size="small"
               value="ranges"
             >
-              Ranges
+              Range
             </v-btn>
             <v-btn
               class="text-none"
               size="small"
               value="events"
             >
-              Events
+              Event
             </v-btn>
           </v-btn-toggle>
 
           <!-- View Switcher (Month/Week/Day/List) -->
-          <v-menu location="bottom end">
-            <template #activator="{ props: menuProps }">
-              <v-btn
-                v-bind="menuProps"
-                append-icon="mdi-chevron-down"
-                class="text-none"
-                size="small"
-                variant="outlined"
-              >
-                {{ viewLabels[activeViewKey] }}
-              </v-btn>
-            </template>
-            <v-list
-              density="compact"
-              min-width="140"
-            >
-              <v-list-item
-                v-for="opt in viewOptions"
-                :key="opt.value"
-                :active="activeViewKey === opt.value"
-                color="primary"
-                :prepend-icon="opt.icon"
-                :title="opt.label"
-                @click="switchView(opt.value)"
-              />
-            </v-list>
-          </v-menu>
+          <v-select
+            v-model="selectViewKey"
+            density="compact"
+            hide-details
+            :items="viewSelectItems"
+            style="max-width: 130px;"
+            variant="outlined"
+          />
         </div>
       </v-container>
     </div>
@@ -262,6 +244,18 @@
     if (v === 'timeGridDay') return 'day'
     if (v === 'listWeek') return 'list'
     return 'month'
+  })
+
+  const viewSelectItems = [
+    { title: 'Month', value: 'month' },
+    { title: 'Week', value: 'week' },
+    { title: 'Day', value: 'day' },
+    { title: 'List', value: 'list' },
+  ]
+
+  const selectViewKey = computed({
+    get: () => activeViewKey.value,
+    set: (key: string) => switchView(key),
   })
 
   function switchView (key: string) {

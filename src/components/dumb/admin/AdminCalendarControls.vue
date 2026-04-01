@@ -146,9 +146,9 @@
                 variant="outlined"
                 @update:model-value="handleFilterChange"
               >
-                <template #chip="{ props, item }">
+                <template #chip="{ props: slotProps, item }">
                   <v-chip
-                    v-bind="props"
+                    v-bind="slotProps"
                     :color="getStatusColor(item.value)"
                     size="small"
                   >
@@ -173,8 +173,8 @@
                 variant="outlined"
                 @update:model-value="handleFilterChange"
               >
-                <template #item="{ props, item }">
-                  <v-list-item v-bind="props">
+                <template #item="{ props: slotProps, item }">
+                  <v-list-item v-bind="slotProps">
                     <template #prepend>
                       <v-avatar
                         :color="getCleanerColor(item.value)"
@@ -203,9 +203,9 @@
                 variant="outlined"
                 @update:model-value="handleFilterChange"
               >
-                <template #chip="{ props, item }">
+                <template #chip="{ props: slotProps, item }">
                   <v-chip
-                    v-bind="props"
+                    v-bind="slotProps"
                     :color="item.value === 'turn' ? 'error' : 'primary'"
                     size="small"
                   >
@@ -250,9 +250,9 @@
                 variant="outlined"
                 @update:model-value="handleFilterChange"
               >
-                <template #chip="{ props, item }">
+                <template #chip="{ props: slotProps, item }">
                   <v-chip
-                    v-bind="props"
+                    v-bind="slotProps"
                     :color="getPriorityColor(item.value)"
                     size="small"
                   >
@@ -470,7 +470,7 @@
 
 <script setup lang="ts">
   import type { Cleaner } from '@/types/user'
-  import { computed, ref, watch } from 'vue'
+import { computed, ref, watch } from 'vue'
 
   // Props
   interface Props {
@@ -600,17 +600,21 @@
   ]
 
   const cleanerOptions = computed(() => {
-    return props.cleaners.map(cleaner => ({
-      title: cleaner.name,
-      value: cleaner.id,
-    }))
+    return props.cleaners.map(cleaner => {
+      return ({
+        title: cleaner.name,
+        value: cleaner.id,
+      })
+    })
   })
 
   const propertyOwnerOptions = computed(() => {
-    return props.propertyOwners.map(owner => ({
-      title: owner.name,
-      value: owner.id,
-    }))
+    return props.propertyOwners.map(owner => {
+      return ({
+        title: owner.name,
+        value: owner.id,
+      })
+    })
   })
 
   // Methods

@@ -78,7 +78,7 @@
             class="nav-item"
             :class="{ 'active-nav-item': route.path === '/admin/schedule' || route.path === '/admin/calendar' }"
             prepend-icon="mdi-calendar-month"
-            title="Master Schedule"
+            title="Calendar"
             @click="navigateTo('/admin/schedule')"
           >
             <template

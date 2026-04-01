@@ -27,7 +27,7 @@ const showStandardBookings = ref<boolean>(true)
 
 const selectedPropertyIds = ref<Set<string>>(new Set())
 
-const viewMode = ref<'ranges' | 'events'>('ranges')
+const viewMode = ref<'ranges' | 'events'>('events')
 
 // ============================================================================
 
