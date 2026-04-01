@@ -28,7 +28,7 @@
     <!-- Collapsible Filter Bar -->
     <v-expand-transition>
       <div v-if="showFilters" class="px-5 pb-4">
-        <v-row align="center" dense>
+        <v-row align="center" density="comfortable">
           <v-col cols="12" md="3" sm="6">
             <v-text-field
               v-model="searchQuery"
@@ -224,7 +224,7 @@
 
       <!-- Expanded Row -->
       <template #expand-content="{ item }">
-        <v-row class="pa-2" dense>
+        <v-row class="pa-2" density="comfortable">
           <v-col cols="12" sm="4">
             <div class="text-caption text-uppercase text-medium-emphasis mb-1">Guest Info</div>
             <div class="text-body-2">

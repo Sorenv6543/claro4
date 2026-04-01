@@ -1,6 +1,6 @@
 <template>
   <v-card class="welcome-banner overflow-hidden">
-    <v-row no-gutters>
+    <v-row density="compact" no-gutters>
       <!-- Left side: greeting + stat pills -->
       <v-col class="pa-5 d-flex flex-column justify-center" cols="12" md="8">
         <div class="text-h5 font-weight-bold mb-1">

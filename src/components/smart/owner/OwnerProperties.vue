@@ -22,7 +22,7 @@
       </div>
 
       <!-- Stat Pills Row -->
-      <v-row class="mb-5" dense>
+      <v-row class="mb-5" density="compact">
         <v-col cols="6" sm="3">
           <div class="stat-pill d-flex align-center ga-3 pa-4">
             <div class="stat-pill__icon stat-pill__icon--primary">
@@ -157,7 +157,7 @@
         <!-- Expanded row content -->
         <template #expand-content="{ item }">
           <div class="expanded-content pa-4">
-            <v-row dense>
+            <v-row density="compact">
               <v-col cols="12" md="3" sm="6">
                 <div class="expanded-field">
                   <div class="text-caption text-medium-emphasis mb-1">Special Instructions</div>
@@ -232,18 +232,18 @@
 </template>
 
 <script setup lang="ts">
-  import type { Property, PropertyFormData, PropertyRecord } from '@/types'
-  import { computed, onMounted } from 'vue'
-  import { useRouter } from 'vue-router'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
-  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+import type { Property, PropertyFormData, PropertyRecord } from '@/types'
+import { computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
-  import { useAuthStore } from '@/stores/auth'
-  import { useUIStore } from '@/stores/ui'
-  import { formatPropertyAddress } from '@/types/property'
+import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+import { useAuthStore } from '@/stores/auth'
+import { useUIStore } from '@/stores/ui'
+import { formatPropertyAddress } from '@/types/property'
 
   // Component metadata
   defineOptions({

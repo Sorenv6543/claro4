@@ -43,7 +43,7 @@
           <v-col cols="12" md="8">
             <v-card class="mb-5 pa-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
               <h3 class="text-h6 font-weight-medium mb-4">Personal Information</h3>
-              <v-row dense>
+              <v-row density="comfortable">
                 <v-col cols="12" sm="6">
                   <div class="info-row">
                     <div class="text-caption text-medium-emphasis">Full Name</div>
@@ -86,7 +86,7 @@
             <!-- Account Settings Card -->
             <v-card class="pa-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
               <h3 class="text-h6 font-weight-medium mb-4">Account Settings</h3>
-              <v-row dense>
+              <v-row density="comfortable">
                 <v-col cols="12" sm="6">
                   <div class="info-row">
                     <div class="text-caption text-medium-emphasis">Theme</div>

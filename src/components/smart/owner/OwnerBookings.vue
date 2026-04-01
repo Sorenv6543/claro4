@@ -17,7 +17,7 @@
       </div>
 
       <!-- Stat Pills Row -->
-      <v-row class="mb-5" dense>
+      <v-row class="mb-5" density="comfortable">
         <v-col cols="6" sm="3">
           <div class="stat-pill d-flex align-center ga-3 pa-4">
             <div class="stat-pill__icon stat-pill__icon--primary">
@@ -75,7 +75,7 @@
       >
         <!-- Filters -->
         <template #filters>
-          <v-row align="center" dense>
+          <v-row align="center" density="comfortable">
             <v-col cols="12" sm="4">
               <v-select
                 v-model="selectedProperty"
@@ -188,7 +188,7 @@
         <!-- Expanded row content -->
         <template #expand-content="{ item }">
           <div class="expanded-content pa-4">
-            <v-row dense>
+            <v-row density="comfortable">
               <v-col cols="12" md="3" sm="6">
                 <div class="expanded-field">
                   <div class="text-caption text-medium-emphasis mb-1">Guest Name</div>
