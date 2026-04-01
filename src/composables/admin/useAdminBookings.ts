@@ -5,7 +5,7 @@ import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
-import { calculateBookingPriority } from '@/utils/businessLogic'
+import { buildAssignmentUpdate, calculateBookingPriority } from '@/utils/businessLogic'
 import { computed, ref } from 'vue'
 
 /**
