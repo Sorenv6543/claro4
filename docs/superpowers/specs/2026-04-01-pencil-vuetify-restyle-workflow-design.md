@@ -36,11 +36,13 @@ Pencil .pen (variables) ◄──two-way sync──► src/styles/tokens.css (CS
 
 ### How Vuetify Reads Tokens
 
-`vuetify.ts` imports `tokens.css` and references CSS custom properties in theme color definitions. Vuetify 4 supports CSS color values directly in theme config, so `primary: 'var(--claro-primary)'` wires the theme to the token file without runtime JS. Components that use `color="primary"` automatically resolve to the token value. For non-color tokens (spacing, radii, shadows), components reference them via CSS: `var(--claro-radius-lg)` in scoped styles or wrapper components.
+**Colors:** Vuetify 4 requires hex values in theme config (it generates `--v-theme-*` RGB tuples internally). CSS variables like `var(--claro-primary)` cannot be used in `theme.colors`. Therefore, color hex values live in both `vuetify.ts` AND `tokens.css` and must be kept in sync. Components use Vuetify's own `rgb(var(--v-theme-primary))` for color references. Two-way Pencil sync updates both files.
+
+**Non-color tokens** (spacing, radii, shadows, gradients, layout dimensions, typography weights): Live exclusively in `tokens.css`. Components reference them via CSS: `var(--claro-radius-lg)`, `var(--claro-space-md)`, etc.
 
 ## Token File: `src/styles/tokens.css`
 
-Single source of truth for all design values. Replaces hardcoded hex values in `vuetify.ts`, component styles, and scattered SCSS.
+Reference source of truth for color values, active source for all non-color tokens. Color hex values are duplicated in `vuetify.ts` (required by Vuetify's theme system) and must be kept in sync.
 
 ### Token Categories
 

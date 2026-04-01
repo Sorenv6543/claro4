@@ -1,5 +1,10 @@
 // Vuetify plugin configuration
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
+//
+// Color values here MUST match src/styles/tokens.css.
+// Vuetify requires hex values (it generates --v-theme-* RGB tuples).
+// Non-color tokens (spacing, radii, shadows, layout) live in tokens.css only.
+// Two-way Pencil sync updates both files.
 
 // Vuetify
 import type { ThemeDefinition } from 'vuetify'
