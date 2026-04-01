@@ -1,12 +1,12 @@
 import type { Booking, BookingFormData, BookingStatus, BookingType } from '@/types'
 
-import { computed, ref } from 'vue'
 import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
 import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
 import { calculateBookingPriority } from '@/utils/businessLogic'
+import { computed, ref } from 'vue'
 
 /**
  * Admin-specific booking composable
@@ -123,21 +123,25 @@ export function useAdminBookings () {
 
   const unassignedToday = computed(() => {
     return todayBookingsByTime.value.filter(
-      (b: Booking) => !b.assigned_cleaner_id && !b.assigned_team_id && (!b.assigned_group_ids || b.assigned_group_ids.length === 0)
+      (b: Booking) => !b.assigned_cleaner_id && !b.assigned_team_id && (!b.assigned_group_ids || b.assigned_group_ids.length === 0),
     )
   })
 
   const unassignedTomorrow = computed(() => {
     return tomorrowBookings.value.filter(
-      (b: Booking) => !b.assigned_cleaner_id && !b.assigned_team_id && (!b.assigned_group_ids || b.assigned_group_ids.length === 0)
+      (b: Booking) => !b.assigned_cleaner_id && !b.assigned_team_id && (!b.assigned_group_ids || b.assigned_group_ids.length === 0),
     )
   })
 
   const urgentTurnsToday = computed(() => {
     const now = new Date()
     return todayBookingsByTime.value.filter((b: Booking) => {
-      if (b.booking_type !== 'turn') return false
-      if (b.status === 'completed' || b.status === 'cancelled') return false
+      if (b.booking_type !== 'turn') {
+        return false
+      }
+      if (b.status === 'completed' || b.status === 'cancelled') {
+        return false
+      }
       const checkoutTime = b.checkout_time || '11:00'
       const [hours, minutes] = checkoutTime.split(':').map(Number)
       const checkoutDate = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes)
@@ -706,9 +710,9 @@ export function useAdminBookings () {
         } as Partial<Booking>)
         success.value = 'Cleaner assigned successfully'
         return true
-      } catch (e) {
-        error.value = e instanceof Error ? e.message : 'Failed to assign cleaner'
-        console.error('[useAdminBookings] assignCleanerToBooking error:', e)
+      } catch (error_) {
+        error.value = error_ instanceof Error ? error_.message : 'Failed to assign cleaner'
+        console.error('[useAdminBookings] assignCleanerToBooking error:', error_)
         return false
       } finally {
         loading.value = false
@@ -725,8 +729,8 @@ export function useAdminBookings () {
         } as Partial<Booking>)
         success.value = 'Team assigned successfully'
         return true
-      } catch (e) {
-        error.value = e instanceof Error ? e.message : 'Failed to assign team'
+      } catch (error_) {
+        error.value = error_ instanceof Error ? error_.message : 'Failed to assign team'
         return false
       } finally {
         loading.value = false
@@ -743,8 +747,8 @@ export function useAdminBookings () {
         } as Partial<Booking>)
         success.value = 'Group assigned successfully'
         return true
-      } catch (e) {
-        error.value = e instanceof Error ? e.message : 'Failed to assign group'
+      } catch (error_) {
+        error.value = error_ instanceof Error ? error_.message : 'Failed to assign group'
         return false
       } finally {
         loading.value = false
