@@ -25,7 +25,7 @@ defineProps<{
 .dashboard-shell {
   width: 100%;
   min-height: 100%;
-  background: var(--claro-color-background);
+  background: var(--claro-background);
   padding: var(--claro-content-padding);
 }
 

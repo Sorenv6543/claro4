@@ -16,32 +16,32 @@
 
 :root {
   /* ─── Colors: Primary Palette ─────────────────────────────────────── */
-  --claro-color-primary:        #1976D2;
-  --claro-color-primary-light:  #42A5F5;
-  --claro-color-primary-dark:   #1565C0;
-  --claro-color-secondary:      #5C6BC0;
-  --claro-color-accent:         #82B1FF;
+  --claro-primary:        #1976D2;
+  --claro-primary-light:  #42A5F5;
+  --claro-primary-dark:   #1565C0;
+  --claro-secondary:      #5C6BC0;
+  --claro-accent:         #82B1FF;
 
   /* ─── Colors: Surfaces ────────────────────────────────────────────── */
-  --claro-color-background:      #F5F7FA;
-  --claro-color-surface:         #FFFFFF;
-  --claro-color-surface-variant: #E8EAF6;
-  --claro-color-card-bg:         #FFFFFF;
+  --claro-background:      #F5F7FA;
+  --claro-surface:         #FFFFFF;
+  --claro-surface-variant: #E8EAF6;
+  --claro-card-bg:         #FFFFFF;
 
   /* ─── Colors: Semantic ────────────────────────────────────────────── */
-  --claro-color-success: #4CAF50;
-  --claro-color-warning: #FFC107;
-  --claro-color-error:   #FF5252;
-  --claro-color-info:    #2196F3;
+  --claro-success: #4CAF50;
+  --claro-warning: #FFC107;
+  --claro-error:   #FF5252;
+  --claro-info:    #2196F3;
 
   /* ─── Colors: Domain-Specific ─────────────────────────────────────── */
-  --claro-color-turn-urgent:       #F44336;
-  --claro-color-turn-standard:     #FF9800;
-  --claro-color-booking-standard:  #4CAF50;
+  --claro-turn-urgent:       #F44336;
+  --claro-turn-standard:     #FF9800;
+  --claro-booking-standard:  #4CAF50;
 
   /* ─── Colors: Text ────────────────────────────────────────────────── */
-  --claro-color-on-background: #1C1B1F;
-  --claro-color-on-surface:    #1C1B1F;
+  --claro-on-background: #1C1B1F;
+  --claro-on-surface:    #1C1B1F;
 
   /* ─── Typography ──────────────────────────────────────────────────── */
   --claro-font-family: 'Inter', sans-serif;
@@ -70,14 +70,14 @@
   /* ─── Gradients ───────────────────────────────────────────────────── */
   --claro-gradient-primary: linear-gradient(
     135deg,
-    var(--claro-color-primary-light) 0%,
-    var(--claro-color-primary) 60%,
-    var(--claro-color-primary-dark) 100%
+    var(--claro-primary-light) 0%,
+    var(--claro-primary) 60%,
+    var(--claro-primary-dark) 100%
   );
   --claro-gradient-surface: linear-gradient(
     180deg,
-    var(--claro-color-surface) 0%,
-    var(--claro-color-surface-variant) 100%
+    var(--claro-surface) 0%,
+    var(--claro-surface-variant) 100%
   );
 
   /* ─── Layout Dimensions ───────────────────────────────────────────── */
