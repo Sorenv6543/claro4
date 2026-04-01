@@ -1,206 +1,290 @@
-# Property Cleaning Scheduler
+# **BookingApp v89**
 
-> Multi-tenant property cleaning scheduler with role-based Owner/Admin UI.
-> Built with Vue 3, Vuetify 4, Pinia, Supabase, and FullCalendar.
-
----
-
-## Overview
-
-A web application for property cleaning businesses managing multiple clients. Two distinct user types are served through separate, optimized interfaces:
-
-- **Property Owners** (30-40 clients): Personal property and booking management, calendar views, turn alerts
-- **Business Admin** (1 user): System-wide operations, cleaner team management, cross-client scheduling
-
-### Key Features
-
-- **Role-Based Interfaces** — Separate optimized UIs for owners vs admin with role-based code splitting
-- **Turn Priority System** — Same-day turnovers with automatic prioritization (urgent/high/normal/low)
-- **Cleaner Team Management** — Team creation, assignment, and scheduling tools
-- **Real-Time Updates** — Supabase realtime subscriptions for cross-role data sync
-- **PWA Support** — Installable app with offline caching via Workbox (StaleWhileRevalidate for chunks, NetworkFirst for API, CacheFirst for images)
-- **Multi-Tenant Architecture** — Row-level security with Supabase, data isolation per owner
+> **Multi-Tenant Property Cleaning Scheduler**  
+> Role-Based Architecture for Property Owners & Business Management
 
 ---
 
-## Quick Start
+## **🎯 Overview**
 
-### Prerequisites
+Claro4  is a modern web application designed for property cleaning businesses managing multiple clients. It features a role-based architecture serving three distinct user types:
 
-- **Node.js** 18+
-- **pnpm** 10+ (`packageManager` field enforces `pnpm@10.32.1`)
-- **Supabase** project with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in `.env.local`
+- **Property Owners** (30-40 clients): Personal property and booking management
+- **Business Admin** (1 user): System-wide operations and cleaner management
+- **Cleaners** (10-20 users): Assigned cleaning tasks and schedules
 
-### Installation
+### **Key Features**
+- ✅ **Role-Based Interface**: Separate optimized interfaces for owners vs admin
+- ✅ **Turn Priority System**: Urgent same-day turnovers with automatic prioritization
+- ✅ **Multi-Tenant Architecture**: Data isolation with shared business logic
+- ✅ **Cleaner Management**: Advanced assignment and scheduling tools
+- ✅ **Real-Time Updates**: Cross-role data synchronization
+- ✅ **Performance Optimized**: Role-based code splitting and chunking
 
+---
+
+## **🚀 Quick Start**
+
+### **Prerequisites**
+- **Node.js** 18+ 
+- **pnpm** package manager
+- **Git** for version control
+
+### **Installation**
 ```bash
-git clone <repo-url>
-cd property-cleaning-scheduler
+# Clone the repository
+git clone https://github.com/your-org/BookingAppv89.git
+cd BookingAppv89
 
+# Install dependencies
 pnpm install
-pnpm dev
+
+# Start development server
+pnpm run dev
 ```
 
-### Scripts
-
+### **Available Scripts**
 ```bash
 # Development
-pnpm dev                    # Start dev server (port 3000, --host)
+pnpm run dev                # Start dev server with HMR
+pnpm run build:fast         # Quick build without TypeScript checking
 
 # Production Builds
-pnpm build                  # Full build (runs vue-tsc --noEmit first)
-pnpm build:fast             # Skip type checking for quick iteration
-pnpm build:owner-only       # Owner interface only
-pnpm build:admin-only       # Admin interface only
-pnpm build:pwa              # Build with PWA manifest optimization
+pnpm run build:production   # Full multi-tenant build
+pnpm run build:owner-only   # Owner interface only (~800KB)
+pnpm run build:admin-only   # Admin interface only (~1.1MB)
 
-# Testing
-pnpm test                   # Vitest in watch mode
-pnpm test:run               # Run tests once
-pnpm test:coverage          # Run with coverage
-pnpm test:performance       # Performance regression tests
+# Testing & Quality
+pnpm run test              # Run test suite
+pnpm run test:coverage     # Run tests with coverage
+pnpm run lint              # ESLint code quality check
 
-# Quality
-pnpm lint                   # ESLint with auto-fix
-
-# Analysis
-pnpm analyze:bundle         # Bundle size analysis
-pnpm perf:analysis          # Bundle analysis + regression tests
+# Preview & Analysis
+pnpm run preview           # Preview production build
+pnpm run analyze:bundle    # Bundle size analysis
 ```
 
 ---
 
-## Architecture
+## **🏗️ Architecture**
 
-### Role-Based Component Structure
-
+### **Role-Based Component Structure**
 ```
 src/
 ├── components/
-│   ├── dumb/                    # Pure UI — props in, events out
-│   │   ├── shared/   (25)       # Cross-role: BookingForm, ConfirmationDialog, MaterioDataTable, etc.
-│   │   ├── owner/    (19)       # OwnerBookingForm, PropertyForms, OwnerCalendarControls
-│   │   └── admin/    (26)       # AdminBookingForm, CleanerAssignmentModal, UrgentTurnsCard
-│   └── smart/                   # Data-aware orchestrators
-│       ├── shared/
-│       ├── owner/
-│       └── admin/
+│   ├── dumb/
+│   │   ├── owner/           # Owner-specific UI components
+│   │   ├── admin/           # Admin-specific UI components
+│   │   └── shared/          # Reusable cross-role components
+│   └── smart/
+│       ├── owner/           # Owner interface orchestrators
+│       ├── admin/           # Admin interface orchestrators
+│       └── shared/          # Cross-role smart components
 ├── composables/
-│   ├── shared/                  # useCalendarState, usePerformanceMonitor, usePWA, etc.
-│   ├── owner/                   # useOwnerBookings, useOwnerProperties, useOwnerCalendarState
-│   ├── admin/                   # useAdminBookings, useCleanerManagement, useTimeAwareMode
-│   └── supabase/                # useSupabaseAuth, useSupabaseBookings, useRealtimeSync
+│   ├── owner/               # Owner-scoped business logic
+│   ├── admin/               # Admin-scoped business logic
+│   └── shared/              # Shared business logic
 ├── pages/
-│   ├── owner/                   # dashboard, bookings, calendar, properties, profile, settings
-│   ├── admin/                   # dashboard, schedule, properties, bookings, cleaners, reports, users
-│   └── auth/                    # login, register, no-access
-├── stores/                      # Pinia: auth, booking, property, ui, user
-├── types/                       # Domain types: booking, property, user, team, ui, api, router
-├── utils/                       # businessLogic, authHelpers, constants, calendarHelpers, etc.
-├── layouts/                     # admin, owner, auth, default
-├── router/                      # Route definitions + auth/role guards
-├── plugins/                     # Vuetify config, Supabase client
-└── styles/                      # SCSS with responsive custom properties
+│   ├── owner/               # Owner interface pages
+│   ├── admin/               # Admin interface pages
+│   └── auth/                # Authentication pages
+└── stores/                  # Reactive state management
 ```
 
-### State Management
-
-Pinia stores use `Map<string, T>` collections with TTL-based cached filtered Maps for O(1) lookups. Business logic lives in `src/utils/businessLogic.ts`, not in stores. Optimistic updates with rollback on failure.
-
-### Build & Chunking
-
-Vite splits output into role-aware chunks: `admin-app`, `owner-app`, `app-core`, plus vendor chunks for `vue-core`, `vuetify`, `calendar`, `supabase`, and general `vendor`. Build flags `__ENABLE_OWNER_FEATURES__` and `__ENABLE_ADMIN_FEATURES__` control role-specific code inclusion.
-
----
-
-## Tech Stack
-
-- **Framework**: Vue 3.5 + TypeScript 5.9 + Vite 7
-- **UI**: Vuetify 4 + Material Design Icons (`@mdi/font`)
-- **State**: Pinia 3 with Map-based stores
-- **Calendar**: FullCalendar 6 (daygrid, timegrid, list, interaction)
-- **Backend**: Supabase (Auth, Postgres, RLS, Realtime)
-- **Testing**: Vitest 4 + Vue Test Utils
-- **PWA**: vite-plugin-pwa + Workbox
-- **Package Manager**: pnpm 10
-
----
-
-## Supabase Integration
-
-Schema and RLS policies managed through migrations in `supabase/migrations/` (7 migrations). Tables cover properties, bookings, users/profiles, cleaner teams, and booking assignments. Realtime subscriptions in composables auto-sync data across roles.
-
-Requires `.env.local`:
-
+### **Build Output (Production)**
 ```
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-anon-key
+dist/
+├── js/
+│   ├── admin-components-[hash].js   # 169KB - Admin UI
+│   ├── owner-components-[hash].js   # 59KB  - Owner UI
+│   ├── shared-ui-[hash].js          # 84KB  - Shared components
+│   ├── admin-logic-[hash].js        # 54KB  - Admin business logic
+│   ├── owner-logic-[hash].js        # 19KB  - Owner business logic
+│   ├── shared-logic-[hash].js       # 33KB  - Shared business logic
+│   ├── vuetify-[hash].js           # 874KB - UI framework
+│   ├── vue-core-[hash].js          # 683KB - Vue framework
+│   └── calendar-[hash].js          # 581KB - Calendar components
+└── assets/                         # Optimized images & fonts
 ```
 
 ---
 
-## Routes
+## **📖 Documentation**
 
-### Owner (`/owner/*`) — requires auth, role: owner
+### **Deployment**
+- 📋 **[Deployment Guide](docs/deployment-guide.md)** - Complete deployment strategies
+- ⚙️ **[Environment Config](docs/environment-config.md)** - Environment setup & variables  
+- ✅ **[Deployment Checklist](docs/deployment-checklist.md)** - Pre-production verification
+- 🧪 **[Testing Procedures](docs/testing-procedures.md)** - Role-based testing guide
 
-`/owner/dashboard` · `/owner/overview` · `/owner/bookings` · `/owner/properties` · `/owner/properties/:id` · `/owner/profile` · `/owner/settings`
+### **Architecture References**
+- 🏗️ **[Project Summary](docs/references/project_summary.md)** - Role-based architecture overview
+- 🧩 **[Component Orchestration](docs/references/component_orchestration_reference.md)** - Component patterns
+- 💼 **[Business Logic](docs/references/business_logic_reference.md)** - Turn vs standard logic
+- ⚡ **[Vue TypeScript Patterns](docs/references/vue_typescript_reference.md)** - Development patterns
 
-### Admin (`/admin/*`) — requires auth, role: admin
-
-`/admin` · `/admin/schedule` · `/admin/properties` · `/admin/bookings` · `/admin/cleaners` · `/admin/calendar` · `/admin/users` · `/admin/property-owners` · `/admin/owners/:id` · `/admin/reports`
-
-### Auth (public)
-
-`/` (login) · `/auth/register` · `/auth/no-access`
-
-Guards in `src/router/guards.ts` enforce `meta.requiresAuth` and `meta.role` automatically.
-
----
-
-## Documentation
-
-### Deployment
-
-- [Deployment Guide](docs/deployment/deployment-guide.md)
-- [Environment Config](docs/deployment/environment-config.md)
-- [Deployment Checklist](docs/deployment/deployment-checklist.md)
-- [Development Guide](docs/deployment/DEVELOPMENT_GUIDE.md)
-
-### API & Architecture
-
-- [API Reference](docs/api/API_REFERENCE.md)
-- [Database API Design](docs/api/DATABASE_API_DESIGN.md)
-- [Component Interfaces](docs/COMPONENT_INTERFACES.md)
-- [Implementation Guide](docs/IMPLEMENTATION_GUIDE.md)
-- [Performance Optimization Patterns](docs/PERFORMANCE_OPTIMIZATION_PATTERNS.md)
-
-### Role-Specific Component Docs
-
-- [Owner Components](docs/api/owner-components.md)
-- [Admin Components](docs/api/admin-components.md)
-- [Shared Components](docs/api/shared-components.md)
-- [Role-Based Integration](docs/api/role-based-integration.md)
-
-### Supabase
-
-- [Migration Plan](docs/supabase_migration/supabase-migration-plan.md)
-- [Migration Steps](docs/supabase_migration/supabase-migration-steps.md)
-- [Integration Checklist](docs/supabase_migration/supabase-integration-checklist.md)
-
-### Other
-
-- [FullCalendar Reference](docs/fullcalendar-reference.md)
-- [PWA Product Requirements](docs/pwa-product-requirements-document.md)
-- [UML Diagrams](docs/uml/)
+### **Technical References**
+- 🎨 **[Vuetify Integration](docs/references/vuetify_typescript_reference.md)** - UI component usage
+- 📅 **[FullCalendar Integration](docs/references/fullcalendar_integration_reference.md)** - Calendar implementation
+- 🗄️ **[Supabase TypeScript](docs/references/supabase_typescript_reference.md)** - Database integration
+- 🛡️ **[Error Handling](docs/references/error_handling_reference.md)** - Error management patterns
 
 ---
 
-## License
+## **🎭 Role-Based Interfaces**
 
-Proprietary software for property cleaning business management.
+### **Property Owner Interface**
+**Target Users**: 30-40 property owners managing their own properties
+
+**Features**:
+- Personal property and booking management
+- Owner-specific turn alerts and notifications
+- Mobile-optimized interface
+- Personal calendar view with own bookings only
+
+**Access**: `/owner/dashboard`
+
+### **Business Admin Interface**  
+**Target Users**: 1 business admin managing all operations
+
+**Features**:
+- System-wide business management
+- Cleaner assignment and scheduling
+- Cross-client analytics and reporting
+- Master calendar with all bookings
+- Turn priority management across all properties
+
+**Access**: `/admin/`
 
 ---
 
-**Version**: 0.1.0
-**Last Updated**: March 2026
+## **⚡ Performance**
+
+### **Bundle Sizes** (Gzipped)
+- **Production (Full)**: ~400KB (serves both roles)
+- **Owner-Only**: ~200KB (50% smaller, owner features only)
+- **Admin-Only**: ~300KB (25% smaller, admin features only)
+
+### **Performance Targets**
+- **Lighthouse Score**: 90+ across all metrics
+- **Initial Load**: < 3 seconds
+- **Role Interface Load**: < 2 seconds
+- **Calendar Rendering**: < 1 second
+
+---
+
+## **🧪 Testing**
+
+### **Test Coverage**
+- **Overall**: 80%+ required
+- **Role-Specific Logic**: 90%+ required  
+- **Business Logic**: 95%+ required
+- **Shared Components**: 85%+ required
+
+### **Test Types**
+```bash
+# Unit Tests
+src/__tests__/stores/        # Data management tests
+src/__tests__/utils/         # Business logic tests  
+src/__tests__/components/    # Component tests
+
+# Integration Tests
+- Role-based data isolation
+- Cross-role data synchronization
+- Component integration verification
+```
+
+---
+
+## **🔧 Tech Stack**
+
+### **Core Technologies**
+- **Frontend**: Vue 3 + TypeScript + Vite
+- **UI Framework**: Vuetify 3 + Material Design
+- **State Management**: Pinia (reactive stores)
+- **Calendar**: FullCalendar
+- **Testing**: Vitest + Vue Test Utils
+- **Build**: Vite with role-based chunking
+
+### **Architecture Patterns**
+- **Composition API**: Vue 3 reactive patterns
+- **TypeScript**: Full type safety
+- **Component Architecture**: Dumb/Smart separation  
+- **State Management**: Map-based collections
+- **Role-Based Design**: Owner vs Admin separation
+
+---
+
+## **🚀 Deployment**
+
+### **Quick Deployment**
+```bash
+# Production deployment
+pnpm run build:production
+vercel --prod
+
+# Role-specific deployments
+pnpm run build:owner-only   # Deploy to owners.yourapp.com
+pnpm run build:admin-only   # Deploy to admin.yourapp.com
+```
+
+### **Supported Platforms**
+- ✅ **Vercel** (recommended)
+- ✅ **Netlify**
+- ✅ **AWS S3 + CloudFront**
+- ✅ **Any static hosting** with SPA support
+
+---
+
+## **📊 Project Status**
+
+### **Current State** ✅ **Production Ready**
+- ✅ Role-based architecture fully implemented
+- ✅ TypeScript compilation clean for production
+- ✅ Component integration complete and tested  
+- ✅ Build optimization and chunking implemented
+- ✅ Comprehensive deployment documentation
+
+### **Next Steps**
+1. **Testing Infrastructure**: Comprehensive test suite completion
+2. **Performance Monitoring**: Production analytics setup  
+3. **Backend Integration**: Supabase RLS and API integration
+4. **User Onboarding**: Role-specific user flows
+
+---
+
+## **📞 Support**
+
+### **Development**
+- **Framework**: Vue 3 + TypeScript + Vite
+- **Package Manager**: pnpm (required)
+- **Node Version**: 18+ required
+
+### **Deployment Issues**
+1. Review [Deployment Checklist](docs/deployment-checklist.md)
+2. Check [Environment Configuration](docs/environment-config.md)
+3. Verify [Testing Procedures](docs/testing-procedures.md)
+4. Test locally with `pnpm run preview`
+
+---
+
+## **📄 License**
+
+This project is proprietary software for property cleaning business management.
+
+---
+
+**Version**: 0.89.0  
+**Last Updated**: December 2024  
+**Build System**: Vite 5.x + Vue 3 + TypeScript  
 **Architecture**: Role-Based Multi-Tenant
+
+
+
+
+
+
+
+
+
+
