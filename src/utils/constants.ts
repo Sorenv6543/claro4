@@ -18,12 +18,17 @@ export type PropertyColor = typeof PROPERTY_COLORS[number]
  */
 export function getBookingStatusColor (status: string): string {
   switch (status) {
-    case 'completed': return 'success'
-    case 'in_progress': return 'info'
-    case 'scheduled': return 'primary'
-    case 'cancelled': return 'error'
+    case 'completed': { return 'success'
+    }
+    case 'in_progress': { return 'info'
+    }
+    case 'scheduled': { return 'primary'
+    }
+    case 'cancelled': { return 'error'
+    }
     case 'pending':
-    default: return 'warning'
+    default: { return 'warning'
+    }
   }
 }
 

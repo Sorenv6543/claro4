@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useTimeAwareMode } from '@composables/admin/useTimeAwareMode'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 describe('useTimeAwareMode', () => {
   beforeEach(() => {
@@ -14,21 +14,21 @@ describe('useTimeAwareMode', () => {
     vi.setSystemTime(new Date('2026-03-27T10:00:00'))
     const { isEveningMode, modeLabel } = useTimeAwareMode()
     expect(isEveningMode.value).toBe(false)
-    expect(modeLabel.value).toBe("Today's Schedule")
+    expect(modeLabel.value).toBe('Today\'s Schedule')
   })
 
   it('returns evening mode at 4 PM', () => {
     vi.setSystemTime(new Date('2026-03-27T16:00:00'))
     const { isEveningMode, modeLabel } = useTimeAwareMode()
     expect(isEveningMode.value).toBe(true)
-    expect(modeLabel.value).toBe("Tomorrow's Prep")
+    expect(modeLabel.value).toBe('Tomorrow\'s Prep')
   })
 
   it('returns evening mode after 4 PM', () => {
     vi.setSystemTime(new Date('2026-03-27T19:30:00'))
     const { isEveningMode, modeLabel } = useTimeAwareMode()
     expect(isEveningMode.value).toBe(true)
-    expect(modeLabel.value).toBe("Tomorrow's Prep")
+    expect(modeLabel.value).toBe('Tomorrow\'s Prep')
   })
 
   it('provides today and tomorrow date strings', () => {

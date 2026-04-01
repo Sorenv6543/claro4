@@ -11,12 +11,12 @@ export * from './booking'
 // Property types
 export * from './property'
 
-// Team types
-export type { CleanerTeam, CleanerTeamFormData } from './team'
-export { isCleanerTeam } from './team'
-
 // Router types
 export * from './router'
+
+// Team types
+export { isCleanerTeam } from './team'
+export type { CleanerTeam, CleanerTeamFormData } from './team'
 
 // UI types - export everything except UserRole
 export type {

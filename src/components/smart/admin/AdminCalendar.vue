@@ -231,13 +231,6 @@
     { value: 'list', label: 'List', icon: 'mdi-format-list-bulleted' },
   ] as const
 
-  const viewLabels: Record<string, string> = {
-    month: 'Month',
-    week: 'Week',
-    day: 'Day',
-    list: 'List',
-  }
-
   const activeViewKey = computed(() => {
     const v = currentView.value
     if (v === 'timeGridWeek') return 'week'
@@ -246,12 +239,10 @@
     return 'month'
   })
 
-  const viewSelectItems = [
-    { title: 'Month', value: 'month' },
-    { title: 'Week', value: 'week' },
-    { title: 'Day', value: 'day' },
-    { title: 'List', value: 'list' },
-  ]
+  const viewSelectItems = viewOptions.map(option => ({
+    title: option.label,
+    value: option.value,
+  }))
 
   const selectViewKey = computed({
     get: () => activeViewKey.value,
@@ -470,9 +461,9 @@
         try {
           await updateBooking(booking.id, { status: 'completed' })
           uiStore.addNotification('success', 'Updated', 'Booking marked as completed')
-        } catch (err) {
-          console.error('Failed to complete booking:', err)
-          uiStore.addNotification('error', 'Update Failed', err instanceof Error ? err.message : 'Could not complete booking')
+        } catch (error) {
+          console.error('Failed to complete booking:', error)
+          uiStore.addNotification('error', 'Update Failed', error instanceof Error ? error.message : 'Could not complete booking')
         }
         break
       }
@@ -480,9 +471,9 @@
         try {
           await updateBooking(booking.id, { status: 'cancelled' })
           uiStore.addNotification('success', 'Updated', 'Booking cancelled')
-        } catch (err) {
-          console.error('Failed to cancel booking:', err)
-          uiStore.addNotification('error', 'Update Failed', err instanceof Error ? err.message : 'Could not cancel booking')
+        } catch (error) {
+          console.error('Failed to cancel booking:', error)
+          uiStore.addNotification('error', 'Update Failed', error instanceof Error ? error.message : 'Could not cancel booking')
         }
         break
       }

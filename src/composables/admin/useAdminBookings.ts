@@ -703,11 +703,7 @@ export function useAdminBookings () {
       loading.value = true
       error.value = null
       try {
-        await supaUpdate(bookingId, {
-          assigned_cleaner_id: cleanerId,
-          assigned_team_id: null,
-          assigned_group_ids: null,
-        } as Partial<Booking>)
+        await supaUpdate(bookingId, buildAssignmentUpdate('cleaner', cleanerId) as Partial<Booking>)
         success.value = 'Cleaner assigned successfully'
         return true
       } catch (error_) {
@@ -722,11 +718,7 @@ export function useAdminBookings () {
       loading.value = true
       error.value = null
       try {
-        await supaUpdate(bookingId, {
-          assigned_team_id: teamId,
-          assigned_cleaner_id: null,
-          assigned_group_ids: null,
-        } as Partial<Booking>)
+        await supaUpdate(bookingId, buildAssignmentUpdate('team', teamId) as Partial<Booking>)
         success.value = 'Team assigned successfully'
         return true
       } catch (error_) {
@@ -740,11 +732,7 @@ export function useAdminBookings () {
       loading.value = true
       error.value = null
       try {
-        await supaUpdate(bookingId, {
-          assigned_group_ids: cleanerIds,
-          assigned_cleaner_id: null,
-          assigned_team_id: null,
-        } as Partial<Booking>)
+        await supaUpdate(bookingId, buildAssignmentUpdate('group', cleanerIds) as Partial<Booking>)
         success.value = 'Group assigned successfully'
         return true
       } catch (error_) {

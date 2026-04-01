@@ -14,14 +14,16 @@ export interface CleanerTeam {
 
 export type CleanerTeamFormData = Omit<CleanerTeam, 'id' | 'created_at' | 'updated_at'>
 
-export function isCleanerTeam(obj: unknown): obj is CleanerTeam {
-  if (!obj || typeof obj !== 'object') return false
+export function isCleanerTeam (obj: unknown): obj is CleanerTeam {
+  if (!obj || typeof obj !== 'object') {
+    return false
+  }
   const team = obj as Record<string, unknown>
   return (
-    typeof team.id === 'string' &&
-    typeof team.name === 'string' &&
-    Array.isArray(team.member_ids) &&
-    team.member_ids.every((id: unknown) => typeof id === 'string') &&
-    typeof team.active === 'boolean'
+    typeof team.id === 'string'
+    && typeof team.name === 'string'
+    && Array.isArray(team.member_ids)
+    && team.member_ids.every((id: unknown) => typeof id === 'string')
+    && typeof team.active === 'boolean'
   )
 }

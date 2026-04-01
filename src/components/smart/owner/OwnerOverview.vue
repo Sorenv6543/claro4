@@ -1,6 +1,6 @@
 <template>
   <v-container class="owner-overview pa-4" fluid>
-    <v-progress-linear v-if="loading" color="primary" indeterminate class="mb-4" />
+    <v-progress-linear v-if="loading" class="mb-4" color="primary" indeterminate />
 
     <!-- Welcome Banner -->
     <v-row>
