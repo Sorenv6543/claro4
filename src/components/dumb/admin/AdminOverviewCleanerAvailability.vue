@@ -38,7 +38,7 @@
 </script>
 
 <template>
-  <v-card class="mb-3" rounded="lg" variant="outlined">
+  <v-card class="mb-3" elevation="24" rounded="sm" variant="elevated">
     <v-card-text>
       <div class="text-subtitle-2 font-weight-bold mb-3">
         <v-icon class="mr-1" icon="mdi-account-group-outline" size="18" />

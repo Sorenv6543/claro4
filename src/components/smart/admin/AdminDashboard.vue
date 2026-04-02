@@ -298,7 +298,7 @@
     </div>
 
     <!-- Split Layout -->
-    <v-row>
+    <v-row align="start">
       <!-- LEFT: Timeline -->
       <v-col class="order-2 order-md-1" cols="12" md="7">
         <template v-if="activeTimelineBookings.length > 0">

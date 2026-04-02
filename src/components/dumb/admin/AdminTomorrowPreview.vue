@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { Booking } from '@/types/booking'
+  import type { Booking } from '@/types/booking';
 
   const props = defineProps<{
     totalBookings: number
@@ -23,9 +23,9 @@
   <v-card
     :border="isEveningMode ? 'info' : undefined"
     class="mb-3"
-    rounded="lg"
+    rounded="sm"
     :style="isEveningMode ? {} : { opacity: 0.7 }"
-    variant="outlined"
+    variant="elevated"
   >
     <v-card-text>
       <div class="text-subtitle-2 font-weight-bold mb-2" :class="isEveningMode ? 'text-info' : 'text-medium-emphasis'">
@@ -44,7 +44,7 @@
         <div
           v-for="booking in unassignedBookings"
           :key="booking.id"
-          class="d-flex align-center justify-space-between rounded-lg pa-2 mb-1"
+          class="d-flex align-center justify-space-between rounded-sm pa-2 mb-1"
           style="background: rgb(var(--v-theme-surface-variant), 0.3);"
         >
           <div>
