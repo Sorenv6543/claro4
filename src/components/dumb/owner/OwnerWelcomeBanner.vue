@@ -6,7 +6,7 @@
         <div class="text-h5 font-weight-bold mb-1 text-white">
           Welcome back, {{ userName }}
         </div>
-        <div class="text-body-2 mb-4" style="color: rgba(255,255,255,0.8)">
+        <div class="text-body-2 mb-4" style="color: rgba(255,255,255,0.75)">
           Here is what is happening with your properties today.
         </div>
 
