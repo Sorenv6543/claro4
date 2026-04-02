@@ -28,7 +28,7 @@ const lightTheme: ThemeDefinition = {
     'v-theme-primary-dark': '#5E52EE',
     'v-theme-secondary': '#A8AAAE',
     'v-theme-accent': '#7367F020',
-    'v-theme-background': '#ffffff',
+    'v-theme-background': '#F5F5F9',
     'v-theme-surface': '#ffffff',
     'v-theme-surface-variant': '#F5F5F9',
     'v-theme-card-bg': '#ffffff',
