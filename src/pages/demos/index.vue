@@ -77,7 +77,6 @@
               <v-card
                 class="cursor-pointer"
                 hover
-                variant="outlined"
                 @click="navigateToDemo(demo.slug)"
               >
                 <v-card-title class="text-body-1">

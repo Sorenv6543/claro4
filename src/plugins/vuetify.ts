@@ -1,41 +1,62 @@
 // Vuetify plugin configuration
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
+//
+// Color values here MUST match src/styles/tokens.css.
+// Vuetify requires hex values (it generates --v-theme-* RGB tuples).
+// Non-color tokens (spacing, radii, shadows, layout) live in tokens.css only.
+// Two-way Pencil sync updates both files.
 
 // Vuetify
 import type { ThemeDefinition } from 'vuetify'
 import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
-
 // Import Vuetify styles
 import '@fontsource/inter/400.css'
 import '@fontsource/inter/500.css'
 import '@fontsource/inter/600.css'
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
-// Dark Teal Theme
-const darkTealTheme: ThemeDefinition = {
-  dark: true,
+
+// default light theme
+// Color values must stay in sync with src/styles/tokens.css (canonical source).
+
+const lightTheme: ThemeDefinition = {
+  dark: false,
   colors: {
-    'primary': '#26A69A', // Lighter Teal
-    'secondary': '#26C6DA', // Lighter Cyan
-    'accent': '#66BB6A', // Lighter Green
-    'error': '#EF5350', // Lighter Red
-    'info': '#29B6F6', // Lighter Blue
-    'success': '#66BB6A', // Lighter Green
-    'warning': '#FFA726', // Lighter Orange
-    'background': '#121212', // Dark Grey
-    'surface': '#1E1E1E', // Slightly lighter dark grey
-    'on-background': '#E6E1E5',
-    'on-surface': '#E6E1E5',
-    'surface-variant': '#2D2D2D',
-    'on-surface-variant': '#CAC4D0',
-    'turn-urgent': '#EF5350', // Lighter Red
-    'turn-standard': '#FFA726', // Lighter Orange
-    'booking-standard': '#26A69A', // Lighter Teal
+    'v-theme-primary': '#7367F0',
+    'v-theme-primary-light': '#9E95F5',
+    'v-theme-primary-dark': '#5E52EE',
+    'v-theme-secondary': '#A8AAAE',
+    'v-theme-accent': '#7367F020',
+    'v-theme-background': '#F5F5F9',
+    'v-theme-surface': '#ffffff',
+    'v-theme-surface-variant': '#F5F5F9',
+    'v-theme-card-bg': '#ffffff',
+    'v-theme-success': '#28C76F',
+    'v-theme-warning': '#FF9F43',
+    'v-theme-error': '#EA5455',
+    'v-theme-info': '#00CFE8',
+
+    'v-theme-turn-urgent': '#EA5455',
+    'v-theme-turn-standard': '#FF9F43',
+    'v-theme-booking-standard': '#28C76F',
+
+    /* ─── Colors: Text ────────────────────────────────────────────────── */
+    'v-theme-on-background': '#2E263D',
+    'v-theme-on-surface': '#2E263D',
+    'v-theme-text-secondary': 'rgba(46, 38, 61, 0.5)',
+    'v-theme-divider': '#E8E8E8',
+
   },
 }
 
 export default createVuetify({
+  theme: {
+    defaultTheme: 'light',
+    themes: {
+      light: lightTheme,
+    },
+  },
   // Icon configuration
   icons: {
     defaultSet: 'mdi',
@@ -45,38 +66,8 @@ export default createVuetify({
     },
   },
 
-  // Theme configuration
-  theme: {
-    defaultTheme: 'light',
-    themes: {
-      light: {
-        colors: {
-          'primary': '#1976D2',
-          'secondary': '#5C6BC0',
-          'accent': '#82B1FF',
-          'error': '#FF5252',
-          'info': '#2196F3',
-          'success': '#4CAF50',
-          'warning': '#FFC107',
-          'background': '#F5F7FA',
-          'surface': '#FFFFFF',
-          'surface-variant': '#E8EAF6',
-          'turn-urgent': '#F44336',
-          'turn-standard': '#FF9800',
-          'booking-standard': '#4CAF50',
-          'on-background': '#1C1B1F',
-          'on-surface': '#1C1B1F',
-        },
-      },
-      darkTeal: darkTealTheme,
-    },
-    variations: {
-      colors: ['primary', 'secondary', 'accent', 'error', 'info', 'success', 'warning'],
-      lighten: 3,
-      darken: 3,
-    },
-  },
-  // Default configuration for components
+  // Default configuration for components (https://vuetifyjs.com/en/features/global-configuration/#defaults)
+
   defaults: {
     VBtn: {
       variant: 'flat',
@@ -84,8 +75,8 @@ export default createVuetify({
       elevation: 1,
     },
     VCard: {
-      elevation: 2,
-      rounded: 'lg',
+      elevation: 24,
+      rounded: 'sm',
       class: 'pa-2',
     },
     VChip: {

@@ -1,6 +1,65 @@
-<!-- layouts/admin.vue - Full admin layout with sidebar -->
+<!-- layouts/admin.vue - Full admin layout with sidebar and top app bar -->
 <template>
-  <v-app>
+  <v-app class="admin-layout">
+    <!-- Admin App Bar — matches owner nav bar style -->
+    <v-app-bar
+      border="b"
+      color="surface"
+      flat
+      height="64"
+      order="-1"
+    >
+      <v-app-bar-nav-icon
+        :icon="isSidebarOpen ? 'mdi-menu-open' : 'mdi-menu'"
+        @click="toggleSidebar"
+      />
+
+      <v-app-bar-title class="flex-grow-0" style="min-width:auto">
+        <span class="text-h6 font-weight-bold text-primary">Claro</span>
+      </v-app-bar-title>
+
+      <v-spacer />
+
+      <!-- Notification bell -->
+      <v-btn
+        aria-label="Notifications"
+        class="mr-1"
+        icon="mdi-bell-outline"
+        size="small"
+        variant="text"
+      />
+
+      <!-- Avatar / user menu -->
+      <v-menu location="bottom end">
+        <template #activator="{ props: menuProps }">
+          <v-avatar
+            v-bind="menuProps"
+            class="mr-2"
+            color="primary"
+            size="28"
+            style="cursor: pointer"
+          >
+            <span class="text-caption font-weight-bold">{{ userInitials }}</span>
+          </v-avatar>
+        </template>
+        <v-card rounded="lg">
+          <v-list density="comfortable" min-width="160">
+            <v-list-item
+              prepend-icon="mdi-account-outline"
+              title="Profile"
+              to="/admin/profile"
+            />
+            <v-divider />
+            <v-list-item
+              prepend-icon="mdi-logout"
+              title="Sign Out"
+              @click="handleSignOut"
+            />
+          </v-list>
+        </v-card>
+      </v-menu>
+    </v-app-bar>
+
     <!-- Admin Sidebar -->
     <AdminSidebar
       v-model="isSidebarOpen"
@@ -21,16 +80,12 @@
       @manage-system="handleManageSystem"
       @navigate-to-booking="handleNavigateToBooking"
       @navigate-to-date="handleNavigateToDate"
-      @toggle-sidebar="toggleSidebar"
     />
 
     <!-- Main Content Area -->
-    <div
-      class="admin-main-content"
-      :class="{ 'sidebar-open': isSidebarOpen && !mobile }"
-    >
+    <v-main>
       <router-view />
-    </div>
+    </v-main>
   </v-app>
 </template>
 
@@ -42,12 +97,14 @@
   import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
   import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
+  import { useAuthStore } from '@/stores/auth'
   import { useBookingStore } from '@/stores/booking'
   import { usePropertyStore } from '@/stores/property'
 
   // Composables
   const router = useRouter()
-  const { mobile } = useDisplay()
+  const { mdAndUp } = useDisplay()
+  const authStore = useAuthStore()
   const bookingStore = useBookingStore()
   const propertyStore = usePropertyStore()
   const { users: _allUsers, fetchAllUsers } = useAdminUserManagement()
@@ -56,7 +113,7 @@
   // Initialize state
   const currentView = ref('month')
   const currentDate = ref(new Date())
-  const isSidebarOpen = ref(true)
+  const isSidebarOpen = ref(mdAndUp.value)
   const loading = ref<boolean>(false)
 
   const bookings = computed(() => Array.from(bookingStore.bookings.values()))
@@ -86,9 +143,31 @@
       .length
   })
 
+  const userInitials = computed(() => {
+    const name
+      = authStore.user?.name
+        || authStore.user?.email?.split('@')[0]
+        || 'A'
+    return name
+      .split(' ')
+      .map((n: string) => n[0] ?? '')
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  })
+
   // Navigation handlers
   function toggleSidebar () {
     isSidebarOpen.value = !isSidebarOpen.value
+  }
+
+  async function handleSignOut () {
+    try {
+      await authStore.logout()
+    } catch (error) {
+      console.error('Logout failed:', error)
+    }
+    router.push('/')
   }
 
   // Event handlers for sidebar
@@ -143,96 +222,3 @@
     }
   })
 </script>
-
-<style scoped>
-/* ================================================================ */
-/* MAIN APP HEADER */
-/* ================================================================ */
-
-.main-app-header {
-  background: white !important;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  border-bottom: 1px solid #e0e0e0 !important;
-  z-index: 19 !important; /* Lower than sidebar z-index */
-  transition: margin-left 0.3s ease-in-out;
-  margin-left: 0;
-}
-
-.main-app-header.sidebar-open {
-  margin-left: 280px; /* Match sidebar width */
-}
-
-.app-title {
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-}
-
-.brand-container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.brand-icon {
-  background: #1976d2;
-  color: white;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.brand-text {
-  color: black;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.main-app-header .v-app-bar-nav-icon {
-  color: black !important;
-}
-
-.main-app-header .v-app-bar-nav-icon:hover {
-  background: rgba(0, 0, 0, 0.05) !important;
-}
-
-/* ================================================================ */
-/* ADMIN MAIN CONTENT LAYOUT */
-/* ================================================================ */
-
-.admin-main-content {
-  transition: margin-left 0.3s ease-in-out;
-  margin-left: 0;
-
-  margin-top: 16px; /* Account for app header */
-  min-height: 100vh;
-}
-.menu-button{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  position: absolute;
-  top: 100px;
-  left: 10px;
-}
-
-.admin-main-content.sidebar-open {
-  margin-left: 280px; /* Match sidebar width */
-}
-
-/* Responsive behavior - overlay on mobile */
-@media (max-width: 959px) {
-  .admin-main-content.sidebar-open {
-    margin-left: 0; /* No push on mobile */
-  }
-
-  .main-app-header.sidebar-open {
-    margin-left: 0; /* No push on mobile */
-  }
-}
-</style>

@@ -28,114 +28,18 @@
     <!-- Stats Cards -->
     <div class="stats-section">
       <v-container fluid>
-        <v-row>
-          <v-col
-            cols="12"
-            md="3"
-            sm="6"
-          >
-            <v-card>
-              <v-card-text>
-                <div class="d-flex align-center">
-                  <v-icon
-                    class="me-3"
-                    color="primary"
-                    size="40"
-                  >
-                    mdi-account-group
-                  </v-icon>
-                  <div>
-                    <div class="text-h5 font-weight-bold">
-                      {{ cleanerStats.total }}
-                    </div>
-                    <div class="text-caption text-medium-emphasis">
-                      Total Cleaners
-                    </div>
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
+        <v-row density="compact">
+          <v-col cols="12" md="3" sm="6">
+            <StatCard color="primary" icon="mdi-account-group" label="Total Cleaners" :value="cleanerStats.total" />
           </v-col>
-          <v-col
-            cols="12"
-            md="3"
-            sm="6"
-          >
-            <v-card>
-              <v-card-text>
-                <div class="d-flex align-center">
-                  <v-icon
-                    class="me-3"
-                    color="success"
-                    size="40"
-                  >
-                    mdi-check-circle
-                  </v-icon>
-                  <div>
-                    <div class="text-h5 font-weight-bold">
-                      {{ cleanerStats.available }}
-                    </div>
-                    <div class="text-caption text-medium-emphasis">
-                      Available Today
-                    </div>
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
+          <v-col cols="12" md="3" sm="6">
+            <StatCard color="success" icon="mdi-check-circle" label="Available Today" :value="cleanerStats.available" />
           </v-col>
-          <v-col
-            cols="12"
-            md="3"
-            sm="6"
-          >
-            <v-card>
-              <v-card-text>
-                <div class="d-flex align-center">
-                  <v-icon
-                    class="me-3"
-                    color="warning"
-                    size="40"
-                  >
-                    mdi-clock-outline
-                  </v-icon>
-                  <div>
-                    <div class="text-h5 font-weight-bold">
-                      {{ cleanerStats.busy }}
-                    </div>
-                    <div class="text-caption text-medium-emphasis">
-                      Currently Busy
-                    </div>
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
+          <v-col cols="12" md="3" sm="6">
+            <StatCard color="warning" icon="mdi-clock-outline" label="Currently Busy" :value="cleanerStats.busy" />
           </v-col>
-          <v-col
-            cols="12"
-            md="3"
-            sm="6"
-          >
-            <v-card>
-              <v-card-text>
-                <div class="d-flex align-center">
-                  <v-icon
-                    class="me-3"
-                    color="info"
-                    size="40"
-                  >
-                    mdi-star
-                  </v-icon>
-                  <div>
-                    <div class="text-h5 font-weight-bold">
-                      4.8
-                    </div>
-                    <div class="text-caption text-medium-emphasis">
-                      Average Rating
-                    </div>
-                  </div>
-                </div>
-              </v-card-text>
-            </v-card>
+          <v-col cols="12" md="3" sm="6">
+            <StatCard color="info" icon="mdi-star" label="Average Rating" value="4.8" />
           </v-col>
         </v-row>
       </v-container>
@@ -402,6 +306,7 @@
   import type { Cleaner } from '@/types/user'
   import { computed, onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
+  import StatCard from '@/components/dumb/shared/StatCard.vue'
   import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
 
   // Router and composables

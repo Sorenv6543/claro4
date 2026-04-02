@@ -3,44 +3,44 @@
     <v-row density="compact" no-gutters>
       <!-- Left side: greeting + stat pills -->
       <v-col class="pa-5 d-flex flex-column justify-center" cols="12" md="8">
-        <div class="text-h5 font-weight-bold mb-1">
+        <div class="text-h5 font-weight-bold mb-1 text-white">
           Welcome back, {{ userName }}
         </div>
-        <div class="text-body-2 text-medium-emphasis mb-4">
+        <div class="text-body-2 mb-4" style="color: rgba(255,255,255,0.75)">
           Here is what is happening with your properties today.
         </div>
 
         <div class="d-flex flex-wrap ga-4">
           <!-- Properties pill -->
           <div class="stat-pill d-flex align-center ga-3">
-            <div class="stat-icon-wrap" style="background: rgba(25, 118, 210, 0.12)">
-              <v-icon color="primary" size="24">mdi-home-outline</v-icon>
+            <div class="stat-icon-wrap">
+              <v-icon color="white" size="24">mdi-home</v-icon>
             </div>
             <div>
-              <div class="text-caption text-medium-emphasis">Properties</div>
-              <div class="text-h6 font-weight-bold text-primary">{{ propertyCount }}</div>
+              <div class="text-caption" style="color: rgba(255,255,255,0.75)">Properties</div>
+              <div class="text-h6 font-weight-bold text-white">{{ propertyCount }}</div>
             </div>
           </div>
 
           <!-- Bookings pill -->
           <div class="stat-pill d-flex align-center ga-3">
-            <div class="stat-icon-wrap" style="background: rgba(76, 175, 80, 0.12)">
-              <v-icon color="success" size="24">mdi-calendar-check</v-icon>
+            <div class="stat-icon-wrap">
+              <v-icon color="white" size="24">mdi-calendar-check</v-icon>
             </div>
             <div>
-              <div class="text-caption text-medium-emphasis">Bookings</div>
-              <div class="text-h6 font-weight-bold text-success">{{ bookingCount }}</div>
+              <div class="text-caption" style="color: rgba(255,255,255,0.75)">Bookings</div>
+              <div class="text-h6 font-weight-bold text-white">{{ bookingCount }}</div>
             </div>
           </div>
 
           <!-- Turns pill -->
           <div class="stat-pill d-flex align-center ga-3">
-            <div class="stat-icon-wrap" style="background: rgba(255, 152, 0, 0.12)">
-              <v-icon color="warning" size="24">mdi-swap-horizontal</v-icon>
+            <div class="stat-icon-wrap">
+              <v-icon color="white" size="24">mdi-swap-horizontal</v-icon>
             </div>
             <div>
-              <div class="text-caption text-medium-emphasis">Turns</div>
-              <div class="text-h6 font-weight-bold text-warning">{{ turnCount }}</div>
+              <div class="text-caption" style="color: rgba(255,255,255,0.75)">Turns</div>
+              <div class="text-h6 font-weight-bold text-white">{{ turnCount }}</div>
             </div>
           </div>
         </div>
@@ -49,7 +49,7 @@
       <!-- Right side: donut chart -->
       <v-col class="d-flex align-center justify-center pa-5" cols="12" md="4">
         <div class="text-center">
-          <div class="text-body-2 font-weight-medium mb-2">Booking Activity</div>
+          <div class="text-body-2 font-weight-medium mb-2 text-white">Booking Activity</div>
           <v-progress-circular
             :color="donutColor"
             :model-value="donutPercentage"
@@ -57,11 +57,11 @@
             :width="10"
           >
             <div class="text-center">
-              <div class="text-h5 font-weight-bold">{{ activeBookings }}</div>
-              <div class="text-caption text-medium-emphasis">active</div>
+              <div class="text-h5 font-weight-bold text-white">{{ activeBookings }}</div>
+              <div class="text-caption" style="color: rgba(255,255,255,0.75)">active</div>
             </div>
           </v-progress-circular>
-          <div class="text-caption text-medium-emphasis mt-2">
+          <div class="text-caption mt-2" style="color: rgba(255,255,255,0.75)">
             {{ activeBookings }} of {{ totalBookings }} active
           </div>
         </div>
@@ -98,13 +98,14 @@
 
 <style scoped>
 .welcome-banner {
-  background: linear-gradient(135deg, rgb(var(--v-theme-surface)) 0%, rgba(25, 118, 210, 0.04) 100%);
+  background: var(--claro-gradient-primary) !important;
 }
 
 .stat-icon-wrap {
   width: 48px;
   height: 48px;
   border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;

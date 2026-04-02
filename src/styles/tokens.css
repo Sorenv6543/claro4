@@ -1,0 +1,126 @@
+/**
+ * tokens.css — Design Token Single Source of Truth
+ *
+ * Two-Way Sync Protocol (Pencil MCP):
+ * These tokens are bootstrapped from src/plugins/vuetify.ts theme values.
+ * In sessions where Pencil MCP is available, run the sync to pull live
+ * computed values from the browser and update the hex values here.
+ * Conversely, editing a token here and re-syncing will propagate the
+ * change back into Vuetify's runtime theme via CSS custom property
+ * overrides. Never edit hex values in two places — always treat this
+ * file as the canonical source and vuetify.ts as the registration point.
+ *
+ * Prefix convention: all properties use --claro- to avoid collisions
+ * with Vuetify's own --v- namespace.
+ */
+
+:root {
+  /* ─── Colors: Primary Palette ─────────────────────────────────────── */
+  --claro-primary:        #7367F0;
+  --claro-primary-light:  #9E95F5;
+  --claro-primary-dark:   #5E52EE;
+  --claro-secondary:      #A8AAAE;
+  --claro-accent:         #7367F020;
+
+  /* ─── Colors: Surfaces ────────────────────────────────────────────── */
+  --claro-background:      #F5F5F9;
+  --claro-surface:         #FFFFFF;
+  --claro-surface-variant: #F5F5F9;
+  --claro-card-bg:         #FFFFFF;
+
+  /* ─── Colors: Semantic ────────────────────────────────────────────── */
+  --claro-success: #28C76F;
+  --claro-warning: #FF9F43;
+  --claro-error:   #EA5455;
+  --claro-info:    #00CFE8;
+
+  /* ─── Colors: Domain-Specific ─────────────────────────────────────── */
+  --claro-turn-urgent:       #EA5455;
+  --claro-turn-standard:     #FF9F43;
+  --claro-booking-standard:  #28C76F;
+
+  /* ─── Colors: Text ────────────────────────────────────────────────── */
+  --claro-on-background: #2E263D;
+  --claro-on-surface:    #2E263D;
+  --claro-text-secondary: rgba(46, 38, 61, 0.5);
+  --claro-divider:        #E8E8E8;
+
+  /* ─── Typography ──────────────────────────────────────────────────── */
+  --claro-font-family: 'Inter', sans-serif;
+  --claro-font-weight-normal:   400;
+  --claro-font-weight-medium:   500;
+  --claro-font-weight-semibold: 600;
+
+  /* ─── Spacing Scale ───────────────────────────────────────────────── */
+  --claro-space-xs: 4px;
+  --claro-space-sm: 8px;
+  --claro-space-md: 16px;
+  --claro-space-lg: 24px;
+  --claro-space-xl: 32px;
+
+  /* ─── Shape / Border Radii ────────────────────────────────────────── */
+  --claro-radius-sm:   4px;
+  --claro-radius-md:   8px;
+  --claro-radius-lg:   12px;
+  --claro-radius-pill: 9999px;
+
+  /* ─── Elevation / Shadows (Material-like) ─────────────────────────── */
+  --claro-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+  --claro-shadow-md: 0 4px 18px rgba(115, 103, 240, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --claro-shadow-lg: 0 8px 28px rgba(115, 103, 240, 0.18), 0 4px 10px rgba(0, 0, 0, 0.08);
+
+  /* ─── Gradients ───────────────────────────────────────────────────── */
+  --claro-gradient-primary: linear-gradient(
+    135deg,
+    var(--claro-primary-light) 0%,
+    var(--claro-primary) 60%,
+    var(--claro-primary-dark) 100%
+  );
+  --claro-gradient-surface: linear-gradient(
+    180deg,
+    var(--claro-surface) 0%,
+    var(--claro-surface-variant) 100%
+  );
+
+  /* ─── Layout Dimensions ───────────────────────────────────────────── */
+  --claro-app-bar-height:         64px;
+  --claro-app-bar-height-mobile:  56px;
+  --claro-drawer-width:           380px;
+  --claro-drawer-width-collapsed: 72px;
+  --claro-content-padding:        24px;
+  --claro-content-padding-mobile: 12px;
+
+  /* ─── Responsive Spacing ──────────────────────────────────────────── */
+  --claro-card-gap:     var(--claro-space-md);
+  --claro-card-padding: var(--claro-space-lg);
+  --claro-section-gap:  var(--claro-space-xl);
+
+  /* ─── Touch Targets ───────────────────────────────────────────────── */
+  --claro-touch-target-min: 44px;
+
+  /* ─── Density ─────────────────────────────────────────────────────── */
+  --claro-input-density: comfortable;
+}
+
+/* ─── Mobile Overrides (xs breakpoint: < 600px) ────────────────────── */
+@media (max-width: 599px) {
+  :root {
+    --claro-content-padding: var(--claro-content-padding-mobile);
+    --claro-card-gap:        var(--claro-space-sm);
+    --claro-card-padding:    var(--claro-space-md);
+    --claro-section-gap:     var(--claro-space-lg);
+    --claro-drawer-width:    var(--claro-drawer-width-collapsed);
+    --claro-input-density:   compact;
+  }
+}
+
+/* ─── Tablet Overrides (sm breakpoint: 600px – 959px) ──────────────── */
+@media (min-width: 600px) and (max-width: 959px) {
+  :root {
+    --claro-content-padding: var(--claro-space-md);
+    --claro-card-gap:        var(--claro-space-md);
+    --claro-card-padding:    var(--claro-space-md);
+    --claro-section-gap:     var(--claro-space-lg);
+    --claro-drawer-width:    280px;
+  }
+}

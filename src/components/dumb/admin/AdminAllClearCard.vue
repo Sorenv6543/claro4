@@ -1,5 +1,5 @@
 <template>
-  <v-card rounded="lg" variant="outlined">
+  <v-card class="mb-3 d-flex flex-column align-center justify-center pa-4 text-center" elevation="24" rounded="sm">
     <v-icon class="mb-2" color="success" icon="mdi-check-circle-outline" size="48" />
     <div class="text-body-1 text-medium-emphasis">
       All clear — no actions needed

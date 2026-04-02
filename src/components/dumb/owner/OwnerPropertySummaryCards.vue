@@ -1,11 +1,5 @@
 <template>
-  <v-card>
-    <v-card-title class="d-flex align-center">
-      <v-icon class="mr-2" size="20">mdi-home-group</v-icon>
-      Property Summary
-    </v-card-title>
-    <v-divider />
-    <v-card-text class="pa-3">
+  <DashboardCard icon="mdi-home-group" title="Property Summary">
       <div v-if="properties.length === 0" class="text-center text-medium-emphasis py-6">
         <v-icon class="mb-2" size="48">mdi-home-plus-outline</v-icon>
         <div class="text-body-2">No properties yet</div>
@@ -48,11 +42,12 @@
           </div>
         </div>
       </div>
-    </v-card-text>
-  </v-card>
+  </DashboardCard>
 </template>
 
 <script setup lang="ts">
+  import DashboardCard from '@/components/dumb/shared/DashboardCard.vue'
+
   interface PropertySummary {
     name: string
     color: string

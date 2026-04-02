@@ -42,7 +42,8 @@
       :items="filteredItems"
       :items-per-page="itemsPerPage"
       :loading="loading"
-      :show-expand="expandable"
+      :expand-on-click="expandable"
+      :row-props="rowProps"
     >
       <!-- Pass through all slots from parent -->
       <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
@@ -100,6 +101,7 @@
     searchKeys?: string[]
     itemsPerPage?: number
     elevation?: number | string
+    rowProps?: Record<string, unknown> | ((data: { item: Record<string, unknown>, index: number }) => Record<string, unknown>)
   }>(), {
     title: '',
     subtitle: '',
@@ -108,7 +110,8 @@
     expandable: false,
     searchKeys: () => [],
     itemsPerPage: 10,
-    elevation: 0,
+    elevation: 24,
+    rowProps: undefined,
   })
 
   const searchQuery = ref('')
@@ -136,7 +139,7 @@
 
 <style scoped>
 .materio-data-table {
-  border-radius: 8px;
+  border-radius: var(--claro-radius-md, 8px) !important;
   overflow: hidden;
 }
 

@@ -32,113 +32,18 @@
       <!-- Stats Cards -->
       <div class="stats-section">
         <v-container fluid>
-          <v-row>
-            <v-col
-              cols="6"
-              md="3"
-            >
-              <v-card class="stat-card">
-                <v-card-text class="pa-4">
-                  <div class="d-flex align-center">
-                    <v-icon
-                      class="me-3"
-                      color="primary"
-                      size="32"
-                    >
-                      mdi-account-group
-                    </v-icon>
-                    <div>
-                      <div class="text-h6 font-weight-bold">
-                        {{ totalUsers }}
-                      </div>
-                      <div class="text-caption text-medium-emphasis">
-                        Total Users
-                      </div>
-                    </div>
-                  </div>
-                </v-card-text>
-              </v-card>
+          <v-row density="compact">
+            <v-col cols="6" md="3">
+              <StatCard color="primary" icon="mdi-account-group" label="Total Users" :value="totalUsers" />
             </v-col>
-
-            <v-col
-              cols="6"
-              md="3"
-            >
-              <v-card class="stat-card">
-                <v-card-text class="pa-4">
-                  <div class="d-flex align-center">
-                    <v-icon
-                      class="me-3"
-                      color="success"
-                      size="32"
-                    >
-                      mdi-shield-account
-                    </v-icon>
-                    <div>
-                      <div class="text-h6 font-weight-bold">
-                        {{ adminCount }}
-                      </div>
-                      <div class="text-caption text-medium-emphasis">
-                        Admins
-                      </div>
-                    </div>
-                  </div>
-                </v-card-text>
-              </v-card>
+            <v-col cols="6" md="3">
+              <StatCard color="success" icon="mdi-shield-account" label="Admins" :value="adminCount" />
             </v-col>
-
-            <v-col
-              cols="6"
-              md="3"
-            >
-              <v-card class="stat-card">
-                <v-card-text class="pa-4">
-                  <div class="d-flex align-center">
-                    <v-icon
-                      class="me-3"
-                      color="info"
-                      size="32"
-                    >
-                      mdi-home-account
-                    </v-icon>
-                    <div>
-                      <div class="text-h6 font-weight-bold">
-                        {{ ownerCount }}
-                      </div>
-                      <div class="text-caption text-medium-emphasis">
-                        Property Owners
-                      </div>
-                    </div>
-                  </div>
-                </v-card-text>
-              </v-card>
+            <v-col cols="6" md="3">
+              <StatCard color="info" icon="mdi-home-account" label="Property Owners" :value="ownerCount" />
             </v-col>
-
-            <v-col
-              cols="6"
-              md="3"
-            >
-              <v-card class="stat-card">
-                <v-card-text class="pa-4">
-                  <div class="d-flex align-center">
-                    <v-icon
-                      class="me-3"
-                      color="warning"
-                      size="32"
-                    >
-                      mdi-broom
-                    </v-icon>
-                    <div>
-                      <div class="text-h6 font-weight-bold">
-                        {{ cleanerCount }}
-                      </div>
-                      <div class="text-caption text-medium-emphasis">
-                        Cleaners
-                      </div>
-                    </div>
-                  </div>
-                </v-card-text>
-              </v-card>
+            <v-col cols="6" md="3">
+              <StatCard color="warning" icon="mdi-broom" label="Cleaners" :value="cleanerCount" />
             </v-col>
           </v-row>
         </v-container>
@@ -365,6 +270,7 @@
   import type { User, UserFormData, UserRole } from '@/types/user'
   import { computed, onMounted, ref } from 'vue'
   import { useDisplay } from 'vuetify'
+  import StatCard from '@/components/dumb/shared/StatCard.vue'
   import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'

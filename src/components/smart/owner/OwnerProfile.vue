@@ -8,7 +8,7 @@
 
       <template v-else>
         <!-- Profile Header Card -->
-        <v-card class="mb-5 pa-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
+        <DashboardCard class="mb-5">
           <div class="d-flex align-center ga-4 flex-wrap">
             <v-avatar color="primary" size="80">
               <v-icon color="white" size="40">mdi-account</v-icon>
@@ -36,13 +36,12 @@
               Edit Profile
             </v-btn>
           </div>
-        </v-card>
+        </DashboardCard>
 
         <v-row>
           <!-- Info Card -->
           <v-col cols="12" md="8">
-            <v-card class="mb-5 pa-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
-              <h3 class="text-h6 font-weight-medium mb-4">Personal Information</h3>
+            <DashboardCard class="mb-5" title="Personal Information">
               <v-row density="comfortable">
                 <v-col cols="12" sm="6">
                   <div class="info-row">
@@ -81,11 +80,10 @@
                   </div>
                 </v-col>
               </v-row>
-            </v-card>
+            </DashboardCard>
 
             <!-- Account Settings Card -->
-            <v-card class="pa-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
-              <h3 class="text-h6 font-weight-medium mb-4">Account Settings</h3>
+            <DashboardCard title="Account Settings">
               <v-row density="comfortable">
                 <v-col cols="12" sm="6">
                   <div class="info-row">
@@ -100,14 +98,12 @@
                   </div>
                 </v-col>
               </v-row>
-            </v-card>
+            </DashboardCard>
           </v-col>
 
           <!-- Stats Card -->
           <v-col cols="12" md="4">
-            <v-card class="pa-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
-              <h3 class="text-h6 font-weight-medium mb-4">Account Stats</h3>
-
+            <DashboardCard title="Account Stats">
               <div class="stat-item d-flex align-center ga-3 mb-4">
                 <div class="stat-item__icon stat-item__icon--primary">
                   <v-icon color="primary" size="20">mdi-calendar-check</v-icon>
@@ -137,11 +133,10 @@
                   <div class="text-body-1 font-weight-medium">Verified</div>
                 </div>
               </div>
-            </v-card>
+            </DashboardCard>
 
             <!-- Actions Card -->
-            <v-card class="pa-5 mt-5" rounded="lg" :style="{ border: 'thin solid rgba(var(--v-theme-on-surface), 0.08)' }" variant="flat">
-              <h3 class="text-h6 font-weight-medium mb-4">Quick Actions</h3>
+            <DashboardCard class="mt-5" title="Quick Actions">
               <div class="d-flex flex-column ga-2">
                 <v-btn
                   block
@@ -171,7 +166,7 @@
                   Settings
                 </v-btn>
               </div>
-            </v-card>
+            </DashboardCard>
           </v-col>
         </v-row>
       </template>
@@ -182,6 +177,7 @@
 <script setup lang="ts">
   import { computed } from 'vue'
   import { useRouter } from 'vue-router'
+  import DashboardCard from '@/components/dumb/shared/DashboardCard.vue'
   import { useAuthStore } from '@/stores/auth'
 
   defineOptions({

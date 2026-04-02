@@ -18,7 +18,11 @@
       "Bash(bash:*)",
       "mcp__chrome-devtools__wait_for",
       "Bash(grep -rn \"next.*deprecated\\\\|next.*callback\\\\|deprecated.*next\" node_modules/vue-router/dist/*.js)",
-      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(v\\) for v in d.get\\('versions',[]\\)]\")"
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(v\\) for v in d.get\\('versions',[]\\)]\")",
+      "mcp__vuetify-mcp__get_component_api_by_version",
+      "Bash(xargs grep:*)",
+      "Bash(/c/Users/Soren/AppData/Local/Programs/Python/Python311/python.exe:*)",
+      "Bash(chmod +x /c/Users/Soren/bin/python3)"
     ]
   },
   "enableAllProjectMcpServers": true,

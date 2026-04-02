@@ -1,5 +1,6 @@
 /* Main CSS file */
 @use '../styles/responsive.scss';
+@import '../styles/tokens.css';
 
 
 /* Global Layout Resets */
@@ -12,14 +13,51 @@ html, body {
 
 }
 
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
 
 /* PWA viewport handling */
 @supports (height: 100dvh) {
   .v-application {
     min-height: 100dvh;
   }
-} 
+}
+
+/* ─── Subtle Micro Animations ─────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  /* Cards lift with purple shadow on hover.
+     Exclude data table rows and calendar cells — they're too dense. */
+  .v-card:not(.v-data-table .v-card):not(.v-calendar .v-card) {
+    transition-property: box-shadow, opacity, background, --v-elevation-overlay, transform;
+    transition-duration: 0.25s;
+    transition-timing-function: ease;
+
+    &:hover {
+      box-shadow: var(--claro-shadow-lg);
+      transform: translateY(-2px);
+    }
+  }
+
+  /* Buttons: press feel on active, opacity dim on text/icon variants hover */
+  .v-btn {
+    transition-property: box-shadow, transform, opacity, background;
+    transition-duration: 0.15s;
+    transition-timing-function: ease;
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  /* List items: smooth highlight fade instead of snap */
+  .v-list-item {
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  /* Chips: tiny lift */
+  .v-chip {
+    transition: transform 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+}

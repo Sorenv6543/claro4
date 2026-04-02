@@ -134,7 +134,7 @@
 
 <style scoped>
 .welcome-banner {
-  background: linear-gradient(135deg, rgb(var(--v-theme-surface)) 0%, rgba(25, 118, 210, 0.04) 100%);
+  background: linear-gradient(135deg, rgb(var(--v-theme-surface)) 0%, rgba(var(--v-theme-primary), 0.04) 100%);
 }
 
 .stat-pill {
@@ -148,18 +148,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
 .stat-icon--blue {
-  background: rgba(25, 118, 210, 0.12);
+  background: rgba(var(--v-theme-primary), 0.12);
 }
 
 .stat-icon--green {
-  background: rgba(76, 175, 80, 0.12);
+  background: rgba(var(--v-theme-success), 0.12);
 }
 
 .stat-icon--orange {
-  background: rgba(255, 152, 0, 0.12);
+  background: rgba(var(--v-theme-warning), 0.12);
 }
 
 .donut-wrapper {

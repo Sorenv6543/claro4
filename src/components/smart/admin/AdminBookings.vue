@@ -99,11 +99,11 @@
 
     <!-- Bookings Data Table -->
     <MaterioDataTable
-      expandable
       :headers="tableHeaders"
       :items="tableItems"
       :items-per-page="25"
       :loading="false"
+      :row-props="bookingRowProps"
       :search-keys="['propertyName', 'ownerName', 'cleanerName', 'status', 'booking_type']"
       searchable
     >
@@ -114,11 +114,11 @@
             class="property-color-dot"
             :style="{ background: getPropertyColor(item.property_id as string) }"
           />
-          <div>
-            <div class="text-body-2 font-weight-medium">
+          <div style="min-width:0">
+            <div class="text-body-2 font-weight-medium text-truncate">
               {{ item.propertyName }}
             </div>
-            <div class="text-caption text-medium-emphasis">
+            <div class="text-caption text-medium-emphasis text-truncate">
               {{ item.ownerName }}
             </div>
           </div>
@@ -127,7 +127,7 @@
 
       <!-- Dates Column -->
       <template #[`item.dates`]="{ item }">
-        <div class="text-body-2">
+        <div class="text-body-2 text-no-wrap">
           <div>{{ formatDate(item.checkin_date as string) }}</div>
           <div class="text-caption text-medium-emphasis">
             &rarr; {{ formatDate(item.checkout_date as string) }}
@@ -152,7 +152,7 @@
         <v-chip
           class="text-capitalize"
           :color="getStatusColor(item.status as string)"
-          size="small"
+          :size="mobile ? 'x-small' : 'small'"
           variant="flat"
         >
           {{ (item.status as string).replace('_', ' ') }}
@@ -222,83 +222,20 @@
         </div>
       </template>
 
-      <!-- Expanded Row -->
-      <template #expand-content="{ item }">
-        <v-row class="pa-2" density="comfortable">
-          <v-col cols="12" sm="4">
-            <div class="text-caption text-uppercase text-medium-emphasis mb-1">Guest Info</div>
-            <div class="text-body-2">
-              <v-icon class="mr-1" size="14">mdi-account-group</v-icon>
-              {{ item.guest_count || 'N/A' }} guests
-            </div>
-            <div v-if="item.notes" class="text-body-2 mt-1">
-              <v-icon class="mr-1" size="14">mdi-note-text</v-icon>
-              {{ item.notes }}
-            </div>
-          </v-col>
-          <v-col cols="12" sm="4">
-            <div class="text-caption text-uppercase text-medium-emphasis mb-1">Property Details</div>
-            <div class="text-body-2">
-              <v-icon class="mr-1" size="14">mdi-map-marker</v-icon>
-              {{ getPropertyAddress(item.property_id as string) }}
-            </div>
-            <div class="text-body-2 mt-1">
-              <v-icon class="mr-1" size="14">mdi-account</v-icon>
-              Owner: {{ item.ownerName }}
-            </div>
-          </v-col>
-          <v-col cols="12" sm="4">
-            <div class="text-caption text-uppercase text-medium-emphasis mb-1">Timestamps</div>
-            <div class="text-body-2">
-              Created: {{ formatDateTime(item.created_at as string) }}
-            </div>
-            <div v-if="item.updated_at" class="text-body-2 mt-1">
-              Modified: {{ formatDateTime(item.updated_at as string) }}
-            </div>
-          </v-col>
-        </v-row>
-      </template>
     </MaterioDataTable>
 
     <!-- Create/Edit Booking Dialog -->
-    <v-dialog
+    <AdminBookingForm
       v-model="showBookingDialog"
-      max-width="600px"
-    >
-      <v-card>
-        <v-card-title>
-          {{ editingBooking ? 'Edit Booking' : 'Create New Booking' }}
-        </v-card-title>
-        <v-card-text>
-          <p class="text-body-2 text-medium-emphasis mb-4">
-            Admin booking form would be implemented here with full property and cleaner selection
-          </p>
-          <div class="text-center py-4">
-            <v-icon
-              color="grey-lighten-1"
-              size="48"
-            >
-              mdi-form-select
-            </v-icon>
-            <p class="text-caption text-medium-emphasis mt-2">
-              Integration with AdminBookingForm component needed
-            </p>
-          </div>
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="closeBookingDialog">
-            Cancel
-          </v-btn>
-          <v-btn
-            color="primary"
-            @click="saveBooking"
-          >
-            {{ editingBooking ? 'Update' : 'Create' }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+      :booking="editingBooking"
+      :cleaners="availableCleaners"
+      :loading="bookingFormLoading"
+      :mode="editingBooking ? 'edit' : 'create'"
+      :properties="allProperties"
+      @delete="handleDeleteBooking"
+      @mark-complete="handleMarkComplete"
+      @submit="handleSubmitBooking"
+    />
 
     <!-- Cleaner Assignment Dialog -->
     <v-dialog
@@ -344,19 +281,22 @@
 </template>
 
 <script setup lang="ts">
-  import type { Booking } from '@/types/booking'
-  import { computed, onMounted, ref } from 'vue'
-  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
-  import { useAdminBookings } from '@/composables/admin/useAdminBookings'
-  import { useAdminProperties } from '@/composables/admin/useAdminProperties'
-  import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
-  import { useUIStore } from '@/stores/ui'
-  import { formatPropertyAddress } from '@/types/property'
-  import { getBookingStatusColor } from '@/utils/constants'
+  import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
+import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+import { useAdminBookings } from '@/composables/admin/useAdminBookings'
+import { useAdminProperties } from '@/composables/admin/useAdminProperties'
+import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
+import { useUIStore } from '@/stores/ui'
+import type { Booking, BookingFormData } from '@/types/booking'
+import { formatPropertyAddress } from '@/types/property'
+import { getBookingStatusColor } from '@/utils/cal'
+import { computed, onMounted, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
   // Composables
-  const { allBookings, updateBooking, fetchAllBookings } = useAdminBookings()
+  const { mobile } = useDisplay()
+  const { allBookings, updateBooking, createBooking, deleteBooking, fetchAllBookings } = useAdminBookings()
   const { allProperties, fetchAllProperties } = useAdminProperties()
   const { availableCleaners, fetchCleaners } = useCleanerManagement()
   const uiStore = useUIStore()
@@ -388,6 +328,7 @@
   const showBookingDialog = ref(false)
   const showCleanerDialog = ref(false)
   const editingBooking = ref<Booking | null>(null)
+  const bookingFormLoading = ref(false)
   const selectedBookingForCleaner = ref<Booking | null>(null)
   const selectedCleaner = ref('')
 
@@ -409,16 +350,33 @@
     { title: 'Turn', value: 'turn' },
   ]
 
-  // Table headers for MaterioDataTable
-  const tableHeaders = [
-    { title: 'Property', key: 'propertyName', sortable: true },
-    { title: 'Dates', key: 'dates', sortable: false, width: '160px' },
-    { title: 'Type', key: 'booking_type', sortable: true, width: '110px' },
-    { title: 'Status', key: 'status', sortable: true, width: '120px' },
-    { title: 'Priority', key: 'priority', sortable: true, width: '100px' },
-    { title: 'Cleaner', key: 'cleanerName', sortable: true, width: '140px' },
-    { title: 'Actions', key: 'actions', sortable: false, width: '130px', align: 'end' as const },
-  ]
+  // Table headers
+  const tableHeaders = computed(() => {
+    if (mobile.value) {
+      return [
+        { title: 'Property', key: 'propertyName', sortable: true, width: '45%' },
+        { title: 'Status', key: 'status', sortable: true, width: '30%' },
+        { title: '', key: 'actions', sortable: false, width: '25%', align: 'end' as const },
+      ]
+    }
+    return [
+      { title: 'Property', key: 'propertyName', sortable: true },
+      { title: 'Dates', key: 'dates', sortable: false, width: '160px' },
+      { title: 'Type', key: 'booking_type', sortable: true, width: '110px' },
+      { title: 'Status', key: 'status', sortable: true, width: '120px' },
+      { title: 'Priority', key: 'priority', sortable: true, width: '100px' },
+      { title: 'Cleaner', key: 'cleanerName', sortable: true, width: '140px' },
+      { title: '', key: 'actions', sortable: false, width: '130px', align: 'end' as const },
+    ]
+  })
+
+  // Row props: clicking a row opens the edit dialog (action buttons use @click.stop to override)
+  function bookingRowProps ({ item }: { item: Record<string, unknown> }) {
+    return {
+      onClick: () => editBooking(item as unknown as Booking),
+      style: 'cursor: pointer',
+    }
+  }
 
   // Computed properties
   const propertyOptions = computed(() => {
@@ -533,10 +491,12 @@
   }
 
   function formatDate (dateString: string): string {
-    const date = new Date(dateString)
+    const date = new Date(dateString + 'T00:00:00')
+    if (mobile.value) {
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+    }
     return date.toLocaleDateString('en-US', {
       weekday: 'short',
-      year: 'numeric',
       month: 'short',
       day: 'numeric',
     })
@@ -568,9 +528,48 @@
     editingBooking.value = null
   }
 
-  function saveBooking () {
-    console.log('Saving booking...')
-    closeBookingDialog()
+  async function handleSubmitBooking (data: BookingFormData) {
+    bookingFormLoading.value = true
+    try {
+      if (editingBooking.value) {
+        await updateBooking(editingBooking.value.id, data)
+        uiStore.addNotification('success', 'Updated', 'Booking updated successfully')
+      } else {
+        await createBooking(data)
+        uiStore.addNotification('success', 'Created', 'Booking created successfully')
+      }
+      closeBookingDialog()
+    } catch (error) {
+      uiStore.addNotification('error', 'Error', error instanceof Error ? error.message : 'Failed to save booking')
+    } finally {
+      bookingFormLoading.value = false
+    }
+  }
+
+  async function handleDeleteBooking (id: string) {
+    bookingFormLoading.value = true
+    try {
+      await deleteBooking(id)
+      uiStore.addNotification('success', 'Deleted', 'Booking deleted successfully')
+      closeBookingDialog()
+    } catch (error) {
+      uiStore.addNotification('error', 'Error', error instanceof Error ? error.message : 'Failed to delete booking')
+    } finally {
+      bookingFormLoading.value = false
+    }
+  }
+
+  async function handleMarkComplete (id: string) {
+    bookingFormLoading.value = true
+    try {
+      await updateBooking(id, { status: 'completed' })
+      uiStore.addNotification('success', 'Completed', 'Booking marked as complete')
+      closeBookingDialog()
+    } catch (error) {
+      uiStore.addNotification('error', 'Error', error instanceof Error ? error.message : 'Failed to update booking')
+    } finally {
+      bookingFormLoading.value = false
+    }
   }
 
   // Cleaner assignment methods
@@ -633,5 +632,18 @@
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+}
+
+/* Force fixed-layout table so percentage column widths are respected on mobile */
+@media (max-width: 599px) {
+  :deep(.v-table table) {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  :deep(.v-table td),
+  :deep(.v-table th) {
+    overflow: hidden;
+  }
 }
 </style>

@@ -109,6 +109,9 @@
     "deny": [
       "Bash(rm -rf:*)",
       "Bash(rm -r /:*)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\Soren\\.claude\\projects\\C--Users-Soren-claro4\\memory"
     ]
   },
   "enabledMcpjsonServers": [
