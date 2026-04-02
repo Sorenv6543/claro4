@@ -19,4 +19,41 @@ html, body {
   .v-application {
     min-height: 100dvh;
   }
-} 
+}
+
+/* ─── Subtle Micro Animations ─────────────────────────────────────── */
+@media (prefers-reduced-motion: no-preference) {
+  /* Cards lift with purple shadow on hover.
+     Exclude data table rows and calendar cells — they're too dense. */
+  .v-card:not(.v-data-table .v-card):not(.v-calendar .v-card) {
+    transition: box-shadow 0.25s ease, transform 0.2s ease;
+
+    &:hover {
+      box-shadow: var(--claro-shadow-lg);
+      transform: translateY(-2px);
+    }
+  }
+
+  /* Buttons: press feel on active, opacity dim on text/icon variants hover */
+  .v-btn {
+    transition: opacity 0.15s ease, transform 0.15s ease;
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  /* List items: smooth highlight fade instead of snap */
+  .v-list-item {
+    transition: background-color 0.2s ease, color 0.2s ease;
+  }
+
+  /* Chips: tiny lift */
+  .v-chip {
+    transition: transform 0.15s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+    }
+  }
+}
