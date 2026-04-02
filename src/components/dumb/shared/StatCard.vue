@@ -1,5 +1,5 @@
 <template>
-  <v-card class="stat-card" flat>
+  <v-card class="stat-card" elevation="24">
     <div class="stat-card__body">
       <div class="stat-card__info">
         <span class="stat-card__value">{{ value }}</span>
@@ -22,7 +22,7 @@
         :style="iconCircleStyle"
       >
         <v-icon
-          color="white"
+          :color="color"
           :icon="icon"
           size="24"
         />
@@ -50,16 +50,15 @@
   })
 
   const iconCircleStyle = computed(() => ({
-    backgroundColor: props.color ?? 'var(--claro-primary, rgb(var(--v-theme-primary)))',
+    backgroundColor: `rgba(var(--v-theme-${props.color ?? 'primary'}), 0.12)`,
   }))
 </script>
 
 <style scoped>
 .stat-card {
   background: var(--claro-card-bg, rgb(var(--v-theme-surface))) !important;
-  border-radius: var(--claro-radius-lg, 12px) !important;
-  box-shadow: var(--claro-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.08)) !important;
-  padding: var(--claro-space-md, 20px);
+  border-radius: var(--claro-radius-md, 8px) !important;
+  padding: var(--claro-space-lg, 24px);
 }
 
 .stat-card__body {

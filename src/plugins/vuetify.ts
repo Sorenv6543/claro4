@@ -68,8 +68,8 @@ export default createVuetify({
       elevation: 1,
     },
     VCard: {
-      elevation: 2,
-      rounded: 'lg',
+      elevation: 24,
+      rounded: 'sm',
       class: 'pa-2',
     },
     VChip: {

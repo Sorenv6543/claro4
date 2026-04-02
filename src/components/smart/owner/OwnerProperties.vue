@@ -21,51 +21,39 @@
         </v-btn>
       </div>
 
-      <!-- Stat Pills Row -->
+      <!-- Stat Cards Row -->
       <v-row class="mb-5" density="compact">
         <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--primary">
-              <v-icon color="primary" size="24">mdi-home-city</v-icon>
-            </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">Total Properties</div>
-              <div class="text-h5 font-weight-bold text-primary">{{ myProperties.length }}</div>
-            </div>
-          </div>
+          <StatCard
+            color="primary"
+            icon="mdi-home-city"
+            label="Total Properties"
+            :value="myProperties.length"
+          />
         </v-col>
         <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--success">
-              <v-icon color="success" size="24">mdi-check-circle</v-icon>
-            </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">Active</div>
-              <div class="text-h5 font-weight-bold text-success">{{ myActiveProperties.length }}</div>
-            </div>
-          </div>
+          <StatCard
+            color="success"
+            icon="mdi-check-circle"
+            label="Active"
+            :value="myActiveProperties.length"
+          />
         </v-col>
         <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--info">
-              <v-icon color="info" size="24">mdi-calendar-multiple</v-icon>
-            </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">Total Bookings</div>
-              <div class="text-h5 font-weight-bold text-info">{{ myBookings.length }}</div>
-            </div>
-          </div>
+          <StatCard
+            color="info"
+            icon="mdi-calendar-multiple"
+            label="Total Bookings"
+            :value="myBookings.length"
+          />
         </v-col>
         <v-col cols="6" sm="3">
-          <div class="stat-pill d-flex align-center ga-3 pa-4">
-            <div class="stat-pill__icon stat-pill__icon--warning">
-              <v-icon color="warning" size="24">mdi-swap-horizontal</v-icon>
-            </div>
-            <div>
-              <div class="text-caption text-medium-emphasis">Today's Turns</div>
-              <div class="text-h5 font-weight-bold text-warning">{{ myTodayTurns.length }}</div>
-            </div>
-          </div>
+          <StatCard
+            color="warning"
+            icon="mdi-swap-horizontal"
+            label="Today's Turns"
+            :value="myTodayTurns.length"
+          />
         </v-col>
       </v-row>
 
@@ -234,6 +222,7 @@
 <script setup lang="ts">
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
 import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+import StatCard from '@/components/dumb/shared/StatCard.vue'
 import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
 import type { Property, PropertyFormData, PropertyRecord } from '@/types'
 import { computed, onMounted } from 'vue'
@@ -516,38 +505,6 @@ import { formatPropertyAddress } from '@/types/property'
   min-height: calc(100vh - var(--app-bar-height, 64px));
 }
 
-/* Stat Pills - Materio Academy Style */
-.stat-pill {
-  background: rgb(var(--v-theme-surface));
-  border-radius: 8px;
-  border: thin solid rgba(var(--v-theme-on-surface), 0.08);
-}
-
-.stat-pill__icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.stat-pill__icon--primary {
-  background: rgba(var(--v-theme-primary), 0.12);
-}
-
-.stat-pill__icon--success {
-  background: rgba(var(--v-theme-success), 0.12);
-}
-
-.stat-pill__icon--info {
-  background: rgba(var(--v-theme-info), 0.12);
-}
-
-.stat-pill__icon--warning {
-  background: rgba(var(--v-theme-warning), 0.12);
-}
 
 /* Property color dot */
 .property-color-dot {

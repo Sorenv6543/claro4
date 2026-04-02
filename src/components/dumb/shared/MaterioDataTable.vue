@@ -108,7 +108,7 @@
     expandable: false,
     searchKeys: () => [],
     itemsPerPage: 10,
-    elevation: 0,
+    elevation: 24,
   })
 
   const searchQuery = ref('')
@@ -136,7 +136,7 @@
 
 <style scoped>
 .materio-data-table {
-  border-radius: 8px;
+  border-radius: var(--claro-radius-md, 8px) !important;
   overflow: hidden;
 }
 
