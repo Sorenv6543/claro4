@@ -2,7 +2,7 @@ import { mount } from '@vue/test-utils'
 import { describe, expect, it } from 'vitest'
 import { createVuetify } from 'vuetify'
 import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
-import { PROPERTY_COLORS } from '@/utils/constants'
+import { PROPERTY_COLORS } from '@/utils/cal'
 
 const vuetify = createVuetify()
 
