@@ -1,11 +1,5 @@
 <template>
-  <v-card>
-    <v-card-title class="d-flex align-center">
-      <v-icon class="mr-2" size="20">mdi-history</v-icon>
-      Recent Activity
-    </v-card-title>
-    <v-divider />
-    <v-card-text class="pa-3">
+  <DashboardCard icon="mdi-history" title="Recent Activity">
       <div v-if="activities.length === 0" class="text-center text-medium-emphasis py-6">
         <v-icon class="mb-2" size="48">mdi-clock-outline</v-icon>
         <div class="text-body-2">No recent activity</div>
@@ -27,11 +21,12 @@
           </div>
         </v-timeline-item>
       </v-timeline>
-    </v-card-text>
-  </v-card>
+  </DashboardCard>
 </template>
 
 <script setup lang="ts">
+  import DashboardCard from '@/components/dumb/shared/DashboardCard.vue'
+
   interface ActivityItem {
     type: 'created' | 'modified' | 'cancelled'
     description: string

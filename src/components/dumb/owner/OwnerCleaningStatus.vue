@@ -1,11 +1,5 @@
 <template>
-  <v-card>
-    <v-card-title class="d-flex align-center">
-      <v-icon class="mr-2" size="20">mdi-broom</v-icon>
-      Cleaning Status
-    </v-card-title>
-    <v-divider />
-    <v-card-text class="pa-0">
+  <DashboardCard icon="mdi-broom" title="Cleaning Status">
       <div v-if="cleanings.length === 0" class="text-center text-medium-emphasis py-6">
         <v-icon class="mb-2" size="48">mdi-check-circle-outline</v-icon>
         <div class="text-body-2">No upcoming cleanings this week</div>
@@ -51,11 +45,11 @@
           </tr>
         </tbody>
       </v-table>
-    </v-card-text>
-  </v-card>
+  </DashboardCard>
 </template>
 
 <script setup lang="ts">
+  import DashboardCard from '@/components/dumb/shared/DashboardCard.vue'
   import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/constants'
 
   interface CleaningInfo {
@@ -85,5 +79,9 @@
   width: 10px;
   height: 10px;
   border-radius: 50%;
+}
+
+:deep(.dashboard-card__content) {
+  padding: 0 !important;
 }
 </style>

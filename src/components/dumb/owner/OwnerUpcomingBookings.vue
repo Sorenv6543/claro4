@@ -1,11 +1,5 @@
 <template>
-  <v-card>
-    <v-card-title class="d-flex align-center">
-      <v-icon class="mr-2" size="20">mdi-calendar-clock</v-icon>
-      Upcoming Bookings
-    </v-card-title>
-    <v-divider />
-    <v-card-text class="pa-0">
+  <DashboardCard icon="mdi-calendar-clock" title="Upcoming Bookings">
       <div v-if="bookings.length === 0" class="text-center text-medium-emphasis py-6">
         <v-icon class="mb-2" size="48">mdi-calendar-blank-outline</v-icon>
         <div class="text-body-2">No upcoming bookings</div>
@@ -57,9 +51,7 @@
           </v-list-item>
         </template>
       </v-list>
-    </v-card-text>
-    <v-divider />
-    <v-card-actions>
+    <template #actions>
       <v-btn
         block
         color="primary"
@@ -70,12 +62,13 @@
         <v-icon class="mr-1" size="16">mdi-calendar</v-icon>
         View Calendar
       </v-btn>
-    </v-card-actions>
-  </v-card>
+    </template>
+  </DashboardCard>
 </template>
 
 <script setup lang="ts">
   import type { BookingStatus, BookingType } from '@/types'
+  import DashboardCard from '@/components/dumb/shared/DashboardCard.vue'
   import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/constants'
 
   interface UpcomingBooking {
@@ -117,5 +110,9 @@
   width: 48px;
   height: 48px;
   min-width: 48px;
+}
+
+:deep(.dashboard-card__content) {
+  padding: 0 !important;
 }
 </style>

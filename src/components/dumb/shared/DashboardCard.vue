@@ -65,8 +65,8 @@
 <style scoped>
 .dashboard-card {
   background: var(--claro-card-bg, rgb(var(--v-theme-surface))) !important;
-  border-radius: var(--claro-radius-lg, 12px) !important;
-  box-shadow: var(--claro-shadow-sm, 0 2px 8px rgba(0, 0, 0, 0.08)) !important;
+  border-radius: var(--claro-radius-md, 8px) !important;
+  box-shadow: var(--claro-shadow-md, 0 2px 10px rgba(0, 0, 0, 0.05)) !important;
   padding: var(--claro-card-padding, 0);
 }
 
@@ -83,14 +83,14 @@
   flex-direction: row;
   align-items: center;
   font-weight: var(--claro-font-weight-semibold, 600);
-  padding: var(--claro-space-md, 16px) var(--claro-space-md, 16px) var(--claro-space-sm, 8px);
+  padding: var(--claro-space-lg, 24px) var(--claro-space-lg, 24px) var(--claro-space-sm, 8px);
 }
 
 .dashboard-card__content {
-  padding: var(--claro-space-md, 16px) !important;
+  padding: var(--claro-space-lg, 24px) !important;
 }
 
 .dashboard-card__actions {
-  padding: var(--claro-space-sm, 8px) var(--claro-space-md, 16px) !important;
+  padding: var(--claro-space-sm, 8px) var(--claro-space-lg, 24px) !important;
 }
 </style>

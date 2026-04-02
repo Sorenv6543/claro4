@@ -19,24 +19,25 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 
 // default light theme
+// Color values must stay in sync with src/styles/tokens.css (canonical source).
 const lightTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    'primary': '#1976D2',
-    'secondary': '#5C6BC0',
-    'accent': '#82B1FF',
-    'error': '#FF5252',
-    'info': '#2196F3',
-    'success': '#4CAF50',
-    'warning': '#FFC107',
-    'background': '#cbd0d6',
+    'primary': '#7367F0',
+    'secondary': '#A8AAAE',
+    'accent': '#9E95F5',
+    'error': '#EA5455',
+    'info': '#00CFE8',
+    'success': '#28C76F',
+    'warning': '#FF9F43',
+    'background': '#f1f1f1',
     'surface': '#FFFFFF',
-    'surface-variant': '#E8EAF6',
-    'turn-urgent': '#F44336',
-    'turn-standard': '#FF9800',
-    'booking-standard': '#4CAF50',
-    'on-background': '#1C1B1F',
-    'on-surface': '#1C1B1F',
+    'surface-variant': '#F5F5F9',
+    'turn-urgent': '#EA5455',
+    'turn-standard': '#FF9F43',
+    'booking-standard': '#28C76F',
+    'on-background': '#2E263D',
+    'on-surface': '#2E263D',
   },
 }
 

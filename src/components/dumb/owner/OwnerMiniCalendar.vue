@@ -1,11 +1,5 @@
 <template>
-  <v-card>
-    <v-card-title class="d-flex align-center">
-      <v-icon class="mr-2" size="20">mdi-calendar-month</v-icon>
-      {{ monthLabel }}
-    </v-card-title>
-    <v-divider />
-    <v-card-text class="pa-3">
+  <DashboardCard icon="mdi-calendar-month" :title="monthLabel">
       <!-- Day-of-week headers -->
       <div class="calendar-grid mb-1">
         <div
@@ -43,12 +37,13 @@
           </div>
         </div>
       </div>
-    </v-card-text>
-  </v-card>
+  </DashboardCard>
 </template>
 
 <script setup lang="ts">
   import { computed } from 'vue'
+  import DashboardCard from '@/components/dumb/shared/DashboardCard.vue'
+
 
   interface BookingDate {
     date: string
@@ -127,8 +122,8 @@
 }
 
 .today-cell {
-  background: rgba(25, 118, 210, 0.1);
-  border: 1px solid rgba(25, 118, 210, 0.3);
+  background: rgba(var(--v-theme-primary), 0.1);
+  border: 1px solid rgba(var(--v-theme-primary), 0.3);
 }
 
 .dot-row {
