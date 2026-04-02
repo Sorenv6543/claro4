@@ -16,7 +16,7 @@
           :active="isActive(item.to)"
           color="primary"
           :disabled="item.disabled"
-          :prepend-icon="item.icon"
+          :prepend-icon="isActive(item.to) ? item.filledIcon : item.icon"
           rounded="lg"
           :title="item.label"
           :to="item.disabled ? undefined : item.to"
@@ -60,7 +60,7 @@
         :key="item.label"
         :active="isActive(item.to)"
         color="primary"
-        :prepend-icon="item.icon"
+        :prepend-icon="isActive(item.to) ? item.filledIcon : item.icon"
         rounded="lg"
         :title="item.label"
         :to="item.to"
@@ -115,15 +115,47 @@ import { useDisplay } from 'vuetify'
 
   // ── Nav items ──────────────────────────────────────────────────
   const navItems = [
-    { label: 'Overview', icon: 'mdi-view-dashboard-outline', to: '/owner/overview' },
-    { label: 'Schedule', icon: 'mdi-calendar-month-outline', to: '/owner/dashboard' },
-    { label: 'Check-ins & Turns', icon: 'mdi-clipboard-check-outline', to: '/owner/checkins', disabled: true, soon: true },
-    { label: 'Bookings', icon: 'mdi-format-list-bulleted', to: '/owner/bookings' },
-    { label: 'Properties', icon: 'mdi-home-outline', to: '/owner/properties' },
+    {
+      label: 'Overview',
+      icon: 'mdi-view-dashboard-outline',
+      filledIcon: 'mdi-view-dashboard',
+      to: '/owner/overview',
+    },
+    {
+      label: 'Schedule',
+      icon: 'mdi-calendar-month-outline',
+      filledIcon: 'mdi-calendar-month',
+      to: '/owner/dashboard',
+    },
+    {
+      label: 'Check-ins & Turns',
+      icon: 'mdi-clipboard-check-outline',
+      filledIcon: 'mdi-clipboard-check',
+      to: '/owner/checkins',
+      disabled: true,
+      soon: true,
+    },
+    {
+      label: 'Bookings',
+      icon: 'mdi-format-list-bulleted',
+      filledIcon: 'mdi-format-list-bulleted',
+      to: '/owner/bookings',
+    },
+    {
+      label: 'Properties',
+      icon: 'mdi-home-outline',
+      filledIcon: 'mdi-home',
+      to: '/owner/properties',
+    },
   ]
 
   const accountItems = [
-    { label: 'Settings', icon: 'mdi-cog-outline', to: '/owner/settings' },
+    {
+      label: 'Settings',
+      icon: 'mdi-cog-outline',
+      filledIcon: 'mdi-cog',
+      to: '/owner/settings',
+    },
   ]
 
   // ── Active state ───────────────────────────────────────────────
