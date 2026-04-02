@@ -13,7 +13,7 @@
         <div class="d-flex flex-wrap ga-4">
           <!-- Properties pill -->
           <div class="stat-pill d-flex align-center ga-3">
-            <div class="stat-icon-wrap" style="background: rgba(25, 118, 210, 0.12)">
+            <div class="stat-icon-wrap stat-icon-wrap--primary">
               <v-icon color="primary" size="24">mdi-home-outline</v-icon>
             </div>
             <div>
@@ -24,7 +24,7 @@
 
           <!-- Bookings pill -->
           <div class="stat-pill d-flex align-center ga-3">
-            <div class="stat-icon-wrap" style="background: rgba(76, 175, 80, 0.12)">
+            <div class="stat-icon-wrap stat-icon-wrap--success">
               <v-icon color="success" size="24">mdi-calendar-check</v-icon>
             </div>
             <div>
@@ -35,7 +35,7 @@
 
           <!-- Turns pill -->
           <div class="stat-pill d-flex align-center ga-3">
-            <div class="stat-icon-wrap" style="background: rgba(255, 152, 0, 0.12)">
+            <div class="stat-icon-wrap stat-icon-wrap--warning">
               <v-icon color="warning" size="24">mdi-swap-horizontal</v-icon>
             </div>
             <div>
@@ -98,7 +98,7 @@
 
 <style scoped>
 .welcome-banner {
-  background: linear-gradient(135deg, rgb(var(--v-theme-surface)) 0%, rgba(25, 118, 210, 0.04) 100%);
+  background: linear-gradient(135deg, rgb(var(--v-theme-surface)) 0%, rgba(var(--v-theme-primary), 0.04) 100%);
 }
 
 .stat-icon-wrap {
@@ -108,6 +108,19 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+}
+
+.stat-icon-wrap--primary {
+  background: rgba(var(--v-theme-primary), 0.12);
+}
+
+.stat-icon-wrap--success {
+  background: rgba(var(--v-theme-success), 0.12);
+}
+
+.stat-icon-wrap--warning {
+  background: rgba(var(--v-theme-warning), 0.12);
 }
 
 .stat-pill {

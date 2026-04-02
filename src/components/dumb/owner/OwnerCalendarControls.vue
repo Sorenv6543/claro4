@@ -225,8 +225,8 @@
     view: 'dayGridMonth',
     properties: () => [],
     loading: false,
-    elevation: 1,
-    variant: 'outlined',
+    elevation: 24,
+    variant: 'elevated',
   })
 
   // Emits
