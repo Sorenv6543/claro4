@@ -14761,7 +14761,7 @@
           "id": "5UNpR",
           "name": "tabRow",
           "width": "fill_container",
-          "height": 24.802336903602725,
+          "height": 57.36775404986593,
           "gap": 8,
           "children": [
             {
@@ -14879,7 +14879,7 @@
           "id": "X9BEX",
           "name": "acctCard",
           "width": "fill_container",
-          "height": 679,
+          "height": 1570.52559810204,
           "fill": "#FFFFFF",
           "cornerRadius": 8,
           "effect": {

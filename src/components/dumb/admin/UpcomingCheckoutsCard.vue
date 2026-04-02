@@ -66,7 +66,7 @@
 </template>
 
 <script setup lang="ts">
-  import { getBookingStatusColor as statusColor } from '@/utils/constants'
+  import { getBookingStatusColor as statusColor } from '@/utils/cal';
 
   defineProps<{
     checkouts: Array<{ property: string, date: string, status: string }>

@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
   import DashboardCard from '@/components/dumb/shared/DashboardCard.vue'
-  import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/constants'
+import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/cal'
 
   interface CleaningInfo {
     property: string

@@ -493,13 +493,13 @@
 </template>
 
 <script setup lang="ts">
-  import type { VForm } from 'vuetify/components'
-  import type { PricingTier, Property, PropertyFormData } from '@/types'
-  import { computed, onMounted, reactive, ref, watch } from 'vue'
   import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
-  import MaterioFormWizard from '@/components/dumb/shared/MaterioFormWizard.vue'
-  import { useAuthStore } from '@/stores/auth'
-  import { PROPERTY_COLORS } from '@/utils/constants'
+import MaterioFormWizard from '@/components/dumb/shared/MaterioFormWizard.vue'
+import { useAuthStore } from '@/stores/auth'
+import type { PricingTier, Property, PropertyFormData } from '@/types'
+import { PROPERTY_COLORS } from '@/utils/cal'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import type { VForm } from 'vuetify/components'
 
   // PROPS & EMITS
   interface Props {

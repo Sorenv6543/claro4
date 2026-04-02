@@ -618,7 +618,8 @@
   const dateRules = [
     (v: string) => !!v || 'Date is required',
     (v: string) => {
-      if (!v) return true
+      // Allow any date when editing an existing booking
+      if (!v || props.mode === 'edit') return true
 
       // Parse date as local date to avoid timezone issues
       const [year, month, day] = v.split('-').map(Number)
@@ -793,8 +794,8 @@
         property_id: newBooking.property_id,
         checkin_date: formatDateForInput(newBooking.checkin_date),
         checkout_date: formatDateForInput(newBooking.checkout_date),
-        checkin_time: newBooking.checkin_time || '15:00',
-        checkout_time: newBooking.checkout_time || '11:00',
+        checkin_time: (newBooking.checkin_time || '15:00').slice(0, 5),
+        checkout_time: (newBooking.checkout_time || '11:00').slice(0, 5),
         booking_type: newBooking.booking_type,
         guest_count: newBooking.guest_count,
         notes: newBooking.notes || '',
@@ -807,9 +808,13 @@
     }
   }, { immediate: true })
 
-  // Watch for modal close
+  // Watch for modal open/close
   watch(isOpen, newValue => {
-    if (!newValue) {
+    if (newValue && props.mode === 'edit') {
+      // Vuetify 4 doesn't auto-validate on mount — run it so formValid is true
+      // when the admin opens an existing booking and hasn't changed any fields.
+      nextTick(() => formRef.value?.validate())
+    } else if (!newValue) {
       nextTick(() => {
         form.value = { ...defaultForm }
         formRef.value?.resetValidation()

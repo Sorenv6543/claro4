@@ -182,6 +182,7 @@
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
   import { useCalendarState } from '@/composables/shared/useCalendarState'
   import { useUIStore } from '@/stores/ui'
+  import { subtractOneDay } from '@/utils/calendarHelpers'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when the schedule route is visited.
@@ -366,8 +367,8 @@
 
     try {
       await updateBooking(booking.id, {
-        checkout_date: dropInfo.event.startStr,
-        checkin_date: dropInfo.event.endStr || dropInfo.event.startStr,
+        checkin_date: dropInfo.event.startStr,
+        checkout_date: subtractOneDay(dropInfo.event.endStr || dropInfo.event.startStr),
       })
     } catch (error) {
       console.error('Failed to update booking:', error)
@@ -381,8 +382,8 @@
 
     try {
       await updateBooking(booking.id, {
-        checkout_date: resizeInfo.event.startStr,
-        checkin_date: resizeInfo.event.endStr,
+        checkin_date: resizeInfo.event.startStr,
+        checkout_date: subtractOneDay(resizeInfo.event.endStr),
       })
     } catch (error) {
       console.error('Failed to update booking:', error)

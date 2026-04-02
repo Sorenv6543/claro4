@@ -67,13 +67,14 @@
 </template>
 
 <script setup lang="ts">
-  import type { BookingStatus, BookingType } from '@/types'
   import DashboardCard from '@/components/dumb/shared/DashboardCard.vue'
-  import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/constants'
+import type { BookingStatus, BookingType } from '@/types'
+import type { PROPERTY_COLORS } from '@/utils/cal'
+import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/cal'
 
   interface UpcomingBooking {
     property: string
-    propertyColor: string
+    propertyColor: typeof PROPERTY_COLORS[number]
     checkinDate: string
     checkoutDate: string
     type: BookingType

@@ -23,7 +23,7 @@
   --claro-accent:         #7367F020;
 
   /* ─── Colors: Surfaces ────────────────────────────────────────────── */
-  --claro-background:      #F5F5F9;
+  --claro-background:      #acacac;
   --claro-surface:         #FFFFFF;
   --claro-surface-variant: #F5F5F9;
   --claro-card-bg:         #FFFFFF;
@@ -64,10 +64,10 @@
   --claro-radius-lg:   12px;
   --claro-radius-pill: 9999px;
 
-  /* ─── Elevation / Shadows (Materio-style) ─────────────────────────── */
-  --claro-shadow-sm: 0 1px 4px rgba(0, 0, 0, 0.05);
-  --claro-shadow-md: 0 2px 10px rgba(0, 0, 0, 0.05);
-  --claro-shadow-lg: 0 4px 20px rgba(0, 0, 0, 0.08);
+  /* ─── Elevation / Shadows (Material-like) ─────────────────────────── */
+  --claro-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.08);
+  --claro-shadow-md: 0 3px 6px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.10);
+  --claro-shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.10);
 
   /* ─── Gradients ───────────────────────────────────────────────────── */
   --claro-gradient-primary: linear-gradient(

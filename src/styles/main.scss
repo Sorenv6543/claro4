@@ -13,10 +13,6 @@ html, body {
 
 }
 
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
 
 /* PWA viewport handling */
 @supports (height: 100dvh) {

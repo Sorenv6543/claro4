@@ -88,17 +88,19 @@
               {{ viewLabels[activeViewKey] }}
             </v-btn>
           </template>
-          <v-list density="compact" min-width="140">
-            <v-list-item
-              v-for="opt in viewOptions"
-              :key="opt.value"
-              :active="activeViewKey === opt.value"
-              color="primary"
-              :prepend-icon="opt.icon"
-              :title="opt.label"
-              @click="switchView(opt.value)"
-            />
-          </v-list>
+          <v-card rounded="lg">
+            <v-list density="compact" min-width="140">
+              <v-list-item
+                v-for="opt in viewOptions"
+                :key="opt.value"
+                :active="activeViewKey === opt.value"
+                color="primary"
+                :prepend-icon="opt.icon"
+                :title="opt.label"
+                @click="switchView(opt.value)"
+              />
+            </v-list>
+          </v-card>
         </v-menu>
       </template>
 
@@ -164,19 +166,21 @@
             <span class="text-caption font-weight-bold">{{ userInitials }}</span>
           </v-avatar>
         </template>
-        <v-list density="comfortable" min-width="160">
-          <v-list-item
-            prepend-icon="mdi-account-outline"
-            title="Profile"
-            :to="'/owner/profile'"
-          />
-          <v-divider />
-          <v-list-item
-            prepend-icon="mdi-logout"
-            title="Sign Out"
-            @click="handleSignOut"
-          />
-        </v-list>
+        <v-card rounded="lg">
+          <v-list density="comfortable" min-width="160">
+            <v-list-item
+              prepend-icon="mdi-account-outline"
+              title="Profile"
+              :to="'/owner/profile'"
+            />
+            <v-divider />
+            <v-list-item
+              prepend-icon="mdi-logout"
+              title="Sign Out"
+              @click="handleSignOut"
+            />
+          </v-list>
+        </v-card>
       </v-menu>
     </v-app-bar>
 

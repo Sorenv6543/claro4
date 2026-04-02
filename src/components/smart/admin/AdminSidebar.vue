@@ -1,479 +1,138 @@
 <template>
   <v-navigation-drawer
-    v-model="sidebarOpen"
-    class="admin-sidebar"
-    color="white"
-    elevation="4"
-    location="left"
-    :permanent="!mobile"
-    :temporary="mobile"
-    :width="SIDEBAR_WIDTH"
+    :model-value="modelValue"
+    :permanent="mdAndUp"
+    :temporary="!mdAndUp"
+    width="264"
+    @update:model-value="emit('update:modelValue', $event)"
   >
-    <!-- Main Content Wrapper -->
-    <div class="sidebar-content-wrapper">
-      <!-- Brand Overlay -->
-      <div
-        v-show="showBrandOverlay"
-        class="claro-brand-overlay"
-      >
-        <div class="claro-brand-section">
-          <div class="claro-brand-icon">
-            <v-btn
-              class="prominent-icon"
-              color="primary"
-              elevation="8"
-              icon
-              size="x-large"
-            >
-              <v-icon
-                color="white"
-                size="32"
-              >
-                mdi-shield-crown
-              </v-icon>
-            </v-btn>
-          </div>
-          <div class="claro-brand-info">
-            <div class="claro-brand-title">
-              Claro Admin
-            </div>
-            <div class="claro-brand-subtitle">
-              Business Management
-            </div>
-          </div>
-        </div>
-      </div>
+    <!-- Navigation section -->
+    <v-list class="pt-2" density="comfortable" nav>
+      <v-list-subheader class="text-overline">Administration</v-list-subheader>
 
-      <!-- Navigation Section -->
-      <div class="nav-section sidebar-content-spacing">
-        <div class="section-header">
-          Administration
-        </div>
+      <v-list-item
+        v-for="item in navItems"
+        :key="item.to"
+        :active="isActive(item.to)"
+        color="primary"
+        :prepend-icon="item.icon"
+        rounded="lg"
+        :title="item.label"
+        @click="navigateTo(item.to)"
+      />
+    </v-list>
 
-        <v-list
-          class="nav-list"
-          density="compact"
-        >
-          <v-list-item
-            class="nav-item"
-            :class="{ 'active-nav-item': route.path === '/admin' }"
-            prepend-icon="mdi-view-dashboard"
-            title="Dashboard"
-            @click="navigateTo('/admin')"
-          >
-            <template
-              v-if="route.path === '/admin'"
-              #append
-            >
-              <v-icon
-                color="white"
-                size="16"
-              >
-                mdi-chevron-right
-              </v-icon>
-            </template>
-          </v-list-item>
+    <v-divider class="mx-4 my-1" />
 
-          <v-list-item
-            class="nav-item"
-            :class="{ 'active-nav-item': route.path === '/admin/schedule' || route.path === '/admin/calendar' }"
-            prepend-icon="mdi-calendar-month"
-            title="Calendar"
-            @click="navigateTo('/admin/schedule')"
-          >
-            <template
-              v-if="route.path === '/admin/schedule'"
-              #append
-            >
-              <v-icon
-                color="white"
-                size="16"
-              >
-                mdi-chevron-right
-              </v-icon>
-            </template>
-          </v-list-item>
-
-          <v-list-item
-            class="nav-item"
-            :class="{ 'active-nav-item': route.path === '/admin/bookings' }"
-            prepend-icon="mdi-calendar-check"
-            title="All Bookings"
-            @click="navigateTo('/admin/bookings')"
-          >
-            <template
-              v-if="route.path === '/admin/bookings'"
-              #append
-            >
-              <v-icon
-                color="white"
-                size="16"
-              >
-                mdi-chevron-right
-              </v-icon>
-            </template>
-          </v-list-item>
-
-          <v-list-item
-            class="nav-item"
-            :class="{ 'active-nav-item': route.path === '/admin/properties' }"
-            prepend-icon="mdi-home-city"
-            title="Properties"
-            @click="navigateTo('/admin/properties')"
-          >
-            <template
-              v-if="route.path === '/admin/properties'"
-              #append
-            >
-              <v-icon
-                color="white"
-                size="16"
-              >
-                mdi-chevron-right
-              </v-icon>
-            </template>
-          </v-list-item>
-
-          <v-list-item
-            class="nav-item"
-            :class="{ 'active-nav-item': route.path === '/admin/cleaners' }"
-            prepend-icon="mdi-account-hard-hat"
-            title="Cleaners"
-            @click="navigateTo('/admin/cleaners')"
-          >
-            <template
-              v-if="route.path === '/admin/cleaners'"
-              #append
-            >
-              <v-icon
-                color="white"
-                size="16"
-              >
-                mdi-chevron-right
-              </v-icon>
-            </template>
-          </v-list-item>
-
-          <v-list-item
-            class="nav-item"
-            :class="{ 'active-nav-item': route.path === '/admin/property-owners' }"
-            prepend-icon="mdi-account-group"
-            title="Property Owners"
-            @click="navigateTo('/admin/property-owners')"
-          >
-            <template
-              v-if="route.path === '/admin/property-owners'"
-              #append
-            >
-              <v-icon
-                color="white"
-                size="16"
-              >
-                mdi-chevron-right
-              </v-icon>
-            </template>
-          </v-list-item>
-
-          <v-list-item
-            class="nav-item"
-            :class="{ 'active-nav-item': route.path === '/admin/users' }"
-            prepend-icon="mdi-account-cog"
-            title="System Users"
-            @click="navigateTo('/admin/users')"
-          >
-            <template
-              v-if="route.path === '/admin/users'"
-              #append
-            >
-              <v-icon
-                color="white"
-                size="16"
-              >
-                mdi-chevron-right
-              </v-icon>
-            </template>
-          </v-list-item>
-
-          <v-list-item
-            class="nav-item"
-            :class="{ 'active-nav-item': route.path === '/admin/reports' }"
-            prepend-icon="mdi-chart-line"
-            title="Reports"
-            @click="navigateTo('/admin/reports')"
-          >
-            <template
-              v-if="route.path === '/admin/reports'"
-              #append
-            >
-              <v-icon
-                color="white"
-                size="16"
-              >
-                mdi-chevron-right
-              </v-icon>
-            </template>
-          </v-list-item>
-        </v-list>
-      </div>
-
-      <!-- Business Metrics Section -->
-      <div class="metrics-section">
-        <div class="section-header">
-          <span>Business Overview</span>
-          <v-btn
-            color="primary"
-            icon="mdi-refresh"
-            size="small"
-            variant="text"
-            @click="refreshMetrics"
-          />
-        </div>
-
-        <div class="metrics-cards">
-          <v-card
-            class="metric-card"
-            variant="outlined"
-          >
-            <v-card-text class="text-center pa-3">
-              <div class="metric-value text-primary">
-                {{ totalProperties }}
-              </div>
-              <div class="metric-label">
-                Properties
-              </div>
-            </v-card-text>
-          </v-card>
-
-          <v-card
-            class="metric-card"
-            variant="outlined"
-          >
-            <v-card-text class="text-center pa-3">
-              <div class="metric-value text-success">
-                {{ activeCleaningsToday }}
-              </div>
-              <div class="metric-label">
-                Active Today
-              </div>
-            </v-card-text>
-          </v-card>
-
-          <v-card
-            class="metric-card"
-            variant="outlined"
-          >
-            <v-card-text class="text-center pa-3">
-              <div class="metric-value text-warning">
-                {{ urgentTurnsCount }}
-              </div>
-              <div class="metric-label">
-                Urgent Turns
-              </div>
-            </v-card-text>
-          </v-card>
-
-          <v-card
-            class="metric-card"
-            variant="outlined"
-          >
-            <v-card-text class="text-center pa-3">
-              <div class="metric-value text-info">
-                {{ availableCleanersCount }}
-              </div>
-              <div class="metric-label">
-                Available
-              </div>
-            </v-card-text>
-          </v-card>
-        </div>
-      </div>
-
-      <!-- Urgent Alerts Section -->
-      <div
-        v-if="urgentBookings.length > 0"
-        class="alerts-section"
-      >
-        <div class="section-header">
-          <span>Urgent Alerts</span>
-          <v-chip
-            color="error"
-            size="small"
-            variant="flat"
-          >
-            {{ urgentBookings.length }}
-          </v-chip>
-        </div>
-
-        <v-list
-          class="alert-list"
-          density="compact"
-        >
-          <v-list-item
-            v-for="booking in urgentBookings.slice(0, 3)"
-            :key="booking.id"
-            class="alert-item"
-            @click="viewBooking(booking)"
-          >
-            <template #prepend>
-              <v-icon
-                color="error"
-                size="16"
-              >
-                mdi-alert-circle
-              </v-icon>
-            </template>
-
-            <div class="alert-content">
-              <div class="alert-title">
-                {{ getPropertyName(booking.property_id) }}
-              </div>
-              <div class="alert-subtitle">
-                Turn cleaning needed
-              </div>
-            </div>
-
-            <template #append>
-              <v-btn
-                icon="mdi-chevron-right"
-                size="small"
-                variant="text"
-              />
-            </template>
-          </v-list-item>
-
-          <v-list-item
-            v-if="urgentBookings.length > 3"
-            class="view-all-item"
-            @click="navigateTo('/admin/bookings?filter=urgent')"
-          >
-            <template #prepend>
-              <v-icon
-                color="primary"
-                size="16"
-              >
-                mdi-eye
-              </v-icon>
-            </template>
-
-            <div class="alert-content">
-              <div class="alert-title">
-                View all urgent items ({{ urgentBookings.length }})
-              </div>
-            </div>
-          </v-list-item>
-        </v-list>
-      </div>
-
-      <!-- Quick Actions Section -->
-      <div class="actions-section">
-        <div class="section-header">
-          Quick Actions
-        </div>
-
-        <v-list
-          class="actions-list"
-          density="compact"
-        >
-          <v-list-item
-            class="action-item"
-            prepend-icon="mdi-calendar-plus"
-            title="New Booking"
-            @click="emit('create-booking')"
-          />
-
-          <v-list-item
-            class="action-item"
-            prepend-icon="mdi-home-plus"
-            title="Add Property"
-            @click="emit('create-property')"
-          />
-
-          <v-list-item
-            class="action-item"
-            prepend-icon="mdi-account-plus"
-            title="Add Cleaner"
-            @click="navigateTo('/admin/cleaners/create')"
-          />
-
-          <v-list-item
-            class="action-item"
-            prepend-icon="mdi-file-chart"
-            title="Generate Report"
-            @click="emit('generate-reports')"
-          />
-
-          <v-list-item
-            class="action-item"
-            prepend-icon="mdi-cog"
-            title="System Settings"
-            @click="navigateTo('/admin/settings')"
-          />
-        </v-list>
+    <!-- Business Overview metrics -->
+    <div class="px-4 pt-2 pb-1">
+      <div class="text-overline text-medium-emphasis px-1 mb-2" style="font-size:0.67rem">Business Overview</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <v-card rounded="lg" variant="outlined">
+          <v-card-text class="text-center pa-2">
+            <div class="text-h6 font-weight-bold text-primary">{{ totalProperties }}</div>
+            <div class="text-caption text-medium-emphasis">Properties</div>
+          </v-card-text>
+        </v-card>
+        <v-card rounded="lg" variant="outlined">
+          <v-card-text class="text-center pa-2">
+            <div class="text-h6 font-weight-bold text-success">{{ activeCleaningsToday }}</div>
+            <div class="text-caption text-medium-emphasis">Active</div>
+          </v-card-text>
+        </v-card>
+        <v-card rounded="lg" variant="outlined">
+          <v-card-text class="text-center pa-2">
+            <div class="text-h6 font-weight-bold text-warning">{{ urgentTurnsCount }}</div>
+            <div class="text-caption text-medium-emphasis">Urgent</div>
+          </v-card-text>
+        </v-card>
+        <v-card rounded="lg" variant="outlined">
+          <v-card-text class="text-center pa-2">
+            <div class="text-h6 font-weight-bold text-info">{{ availableCleanersCount }}</div>
+            <div class="text-caption text-medium-emphasis">Available</div>
+          </v-card-text>
+        </v-card>
       </div>
     </div>
 
-    <!-- User Info Section at Bottom -->
-    <div class="user-info-section">
-      <v-divider class="mb-3" />
-      <div class="user-info-card">
-        <v-avatar
-          class="user-avatar"
+    <!-- Urgent Alerts -->
+    <template v-if="urgentBookings.length">
+      <v-divider class="mx-4 my-1" />
+      <v-list class="pt-1" density="compact" nav>
+        <v-list-subheader class="text-overline">
+          Urgent Alerts
+          <v-chip class="ml-2" color="error" size="x-small" variant="flat">{{ urgentBookings.length }}</v-chip>
+        </v-list-subheader>
+
+        <v-list-item
+          v-for="booking in urgentBookings.slice(0, 3)"
+          :key="booking.id"
+          color="error"
+          prepend-icon="mdi-alert-circle"
+          rounded="lg"
+          :subtitle="'Turn cleaning needed'"
+          :title="getPropertyName(booking.property_id)"
+          @click="viewBooking(booking)"
+        />
+
+        <v-list-item
+          v-if="urgentBookings.length > 3"
           color="primary"
-          size="32"
-        >
-          <v-icon
-            color="white"
-            size="18"
-          >
-            mdi-shield-account
-          </v-icon>
-        </v-avatar>
+          prepend-icon="mdi-eye"
+          rounded="lg"
+          :title="`View all (${urgentBookings.length})`"
+          @click="navigateTo('/admin/bookings?filter=urgent')"
+        />
+      </v-list>
+    </template>
 
-        <div class="user-details">
-          <div class="user-name">
-            {{ authStore.user?.name || 'Admin' }}
+    <v-divider class="mx-4 my-1" />
+
+    <!-- Quick Actions -->
+    <v-list class="pt-1" density="compact" nav>
+      <v-list-subheader class="text-overline">Quick Actions</v-list-subheader>
+
+      <v-list-item
+        v-for="item in quickActions"
+        :key="item.label"
+        color="primary"
+        :prepend-icon="item.icon"
+        rounded="lg"
+        :title="item.label"
+        @click="item.action()"
+      />
+    </v-list>
+
+    <!-- Bottom: user profile -->
+    <template #append>
+      <v-divider />
+      <div class="pa-3 pb-2">
+        <div class="d-flex align-center ga-3 px-1 py-2">
+          <v-avatar color="primary" size="30">
+            <v-icon color="white" size="18">mdi-shield-account</v-icon>
+          </v-avatar>
+          <div class="overflow-hidden flex-1-1">
+            <div class="text-body-2 font-weight-semibold text-truncate">{{ authStore.user?.name || 'Admin' }}</div>
+            <div class="text-caption text-medium-emphasis text-truncate">{{ authStore.user?.email || '' }}</div>
           </div>
-          <div class="user-email">
-            {{ authStore.user?.email || 'No email' }}
-          </div>
+          <v-menu location="bottom end">
+            <template #activator="{ props: menuProps }">
+              <v-btn v-bind="menuProps" icon size="x-small" variant="text">
+                <v-icon size="16">mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+            <v-card rounded="lg">
+              <v-list density="compact">
+                <v-list-item prepend-icon="mdi-account" title="Profile" @click="navigateTo('/admin/profile')" />
+                <v-list-item prepend-icon="mdi-cog" title="Settings" @click="navigateTo('/admin/settings')" />
+                <v-divider />
+                <v-list-item prepend-icon="mdi-logout" title="Sign Out" @click="handleSignOut" />
+              </v-list>
+            </v-card>
+          </v-menu>
         </div>
-
-        <v-menu offset-y>
-          <template #activator="{ props: activatorProps }">
-            <v-btn
-              v-bind="activatorProps"
-              class="user-menu-btn"
-              icon
-              size="small"
-              variant="text"
-            >
-              <v-icon size="16">
-                mdi-dots-vertical
-              </v-icon>
-            </v-btn>
-          </template>
-
-          <v-list density="compact">
-            <v-list-item
-              prepend-icon="mdi-account"
-              title="Profile"
-              @click="navigateTo('/admin/profile')"
-            />
-            <v-list-item
-              prepend-icon="mdi-cog"
-              title="Settings"
-              @click="navigateTo('/admin/settings')"
-            />
-            <v-divider />
-            <v-list-item
-              prepend-icon="mdi-logout"
-              title="Sign Out"
-              @click="handleSignOut"
-            />
-          </v-list>
-        </v-menu>
       </div>
-    </div>
+    </template>
   </v-navigation-drawer>
 </template>
 
@@ -486,12 +145,6 @@
   import { useAuthStore } from '@/stores/auth.ts'
   import { formatPropertyAddress } from '@/types/property'
 
-  // Constants for consistent sizing
-  const SIDEBAR_WIDTH = 280
-  const BRAND_HEIGHT_DESKTOP = 200
-  const BRAND_HEIGHT_MOBILE = 100
-
-  // Define props matching HomeAdmin expectations
   interface Props {
     modelValue?: boolean
     bookings?: Booking[]
@@ -529,446 +182,76 @@
     'emergency-response': []
   }>()
 
-  // Composables
   const router = useRouter()
   const route = useRoute()
-  const { mobile } = useDisplay()
+  const { mdAndUp } = useDisplay()
   const authStore = useAuthStore()
 
-  // v-model support
-  const sidebarOpen = computed({
-    get: () => props.modelValue,
-    set: (value: boolean) => emit('update:modelValue', value),
-  })
+  const navItems = [
+    { label: 'Dashboard', icon: 'mdi-view-dashboard-outline', to: '/admin' },
+    { label: 'Calendar', icon: 'mdi-calendar-month-outline', to: '/admin/schedule' },
+    { label: 'All Bookings', icon: 'mdi-calendar-check-outline', to: '/admin/bookings' },
+    { label: 'Properties', icon: 'mdi-home-city-outline', to: '/admin/properties' },
+    { label: 'Cleaners', icon: 'mdi-account-hard-hat-outline', to: '/admin/cleaners' },
+    { label: 'Property Owners', icon: 'mdi-account-group-outline', to: '/admin/property-owners' },
+    { label: 'System Users', icon: 'mdi-account-cog-outline', to: '/admin/users' },
+    { label: 'Reports', icon: 'mdi-chart-line', to: '/admin/reports' },
+  ]
 
-  // Brand overlay display logic
-  const showBrandOverlay = computed(() => {
-    return !mobile.value || sidebarOpen.value
-  })
+  const quickActions = [
+    { label: 'New Booking', icon: 'mdi-calendar-plus', action: () => emit('create-booking') },
+    { label: 'Add Property', icon: 'mdi-home-plus', action: () => emit('create-property') },
+    { label: 'Add Cleaner', icon: 'mdi-account-plus', action: () => navigateTo('/admin/cleaners/create') },
+    { label: 'Generate Report', icon: 'mdi-file-chart-outline', action: () => emit('generate-reports') },
+    { label: 'System Settings', icon: 'mdi-cog-outline', action: () => navigateTo('/admin/settings') },
+  ]
 
-  // Computed metrics from props
-  const availableCleanersCount = computed(() => {
-    // TODO: Calculate from actual cleaner data
-    return 5 // Placeholder
-  })
+  function isActive (to: string): boolean {
+    if (to === '/admin') return route.path === '/admin'
+    return route.path === to || route.path.startsWith(to + '/')
+  }
 
-  // Urgent bookings for alerts
-  const urgentBookings = computed(() => {
-    return props.bookings.filter(booking =>
-      booking.booking_type === 'turn'
-      && booking.status === 'pending',
-    )
-  })
+  const availableCleanersCount = computed(() => 5)
 
-  // Navigation helper
+  const urgentBookings = computed(() =>
+    props.bookings.filter(b => b.booking_type === 'turn' && b.status === 'pending'),
+  )
+
   function navigateTo (path: string) {
     router.push(path)
   }
 
-  // Sign out handler
   async function handleSignOut () {
     const success = await authStore.logout()
-    if (success) {
-      router.push('/')
-    }
+    if (success) router.push('/')
   }
 
-  // Booking actions
   function viewBooking (booking: Booking) {
     emit('navigate-to-booking', booking.id)
   }
 
-  // Get property name helper
   function getPropertyName (propertyId: string): string {
     const property = props.properties.find(p => p.id === propertyId)
     return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
   }
-
-  // Refresh metrics
-  function refreshMetrics () {
-    // TODO: Implement metrics refresh
-    console.log('Refreshing metrics...')
-  }
 </script>
 
 <style scoped>
-/* Navigation Drawer Z-Index Override */
-.admin-sidebar {
-  top: 0 !important;
-  height: 100vh !important;
-  background: #f8f9fa !important;
+/* Ensure nav icon colors follow active state, not forced overrides */
+.v-list-item :deep(.v-list-item__prepend .v-icon) {
+  opacity: 0.75;
 }
 
-/* Main Content Wrapper */
-.sidebar-content-wrapper {
-  padding-bottom: 120px;
-  min-height: 100vh;
-  height: 100vh;
-}
-
-/* Sidebar Content Spacing */
-.sidebar-content-spacing {
-  margin-top: v-bind('BRAND_HEIGHT_DESKTOP + "px"');
-}
-
-/* Section Headers */
-.section-header {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: rgb(var(--v-theme-primary));
-  padding: 16px 20px 8px 20px;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-/* Navigation Section */
-.nav-section {
-  margin-bottom: 16px;
-}
-
-.nav-list {
-  padding: 0 12px;
-}
-
-.nav-item {
-  margin-bottom: 4px;
-  border-radius: 8px !important;
-  color: rgb(var(--v-theme-success)) !important;
-  font-weight: 500 !important;
-}
-
-.nav-item:hover {
-  background: #f3f4f6 !important;
-}
-
-.nav-item.active-nav-item {
-  background: rgb(var(--v-theme-primary)) !important;
-  color: white !important;
-}
-
-.nav-item.active-nav-item :deep(.v-list-item__prepend .v-icon) {
-  color: white !important;
-}
-
-.nav-item.active-nav-item :deep(.v-list-item-title) {
-  color: white !important;
-}
-
-/* Metrics Section */
-.metrics-section {
-  margin: 16px 0;
-}
-
-.metrics-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  padding: 0 16px;
-}
-
-.metric-card {
-  min-height: 70px;
-}
-
-.metric-value {
-  font-size: 1.5rem;
-  font-weight: 700;
-  line-height: 1.2;
-}
-
-.metric-label {
-  font-size: 0.75rem;
-  color: rgb(var(--v-theme-info));
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  margin-top: 4px;
-}
-
-/* Alerts Section */
-.alerts-section {
-  margin: 16px 0;
-}
-
-.alert-list {
-  padding: 0 12px;
-}
-
-.alert-item {
-  margin-bottom: 4px;
-  border-radius: 6px !important;
-  border-left: 3px solid rgb(var(--v-theme-error));
-  background: rgba(var(--v-theme-error), 0.05) !important;
-  cursor: pointer;
-}
-
-.alert-item:hover {
-  background: rgba(var(--v-theme-error), 0.1) !important;
-}
-
-.view-all-item {
-  margin-top: 8px;
-  border-radius: 6px !important;
-  color: rgb(var(--v-theme-primary)) !important;
-  cursor: pointer;
-}
-
-.view-all-item:hover {
-  background: rgba(var(--v-theme-primary), 0.05) !important;
-}
-
-.alert-content {
-  flex: 1;
-  min-width: 0;
-}
-
-.alert-title {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: rgb(var(--v-theme-on-surface));
-  line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.alert-subtitle {
-  font-size: 0.7rem;
-  color: rgb(var(--v-theme-error));
-  line-height: 1.1;
-  margin-top: 2px;
-}
-
-/* Actions Section */
-.actions-section {
-  margin-top: 16px;
-}
-
-.actions-list {
-  padding: 0 12px;
-}
-
-.action-item {
-  margin-bottom: 4px;
-  border-radius: 8px !important;
-  color: rgb(var(--v-theme-success)) !important;
-  font-weight: 500 !important;
-}
-
-.action-item:hover {
-  background: #f3f4f6 !important;
-}
-
-/* Icon styling */
-:deep(.v-list-item__prepend .v-icon) {
-  color: rgb(var(--v-theme-info));
+.v-list-item--active :deep(.v-list-item__prepend .v-icon) {
   opacity: 1;
-}
-
-.nav-item:hover :deep(.v-list-item__prepend .v-icon) {
-  color: rgb(var(--v-theme-success));
-}
-
-.action-item:hover :deep(.v-list-item__prepend .v-icon) {
-  color: rgb(var(--v-theme-success));
-}
-
-/* List item title styling */
-:deep(.v-list-item-title) {
-  font-size: 0.95rem !important;
-  font-weight: 500 !important;
-}
-
-/* User Info Section */
-.user-info-section {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 16px 20px 20px 20px;
-  background: white;
-  border-top: 1px solid #e5e7eb;
-}
-
-.user-info-card {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px;
-  border-radius: 8px;
-  background: #f8f9fa;
-  border: 1px solid #e5e7eb;
-}
-
-.user-avatar {
-  flex-shrink: 0;
-}
-
-.user-details {
-  flex: 1;
-  min-width: 0;
-}
-
-.user-name {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: rgb(var(--v-theme-primary));
-  line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.user-email {
-  font-size: 0.75rem;
-  color: rgb(var(--v-theme-info));
-  line-height: 1.2;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.user-menu-btn {
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-.user-menu-btn:hover {
-  opacity: 1;
-  background: rgba(var(--v-theme-primary), 0.1);
-}
-
-/* Responsive adjustments */
-@media (max-width: 959px) {
-  .sidebar-content-spacing {
-    margin-top: v-bind('BRAND_HEIGHT_MOBILE + "px"');
-  }
-
-  .metrics-cards {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* Brand Overlay */
-.claro-brand-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: v-bind('SIDEBAR_WIDTH + "px"');
-  height: v-bind('BRAND_HEIGHT_DESKTOP + "px"');
-  background: linear-gradient(135deg, rgb(var(--v-theme-secondary)) 0%, rgba(var(--v-theme-secondary), 0.9) 100%);
-  display: flex;
-  align-items: center;
-  padding: 0 24px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-  border-bottom: 2px solid rgba(var(--v-theme-primary), 0.3);
-}
-
-.claro-brand-section {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  width: 100%;
-}
-
-.claro-brand-icon {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgba(var(--v-theme-primary), 0.8) 100%);
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.3);
-}
-
-.prominent-icon {
-  width: 64px !important;
-  height: 64px !important;
-  background: linear-gradient(135deg, rgb(var(--v-theme-primary)) 0%, rgba(var(--v-theme-primary), 0.9) 100%) !important;
-  box-shadow: 0 6px 16px rgba(var(--v-theme-primary), 0.4) !important;
-}
-
-.claro-brand-info {
-  flex: 1;
-}
-
-.claro-brand-title {
-  font-size: 1.75rem;
-  font-weight: 800;
-  color: rgb(var(--v-theme-primary));
-  line-height: 1.1;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  letter-spacing: 0.5px;
-}
-
-.claro-brand-subtitle {
-  font-size: 1rem;
-  color: rgb(var(--v-theme-info));
-  line-height: 1.2;
-  font-weight: 500;
-  margin-top: 4px;
-  opacity: 0.9;
-}
-
-/* Responsive Brand Overlay */
-@media (max-width: 959px) {
-  .claro-brand-overlay {
-    height: v-bind('BRAND_HEIGHT_MOBILE + "px"');
-    padding: 0 16px;
-  }
-
-  .claro-brand-icon {
-    width: 48px;
-    height: 48px;
-  }
-
-  .prominent-icon {
-    width: 48px !important;
-    height: 48px !important;
-  }
-
-  .claro-brand-title {
-    font-size: 1.4rem !important;
-    font-weight: 700;
-  }
-
-  .claro-brand-subtitle {
-    font-size: 0.85rem !important;
-  }
 }
 </style>
 
-<!-- Unscoped styles for z-index overrides -->
+<!-- Non-scoped: temporary drawers are teleported to v-app root, scoped CSS can't reach them.
+     Scoped to .admin-layout to avoid affecting owner drawers. -->
 <style>
-/* Global z-index overrides for admin navigation drawer */
-.v-navigation-drawer.admin-sidebar {
-  height: 100vh !important;
-  top: 0 !important;
-}
-
-.v-navigation-drawer--temporary {
-  height: 100vh !important;
-  top: 0 !important;
-}
-
-.v-navigation-drawer--temporary .v-navigation-drawer__content {
-  height: 100vh !important;
-}
-
-.v-overlay--contained .v-overlay__scrim {
-  background-color: rgba(0, 0, 0, 0.6) !important;
-}
-
-.v-overlay__scrim {
-  background-color: rgba(0, 0, 0, 0.6) !important;
-}
-
-/* Enhanced scrim visibility for admin sidebar */
-.v-navigation-drawer--temporary + .v-overlay .v-overlay__scrim {
-  background-color: rgba(0, 0, 0, 0.65) !important;
-  backdrop-filter: blur(2px);
+.admin-layout .v-navigation-drawer--temporary {
+  top: var(--app-bar-height, 64px) !important;
+  height: calc(100% - var(--app-bar-height, 64px)) !important;
 }
 </style>

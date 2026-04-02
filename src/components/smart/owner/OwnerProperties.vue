@@ -222,8 +222,8 @@
 <script setup lang="ts">
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
 import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
-import StatCard from '@/components/dumb/shared/StatCard.vue'
 import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+import StatCard from '@/components/dumb/shared/StatCard.vue'
 import type { Property, PropertyFormData, PropertyRecord } from '@/types'
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -504,7 +504,6 @@ import { formatPropertyAddress } from '@/types/property'
   padding: 1rem;
   min-height: calc(100vh - var(--app-bar-height, 64px));
 }
-
 
 /* Property color dot */
 .property-color-dot {

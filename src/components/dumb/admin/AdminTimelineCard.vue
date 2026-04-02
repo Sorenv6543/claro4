@@ -1,7 +1,7 @@
 <script setup lang="ts">
-  import type { Booking } from '@/types/booking'
-  import { computed } from 'vue'
-  import { getBookingStatusColor } from '@/utils/constants'
+  import type { Booking } from '@/types/booking';
+import { getBookingStatusColor } from '@/utils/cal';
+import { computed } from 'vue';
 
   const props = defineProps<{
     booking: Booking
@@ -57,7 +57,7 @@
     return {}
   })
 
-  const cardClass = computed(() => isUnassigned.value ? 'bg-error-lighten-5' : '')
+  const cardClass = computed(() => isUnassigned.value ? 'bg-error-lighten-5' : 'bg-white')
 
   const statusColor = computed(() => getBookingStatusColor(props.booking.status))
 </script>
@@ -66,9 +66,7 @@
   <v-card
     class="mb-2"
     :class="cardClass"
-    rounded="lg"
-    :style="borderStyle"
-    variant="outlined"
+    variant="elevated"
   >
     <v-card-text class="d-flex align-center ga-3 py-2 px-3">
       <div class="text-subtitle-2 font-weight-bold text-medium-emphasis" style="min-width: 48px;">

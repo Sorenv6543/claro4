@@ -10,7 +10,6 @@
 import type { ThemeDefinition } from 'vuetify'
 import { createVuetify } from 'vuetify'
 import { aliases, mdi } from 'vuetify/iconsets/mdi'
-
 // Import Vuetify styles
 import '@fontsource/inter/400.css'
 import '@fontsource/inter/500.css'
@@ -20,28 +19,36 @@ import 'vuetify/styles'
 
 // default light theme
 // Color values must stay in sync with src/styles/tokens.css (canonical source).
+
 const lightTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    'primary': '#7367F0',
-    'secondary': '#A8AAAE',
-    'accent': '#9E95F5',
-    'error': '#EA5455',
-    'info': '#00CFE8',
-    'success': '#28C76F',
-    'warning': '#FF9F43',
-    'background': '#f1f1f1',
-    'surface': '#FFFFFF',
-    'surface-variant': '#F5F5F9',
-    'turn-urgent': '#EA5455',
-    'turn-standard': '#FF9F43',
-    'booking-standard': '#28C76F',
-    'on-background': '#2E263D',
-    'on-surface': '#2E263D',
+    'v-theme-primary': '#7367F0',
+    'v-theme-primary-light': '#9E95F5',
+    'v-theme-primary-dark': '#5E52EE',
+    'v-theme-secondary': '#A8AAAE',
+    'v-theme-accent': '#7367F020',
+    'v-theme-background': '#ffffff',
+    'v-theme-surface': '#ffffff',
+    'v-theme-surface-variant': '#F5F5F9',
+    'v-theme-card-bg': '#ffffff',
+    'v-theme-success': '#28C76F',
+    'v-theme-warning': '#FF9F43',
+    'v-theme-error': '#EA5455',
+    'v-theme-info': '#00CFE8',
+
+    'v-theme-turn-urgent': '#EA5455',
+    'v-theme-turn-standard': '#FF9F43',
+    'v-theme-booking-standard': '#28C76F',
+
+    /* ─── Colors: Text ────────────────────────────────────────────────── */
+    'v-theme-on-background': '#2E263D',
+    'v-theme-on-surface': '#2E263D',
+    'v-theme-text-secondary': 'rgba(46, 38, 61, 0.5)',
+    'v-theme-divider': '#E8E8E8',
+
   },
 }
-
-// Create Vuetify instance
 
 export default createVuetify({
   theme: {
