@@ -2,7 +2,7 @@
 <template>
   <v-card
     class="pa-6"
-    elevation="8"
+    elevation="24"
   >
     <v-card-title class="text-h4 text-center mb-4">
       <v-icon
