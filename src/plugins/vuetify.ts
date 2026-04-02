@@ -17,30 +17,38 @@ import '@fontsource/inter/500.css'
 import '@fontsource/inter/600.css'
 import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
-// Dark Teal Theme
-const darkTealTheme: ThemeDefinition = {
-  dark: true,
+
+// default light theme
+const lightTheme: ThemeDefinition = {
+  dark: false,
   colors: {
-    'primary': '#26A69A', // Lighter Teal
-    'secondary': '#26C6DA', // Lighter Cyan
-    'accent': '#66BB6A', // Lighter Green
-    'error': '#EF5350', // Lighter Red
-    'info': '#29B6F6', // Lighter Blue
-    'success': '#66BB6A', // Lighter Green
-    'warning': '#FFA726', // Lighter Orange
-    'background': '#121212', // Dark Grey
-    'surface': '#1E1E1E', // Slightly lighter dark grey
-    'on-background': '#E6E1E5',
-    'on-surface': '#E6E1E5',
-    'surface-variant': '#2D2D2D',
-    'on-surface-variant': '#CAC4D0',
-    'turn-urgent': '#EF5350', // Lighter Red
-    'turn-standard': '#FFA726', // Lighter Orange
-    'booking-standard': '#26A69A', // Lighter Teal
+    'primary': '#1976D2',
+    'secondary': '#5C6BC0',
+    'accent': '#82B1FF',
+    'error': '#FF5252',
+    'info': '#2196F3',
+    'success': '#4CAF50',
+    'warning': '#FFC107',
+    'background': '#cbd0d6',
+    'surface': '#FFFFFF',
+    'surface-variant': '#E8EAF6',
+    'turn-urgent': '#F44336',
+    'turn-standard': '#FF9800',
+    'booking-standard': '#4CAF50',
+    'on-background': '#1C1B1F',
+    'on-surface': '#1C1B1F',
   },
 }
 
+// Create Vuetify instance
+
 export default createVuetify({
+  theme: {
+    defaultTheme: 'light',
+    themes: {
+      light: lightTheme,
+    },
+  },
   // Icon configuration
   icons: {
     defaultSet: 'mdi',
@@ -50,38 +58,8 @@ export default createVuetify({
     },
   },
 
-  // Theme configuration
-  theme: {
-    defaultTheme: 'light',
-    themes: {
-      light: {
-        colors: {
-          'primary': '#1976D2',
-          'secondary': '#5C6BC0',
-          'accent': '#82B1FF',
-          'error': '#FF5252',
-          'info': '#2196F3',
-          'success': '#4CAF50',
-          'warning': '#FFC107',
-          'background': '#F5F7FA',
-          'surface': '#FFFFFF',
-          'surface-variant': '#E8EAF6',
-          'turn-urgent': '#F44336',
-          'turn-standard': '#FF9800',
-          'booking-standard': '#4CAF50',
-          'on-background': '#1C1B1F',
-          'on-surface': '#1C1B1F',
-        },
-      },
-      darkTeal: darkTealTheme,
-    },
-    variations: {
-      colors: ['primary', 'secondary', 'accent', 'error', 'info', 'success', 'warning'],
-      lighten: 3,
-      darken: 3,
-    },
-  },
-  // Default configuration for components
+  // Default configuration for components (https://vuetifyjs.com/en/features/global-configuration/#defaults)
+
   defaults: {
     VBtn: {
       variant: 'flat',

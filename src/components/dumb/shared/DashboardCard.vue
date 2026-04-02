@@ -2,8 +2,8 @@
   <v-card
     class="dashboard-card"
     :class="{ 'dashboard-card--accent': !!accentColor, 'dashboard-card--flat': flat }"
-    :style="accentColor ? { '--card-accent': accentColor } : undefined"
     :elevation="flat ? 0 : undefined"
+    :style="accentColor ? { '--card-accent': accentColor } : undefined"
   >
     <!-- Header: shown when title/icon prop provided OR #header slot is used -->
     <v-card-title

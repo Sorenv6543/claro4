@@ -1,8 +1,8 @@
 <script setup lang="ts">
-defineProps<{
-  maxWidth?: string | number
-  noPadding?: boolean
-}>()
+  defineProps<{
+    maxWidth?: string | number
+    noPadding?: boolean
+  }>()
 </script>
 
 <template>
