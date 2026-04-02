@@ -15,7 +15,7 @@
         :key="item.to"
         :active="isActive(item.to)"
         color="primary"
-        :prepend-icon="item.icon"
+        :prepend-icon="isActive(item.to) ? item.filledIcon : item.icon"
         rounded="lg"
         :title="item.label"
         @click="navigateTo(item.to)"
@@ -188,14 +188,54 @@
   const authStore = useAuthStore()
 
   const navItems = [
-    { label: 'Dashboard', icon: 'mdi-view-dashboard-outline', to: '/admin' },
-    { label: 'Calendar', icon: 'mdi-calendar-month-outline', to: '/admin/schedule' },
-    { label: 'All Bookings', icon: 'mdi-calendar-check-outline', to: '/admin/bookings' },
-    { label: 'Properties', icon: 'mdi-home-city-outline', to: '/admin/properties' },
-    { label: 'Cleaners', icon: 'mdi-account-hard-hat-outline', to: '/admin/cleaners' },
-    { label: 'Property Owners', icon: 'mdi-account-group-outline', to: '/admin/property-owners' },
-    { label: 'System Users', icon: 'mdi-account-cog-outline', to: '/admin/users' },
-    { label: 'Reports', icon: 'mdi-chart-line', to: '/admin/reports' },
+    {
+      label: 'Dashboard',
+      icon: 'mdi-view-dashboard-outline',
+      filledIcon: 'mdi-view-dashboard',
+      to: '/admin',
+    },
+    {
+      label: 'Calendar',
+      icon: 'mdi-calendar-month-outline',
+      filledIcon: 'mdi-calendar-month',
+      to: '/admin/schedule',
+    },
+    {
+      label: 'All Bookings',
+      icon: 'mdi-calendar-check-outline',
+      filledIcon: 'mdi-calendar-check',
+      to: '/admin/bookings',
+    },
+    {
+      label: 'Properties',
+      icon: 'mdi-home-city-outline',
+      filledIcon: 'mdi-home-city',
+      to: '/admin/properties',
+    },
+    {
+      label: 'Cleaners',
+      icon: 'mdi-account-hard-hat-outline',
+      filledIcon: 'mdi-account-hard-hat',
+      to: '/admin/cleaners',
+    },
+    {
+      label: 'Property Owners',
+      icon: 'mdi-account-group-outline',
+      filledIcon: 'mdi-account-group',
+      to: '/admin/property-owners',
+    },
+    {
+      label: 'System Users',
+      icon: 'mdi-account-cog-outline',
+      filledIcon: 'mdi-account-cog',
+      to: '/admin/users',
+    },
+    {
+      label: 'Reports',
+      icon: 'mdi-chart-line',
+      filledIcon: 'mdi-chart-line',
+      to: '/admin/reports',
+    },
   ]
 
   const quickActions = [
