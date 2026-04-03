@@ -446,7 +446,8 @@ export function useAdminBookings () {
           } else {
             results.failed.push(bookingId)
           }
-        } catch {
+        } catch (err) {
+          console.error(`[useAdminBookings] bulkAssignCleaner failed for booking ${bookingId}:`, err)
           results.failed.push(bookingId)
         }
       }
@@ -494,7 +495,8 @@ export function useAdminBookings () {
           } else {
             results.failed.push(bookingId)
           }
-        } catch {
+        } catch (err) {
+          console.error(`[useAdminBookings] bulkUpdateStatus failed for booking ${bookingId}:`, err)
           results.failed.push(bookingId)
         }
       }

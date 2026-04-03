@@ -15,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-  import { PROPERTY_COLORS } from '@/utils/cal';
+  import { PROPERTY_COLORS } from '@/utils/constants';
 
   defineProps<{
     modelValue: string

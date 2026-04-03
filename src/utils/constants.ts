@@ -4,12 +4,11 @@
  * Deliberately avoids Vuetify surface/on-surface theme variables.
  */
 export const PROPERTY_COLORS = [
-  '--v-theme-primary', // indigo
-  '--v-theme-success', // green
-  '--v-theme-warning', // amber
-  '--v-theme-error', // red
-  '--v-theme-info', // blue
-
+  '#5c6bc0', // indigo
+  '#43a047', // green
+  '#8e24aa', // purple
+  '#f57c00', // orange
+  '#e53935', // red
 ] as const
 
 export type PropertyColor = typeof PROPERTY_COLORS[number]
@@ -19,16 +18,16 @@ export type PropertyColor = typeof PROPERTY_COLORS[number]
  */
 export function getBookingStatusColor (status: string): string {
   switch (status) {
-    case 'completed': {
-      return '--v-theme-success'
+    case 'completed': { return 'success'
     }
-    case 'in_progress': { return '--v-theme-info'
+    case 'in_progress': { return 'info'
     }
-    case 'scheduled': { return '--v-theme-primary'
+    case 'scheduled': { return 'primary'
     }
-    case 'cancelled': { return '--v-theme-error'
+    case 'cancelled': { return 'error'
     }
-    default: { return '--v-theme-warning'
+    case 'pending':
+    default: { return 'warning'
     }
   }
 }

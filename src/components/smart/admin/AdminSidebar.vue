@@ -7,7 +7,7 @@
     @update:model-value="emit('update:modelValue', $event)"
   >
     <!-- Navigation section -->
-    <v-list class="pt-2" density="comfortable" nav>
+    <v-list class="pt-2" density="comfortable" nav :opened="usersGroupOpen ? ['users'] : []">
       <v-list-subheader class="text-overline">Administration</v-list-subheader>
 
       <v-list-item
@@ -20,6 +20,45 @@
         :title="item.label"
         @click="navigateTo(item.to)"
       />
+
+      <!-- Users group: Cleaners, Property Owners, Administrators -->
+      <v-list-group value="users">
+        <template #activator="{ props: groupProps }">
+          <v-list-item
+            v-bind="groupProps"
+            :active="usersGroupOpen"
+            color="primary"
+            :prepend-icon="usersGroupOpen ? 'mdi-account-multiple' : 'mdi-account-multiple-outline'"
+            rounded="lg"
+            title="Users"
+          />
+        </template>
+
+        <v-list-item
+          :active="isActive('/admin/cleaners')"
+          color="primary"
+          :prepend-icon="isActive('/admin/cleaners') ? 'mdi-account-hard-hat' : 'mdi-account-hard-hat-outline'"
+          rounded="lg"
+          title="Cleaners"
+          @click="navigateTo('/admin/cleaners')"
+        />
+        <v-list-item
+          :active="isActive('/admin/property-owners')"
+          color="primary"
+          :prepend-icon="isActive('/admin/property-owners') ? 'mdi-account-group' : 'mdi-account-group-outline'"
+          rounded="lg"
+          title="Property Owners"
+          @click="navigateTo('/admin/property-owners')"
+        />
+        <v-list-item
+          :active="isActive('/admin/users')"
+          color="primary"
+          :prepend-icon="isActive('/admin/users') ? 'mdi-account-cog' : 'mdi-account-cog-outline'"
+          rounded="lg"
+          title="Administrators"
+          @click="navigateTo('/admin/users')"
+        />
+      </v-list-group>
     </v-list>
 
     <v-divider class="mx-4 my-1" />
@@ -213,24 +252,6 @@
       to: '/admin/properties',
     },
     {
-      label: 'Cleaners',
-      icon: 'mdi-account-hard-hat-outline',
-      filledIcon: 'mdi-account-hard-hat',
-      to: '/admin/cleaners',
-    },
-    {
-      label: 'Property Owners',
-      icon: 'mdi-account-group-outline',
-      filledIcon: 'mdi-account-group',
-      to: '/admin/property-owners',
-    },
-    {
-      label: 'System Users',
-      icon: 'mdi-account-cog-outline',
-      filledIcon: 'mdi-account-cog',
-      to: '/admin/users',
-    },
-    {
       label: 'Reports',
       icon: 'mdi-chart-line',
       filledIcon: 'mdi-chart-line',
@@ -250,6 +271,10 @@
     if (to === '/admin') return route.path === '/admin'
     return route.path === to || route.path.startsWith(to + '/')
   }
+
+  const usersGroupOpen = computed(() =>
+    ['/admin/cleaners', '/admin/property-owners', '/admin/users'].some(path => isActive(path)),
+  )
 
   const availableCleanersCount = computed(() => 5)
 

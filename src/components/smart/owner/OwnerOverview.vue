@@ -55,6 +55,7 @@
 <script setup lang="ts">
   import type { Booking } from '@/types'
   import type { Property } from '@/types/property'
+  import type { PropertyColor } from '@/utils/constants'
   import { computed, onMounted, ref } from 'vue'
   import OwnerCleaningStatus from '@/components/dumb/owner/OwnerCleaningStatus.vue'
   import OwnerMiniCalendar from '@/components/dumb/owner/OwnerMiniCalendar.vue'
@@ -187,7 +188,7 @@
         const property = getProperty(booking.property_id)
         return {
           property: property ? formatPropertyAddress(property, 'short') : 'Unknown property',
-          propertyColor: property?.color || '#5c6bc0',
+          propertyColor: (property?.color || '#5c6bc0') as PropertyColor,
           checkinDate: booking.checkin_date,
           checkoutDate: booking.checkout_date,
           type: booking.booking_type,

@@ -243,7 +243,7 @@ import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
 import { useUIStore } from '@/stores/ui'
 import type { Booking, ModalData } from '@/types'
 import { formatPropertyAddress } from '@/types/property'
-import { formatStatus, getBookingStatusColor } from '@/utils/cal'
+import { formatStatus, getBookingStatusColor } from '@/utils/constants'
 import { computed, onMounted, ref } from 'vue'
 
   defineOptions({
@@ -403,6 +403,9 @@ import { computed, onMounted, ref } from 'vue'
         fetchMyBookings(),
         fetchMyProperties(),
       ])
+    } catch (err) {
+      console.error('Failed to load bookings data:', err)
+      uiStore.addNotification('error', 'Load Failed', 'Could not load bookings. Please refresh the page.')
     } finally {
       loading.value = false
     }
