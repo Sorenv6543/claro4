@@ -62,7 +62,7 @@ page.on('response', response => {
     kind: 'network',
     route: page.url().replace(baseUrl, '') || '/',
     type: 'http',
-    severity: status >= 500 ? 'High' : 'High',
+    severity: status >= 500 ? 'High' : 'Medium',
     message: `${status} ${response.request().method()} ${response.url()}`,
     source: response.url(),
   })
