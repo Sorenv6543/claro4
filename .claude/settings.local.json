@@ -22,7 +22,11 @@
       "mcp__vuetify-mcp__get_component_api_by_version",
       "Bash(xargs grep:*)",
       "Bash(/c/Users/Soren/AppData/Local/Programs/Python/Python311/python.exe:*)",
-      "Bash(chmod +x /c/Users/Soren/bin/python3)"
+      "Bash(chmod +x /c/Users/Soren/bin/python3)",
+      "Bash(C:/Users/Soren/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh:*)",
+      "Bash(xxd /c/Users/Soren/claro4/src/styles/main.scss)",
+      "Bash(winget list:*)",
+      "Bash('/c/Program Files/GitHub CLI/gh.exe' pr create --title 'restyle: Materio UI polish — gray background, animations, purple banner, filled nav icons' --body ':*')"
     ]
   },
   "enableAllProjectMcpServers": true,

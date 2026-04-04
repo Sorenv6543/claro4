@@ -166,7 +166,7 @@
 
   // Methods
   function exportReport () {
-    console.log('Exporting report...')
+    // TODO: Implement report export
   }
 </script>
 

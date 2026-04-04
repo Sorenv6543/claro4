@@ -23,30 +23,33 @@ import 'vuetify/styles'
 const lightTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    'v-theme-primary': '#7367F0',
-    'v-theme-primary-light': '#9E95F5',
-    'v-theme-primary-dark': '#5E52EE',
-    'v-theme-secondary': '#A8AAAE',
-    'v-theme-accent': '#7367F020',
-    'v-theme-background': '#F5F5F9',
-    'v-theme-surface': '#ffffff',
-    'v-theme-surface-variant': '#F5F5F9',
-    'v-theme-card-bg': '#ffffff',
-    'v-theme-success': '#28C76F',
-    'v-theme-warning': '#FF9F43',
-    'v-theme-error': '#EA5455',
-    'v-theme-info': '#00CFE8',
+    'primary': '#7367F0',
+    'primary-light': '#9E95F5',
+    'primary-dark': '#5E52EE',
+    'secondary': '#A8AAAE',
+    'accent': '#7367F0',
+    'background': '#F5F5F9',
+    'surface': '#ffffff',
+    'surface-variant': '#F5F5F9',
+    'card-bg': '#ffffff',
+    'success': '#28C76F',
+    'warning': '#FF9F43',
+    'error': '#EA5455',
+    'info': '#00CFE8',
 
-    'v-theme-turn-urgent': '#EA5455',
-    'v-theme-turn-standard': '#FF9F43',
-    'v-theme-booking-standard': '#28C76F',
+    'turn-urgent': '#EA5455',
+    'turn-standard': '#FF9F43',
+    'booking-standard': '#28C76F',
 
     /* ─── Colors: Text ────────────────────────────────────────────────── */
-    'v-theme-on-background': '#2E263D',
-    'v-theme-on-surface': '#2E263D',
-    'v-theme-text-secondary': 'rgba(46, 38, 61, 0.5)',
-    'v-theme-divider': '#E8E8E8',
+    'on-background': '#2E263D',
+    'on-surface': '#2E263D',
+    'text-secondary': '#2E263D80',
+    'divider': '#E8E8E8',
 
+  },
+  variables: {
+    'border-color': '#E8E8E8',
   },
 }
 
@@ -55,6 +58,11 @@ export default createVuetify({
     defaultTheme: 'light',
     themes: {
       light: lightTheme,
+    },
+    variations: {
+      colors: ['primary', 'secondary', 'accent', 'error', 'info', 'success', 'warning'],
+      lighten: 5,
+      darken: 3,
     },
   },
   // Icon configuration
@@ -75,8 +83,8 @@ export default createVuetify({
       elevation: 1,
     },
     VCard: {
-      elevation: 24,
-      rounded: 'sm',
+      elevation: 2,
+      rounded: 'lg',
       class: 'pa-2',
     },
     VChip: {

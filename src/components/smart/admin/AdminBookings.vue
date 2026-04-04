@@ -290,7 +290,7 @@ import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
 import { useUIStore } from '@/stores/ui'
 import type { Booking, BookingFormData } from '@/types/booking'
 import { formatPropertyAddress } from '@/types/property'
-import { getBookingStatusColor } from '@/utils/cal'
+import { getBookingStatusColor } from '@/utils/constants'
 import { computed, onMounted, ref } from 'vue'
 import { useDisplay } from 'vuetify'
 
@@ -467,11 +467,6 @@ import { useDisplay } from 'vuetify'
     return cleaner?.name || 'Unknown Cleaner'
   }
 
-  function getPropertyAddress (propertyId: string): string {
-    const property = allProperties.value.find(p => p.id === propertyId)
-    return property ? formatPropertyAddress(property) : 'Unknown Address'
-  }
-
   function getPropertyColor (propertyId: string): string {
     const property = allProperties.value.find(p => p.id === propertyId)
     return property?.color || '#9E9E9E'
@@ -499,16 +494,6 @@ import { useDisplay } from 'vuetify'
       weekday: 'short',
       month: 'short',
       day: 'numeric',
-    })
-  }
-
-  function formatDateTime (dateString: string): string {
-    const date = new Date(dateString)
-    return date.toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: 'numeric',
-      minute: '2-digit',
     })
   }
 
@@ -593,8 +578,10 @@ import { useDisplay } from 'vuetify'
           status: 'scheduled',
         })
         closeCleanerDialog()
+        uiStore.addNotification('success', 'Assigned', 'Cleaner assigned successfully')
       } catch (error) {
         console.error('Failed to assign cleaner:', error)
+        uiStore.addNotification('error', 'Assignment Failed', error instanceof Error ? error.message : 'Could not assign cleaner. Please try again.')
       }
     }
   }

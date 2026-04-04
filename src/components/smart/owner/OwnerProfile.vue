@@ -190,11 +190,11 @@
   const user = computed(() => authStore.user)
 
   function handleEditProfile () {
-    console.log('Edit profile clicked')
+    // TODO: Implement profile editing
   }
 
   function handleChangePassword () {
-    console.log('Change password clicked')
+    // TODO: Implement password change flow
   }
 
   function handleSettings () {

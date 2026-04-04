@@ -128,6 +128,7 @@
           <v-card>
             <v-data-table
               class="users-table"
+              density="compact"
               :headers="tableHeaders"
               :items="filteredUsers"
               :loading="loading"
@@ -136,9 +137,9 @@
             >
               <template #[`item.avatar`]="{ item }">
                 <v-avatar
-                  class="ma-2"
+                  class="my-1"
                   :color="getRoleColor(item.role)"
-                  :size="mobile ? 32 : 40"
+                  :size="mobile ? 28 : 32"
                 >
                   <span class="text-white font-weight-bold">
                     {{ getInitials(item.name) }}
@@ -267,13 +268,13 @@
 </template>
 
 <script setup lang="ts">
-  import type { User, UserFormData, UserRole } from '@/types/user'
-  import { computed, onMounted, ref } from 'vue'
-  import { useDisplay } from 'vuetify'
-  import StatCard from '@/components/dumb/shared/StatCard.vue'
   import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
-  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+import StatCard from '@/components/dumb/shared/StatCard.vue'
+import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+import type { User, UserFormData, UserRole } from '@/types/user'
+import { computed, onMounted, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
   const { mobile } = useDisplay()
   const {
@@ -429,6 +430,7 @@
       }
     } catch (error_) {
       console.error('Failed to save user:', error_)
+      error.value = error_ instanceof Error ? error_.message : 'Failed to save user. Please try again.'
     } finally {
       saving.value = false
     }
@@ -441,14 +443,18 @@
 
   async function handleDeleteConfirm () {
     if (!userToDelete.value) return
-    await removeUser(userToDelete.value.id)
-    deleteDialog.value = false
-    userToDelete.value = null
+    try {
+      await removeUser(userToDelete.value.id)
+      deleteDialog.value = false
+      userToDelete.value = null
+    } catch (error_) {
+      console.error('Failed to delete user:', error_)
+      error.value = error_ instanceof Error ? error_.message : 'Failed to delete user. Please try again.'
+    }
   }
 
-  function resetPassword (user: User) {
-    console.log('Reset password for:', user.name)
-  // TODO: Implement password reset flow
+  function resetPassword (_user: User) {
+    // TODO: Implement password reset flow
   }
 
   // Initialize
@@ -499,6 +505,12 @@
 
 .users-table :deep(.v-data-table__tbody tr:hover) {
   background: rgb(var(--v-theme-surface-variant));
+}
+
+.users-table :deep(.v-data-table__td),
+.users-table :deep(.v-data-table__th) {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
 }
 
 .user-name-cell {

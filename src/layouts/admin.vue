@@ -69,6 +69,7 @@
       :current-view="currentView"
       :loading="loading"
       :properties="properties"
+      :total-cleaners="allCleaners.length"
       :total-properties="totalProperties"
       :urgent-turns-count="urgentTurnsCount"
       @assign-cleaner="handleAssignCleaner"
@@ -96,6 +97,7 @@
 
   import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+  import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
   import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
   import { useAuthStore } from '@/stores/auth'
   import { useBookingStore } from '@/stores/booking'
@@ -108,6 +110,7 @@
   const bookingStore = useBookingStore()
   const propertyStore = usePropertyStore()
   const { users: _allUsers, fetchAllUsers } = useAdminUserManagement()
+  const { allCleaners, fetchCleaners } = useCleanerManagement()
   const { init: initRealtimeSync } = useRealtimeSync()
 
   // Initialize state
@@ -213,6 +216,7 @@
     try {
       await Promise.all([
         fetchAllUsers(),
+        fetchCleaners(),
         initRealtimeSync(),
       ])
     } catch (error) {

@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import type { Booking } from '@/types/booking';
-import { getBookingStatusColor } from '@/utils/cal';
+
+  import { getBookingStatusColor } from '@/utils/constants';
 import { computed } from 'vue';
 
   const props = defineProps<{
@@ -36,8 +37,6 @@ import { computed } from 'vue';
     && (!props.booking.assigned_group_ids || props.booking.assigned_group_ids.length === 0),
   )
 
-  const isInProgress = computed(() => props.booking.status === 'in_progress')
-
   const assigneeDisplay = computed(() => {
     if (props.teamName) return props.teamName
     if (props.groupNames?.length) return props.groupNames.join(', ')
@@ -50,13 +49,6 @@ import { computed } from 'vue';
     if (!name) return '?'
     return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()
   })
-
-  const borderStyle = computed(() => {
-    if (isUnassigned.value) return { borderLeft: '3px solid rgb(var(--v-theme-error))' }
-    if (isInProgress.value) return { borderLeft: '3px solid rgb(var(--v-theme-warning))' }
-    return {}
-  })
-
   const cardClass = computed(() => isUnassigned.value ? 'bg-error-lighten-5' : 'bg-white')
 
   const statusColor = computed(() => getBookingStatusColor(props.booking.status))
