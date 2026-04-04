@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import type { Booking } from '@/types/booking';
-import { getBookingStatusColor } from '@/utils/constants';
+
+  import { getBookingStatusColor } from '@/utils/constants';
 import { computed } from 'vue';
 
   const props = defineProps<{
@@ -48,8 +49,6 @@ import { computed } from 'vue';
     if (!name) return '?'
     return name.split(' ').map(w => w[0]).join('').substring(0, 2).toUpperCase()
   })
-
-
   const cardClass = computed(() => isUnassigned.value ? 'bg-error-lighten-5' : 'bg-white')
 
   const statusColor = computed(() => getBookingStatusColor(props.booking.status))

@@ -268,13 +268,13 @@
 </template>
 
 <script setup lang="ts">
-  import type { User, UserFormData, UserRole } from '@/types/user'
-  import { computed, onMounted, ref } from 'vue'
-  import { useDisplay } from 'vuetify'
-  import StatCard from '@/components/dumb/shared/StatCard.vue'
   import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
-  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+import StatCard from '@/components/dumb/shared/StatCard.vue'
+import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+import type { User, UserFormData, UserRole } from '@/types/user'
+import { computed, onMounted, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
   const { mobile } = useDisplay()
   const {
@@ -447,9 +447,9 @@
       await removeUser(userToDelete.value.id)
       deleteDialog.value = false
       userToDelete.value = null
-    } catch (err) {
-      console.error('Failed to delete user:', err)
-      error.value = err instanceof Error ? err.message : 'Failed to delete user. Please try again.'
+    } catch (error_) {
+      console.error('Failed to delete user:', error_)
+      error.value = error_ instanceof Error ? error_.message : 'Failed to delete user. Please try again.'
     }
   }
 

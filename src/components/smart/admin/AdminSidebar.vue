@@ -81,7 +81,7 @@
         </v-card>
         <v-card rounded="lg" variant="outlined">
           <v-card-text class="text-center pa-2">
-            <div class="text-h6 font-weight-bold text-warning">{{ urgentTurnsCount }}</div>
+            <div class="text-h6 font-weight-bold text-warning">{{ urgentBookings.length }}</div>
             <div class="text-caption text-medium-emphasis">Urgent</div>
           </v-card-text>
         </v-card>
@@ -95,7 +95,7 @@
     </div>
 
     <!-- Urgent Alerts -->
-    <template v-if="urgentBookings.length">
+    <template v-if="urgentBookings.length > 0">
       <v-divider class="mx-4 my-1" />
       <v-list class="pt-1" density="compact" nav>
         <v-list-subheader class="text-overline">
@@ -176,19 +176,20 @@
 </template>
 
 <script setup lang="ts">
-  import type { Booking } from '@/types/booking.ts'
-  import type { Property } from '@/types/property.ts'
-  import { computed } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
-  import { useDisplay } from 'vuetify'
   import { useAuthStore } from '@/stores/auth.ts'
-  import { formatPropertyAddress } from '@/types/property'
+import type { Booking } from '@/types/booking.ts'
+import { formatPropertyAddress } from '@/types/property'
+import type { Property } from '@/types/property.ts'
+import { computed } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useDisplay } from 'vuetify'
 
   interface Props {
     modelValue?: boolean
     bookings?: Booking[]
     properties?: Property[]
     totalProperties?: number
+    totalCleaners?: number
     activeCleaningsToday?: number
     urgentTurnsCount?: number
     loading?: boolean
@@ -201,6 +202,7 @@
     bookings: () => [],
     properties: () => [],
     totalProperties: 0,
+    totalCleaners: 0,
     activeCleaningsToday: 0,
     urgentTurnsCount: 0,
     loading: false,
@@ -276,10 +278,22 @@
     ['/admin/cleaners', '/admin/property-owners', '/admin/users'].some(path => isActive(path)),
   )
 
-  const availableCleanersCount = computed(() => 5)
+  const availableCleanersCount = computed(() => props.totalCleaners)
+
+  const propertyNameById = computed(() =>
+    new Map(
+      props.properties.map(property => [property.id, formatPropertyAddress(property, 'short')]),
+    ),
+  )
 
   const urgentBookings = computed(() =>
-    props.bookings.filter(b => b.booking_type === 'turn' && b.status === 'pending'),
+    props.bookings.filter(booking => {
+      const today = new Date().toISOString().split('T')[0]
+
+      return booking.checkout_date.startsWith(today)
+        && booking.booking_type === 'turn'
+        && booking.status !== 'completed'
+    }),
   )
 
   function navigateTo (path: string) {
@@ -296,8 +310,7 @@
   }
 
   function getPropertyName (propertyId: string): string {
-    const property = props.properties.find(p => p.id === propertyId)
-    return property ? formatPropertyAddress(property, 'short') : 'Unknown Property'
+    return propertyNameById.value.get(propertyId) ?? 'Unknown Property'
   }
 </script>
 

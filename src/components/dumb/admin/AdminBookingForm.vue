@@ -56,12 +56,14 @@
               >
                 <v-select
                   v-model="form.property_id"
-                  :disabled="loading"
+                  :disabled="loading || mode === 'edit'"
                   :error-messages="errors.get('property_id')"
+                  :hint="mode === 'edit' ? 'Property cannot be changed after booking creation' : undefined"
                   item-title="displayAddress"
                   item-value="id"
                   :items="propertiesArray"
                   label="Property"
+                  persistent-hint
                   prepend-inner-icon="mdi-home"
                   required
                   :rules="propertyRules"
@@ -215,22 +217,22 @@
                             <v-list-item v-bind="itemProps">
                               <template #prepend>
                                 <v-avatar
-                                  :color="getCleanerAvailabilityColor(item)"
+                                  :color="getCleanerAvailabilityColor(item.raw)"
                                   size="small"
                                 >
                                   <v-icon>mdi-account</v-icon>
                                 </v-avatar>
                               </template>
                               <template #subtitle>
-                                {{ getCleanerSubtitle(item) }}
+                                {{ getCleanerSubtitle(item.raw) }}
                               </template>
                               <template #append>
                                 <v-chip
-                                  :color="getCleanerAvailabilityColor(item)"
+                                  :color="getCleanerAvailabilityColor(item.raw)"
                                   size="x-small"
                                   variant="tonal"
                                 >
-                                  {{ getCleanerAvailabilityText(item) }}
+                                  {{ getCleanerAvailabilityText(item.raw) }}
                                 </v-chip>
                               </template>
                             </v-list-item>
@@ -268,7 +270,7 @@
                             Cleaner: {{ selectedCleaner.name }}
                           </template>
                           <p class="mb-1">
-                            <strong>Skills:</strong> {{ selectedCleaner.skills.join(', ') }}
+                            <strong>Skills:</strong> {{ (selectedCleaner.skills ?? []).join(', ') }}
                           </p>
                           <p class="mb-1">
                             <strong>Today's Bookings:</strong> {{ getCleanerTodayBookings(selectedCleaner.id) }}/{{ selectedCleaner.max_daily_bookings }}
@@ -451,12 +453,13 @@
 
 <script setup lang="ts">
   import type { Booking, BookingFormData } from '@/types/booking'
-  import type { Property } from '@/types/property'
-  import type { Cleaner } from '@/types/user'
-  import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
-  import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
-  import { computed, nextTick, ref, watch } from 'vue'
-  import { formatPropertyAddress } from '@/types/property'
+import type { Property } from '@/types/property'
+import { formatPropertyAddress } from '@/types/property'
+import type { Cleaner } from '@/types/user'
+import { isCleaner } from '@/types/user'
+import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
+import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
+import { computed, nextTick, ref, watch } from 'vue'
 
   // Props
   interface Props {
@@ -545,15 +548,12 @@
   })
 
   const availableCleaners = computed(() => {
-    return props.cleaners.filter(() => {
-      // Filter based on availability and skills if needed
-      return true // Simplified for now
-    })
+    return props.cleaners.filter(isCleaner)
   })
 
   const selectedCleaner = computed(() => {
     if (!form.value.assigned_cleaner_id) return null
-    return props.cleaners.find(c => c.id === form.value.assigned_cleaner_id)
+    return availableCleaners.value.find(c => c.id === form.value.assigned_cleaner_id)
   })
 
   const statusOptions = [
@@ -698,22 +698,24 @@
     return `Owner ${ownerId.slice(-4)}`
   }
 
-  function getCleanerAvailabilityColor (cleaner: Cleaner) {
-    // Simplified availability check
+  function getCleanerAvailabilityColor (cleaner: Cleaner | undefined) {
+    if (!cleaner?.id) return 'grey'
     const todayBookings = getCleanerTodayBookings(cleaner.id)
     if (todayBookings >= cleaner.max_daily_bookings) return 'red'
     if (todayBookings >= cleaner.max_daily_bookings * 0.8) return 'orange'
     return 'green'
   }
 
-  function getCleanerAvailabilityText (cleaner: Cleaner) {
+  function getCleanerAvailabilityText (cleaner: Cleaner | undefined) {
+    if (!cleaner?.id) return 'Unknown'
     const todayBookings = getCleanerTodayBookings(cleaner.id)
     if (todayBookings >= cleaner.max_daily_bookings) return 'Unavailable'
     if (todayBookings >= cleaner.max_daily_bookings * 0.8) return 'Limited'
     return 'Available'
   }
 
-  function getCleanerSubtitle (cleaner: Cleaner) {
+  function getCleanerSubtitle (cleaner: Cleaner | undefined) {
+    if (!cleaner?.skills) return ''
     return `${cleaner.skills.slice(0, 2).join(', ')} • ${getCleanerTodayBookings(cleaner.id)}/${cleaner.max_daily_bookings} bookings`
   }
 
@@ -743,8 +745,8 @@
     const cleanFormData: BookingFormData = {
       ...form.value,
       assigned_cleaner_id: form.value.assigned_cleaner_id || undefined,
-      owner_id: form.value.owner_id || '',
-      property_id: form.value.property_id || '',
+      owner_id: props.mode === 'edit' ? (props.booking?.owner_id || form.value.owner_id || '') : (form.value.owner_id || ''),
+      property_id: props.mode === 'edit' ? (props.booking?.property_id || form.value.property_id || '') : (form.value.property_id || ''),
     }
 
     emit('submit', cleanFormData)

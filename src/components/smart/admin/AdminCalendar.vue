@@ -153,7 +153,7 @@
     <AdminBookingForm
       v-model="adminBookingFormModal.show"
       :booking="adminBookingFormModal.booking"
-      :cleaners="(allUsers.filter(user => user.role === 'cleaner' || user.role === 'admin') as Cleaner[])"
+      :cleaners="allUsers.filter(isCleaner)"
       :errors="adminBookingFormModal.errors"
       :loading="adminBookingFormModal.loading"
       :mode="adminBookingFormModal.mode"
@@ -168,21 +168,22 @@
 </template>
 
 <script setup lang="ts">
-  import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
-  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, BookingFormData } from '@/types/booking.ts'
-  import type { Cleaner, User } from '@/types/user.ts'
+import type { Cleaner } from '@/types/user.ts'
+import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+import type { EventResizeDoneArg } from '@fullcalendar/interaction'
 
-  import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
   import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
-  import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
-  import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
+import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
+import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
+import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
 
   import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts'
-  import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
-  import { useCalendarState } from '@/composables/shared/useCalendarState'
-  import { useUIStore } from '@/stores/ui'
-  import { subtractOneDay } from '@/utils/calendarHelpers'
+import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
+import { useCalendarState } from '@/composables/shared/useCalendarState'
+import { useUIStore } from '@/stores/ui'
+import { isCleaner } from '@/types/user'
+import { subtractOneDay } from '@/utils/calendarHelpers'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when the schedule route is visited.
@@ -502,10 +503,7 @@
   }
 
   function openCleanerAssignmentModal (booking: Booking): void {
-    // Get available cleaners (users with cleaner role)
-    const cleaners = allUsers.value.filter((user: User) =>
-      user.role === 'cleaner' || user.role === 'admin',
-    ) as Cleaner[]
+    const cleaners = allUsers.value.filter(isCleaner)
 
     cleanerAssignmentModal.value = {
       show: true,
