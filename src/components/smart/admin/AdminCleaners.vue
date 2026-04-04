@@ -360,11 +360,20 @@
   ])
 
   const filteredCleaners = computed(() => {
-    if (!searchQuery.value) return allCleaners.value
-    const query = searchQuery.value.toLowerCase()
-    return allCleaners.value.filter(c =>
-      c.name.toLowerCase().includes(query) || c.email.toLowerCase().includes(query),
-    )
+    const query = searchQuery.value.trim().toLowerCase()
+    const selectedStatus = String(statusFilter.value ?? '').toLowerCase()
+
+    return allCleaners.value.filter((c) => {
+      const matchesStatus = !selectedStatus || selectedStatus === 'all'
+        ? true
+        : c.status.toLowerCase() === selectedStatus
+
+      const matchesSearch = !query
+        ? true
+        : c.name.toLowerCase().includes(query) || c.email.toLowerCase().includes(query)
+
+      return matchesStatus && matchesSearch
+    })
   })
 
   const cleanerStats = computed(() => ({
