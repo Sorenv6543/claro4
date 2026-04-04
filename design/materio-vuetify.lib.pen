@@ -15181,7 +15181,7 @@
           "id": "5UNpR",
           "name": "tabRow",
           "width": "fill_container",
-          "height": 3.8366049101371384e+78,
+          "height": "fit_content(32)",
           "gap": 8,
           "children": [
             {
