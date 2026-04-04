@@ -278,7 +278,7 @@ import { useDisplay } from 'vuetify'
     ['/admin/cleaners', '/admin/property-owners', '/admin/users'].some(path => isActive(path)),
   )
 
-  const availableCleanersCount = computed(() => props.totalCleaners)
+  const totalCleanersCount = computed(() => props.totalCleaners)
 
   const propertyNameById = computed(() =>
     new Map(
