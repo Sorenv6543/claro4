@@ -44,7 +44,7 @@ const lightTheme: ThemeDefinition = {
     /* ─── Colors: Text ────────────────────────────────────────────────── */
     'on-background': '#2E263D',
     'on-surface': '#2E263D',
-    'text-secondary': '#8C8794',
+    'text-secondary': '#2E263D80',
     'divider': '#E8E8E8',
 
   },
