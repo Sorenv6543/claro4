@@ -12,37 +12,66 @@
     </div>
 
     <!-- Search & Filters -->
-    <div v-if="searchable || $slots.filters" class="px-5 pb-3">
-      <v-row align="center" dense>
-        <v-col v-if="searchable" cols="12" :md="$slots.filters ? 4 : 6">
-          <v-text-field
-            v-model="searchQuery"
-            clearable
-            density="compact"
-            hide-details
-            placeholder="Search..."
-            prepend-inner-icon="mdi-magnify"
-            rounded="lg"
-            single-line
-            variant="outlined"
+    <div v-if="searchable || $slots.filters" class="px-4 pb-3">
+      <!-- Search row with filter toggle -->
+      <div class="d-flex align-center ga-2">
+        <v-text-field
+          v-if="searchable"
+          v-model="searchQuery"
+          clearable
+          density="compact"
+          hide-details
+          placeholder="Search..."
+          prepend-inner-icon="mdi-magnify"
+          rounded="lg"
+          single-line
+          variant="outlined"
+        />
+        <v-btn
+          v-if="$slots.filters && filtersCollapsible"
+          :color="activeFilterCount > 0 ? 'primary' : undefined"
+          density="comfortable"
+          :icon="showFilters ? 'mdi-tune-variant' : 'mdi-tune'"
+          rounded="lg"
+          size="small"
+          :variant="activeFilterCount > 0 ? 'tonal' : 'outlined'"
+          @click="showFilters = !showFilters"
+        >
+          <v-icon>mdi-tune</v-icon>
+          <v-badge
+            v-if="activeFilterCount > 0"
+            color="primary"
+            :content="activeFilterCount"
+            floating
+            offset-x="-2"
+            offset-y="-2"
           />
-        </v-col>
-        <v-col v-if="$slots.filters">
+        </v-btn>
+      </div>
+
+      <!-- Segment tabs slot -->
+      <div v-if="$slots.segments" class="mt-2">
+        <slot name="segments" />
+      </div>
+
+      <!-- Collapsible filters -->
+      <v-expand-transition>
+        <div v-if="$slots.filters && (!filtersCollapsible || showFilters)" class="mt-3">
           <slot name="filters" />
-        </v-col>
-      </v-row>
+        </div>
+      </v-expand-transition>
     </div>
 
     <!-- Data Table -->
     <v-data-table
       v-model:expanded="expandedRows"
       class="materio-table"
-      :headers="headers"
+      :expand-on-click="expandable"
+      :headers="visibleHeaders"
       item-value="id"
       :items="filteredItems"
       :items-per-page="itemsPerPage"
       :loading="loading"
-      :expand-on-click="expandable"
       :row-props="rowProps"
     >
       <!-- Pass through all slots from parent -->
@@ -80,6 +109,7 @@
 </template>
 
 <script setup lang="ts">
+  import { useDisplay } from 'vuetify'
   import { computed, ref, watch } from 'vue'
 
   export interface DataTableHeader {
@@ -88,6 +118,7 @@
     sortable?: boolean
     align?: 'start' | 'center' | 'end'
     width?: string | number
+    mobileHidden?: boolean
   }
 
   const props = withDefaults(defineProps<{
@@ -102,6 +133,8 @@
     itemsPerPage?: number
     elevation?: number | string
     rowProps?: Record<string, unknown> | ((data: { item: Record<string, unknown>, index: number }) => Record<string, unknown>)
+    filtersCollapsible?: boolean
+    activeFilterCount?: number
   }>(), {
     title: '',
     subtitle: '',
@@ -110,13 +143,18 @@
     expandable: false,
     searchKeys: () => [],
     itemsPerPage: 10,
-    elevation: 24,
+    elevation: 0,
     rowProps: undefined,
+    filtersCollapsible: true,
+    activeFilterCount: 0,
   })
+
+  const { mobile } = useDisplay()
 
   const searchQuery = ref('')
   const expandedRows = ref<string[]>([])
   const itemsPerPageLocal = ref(props.itemsPerPage)
+  const showFilters = ref(false)
 
   watch(() => props.itemsPerPage, val => {
     itemsPerPageLocal.value = val
@@ -134,6 +172,11 @@
         return val != null && String(val).toLowerCase().includes(query)
       }),
     )
+  })
+
+  const visibleHeaders = computed(() => {
+    if (!mobile.value) return props.headers
+    return props.headers.filter(h => !h.mobileHidden)
   })
 </script>
 
