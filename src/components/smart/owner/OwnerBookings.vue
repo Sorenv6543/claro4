@@ -232,8 +232,6 @@ import { computed, onMounted, ref } from 'vue'
   // Composables
   const {
     myBookings: ownerBookings,
-    myTodayTurns: todayBookings,
-    myUpcomingCleanings: upcomingBookings,
     fetchMyBookings,
     deleteMyBooking,
   } = useOwnerBookings()
@@ -272,10 +270,6 @@ import { computed, onMounted, ref } from 'vue'
 
   // Computed
   const ownerBookingsArray = computed(() => ownerBookings.value)
-
-  const turnBookings = computed(() =>
-    ownerBookingsArray.value.filter(b => b.booking_type === 'turn'),
-  )
 
   const propertyOptions = computed(() =>
     ownerProperties.value.map(p => ({

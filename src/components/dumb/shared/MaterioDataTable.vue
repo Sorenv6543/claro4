@@ -122,7 +122,7 @@
     title?: string
     subtitle?: string
     headers: DataTableHeader[]
-    items: Record<string, unknown>[]
+    items: readonly Record<string, any>[]
     loading?: boolean
     searchable?: boolean
     expandable?: boolean
