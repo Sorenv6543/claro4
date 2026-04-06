@@ -27,26 +27,23 @@
           single-line
           variant="outlined"
         />
-        <v-btn
+        <v-badge
           v-if="$slots.filters && filtersCollapsible"
-          :color="activeFilterCount > 0 ? 'primary' : undefined"
-          density="comfortable"
-          :icon="showFilters ? 'mdi-tune-variant' : 'mdi-tune'"
-          rounded="lg"
-          size="small"
-          :variant="activeFilterCount > 0 ? 'tonal' : 'outlined'"
-          @click="showFilters = !showFilters"
+          :content="activeFilterCount"
+          :model-value="activeFilterCount > 0"
+          color="primary"
+          floating
         >
-          <v-icon>mdi-tune</v-icon>
-          <v-badge
-            v-if="activeFilterCount > 0"
-            color="primary"
-            :content="activeFilterCount"
-            floating
-            offset-x="-2"
-            offset-y="-2"
+          <v-btn
+            :color="activeFilterCount > 0 ? 'primary' : undefined"
+            density="comfortable"
+            :icon="showFilters ? 'mdi-tune-variant' : 'mdi-tune'"
+            rounded="lg"
+            size="small"
+            :variant="activeFilterCount > 0 ? 'tonal' : 'outlined'"
+            @click="showFilters = !showFilters"
           />
-        </v-btn>
+        </v-badge>
       </div>
 
       <!-- Segment tabs slot -->
