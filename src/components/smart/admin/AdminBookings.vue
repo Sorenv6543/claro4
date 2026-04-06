@@ -1,20 +1,20 @@
 <template>
   <div class="admin-bookings-page">
-    <!-- Header -->
-    <div class="d-flex align-center justify-space-between pa-5 pb-3">
-      <div>
-        <h3 class="text-h5 font-weight-bold">All Bookings</h3>
-        <p class="text-body-2 text-medium-emphasis mt-1">
-          Manage all bookings across all properties and clients
-        </p>
-      </div>
-      <div class="d-flex align-center ga-2">
-        <v-btn
-          :icon="showFilters ? 'mdi-filter-off' : 'mdi-filter-variant'"
-          size="small"
-          variant="text"
-          @click="showFilters = !showFilters"
-        />
+    <!-- Bookings Data Table -->
+    <MaterioDataTable
+      :active-filter-count="activeFilterCount"
+      :headers="tableHeaders"
+      :items="tableItems"
+      :items-per-page="25"
+      :loading="false"
+      :row-props="bookingRowProps"
+      :search-keys="['propertyName', 'ownerName', 'cleanerName', 'status', 'booking_type']"
+      searchable
+      subtitle="Manage all bookings across all properties and clients"
+      title="All Bookings"
+    >
+      <!-- Header actions -->
+      <template #header-actions>
         <v-btn
           color="primary"
           prepend-icon="mdi-plus"
@@ -22,24 +22,29 @@
         >
           New Booking
         </v-btn>
-      </div>
-    </div>
+      </template>
 
-    <!-- Collapsible Filter Bar -->
-    <v-expand-transition>
-      <div v-if="showFilters" class="px-5 pb-4">
+      <!-- Segment tabs -->
+      <template #segments>
+        <div class="d-flex ga-2 flex-wrap">
+          <v-btn
+            v-for="seg in segments"
+            :key="seg.value"
+            color="primary"
+            density="compact"
+            rounded="lg"
+            size="small"
+            :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
+            @click="selectedSegment = seg.value"
+          >
+            {{ seg.title }}
+          </v-btn>
+        </div>
+      </template>
+
+      <!-- Collapsible filters -->
+      <template #filters>
         <v-row align="center" density="comfortable">
-          <v-col cols="12" md="3" sm="6">
-            <v-text-field
-              v-model="searchQuery"
-              clearable
-              density="compact"
-              hide-details
-              placeholder="Search bookings..."
-              prepend-inner-icon="mdi-magnify"
-              variant="outlined"
-            />
-          </v-col>
           <v-col cols="6" md="2" sm="3">
             <v-select
               v-model="statusFilter"
@@ -62,7 +67,7 @@
               variant="outlined"
             />
           </v-col>
-          <v-col cols="12" md="2" sm="6">
+          <v-col cols="12" md="3" sm="6">
             <v-select
               v-model="propertyFilter"
               clearable
@@ -73,7 +78,7 @@
               variant="outlined"
             />
           </v-col>
-          <v-col cols="6" md="1.5" sm="3">
+          <v-col cols="6" md="2.5" sm="3">
             <v-text-field
               v-model="dateFrom"
               density="compact"
@@ -83,7 +88,7 @@
               variant="outlined"
             />
           </v-col>
-          <v-col cols="6" md="1.5" sm="3">
+          <v-col cols="6" md="2.5" sm="3">
             <v-text-field
               v-model="dateTo"
               density="compact"
@@ -94,19 +99,7 @@
             />
           </v-col>
         </v-row>
-      </div>
-    </v-expand-transition>
-
-    <!-- Bookings Data Table -->
-    <MaterioDataTable
-      :headers="tableHeaders"
-      :items="tableItems"
-      :items-per-page="25"
-      :loading="false"
-      :row-props="bookingRowProps"
-      :search-keys="['propertyName', 'ownerName', 'cleanerName', 'status', 'booking_type']"
-      searchable
-    >
+      </template>
       <!-- Property Column -->
       <template #[`item.propertyName`]="{ item }">
         <div class="d-flex align-center ga-2">
@@ -316,13 +309,30 @@ import { useDisplay } from 'vuetify'
   })
 
   // Reactive state
-  const searchQuery = ref('')
   const statusFilter = ref('')
   const typeFilter = ref('')
   const propertyFilter = ref('')
   const dateFrom = ref('')
   const dateTo = ref('')
-  const showFilters = ref(false)
+  const selectedSegment = ref('all')
+
+  const segments = [
+    { title: 'All', value: 'all' },
+    { title: 'Pending', value: 'pending' },
+    { title: 'Scheduled', value: 'scheduled' },
+    { title: 'In Progress', value: 'in_progress' },
+    { title: 'Done', value: 'completed' },
+  ]
+
+  const activeFilterCount = computed(() => {
+    let count = 0
+    if (statusFilter.value) count++
+    if (typeFilter.value) count++
+    if (propertyFilter.value) count++
+    if (dateFrom.value) count++
+    if (dateTo.value) count++
+    return count
+  })
 
   // Dialog state
   const showBookingDialog = ref(false)
@@ -351,24 +361,15 @@ import { useDisplay } from 'vuetify'
   ]
 
   // Table headers
-  const tableHeaders = computed(() => {
-    if (mobile.value) {
-      return [
-        { title: 'Property', key: 'propertyName', sortable: true, width: '45%' },
-        { title: 'Status', key: 'status', sortable: true, width: '30%' },
-        { title: '', key: 'actions', sortable: false, width: '25%', align: 'end' as const },
-      ]
-    }
-    return [
-      { title: 'Property', key: 'propertyName', sortable: true },
-      { title: 'Dates', key: 'dates', sortable: false, width: '160px' },
-      { title: 'Type', key: 'booking_type', sortable: true, width: '110px' },
-      { title: 'Status', key: 'status', sortable: true, width: '120px' },
-      { title: 'Priority', key: 'priority', sortable: true, width: '100px' },
-      { title: 'Cleaner', key: 'cleanerName', sortable: true, width: '140px' },
-      { title: '', key: 'actions', sortable: false, width: '130px', align: 'end' as const },
-    ]
-  })
+  const tableHeaders = computed(() => [
+    { title: 'Property', key: 'propertyName', sortable: true },
+    { title: 'Dates', key: 'dates', sortable: false, width: '160px' },
+    { title: 'Type', key: 'booking_type', sortable: true, width: '110px', mobileHidden: true },
+    { title: 'Status', key: 'status', sortable: true, width: '120px', mobileHidden: true },
+    { title: 'Priority', key: 'priority', sortable: true, width: '100px', mobileHidden: true },
+    { title: 'Cleaner', key: 'cleanerName', sortable: true, width: '140px', mobileHidden: true },
+    { title: '', key: 'actions', sortable: false, width: '130px', align: 'end' as const, mobileHidden: true },
+  ])
 
   // Row props: clicking a row opens the edit dialog (action buttons use @click.stop to override)
   function bookingRowProps ({ item }: { item: Record<string, unknown> }) {
@@ -396,16 +397,9 @@ import { useDisplay } from 'vuetify'
   const filteredBookings = computed(() => {
     let bookings = allBookings.value
 
-    // Search filter
-    if (searchQuery.value) {
-      const query = searchQuery.value.toLowerCase()
-      bookings = bookings.filter(booking => {
-        const propertyName = getPropertyName(booking.property_id).toLowerCase()
-        const cleanerName = booking.assigned_cleaner_id
-          ? getCleanerName(booking.assigned_cleaner_id).toLowerCase()
-          : ''
-        return propertyName.includes(query) || cleanerName.includes(query)
-      })
+    // Segment filter
+    if (selectedSegment.value !== 'all') {
+      bookings = bookings.filter(b => b.status === selectedSegment.value)
     }
 
     // Status filter
