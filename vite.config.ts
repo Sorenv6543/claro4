@@ -222,7 +222,7 @@ export default defineConfig(({ mode }) => {
     },
     server: {
       port: 3000,
-      open: true,
+      open: false,
       sourcemapIgnoreList: false,
       hmr: {
         overlay: false,

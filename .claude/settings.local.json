@@ -26,7 +26,11 @@
       "Bash(C:/Users/Soren/.claude/plugins/cache/claude-plugins-official/superpowers/5.0.7/skills/brainstorming/scripts/start-server.sh:*)",
       "Bash(xxd /c/Users/Soren/claro4/src/styles/main.scss)",
       "Bash(winget list:*)",
-      "Bash('/c/Program Files/GitHub CLI/gh.exe' pr create --title 'restyle: Materio UI polish — gray background, animations, purple banner, filled nav icons' --body ':*')"
+      "Bash('/c/Program Files/GitHub CLI/gh.exe' pr create --title 'restyle: Materio UI polish — gray background, animations, purple banner, filled nav icons' --body ':*)",
+      "Bash(taskkill //PID 32292 //F)",
+      "Bash(taskkill //PID 9928 //F)",
+      "Bash(taskkill //PID 332 //F)",
+      "mcp__firecrawl__firecrawl_scrape"
     ]
   },
   "enableAllProjectMcpServers": true,
