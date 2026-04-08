@@ -240,28 +240,6 @@ const router = createRouter({
         requiresAuth: true,
       },
     },
-
-    // Dev/demo routes - no auth required, blocked in production
-    {
-      path: '/dev/demos',
-      name: 'dev-demos',
-      component: () => import('@/pages/demos/index.vue'),
-      meta: { layout: 'bare' },
-    },
-    {
-      path: '/dev/demos/:slug',
-      name: 'dev-demo-viewer',
-      component: () => import('@/pages/demos/[slug].vue'),
-      meta: { layout: 'bare' },
-    },
-
-    // ── AI Component Lab (ui-mockups worktree only) ─────────────────────────
-    {
-      path: '/lab',
-      name: 'lab',
-      component: () => import('@/pages/lab/index.vue'),
-      meta: { layout: 'bare', demo: true },
-    },
   ],
 })
 
