@@ -24,15 +24,6 @@
         <v-divider class="mx-3 my-0 d-none d-sm-flex" vertical />
 
         <v-btn
-          class="text-none mr-2"
-          size="small"
-          variant="outlined"
-          @click="calendarState.goToToday()"
-        >
-          Today
-        </v-btn>
-
-        <v-btn
           aria-label="Previous period"
           density="comfortable"
           icon="mdi-chevron-left"
@@ -74,36 +65,6 @@
         </v-btn-toggle>
       </template>
 
-      <!-- View switcher — calendar page only -->
-      <template v-if="isCalendarPage">
-        <v-menu location="bottom end">
-          <template #activator="{ props: menuProps }">
-            <v-btn
-              v-bind="menuProps"
-              append-icon="mdi-chevron-down"
-              class="text-none mr-2"
-              size="small"
-              variant="outlined"
-            >
-              {{ viewLabels[activeViewKey] }}
-            </v-btn>
-          </template>
-          <v-card rounded="lg">
-            <v-list density="compact" min-width="140">
-              <v-list-item
-                v-for="opt in viewOptions"
-                :key="opt.value"
-                :active="activeViewKey === opt.value"
-                color="primary"
-                :prepend-icon="opt.icon"
-                :title="opt.label"
-                @click="switchView(opt.value)"
-              />
-            </v-list>
-          </v-card>
-        </v-menu>
-      </template>
-
       <!-- Notification bell -->
       <v-btn
         aria-label="Notifications"
@@ -113,45 +74,7 @@
         variant="text"
       />
 
-      <!-- DEV: theme picker -->
-      <template v-if="isDev">
-        <v-menu :close-on-content-click="false" location="bottom end">
-          <template #activator="{ props: menuProps }">
-            <v-btn
-              v-bind="menuProps"
-              aria-label="Theme picker"
-              class="mr-1"
-              icon="mdi-palette"
-              size="small"
-              variant="text"
-            />
-          </template>
-          <v-card elevation="2" rounded="lg" style="padding:12px;width:296px">
-            <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px">
-              <div
-                v-for="t in THEMES"
-                :key="t.id"
-                style="position:relative;border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent"
-                :style="theme.global.name.value === t.id ? { borderColor: t.primary } : {}"
-                @click="applyTheme(t.id)"
-              >
-                <div style="display:flex;height:36px">
-                  <div :style="{ flex:1, background: t.primary }" />
-                  <div :style="{ flex:1, background: t.background }" />
-                  <div :style="{ flex:1, background: t.surface }" />
-                </div>
-                <div style="padding:3px 6px;font-size:11px;background:#fff;color:#333">{{ t.label }}</div>
-                <v-icon
-                  v-if="theme.global.name.value === t.id"
-                  color="white"
-                  size="14"
-                  style="position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.45);border-radius:50%;padding:2px"
-                >mdi-check</v-icon>
-              </div>
-            </div>
-          </v-card>
-        </v-menu>
-      </template>
+
 
       <!-- Avatar / user menu -->
       <v-menu location="bottom end">
@@ -166,7 +89,7 @@
             <span class="text-caption font-weight-bold">{{ userInitials }}</span>
           </v-avatar>
         </template>
-        <v-card rounded="lg">
+        <v-card>
           <v-list density="comfortable" min-width="160">
             <v-list-item
               prepend-icon="mdi-account-outline"
@@ -190,7 +113,6 @@
       <router-view />
     </v-main>
 
-    <OwnerBottomNav @open-drawer="sidebarOpen = true" />
   </v-app>
 </template>
 
@@ -198,16 +120,12 @@
   import { useAuthStore } from '@stores/auth'
   import { computed, onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
-  import { useDisplay, useTheme } from 'vuetify'
-  import OwnerBottomNav from '@/components/smart/owner/OwnerBottomNav.vue'
+  import { useDisplay } from 'vuetify'
   import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
   import { useCalendarState } from '@/composables/shared/useCalendarState'
   import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
-  import { THEMES } from '@/layouts/ownerThemes'
 
-  const isDev = import.meta.env.DEV
   const { mdAndUp } = useDisplay()
-  const theme = useTheme()
   const router = useRouter()
   const route = useRoute()
   const authStore = useAuthStore()
@@ -234,43 +152,6 @@
   const formattedMonthYearShort = computed(() =>
     calendarState.currentDate.value.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
   )
-
-  const viewOptions = [
-    { value: 'month', label: 'Month', icon: 'mdi-calendar-month-outline' },
-    { value: 'week', label: 'Week', icon: 'mdi-calendar-week-outline' },
-    { value: 'day', label: 'Day', icon: 'mdi-calendar-today-outline' },
-    { value: 'list', label: 'List', icon: 'mdi-format-list-bulleted' },
-  ] as const
-
-  const viewLabels: Record<string, string> = {
-    month: 'Month',
-    week: 'Week',
-    day: 'Day',
-    list: 'List',
-  }
-
-  const activeViewKey = computed(() => {
-    const v = calendarState.currentView.value
-    if (v === 'timeGridWeek') return 'week'
-    if (v === 'timeGridDay') return 'day'
-    if (v === 'listWeek') return 'list'
-    return 'month'
-  })
-
-  function switchView (key: string) {
-    const viewMap: Record<string, 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'> = {
-      week: 'timeGridWeek',
-      day: 'timeGridDay',
-      list: 'listWeek',
-      month: 'dayGridMonth',
-    }
-    calendarState.setCalendarView(viewMap[key] ?? 'dayGridMonth')
-  }
-
-  // ── Theme / Auth ─────────────────────────────────────────────────
-  function applyTheme (id: string) {
-    theme.global.name.value = id
-  }
 
   const userInitials = computed(() => {
     const name

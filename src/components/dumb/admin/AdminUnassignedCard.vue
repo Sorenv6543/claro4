@@ -17,7 +17,7 @@
 </script>
 
 <template>
-  <v-card border="error" class="mb-3" rounded="lg" variant="outlined">
+  <v-card border="error" class="mb-3" variant="outlined">
     <v-card-text>
       <div class="d-flex align-center justify-space-between mb-3">
         <span class="text-subtitle-2 font-weight-bold text-error">

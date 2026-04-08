@@ -934,7 +934,7 @@
     0 2px 4px rgba(0, 0, 0, 0.1),
     0 1px 2px rgba(0, 0, 0, 0.06) !important;
   transition: all 0.2s ease !important;
-  border-radius: 4px !important;
+  border-radius: 2px !important;
 }
 
 :deep(.fc-event:hover) {
@@ -1094,7 +1094,7 @@
 <!-- Unscoped: FullCalendar renders its own DOM outside Vue's scoping -->
 <style>
 .fc-event.transition-event {
-  border-radius: 6px !important;
+  border-radius: 2px !important;
   font-weight: 700;
   border: none !important;
 }

@@ -59,9 +59,9 @@
   --claro-space-xl: 32px;
 
   /* ─── Shape / Border Radii ────────────────────────────────────────── */
-  --claro-radius-sm:   4px;
-  --claro-radius-md:   8px;
-  --claro-radius-lg:   12px;
+  --claro-radius-sm:   2px;
+  --claro-radius-md:   2px;
+  --claro-radius-lg:   2px;
   --claro-radius-pill: 9999px;
 
   /* ─── Elevation / Shadows (Material-like) ─────────────────────────── */

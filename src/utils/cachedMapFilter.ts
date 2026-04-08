@@ -141,10 +141,13 @@ export function createMapCache (ttl = 10_000): MapCache {
   ): ComputedRef<(key: string) => Map<string, V>> => {
     const cached = ref(new Map<string, Map<string, V>>()) as Ref<Map<string, Map<string, V>>>
     const ownTimestamp = ref(0)
+    const keyTimestamps = new Map<string, number>()
     trackedParamCaches.push({ cache: cached as Ref<Map<string, unknown>>, timestamp: ownTimestamp })
 
     return computed(() => (key: string): Map<string, V> => {
-      if ((Date.now() - ownTimestamp.value) < ttl && cached.value.has(key)) {
+      const keyTs = keyTimestamps.get(key) ?? 0
+      // ownTimestamp is 0 after invalidation — force recompute for all keys
+      if (ownTimestamp.value > 0 && (Date.now() - keyTs) < ttl && cached.value.has(key)) {
         return cached.value.get(key)!
       }
 
@@ -157,6 +160,7 @@ export function createMapCache (ttl = 10_000): MapCache {
 
       cached.value.set(key, filtered)
       const now = Date.now()
+      keyTimestamps.set(key, now)
       ownTimestamp.value = now
       globalTimestamp.value = now
       return filtered

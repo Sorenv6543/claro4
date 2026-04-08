@@ -217,22 +217,22 @@
                             <v-list-item v-bind="itemProps">
                               <template #prepend>
                                 <v-avatar
-                                  :color="getCleanerAvailabilityColor(item.raw)"
+                                  :color="getCleanerAvailabilityColor(item as unknown as Cleaner)"
                                   size="small"
                                 >
                                   <v-icon>mdi-account</v-icon>
                                 </v-avatar>
                               </template>
                               <template #subtitle>
-                                {{ getCleanerSubtitle(item.raw) }}
+                                {{ getCleanerSubtitle(item as unknown as Cleaner) }}
                               </template>
                               <template #append>
                                 <v-chip
-                                  :color="getCleanerAvailabilityColor(item.raw)"
+                                  :color="getCleanerAvailabilityColor(item as unknown as Cleaner)"
                                   size="x-small"
                                   variant="tonal"
                                 >
-                                  {{ getCleanerAvailabilityText(item.raw) }}
+                                  {{ getCleanerAvailabilityText(item as unknown as Cleaner) }}
                                 </v-chip>
                               </template>
                             </v-list-item>
@@ -741,11 +741,17 @@ import { computed, nextTick, ref, watch } from 'vue'
     const { valid } = await formRef.value.validate()
     if (!valid) return
 
+    // Derive owner_id from selected property if not already set
+    const ownerId = form.value.owner_id
+      || props.properties.find(p => p.id === form.value.property_id)?.owner_id
+      || (props.mode === 'edit' ? props.booking?.owner_id : undefined)
+      || ''
+
     // Clean form data - convert empty strings to undefined for UUID fields
     const cleanFormData: BookingFormData = {
       ...form.value,
       assigned_cleaner_id: form.value.assigned_cleaner_id || undefined,
-      owner_id: props.mode === 'edit' ? (props.booking?.owner_id || form.value.owner_id || '') : (form.value.owner_id || ''),
+      owner_id: ownerId,
       property_id: props.mode === 'edit' ? (props.booking?.property_id || form.value.property_id || '') : (form.value.property_id || ''),
     }
 
@@ -809,6 +815,16 @@ import { computed, nextTick, ref, watch } from 'vue'
       form.value = { ...defaultForm }
     }
   }, { immediate: true })
+
+  // Derive owner_id from selected property in create mode
+  watch(() => form.value.property_id, newPropertyId => {
+    if (props.mode === 'create' && newPropertyId) {
+      const property = props.properties.find(p => p.id === newPropertyId)
+      if (property) {
+        form.value.owner_id = property.owner_id
+      }
+    }
+  })
 
   // Watch for modal open/close
   watch(isOpen, newValue => {

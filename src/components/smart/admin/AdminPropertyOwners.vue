@@ -1,211 +1,190 @@
 <template>
   <div class="admin-prop-owners">
-    <div class="owners-content">
-      <!-- Header (Desktop only) -->
-      <div
-        v-if="!mobile"
-        class="owners-header"
-      >
-        <v-container fluid>
-          <v-row align="center">
-            <v-col>
-              <h1 class="text-h4 font-weight-bold mb-2">
-                Property Owners
-              </h1>
-              <p class="text-subtitle-1 text-medium-emphasis">
-                Manage property owners and their portfolios
-              </p>
-            </v-col>
-            <v-col cols="auto">
-              <v-btn
-                color="primary"
-                prepend-icon="mdi-account-plus"
-                @click="inviteDialog = true"
-              >
-                Invite Owner
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-container>
-      </div>
-
-      <!-- Stats Cards -->
-      <div class="stats-section">
-        <v-container fluid>
-          <v-row density="compact">
-            <v-col cols="6" md="3">
-              <StatCard color="primary" icon="mdi-account-group" label="Total Owners" :value="propertyOwners.length" />
-            </v-col>
-            <v-col cols="6" md="3">
-              <StatCard color="success" icon="mdi-check-circle" label="Active" :value="activeOwnerCount" />
-            </v-col>
-            <v-col cols="6" md="3">
-              <StatCard color="info" icon="mdi-home-group" label="With Properties" :value="ownersWithProperties" />
-            </v-col>
-            <v-col cols="6" md="3">
-              <StatCard color="warning" icon="mdi-home-city" label="Total Properties" :value="totalProperties" />
-            </v-col>
-          </v-row>
-        </v-container>
-      </div>
-
-      <!-- Error Alert -->
-      <v-container
-        v-if="fetchError"
-        class="py-2"
-        fluid
-      >
-        <v-alert
-          closable
-          type="error"
-          @click:close="fetchError = null"
-        >
-          {{ fetchError }}
-        </v-alert>
+    <!-- Stats Cards -->
+    <div class="stats-section">
+      <v-container fluid>
+        <v-row density="compact">
+          <v-col cols="6" md="3">
+            <StatCard color="primary" icon="mdi-account-group" label="Total Owners" :value="propertyOwners.length" />
+          </v-col>
+          <v-col cols="6" md="3">
+            <StatCard color="success" icon="mdi-check-circle" label="Active" :value="activeOwnerCount" />
+          </v-col>
+          <v-col cols="6" md="3">
+            <StatCard color="info" icon="mdi-home-group" label="With Properties" :value="ownersWithProperties" />
+          </v-col>
+          <v-col cols="6" md="3">
+            <StatCard color="warning" icon="mdi-home-city" label="Total Properties" :value="totalProperties" />
+          </v-col>
+        </v-row>
       </v-container>
-
-      <!-- Filters and Search -->
-      <div class="filters-section">
-        <v-container fluid>
-          <v-row align="center">
-            <v-col cols="12" md="4">
-              <v-text-field
-                v-model="searchQuery"
-                clearable
-                density="compact"
-                label="Search by name, email, or company..."
-                prepend-inner-icon="mdi-magnify"
-              />
-            </v-col>
-            <v-col cols="6" md="2">
-              <v-select
-                v-model="statusFilter"
-                clearable
-                density="compact"
-                :items="statusOptions"
-                label="Status"
-              />
-            </v-col>
-            <v-col class="d-flex align-center gap-2" cols="12" md="4">
-              <v-chip
-                v-if="filteredOwners.length !== propertyOwners.length"
-                color="primary"
-                size="small"
-                variant="outlined"
-              >
-                {{ filteredOwners.length }} of {{ propertyOwners.length }} owners
-              </v-chip>
-            </v-col>
-          </v-row>
-        </v-container>
-      </div>
-
-      <!-- Owners Table -->
-      <div class="main-content">
-        <v-container fluid>
-          <v-card>
-            <v-data-table
-              class="owners-table"
-              density="compact"
-              :headers="tableHeaders"
-              :items="filteredOwners"
-              :loading="loading"
-              :mobile-breakpoint="0"
-              :search="searchQuery"
-            >
-              <!-- Owner name + email -->
-              <template #[`item.name`]="{ item }">
-                <div class="d-flex align-center py-2">
-                  <v-avatar
-                    class="me-3"
-                    :color="getAvatarColor(item.id)"
-                    :size="mobile ? 28 : 32"
-                  >
-                    <span class="text-white font-weight-bold">
-                      {{ getInitials(item.name) }}
-                    </span>
-                  </v-avatar>
-                  <div>
-                    <div class="font-weight-medium">{{ item.name }}</div>
-                    <div class="text-caption text-medium-emphasis">{{ item.email }}</div>
-                  </div>
-                </div>
-              </template>
-
-              <!-- Company -->
-              <template #[`item.company_name`]="{ item }">
-                <span v-if="item.company_name">{{ item.company_name }}</span>
-                <span v-else class="text-medium-emphasis">—</span>
-              </template>
-
-              <!-- Properties count -->
-              <template #[`item.propertyCount`]="{ item }">
-                <v-chip
-                  :color="item.properties.length > 0 ? 'primary' : 'default'"
-                  size="small"
-                  variant="tonal"
-                >
-                  <v-icon size="14" start>mdi-home-group</v-icon>
-                  {{ item.properties.length }}
-                </v-chip>
-              </template>
-
-              <!-- Status -->
-              <template #[`item.status`]="{ item }">
-                <v-chip
-                  :color="item.last_sign_in_at ? 'success' : 'warning'"
-                  size="small"
-                  variant="flat"
-                >
-                  {{ item.last_sign_in_at ? 'Active' : 'Inactive' }}
-                </v-chip>
-              </template>
-
-              <!-- Joined -->
-              <template #[`item.created_at`]="{ item }">
-                <span class="text-body-2">
-                  {{ item.created_at ? formatDate(item.created_at) : '—' }}
-                </span>
-              </template>
-
-              <!-- Actions -->
-              <template #[`item.actions`]="{ item }">
-                <div class="d-flex align-center gap-1">
-                  <v-btn
-                    aria-label="View owner details"
-                    icon="mdi-eye-outline"
-                    size="small"
-                    variant="text"
-                    @click.stop="viewOwner(item.id)"
-                  />
-                  <v-menu>
-                    <template #activator="{ props: menuProps }">
-                      <v-btn
-                        v-bind="menuProps"
-                        icon="mdi-dots-vertical"
-                        size="small"
-                        variant="text"
-                        @click.stop
-                      />
-                    </template>
-                    <v-list>
-                      <v-list-item @click="viewOwner(item.id)">
-                        <template #prepend><v-icon>mdi-eye-outline</v-icon></template>
-                        <v-list-item-title>View Details</v-list-item-title>
-                      </v-list-item>
-                      <v-list-item :href="`mailto:${item.email}`" @click.stop>
-                        <template #prepend><v-icon>mdi-email-outline</v-icon></template>
-                        <v-list-item-title>Send Email</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </div>
-              </template>
-            </v-data-table>
-          </v-card>
-        </v-container>
-      </div>
     </div>
+
+    <!-- Error Alert -->
+    <v-container
+      v-if="fetchError"
+      class="py-2"
+      fluid
+    >
+      <v-alert
+        closable
+        type="error"
+        @click:close="fetchError = null"
+      >
+        {{ fetchError }}
+      </v-alert>
+    </v-container>
+
+    <!-- Owners Data Table -->
+    <MaterioDataTable
+      :active-filter-count="activeFilterCount"
+      :headers="tableHeaders"
+      :items="filteredOwners"
+      :loading="loading"
+      :search-keys="['name', 'email', 'company_name']"
+      searchable
+      subtitle="Manage property owners and their portfolios"
+      title="Property Owners"
+    >
+      <!-- Header actions -->
+      <template #header-actions>
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-account-plus"
+          @click="inviteDialog = true"
+        >
+          Invite Owner
+        </v-btn>
+      </template>
+
+      <!-- Segment tabs -->
+      <template #segments>
+        <div class="d-flex ga-2 flex-wrap">
+          <v-btn
+            v-for="seg in segments"
+            :key="seg.value"
+            color="primary"
+            density="compact"
+            size="small"
+            :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
+            @click="selectedSegment = seg.value"
+          >
+            {{ seg.title }}
+          </v-btn>
+        </div>
+      </template>
+
+      <!-- Collapsible filters -->
+      <template #filters>
+        <v-row align="center" density="comfortable">
+          <v-col cols="6" md="3" sm="4">
+            <v-select
+              v-model="statusFilter"
+              clearable
+              density="compact"
+              hide-details
+              :items="statusOptions"
+              placeholder="Status"
+              variant="outlined"
+            />
+          </v-col>
+        </v-row>
+      </template>
+
+      <!-- Owner name + email -->
+      <template #[`item.name`]="{ item }">
+        <div class="d-flex align-center py-2">
+          <v-avatar
+            class="me-3"
+            :color="getAvatarColor(item.id as string)"
+            :size="mobile ? 28 : 32"
+          >
+            <span class="text-white font-weight-bold">
+              {{ getInitials(item.name as string) }}
+            </span>
+          </v-avatar>
+          <div style="min-width: 0">
+            <div class="font-weight-medium text-truncate">{{ item.name }}</div>
+            <div class="text-caption text-medium-emphasis text-truncate">{{ item.email }}</div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Company -->
+      <template #[`item.company_name`]="{ item }">
+        <span v-if="item.company_name">{{ item.company_name }}</span>
+        <span v-else class="text-medium-emphasis">&mdash;</span>
+      </template>
+
+      <!-- Properties count -->
+      <template #[`item.propertyCount`]="{ item }">
+        <v-chip
+          :color="(item.properties as unknown[]).length > 0 ? 'primary' : 'default'"
+          size="small"
+          variant="tonal"
+        >
+          <v-icon size="14" start>mdi-home-group</v-icon>
+          {{ (item.properties as unknown[]).length }}
+        </v-chip>
+      </template>
+
+      <!-- Status -->
+      <template #[`item.status`]="{ item }">
+        <v-chip
+          :color="item.last_sign_in_at ? 'success' : 'warning'"
+          size="small"
+          variant="flat"
+        >
+          {{ item.last_sign_in_at ? 'Active' : 'Inactive' }}
+        </v-chip>
+      </template>
+
+      <!-- Joined -->
+      <template #[`item.created_at`]="{ item }">
+        <span class="text-body-2">
+          {{ item.created_at ? formatDate(item.created_at as string) : '&mdash;' }}
+        </span>
+      </template>
+
+      <!-- Actions -->
+      <template #[`item.actions`]="{ item }">
+        <div class="d-flex align-center ga-1">
+          <v-tooltip location="top" text="View details">
+            <template #activator="{ props: tooltipProps }">
+              <v-btn
+                aria-label="View owner details"
+                icon="mdi-eye-outline"
+                size="small"
+                variant="text"
+                v-bind="tooltipProps"
+                @click.stop="viewOwner(item.id as string)"
+              />
+            </template>
+          </v-tooltip>
+          <v-menu>
+            <template #activator="{ props: menuProps }">
+              <v-btn
+                v-bind="menuProps"
+                icon="mdi-dots-vertical"
+                size="small"
+                variant="text"
+                @click.stop
+              />
+            </template>
+            <v-list>
+              <v-list-item @click="viewOwner(item.id as string)">
+                <template #prepend><v-icon>mdi-eye-outline</v-icon></template>
+                <v-list-item-title>View Details</v-list-item-title>
+              </v-list-item>
+              <v-list-item :href="`mailto:${item.email}`" @click.stop>
+                <template #prepend><v-icon>mdi-email-outline</v-icon></template>
+                <v-list-item-title>Send Email</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+      </template>
+    </MaterioDataTable>
 
     <!-- Invite Owner Dialog (placeholder) -->
     <v-dialog v-model="inviteDialog" max-width="500px">
@@ -230,18 +209,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <!-- Mobile FAB -->
-    <v-btn
-      v-if="mobile"
-      class="fab-btn"
-      color="primary"
-      icon="mdi-account-plus"
-      location="bottom end"
-      position="fixed"
-      size="large"
-      @click="inviteDialog = true"
-    />
   </div>
 </template>
 
@@ -249,6 +216,7 @@
   import { computed, onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
+  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import StatCard from '@/components/dumb/shared/StatCard.vue'
   import { supabase } from '@/plugins/supabase'
 
@@ -257,8 +225,8 @@
 
   const loading = ref(false)
   const fetchError = ref<string | null>(null)
-  const searchQuery = ref('')
   const statusFilter = ref<string | null>(null)
+  const selectedSegment = ref('all')
   const inviteDialog = ref(false)
   const inviteEmail = ref('')
 
@@ -274,10 +242,24 @@
 
   const propertyOwners = ref<OwnerRow[]>([])
 
+  // Segments
+  const segments = [
+    { title: 'All', value: 'all' },
+    { title: 'Active', value: 'active' },
+    { title: 'Inactive', value: 'inactive' },
+  ]
+
   const statusOptions = [
     { title: 'Active', value: 'active' },
     { title: 'Inactive', value: 'inactive' },
   ]
+
+  // Active filter count
+  const activeFilterCount = computed(() => {
+    let count = 0
+    if (statusFilter.value) count++
+    return count
+  })
 
   const totalProperties = computed(() =>
     propertyOwners.value.reduce((sum, o) => sum + o.properties.length, 0),
@@ -307,33 +289,27 @@
     return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' })
   }
 
-  const tableHeaders = computed(() => {
-    const h = [
-      { title: 'Owner', key: 'name', sortable: true },
-      { title: 'Company', key: 'company_name', sortable: true },
-      { title: 'Properties', key: 'propertyCount', sortable: true },
-      { title: 'Status', key: 'status', sortable: true },
-      { title: 'Joined', key: 'created_at', sortable: true },
-      { title: 'Actions', key: 'actions', sortable: false, align: 'end' as const, width: 100 },
-    ]
-    if (mobile.value) {
-      return h.filter(c => c.key !== 'company_name' && c.key !== 'created_at')
-    }
-    return h
-  })
+  // Table headers with mobileHidden
+  const tableHeaders = computed(() => [
+    { title: 'Owner', key: 'name', sortable: true },
+    { title: 'Company', key: 'company_name', sortable: true, mobileHidden: true },
+    { title: 'Properties', key: 'propertyCount', sortable: true, width: '110px' },
+    { title: 'Status', key: 'status', sortable: true, width: '100px', mobileHidden: true },
+    { title: 'Joined', key: 'created_at', sortable: true, width: '130px', mobileHidden: true },
+    { title: '', key: 'actions', sortable: false, align: 'end' as const, width: '100px', mobileHidden: true },
+  ])
 
   const filteredOwners = computed(() => {
     let owners = propertyOwners.value
 
-    if (searchQuery.value) {
-      const q = searchQuery.value.toLowerCase()
-      owners = owners.filter(o =>
-        o.name.toLowerCase().includes(q)
-        || o.email.toLowerCase().includes(q)
-        || (o.company_name && o.company_name.toLowerCase().includes(q)),
-      )
+    // Segment filter
+    if (selectedSegment.value === 'active') {
+      owners = owners.filter(o => !!o.last_sign_in_at)
+    } else if (selectedSegment.value === 'inactive') {
+      owners = owners.filter(o => !o.last_sign_in_at)
     }
 
+    // Status filter from collapsible filters
     if (statusFilter.value === 'active') {
       owners = owners.filter(o => !!o.last_sign_in_at)
     } else if (statusFilter.value === 'inactive') {
@@ -388,61 +364,29 @@
 
 <style scoped>
 .admin-prop-owners {
-  min-height: 100vh;
-  background: rgb(var(--v-theme-background));
-}
-
-.owners-content {
-  min-height: 100vh;
-}
-
-.owners-header {
-  background: rgb(var(--v-theme-surface));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-  padding: 24px 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .stats-section {
+  flex-shrink: 0;
   background: rgb(var(--v-theme-surface));
   border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
   padding: 16px 0;
 }
 
-.filters-section {
-  background: rgb(var(--v-theme-surface));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-  padding: 16px 0;
-}
-
-.main-content {
-  padding: 24px 0;
-}
-
-.owners-table {
-  background: rgb(var(--v-theme-surface));
-}
-
-.owners-table :deep(.v-data-table__tbody tr) {
-  cursor: pointer;
-}
-
-.owners-table :deep(.v-data-table__tbody tr:hover) {
-  background: rgb(var(--v-theme-surface-variant));
-}
-
-.owners-table :deep(.v-data-table__td),
-.owners-table :deep(.v-data-table__th) {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-}
-
-.fab-btn {
-  margin: 16px;
-}
-
+/* Force fixed-layout table so percentage column widths are respected on mobile */
 @media (max-width: 599px) {
-  .main-content {
-    padding: 12px 0;
+  :deep(.v-table table) {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  :deep(.v-table td),
+  :deep(.v-table th) {
+    overflow: hidden;
   }
 }
 </style>

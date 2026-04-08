@@ -439,7 +439,7 @@
   font-size: 0.9rem;
   padding: 8px;
   background: rgba(var(--v-theme-surface), 0.5);
-  border-radius: 4px;
+  border-radius: 2px;
 }
 
 .action-buttons {
@@ -451,7 +451,7 @@
 .countdown-timer {
   background: rgba(var(--v-theme-surface), 0.3);
   padding: 8px;
-  border-radius: 4px;
+  border-radius: 2px;
   border-left: 3px solid currentColor;
 }
 

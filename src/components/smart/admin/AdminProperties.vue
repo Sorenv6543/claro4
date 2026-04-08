@@ -1,286 +1,211 @@
 <template>
   <div class="admin-properties-page">
-    <!-- Page Header -->
-    <div class="page-header">
-      <v-container fluid>
-        <v-row align="center">
-          <v-col>
-            <h1 class="text-h4 font-weight-bold">
-              All Properties
-            </h1>
-            <p class="text-subtitle-1 text-medium-emphasis">
-              Manage all properties across all clients
-            </p>
-          </v-col>
-          <v-col cols="auto">
-            <v-btn
-              color="primary"
-              prepend-icon="mdi-plus"
-              @click="openCreatePropertyDialog"
-            >
-              Add Property
-            </v-btn>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
+    <MaterioDataTable
+      :active-filter-count="activeFilterCount"
+      :headers="tableHeaders"
+      :items="tableItems"
+      :items-per-page="25"
+      :loading="tableLoading"
+      :row-props="propertyRowProps"
+      :search-keys="['propertyName', 'fullAddress', 'ownerName']"
+      searchable
+      subtitle="Manage all properties across all clients"
+      title="All Properties"
+    >
+      <!-- Header actions -->
+      <template #header-actions>
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-plus"
+          @click="openCreatePropertyDialog"
+        >
+          Add Property
+        </v-btn>
+      </template>
 
-    <!-- Filters and Search -->
-    <div class="filters-section">
-      <v-container fluid>
-        <v-row align="center">
-          <v-col
-            cols="12"
-            md="3"
+      <!-- Segment tabs -->
+      <template #segments>
+        <div class="d-flex ga-2 flex-wrap">
+          <v-btn
+            v-for="seg in segments"
+            :key="seg.value"
+            color="primary"
+            density="compact"
+            size="small"
+            :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
+            @click="selectedSegment = seg.value"
           >
-            <v-text-field
-              v-model="searchQuery"
-              clearable
-              density="compact"
-              label="Search properties..."
-              prepend-inner-icon="mdi-magnify"
-              variant="outlined"
-            />
-          </v-col>
-          <v-col
-            cols="12"
-            md="2"
-          >
+            {{ seg.title }}
+          </v-btn>
+        </div>
+      </template>
+
+      <!-- Collapsible filters -->
+      <template #filters>
+        <v-row align="center" density="comfortable">
+          <v-col cols="6" md="2" sm="3">
             <v-select
               v-model="statusFilter"
               clearable
               density="compact"
+              hide-details
               :items="statusOptions"
-              label="Status"
+              placeholder="Status"
               variant="outlined"
             />
           </v-col>
-          <v-col
-            cols="12"
-            md="2"
-          >
+          <v-col cols="6" md="2" sm="3">
             <v-select
               v-model="tierFilter"
               clearable
               density="compact"
+              hide-details
               :items="tierOptions"
-              label="Pricing Tier"
+              placeholder="Pricing Tier"
               variant="outlined"
             />
           </v-col>
-          <v-col
-            cols="12"
-            md="2"
-          >
+          <v-col cols="6" md="3" sm="3">
             <v-select
               v-model="ownerFilter"
               clearable
               density="compact"
+              hide-details
               :items="ownerOptions"
-              label="Owner"
+              placeholder="Owner"
               variant="outlined"
             />
           </v-col>
-          <v-col
-            cols="12"
-            md="3"
-          >
-            <div class="d-flex gap-2">
-              <v-text-field
-                v-model="minDuration"
-                density="compact"
-                label="Min Duration"
-                suffix="min"
-                type="number"
-                variant="outlined"
-              />
-              <v-text-field
-                v-model="maxDuration"
-                density="compact"
-                label="Max Duration"
-                suffix="min"
-                type="number"
-                variant="outlined"
-              />
+          <v-col cols="3" md="2.5" sm="1.5">
+            <v-text-field
+              v-model="minDuration"
+              density="compact"
+              hide-details
+              placeholder="Min dur."
+              suffix="min"
+              type="number"
+              variant="outlined"
+            />
+          </v-col>
+          <v-col cols="3" md="2.5" sm="1.5">
+            <v-text-field
+              v-model="maxDuration"
+              density="compact"
+              hide-details
+              placeholder="Max dur."
+              suffix="min"
+              type="number"
+              variant="outlined"
+            />
+          </v-col>
+        </v-row>
+      </template>
+
+      <!-- Property Name Column -->
+      <template #[`item.propertyName`]="{ item }">
+        <div class="d-flex align-center ga-2">
+          <div
+            class="property-color-dot"
+            :style="{ background: (item.color as string) || '#9E9E9E' }"
+          />
+          <div style="min-width:0">
+            <div class="text-body-2 font-weight-medium text-truncate">
+              {{ item.propertyName }}
             </div>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
-
-    <!-- Main Content -->
-    <div class="page-content">
-      <v-container fluid>
-        <!-- Properties Grid -->
-        <div
-          v-if="filteredProperties.length === 0"
-          class="text-center py-8"
-        >
-          <v-icon
-            color="grey-lighten-1"
-            size="64"
-          >
-            mdi-home-search
-          </v-icon>
-          <p class="text-h6 text-medium-emphasis mt-4">
-            No properties found
-          </p>
-          <p class="text-body-2 text-medium-emphasis">
-            Try adjusting your filters or add a new property
-          </p>
+            <div class="text-caption text-medium-emphasis text-truncate">
+              {{ item.fullAddress }}
+            </div>
+          </div>
         </div>
+      </template>
 
-        <v-row v-else>
-          <v-col
-            v-for="property in filteredProperties"
-            :key="property.id"
-            cols="12"
-            lg="3"
-            md="4"
-            sm="6"
-          >
-            <v-card
-              class="property-card"
-              @click="openPropertyDetails(property)"
-            >
-              <v-card-text>
-                <!-- Status and Tier -->
-                <div class="d-flex justify-space-between align-center mb-2">
-                  <v-chip
-                    :color="property.active ? 'success' : 'error'"
-                    size="small"
-                    variant="flat"
-                  >
-                    {{ property.active ? 'Active' : 'Inactive' }}
-                  </v-chip>
-                  <v-chip
-                    :color="getTierColor(property.pricing_tier)"
-                    size="small"
-                    variant="outlined"
-                  >
-                    {{ property.pricing_tier }}
-                  </v-chip>
-                </div>
+      <!-- Owner Column -->
+      <template #[`item.ownerName`]="{ item }">
+        <span class="text-body-2">{{ item.ownerName }}</span>
+      </template>
 
-                <!-- Property Name -->
-                <h3 class="text-h6 font-weight-medium mb-2">
-                  {{ formatPropertyAddress(property, 'short') }}
-                </h3>
+      <!-- Tier Column (chip) -->
+      <template #[`item.pricing_tier`]="{ item }">
+        <v-chip
+          class="text-capitalize"
+          :color="getTierColor(item.pricing_tier as PricingTier)"
+          size="small"
+          variant="outlined"
+        >
+          {{ item.pricing_tier }}
+        </v-chip>
+      </template>
 
-                <!-- Address -->
-                <div class="text-body-2 text-medium-emphasis mb-2">
-                  <v-icon
-                    class="mr-1"
-                    size="16"
-                  >
-                    mdi-map-marker
-                  </v-icon>
-                  {{ formatPropertyAddress(property) }}
-                </div>
+      <!-- Status Column (chip) -->
+      <template #[`item.status`]="{ item }">
+        <v-chip
+          :color="item.active ? 'success' : 'error'"
+          size="small"
+          variant="flat"
+        >
+          {{ item.active ? 'Active' : 'Inactive' }}
+        </v-chip>
+      </template>
 
-                <!-- Property Details -->
-                <div class="property-details mb-3">
-                  <div class="d-flex justify-space-between text-body-2">
-                    <span>
-                      <v-icon
-                        class="mr-1"
-                        size="16"
-                      >mdi-bed</v-icon>
-                      {{ property.bedrooms || 'N/A' }} bed
-                    </span>
-                    <span>
-                      <v-icon
-                        class="mr-1"
-                        size="16"
-                      >mdi-shower</v-icon>
-                      {{ property.bathrooms || 'N/A' }} bath
-                    </span>
-                  </div>
-                  <div class="d-flex justify-space-between text-body-2 mt-1">
-                    <span>
-                      <v-icon
-                        class="mr-1"
-                        size="16"
-                      >mdi-clock</v-icon>
-                      {{ property.cleaning_duration }}min
-                    </span>
-                    <span>
-                      <v-icon
-                        class="mr-1"
-                        size="16"
-                      >mdi-resize</v-icon>
-                      {{ property.square_feet || 'N/A' }} sqft
-                    </span>
-                  </div>
-                </div>
+      <!-- Duration Column -->
+      <template #[`item.cleaning_duration`]="{ item }">
+        <span class="text-body-2">{{ item.cleaning_duration }}min</span>
+      </template>
 
-                <!-- Owner Info -->
-                <div class="text-caption text-medium-emphasis mb-3">
-                  Owner: {{ getOwnerName(property.owner_id) }}
-                </div>
+      <!-- Details Column (beds / baths) -->
+      <template #[`item.details`]="{ item }">
+        <div class="text-body-2 text-no-wrap">
+          <span>{{ item.bedrooms || '-' }}bd / {{ item.bathrooms || '-' }}ba</span>
+        </div>
+      </template>
 
-                <!-- Booking Stats -->
-                <div class="booking-stats">
-                  <div class="d-flex justify-space-between text-body-2">
-                    <span>Total Bookings:</span>
-                    <span class="font-weight-bold">{{ getPropertyBookingCount(property.id) }}</span>
-                  </div>
-                  <div class="d-flex justify-space-between text-body-2">
-                    <span>Turn Bookings:</span>
-                    <span class="font-weight-bold text-warning">{{ getPropertyTurnCount(property.id) }}</span>
-                  </div>
-                </div>
-              </v-card-text>
-
-              <v-card-actions>
-                <v-btn
-                  size="small"
-                  variant="text"
-                  @click.stop="editProperty(property)"
-                >
-                  Edit
-                </v-btn>
-                <v-btn
-                  size="small"
-                  variant="text"
-                  @click.stop="viewBookings(property)"
-                >
-                  Bookings
-                </v-btn>
-                <v-spacer />
-                <v-menu>
-                  <template #activator="{ props }">
-                    <v-btn
-                      icon="mdi-dots-vertical"
-                      size="small"
-                      variant="text"
-                      v-bind="props"
-                      @click.stop
-                    />
-                  </template>
-                  <v-list>
-                    <v-list-item @click="togglePropertyStatus(property)">
-                      <v-list-item-title>
-                        {{ property.active ? 'Deactivate' : 'Activate' }}
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="duplicateProperty(property)">
-                      <v-list-item-title>Duplicate</v-list-item-title>
-                    </v-list-item>
-                    <v-list-item
-                      class="text-error"
-                      @click="deleteProperty(property)"
-                    >
-                      <v-list-item-title>Delete</v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </div>
+      <!-- Actions Column -->
+      <template #[`item.actions`]="{ item }">
+        <div class="d-flex align-center ga-1">
+          <v-tooltip location="top" text="Edit">
+            <template #activator="{ props: tooltipProps }">
+              <v-btn
+                icon="mdi-pencil-outline"
+                size="small"
+                variant="text"
+                v-bind="tooltipProps"
+                @click.stop="editProperty(item as unknown as Property)"
+              />
+            </template>
+          </v-tooltip>
+          <v-menu>
+            <template #activator="{ props: menuProps }">
+              <v-btn
+                icon="mdi-dots-vertical"
+                size="small"
+                variant="text"
+                v-bind="menuProps"
+                @click.stop
+              />
+            </template>
+            <v-list>
+              <v-list-item @click="viewBookings(item as unknown as Property)">
+                <v-list-item-title>View Bookings</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="togglePropertyStatus(item as unknown as Property)">
+                <v-list-item-title>
+                  {{ (item as unknown as Property).active ? 'Deactivate' : 'Activate' }}
+                </v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="duplicateProperty(item as unknown as Property)">
+                <v-list-item-title>Duplicate</v-list-item-title>
+              </v-list-item>
+              <v-list-item
+                class="text-error"
+                @click="deleteProperty(item as unknown as Property)"
+              >
+                <v-list-item-title>Delete</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+      </template>
+    </MaterioDataTable>
 
     <!-- Create/Edit Property Dialog -->
     <v-dialog
@@ -325,28 +250,41 @@
 </template>
 
 <script setup lang="ts">
+  import { computed, ref } from 'vue'
   import type { Booking } from '@/types/booking.ts'
   import type { PricingTier, Property } from '@/types/property.ts'
-  import { computed, ref } from 'vue'
+  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
   import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts'
+  import { usePropertyStore } from '@/stores/property'
   import { formatPropertyAddress } from '@/types/property'
 
   // Composables
   const { allProperties, updateProperty } = useAdminProperties()
   const { allBookings } = useAdminBookings()
+  const propertyStore = usePropertyStore()
+
+  // Loading state — tracks store's loading ref (set by useSupabaseProperties)
+  const tableLoading = computed(() => propertyStore.loading)
 
   // Reactive state
-  const searchQuery = ref('')
   const statusFilter = ref('')
   const tierFilter = ref('')
   const ownerFilter = ref('')
   const minDuration = ref('')
   const maxDuration = ref('')
+  const selectedSegment = ref('all')
 
   // Dialog state
   const showPropertyDialog = ref(false)
   const editingProperty = ref<Property | null>(null)
+
+  // Segments
+  const segments = [
+    { title: 'All', value: 'all' },
+    { title: 'Active', value: 'active' },
+    { title: 'Inactive', value: 'inactive' },
+  ]
 
   // Filter options
   const statusOptions = [
@@ -360,6 +298,36 @@
     { title: 'Premium', value: 'premium' },
     { title: 'Luxury', value: 'luxury' },
   ]
+
+  // Active filter count for badge
+  const activeFilterCount = computed(() => {
+    let count = 0
+    if (statusFilter.value) count++
+    if (tierFilter.value) count++
+    if (ownerFilter.value) count++
+    if (minDuration.value) count++
+    if (maxDuration.value) count++
+    return count
+  })
+
+  // Table headers
+  const tableHeaders = computed(() => [
+    { title: 'Property', key: 'propertyName', sortable: true },
+    { title: 'Owner', key: 'ownerName', sortable: true, width: '140px' },
+    { title: 'Tier', key: 'pricing_tier', sortable: true, width: '110px', mobileHidden: true },
+    { title: 'Status', key: 'status', sortable: false, width: '110px', mobileHidden: true },
+    { title: 'Duration', key: 'cleaning_duration', sortable: true, width: '100px', mobileHidden: true },
+    { title: 'Details', key: 'details', sortable: false, width: '110px', mobileHidden: true },
+    { title: '', key: 'actions', sortable: false, width: '60px', align: 'end' as const },
+  ])
+
+  // Row props: clicking a row opens the detail/edit
+  function propertyRowProps ({ item }: { item: Record<string, unknown> }) {
+    return {
+      onClick: () => openPropertyDetails(item as unknown as Property),
+      style: 'cursor: pointer',
+    }
+  }
 
   // Computed properties
   const allPropertiesArray = computed<Property[]>(() => allProperties.value)
@@ -376,17 +344,14 @@
   const filteredProperties = computed((): Property[] => {
     let properties = allPropertiesArray.value
 
-    // Search filter
-    if (searchQuery.value) {
-      const query = searchQuery.value.toLowerCase()
-      properties = properties.filter(property =>
-        formatPropertyAddress(property, 'short').toLowerCase().includes(query)
-        || formatPropertyAddress(property).toLowerCase().includes(query)
-        || getOwnerName(property.owner_id).toLowerCase().includes(query),
-      )
+    // Segment filter
+    if (selectedSegment.value === 'active') {
+      properties = properties.filter(p => p.active)
+    } else if (selectedSegment.value === 'inactive') {
+      properties = properties.filter(p => !p.active)
     }
 
-    // Status filter
+    // Status filter (from collapsible filters, separate from segment)
     if (statusFilter.value) {
       const isActive = statusFilter.value === 'active'
       properties = properties.filter(property => property.active === isActive)
@@ -414,6 +379,18 @@
 
     // Sort by name
     return properties.toSorted((a, b) => formatPropertyAddress(a, 'short').localeCompare(formatPropertyAddress(b, 'short')))
+  })
+
+  // Transform properties into table-friendly items with extra display fields
+  const tableItems = computed(() => {
+    return filteredProperties.value.map(property => ({
+      ...property,
+      propertyName: formatPropertyAddress(property, 'short'),
+      fullAddress: formatPropertyAddress(property),
+      ownerName: getOwnerName(property.owner_id),
+      bookingCount: getPropertyBookingCount(property.id),
+      turnCount: getPropertyTurnCount(property.id),
+    }))
   })
 
   // Helper methods
@@ -450,7 +427,7 @@
 
   function openPropertyDetails (property: Property) {
     console.log('Opening property details:', property.id)
-  // Navigate to property details or open details modal
+    // Navigate to property details or open details modal
   }
 
   function editProperty (property: Property) {
@@ -472,7 +449,7 @@
   // Property actions
   function viewBookings (property: Property) {
     console.log('Viewing bookings for property:', property.id)
-  // Navigate to bookings page with property filter
+    // Navigate to bookings page with property filter
   }
 
   async function togglePropertyStatus (property: Property) {
@@ -486,73 +463,42 @@
 
   function duplicateProperty (property: Property) {
     console.log('Duplicating property:', property.id)
-  // Implement property duplication logic
+    // Implement property duplication logic
   }
 
   async function deleteProperty (property: Property) {
     if (confirm(`Are you sure you want to delete "${formatPropertyAddress(property, 'short')}"?`)) {
       console.log('Deleting property:', property.id)
-    // Implement property deletion logic
+      // Implement property deletion logic
     }
   }
 </script>
 
 <style scoped>
 .admin-properties-page {
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow: hidden;
 }
 
-.page-header {
+.property-color-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   flex-shrink: 0;
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-  background: rgb(var(--v-theme-surface));
 }
 
-.filters-section {
-  flex-shrink: 0;
-  background: rgb(var(--v-theme-surface));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-}
-
-.page-content {
-  flex: 1;
-  overflow-y: auto;
-  background: rgb(var(--v-theme-background));
-}
-
-.property-card {
-  height: 100%;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.property-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.property-details {
-  border-top: 1px solid rgb(var(--v-theme-surface-variant));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-  padding: 8px 0;
-}
-
-.booking-stats {
-  background: rgb(var(--v-theme-surface-variant));
-  border-radius: 4px;
-  padding: 8px;
-}
-
-@media (max-width: 960px) {
-  .admin-properties-page {
-    height: auto;
+/* Force fixed-layout table so percentage column widths are respected on mobile */
+@media (max-width: 599px) {
+  :deep(.v-table table) {
+    table-layout: fixed;
+    width: 100%;
   }
 
-  .page-content {
-    overflow-y: visible;
+  :deep(.v-table td),
+  :deep(.v-table th) {
+    overflow: hidden;
   }
 }
 </style>

@@ -371,7 +371,7 @@
   background: rgba(255, 255, 255, 0.95);
   color: #d32f2f;
   padding: 12px 24px;
-  border-radius: 16px;
+  border-radius: 2px;
   text-align: center;
   min-width: 250px;
   border: 2px solid rgba(255, 255, 255, 0.8);
@@ -423,7 +423,7 @@
   color: white;
   width: 32px;
   height: 32px;
-  border-radius: 6px;
+  border-radius: 2px;
   display: flex;
   align-items: center;
   justify-content: center;

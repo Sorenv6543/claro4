@@ -1,236 +1,211 @@
 <template>
   <div class="admin-system-users">
-    <div class="users-content">
-      <!-- Header (Desktop only) -->
-      <div
-        v-if="!mobile"
-        class="users-header"
-      >
-        <v-container fluid>
-          <v-row align="center">
-            <v-col>
-              <h1 class="text-h4 font-weight-bold mb-2">
-                System Users
-              </h1>
-              <p class="text-subtitle-1 text-medium-emphasis">
-                Manage all system users including admins, property owners, and cleaners
-              </p>
-            </v-col>
-            <v-col cols="auto">
-              <v-btn
-                color="primary"
-                prepend-icon="mdi-account-plus"
-                @click="openAddUser"
-              >
-                Add User
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-container>
-      </div>
-
-      <!-- Stats Cards -->
-      <div class="stats-section">
-        <v-container fluid>
-          <v-row density="compact">
-            <v-col cols="6" md="3">
-              <StatCard color="primary" icon="mdi-account-group" label="Total Users" :value="totalUsers" />
-            </v-col>
-            <v-col cols="6" md="3">
-              <StatCard color="success" icon="mdi-shield-account" label="Admins" :value="adminCount" />
-            </v-col>
-            <v-col cols="6" md="3">
-              <StatCard color="info" icon="mdi-home-account" label="Property Owners" :value="ownerCount" />
-            </v-col>
-            <v-col cols="6" md="3">
-              <StatCard color="warning" icon="mdi-broom" label="Cleaners" :value="cleanerCount" />
-            </v-col>
-          </v-row>
-        </v-container>
-      </div>
-
-      <!-- Error Alert -->
-      <v-container
-        v-if="error"
-        class="py-2"
-        fluid
-      >
-        <v-alert
-          closable
-          type="error"
-          @click:close="error = null"
-        >
-          {{ error }}
-        </v-alert>
+    <!-- Stats Cards -->
+    <div class="stats-section">
+      <v-container fluid>
+        <v-row density="compact">
+          <v-col cols="6" md="3">
+            <StatCard color="primary" icon="mdi-account-group" label="Total Users" :value="totalUsers" />
+          </v-col>
+          <v-col cols="6" md="3">
+            <StatCard color="success" icon="mdi-shield-account" label="Admins" :value="adminCount" />
+          </v-col>
+          <v-col cols="6" md="3">
+            <StatCard color="info" icon="mdi-home-account" label="Property Owners" :value="ownerCount" />
+          </v-col>
+          <v-col cols="6" md="3">
+            <StatCard color="warning" icon="mdi-broom" label="Cleaners" :value="cleanerCount" />
+          </v-col>
+        </v-row>
       </v-container>
-
-      <!-- Filters and Search -->
-      <div class="filters-section">
-        <v-container fluid>
-          <v-row align="center">
-            <v-col
-              cols="12"
-              md="4"
-            >
-              <v-text-field
-                v-model="searchQuery"
-                clearable
-                density="compact"
-                label="Search users..."
-                prepend-inner-icon="mdi-magnify"
-              />
-            </v-col>
-            <v-col
-              cols="6"
-              md="2"
-            >
-              <v-select
-                v-model="roleFilter"
-                clearable
-                density="compact"
-                :items="roleOptions"
-                label="Role"
-              />
-            </v-col>
-            <v-col
-              cols="6"
-              md="2"
-            >
-              <v-select
-                v-model="statusFilter"
-                clearable
-                density="compact"
-                :items="statusOptions"
-                label="Status"
-              />
-            </v-col>
-            <v-col
-              class="d-flex align-center gap-2"
-              cols="12"
-              md="4"
-            >
-              <v-chip
-                v-if="filteredUsers.length !== allUsers.length"
-                color="primary"
-                size="small"
-                variant="outlined"
-              >
-                {{ filteredUsers.length }} of {{ allUsers.length }} users
-              </v-chip>
-            </v-col>
-          </v-row>
-        </v-container>
-      </div>
-
-      <!-- Users Table -->
-      <div class="main-content">
-        <v-container fluid>
-          <v-card>
-            <v-data-table
-              class="users-table"
-              density="compact"
-              :headers="tableHeaders"
-              :items="filteredUsers"
-              :loading="loading"
-              :mobile-breakpoint="0"
-              :search="searchQuery"
-            >
-              <template #[`item.avatar`]="{ item }">
-                <v-avatar
-                  class="my-1"
-                  :color="getRoleColor(item.role)"
-                  :size="mobile ? 28 : 32"
-                >
-                  <span class="text-white font-weight-bold">
-                    {{ getInitials(item.name) }}
-                  </span>
-                </v-avatar>
-              </template>
-
-              <template #[`item.name`]="{ item }">
-                <div class="user-name-cell">
-                  <div
-                    class="user-name font-weight-medium"
-                    :class="mobile ? 'text-body-2' : 'text-body-1'"
-                  >
-                    {{ item.name }}
-                  </div>
-                  <div
-                    class="user-email text-medium-emphasis"
-                    :class="mobile ? 'text-caption' : 'text-body-2'"
-                  >
-                    {{ item.email }}
-                  </div>
-                </div>
-              </template>
-
-              <template #[`item.role`]="{ item }">
-                <v-chip
-                  :color="getRoleColor(item.role)"
-                  size="small"
-                  variant="flat"
-                >
-                  {{ item.role }}
-                </v-chip>
-              </template>
-
-              <template #[`item.status`]="{ item }">
-                <v-chip
-                  :color="getStatusColor(item)"
-                  size="small"
-                  variant="flat"
-                >
-                  {{ getStatusText(item) }}
-                </v-chip>
-              </template>
-
-              <template #[`item.last_sign_in_at`]="{ item }">
-                <div
-                  class="last-activity"
-                  :class="mobile ? 'text-caption' : 'text-body-2'"
-                >
-                  {{ item.last_sign_in_at ? formatDate(item.last_sign_in_at) : 'Never' }}
-                </div>
-              </template>
-
-              <template #[`item.actions`]="{ item }">
-                <div class="d-flex align-center gap-1">
-                  <v-btn
-                    icon="mdi-pencil"
-                    size="small"
-                    variant="text"
-                    @click.stop="openEditUser(item)"
-                  />
-                  <v-menu>
-                    <template #activator="{ props: menuProps }">
-                      <v-btn
-                        icon="mdi-dots-vertical"
-                        size="small"
-                        variant="text"
-                        v-bind="menuProps"
-                        @click.stop
-                      />
-                    </template>
-                    <v-list>
-                      <v-list-item @click="resetPassword(item)">
-                        <v-list-item-title>Reset Password</v-list-item-title>
-                      </v-list-item>
-                      <v-divider />
-                      <v-list-item
-                        class="text-error"
-                        @click="confirmDeleteUser(item)"
-                      >
-                        <v-list-item-title>Delete User</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </div>
-              </template>
-            </v-data-table>
-          </v-card>
-        </v-container>
-      </div>
     </div>
+
+    <!-- Error Alert -->
+    <v-container
+      v-if="error"
+      class="py-2"
+      fluid
+    >
+      <v-alert
+        closable
+        type="error"
+        @click:close="error = null"
+      >
+        {{ error }}
+      </v-alert>
+    </v-container>
+
+    <!-- Users Data Table -->
+    <MaterioDataTable
+      :active-filter-count="activeFilterCount"
+      :headers="tableHeaders"
+      :items="filteredUsers"
+      :loading="loading"
+      :search-keys="['name', 'email']"
+      searchable
+      subtitle="Manage all system users including admins, property owners, and cleaners"
+      title="System Users"
+    >
+      <!-- Header actions -->
+      <template #header-actions>
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-account-plus"
+          @click="openAddUser"
+        >
+          Add User
+        </v-btn>
+      </template>
+
+      <!-- Segment tabs -->
+      <template #segments>
+        <div class="d-flex ga-2 flex-wrap">
+          <v-btn
+            v-for="seg in segments"
+            :key="seg.value"
+            color="primary"
+            density="compact"
+            size="small"
+            :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
+            @click="selectedSegment = seg.value"
+          >
+            {{ seg.title }}
+          </v-btn>
+        </div>
+      </template>
+
+      <!-- Collapsible filters -->
+      <template #filters>
+        <v-row align="center" density="comfortable">
+          <v-col cols="6" md="2" sm="3">
+            <v-select
+              v-model="roleFilter"
+              clearable
+              density="compact"
+              hide-details
+              :items="roleOptions"
+              placeholder="Role"
+              variant="outlined"
+            />
+          </v-col>
+          <v-col cols="6" md="2" sm="3">
+            <v-select
+              v-model="statusFilter"
+              clearable
+              density="compact"
+              hide-details
+              :items="statusOptions"
+              placeholder="Status"
+              variant="outlined"
+            />
+          </v-col>
+        </v-row>
+      </template>
+
+      <!-- Avatar Column -->
+      <template #[`item.avatar`]="{ item }">
+        <v-avatar
+          class="my-1"
+          :color="getRoleColor(item.role as UserRole)"
+          :size="mobile ? 28 : 32"
+        >
+          <span class="text-white font-weight-bold">
+            {{ getInitials(item.name as string) }}
+          </span>
+        </v-avatar>
+      </template>
+
+      <!-- User Name Column -->
+      <template #[`item.name`]="{ item }">
+        <div style="min-width: 150px">
+          <div
+            class="font-weight-medium"
+            :class="mobile ? 'text-body-2' : 'text-body-1'"
+          >
+            {{ item.name }}
+          </div>
+          <div
+            class="text-medium-emphasis"
+            :class="mobile ? 'text-caption' : 'text-body-2'"
+          >
+            {{ item.email }}
+          </div>
+        </div>
+      </template>
+
+      <!-- Role Column -->
+      <template #[`item.role`]="{ item }">
+        <v-chip
+          class="text-capitalize"
+          :color="getRoleColor(item.role as UserRole)"
+          size="small"
+          variant="flat"
+        >
+          {{ item.role }}
+        </v-chip>
+      </template>
+
+      <!-- Status Column -->
+      <template #[`item.status`]="{ item }">
+        <v-chip
+          :color="getStatusColor(item as unknown as User)"
+          size="small"
+          variant="flat"
+        >
+          {{ getStatusText(item as unknown as User) }}
+        </v-chip>
+      </template>
+
+      <!-- Last Activity Column -->
+      <template #[`item.last_sign_in_at`]="{ item }">
+        <span
+          class="text-body-2"
+          :class="mobile ? 'text-caption' : ''"
+        >
+          {{ item.last_sign_in_at ? formatDate(item.last_sign_in_at as string) : 'Never' }}
+        </span>
+      </template>
+
+      <!-- Actions Column -->
+      <template #[`item.actions`]="{ item }">
+        <div class="d-flex align-center ga-1">
+          <v-tooltip location="top" text="Edit">
+            <template #activator="{ props: tooltipProps }">
+              <v-btn
+                icon="mdi-pencil-outline"
+                size="small"
+                variant="text"
+                v-bind="tooltipProps"
+                @click.stop="openEditUser(item as unknown as User)"
+              />
+            </template>
+          </v-tooltip>
+          <v-menu>
+            <template #activator="{ props: menuProps }">
+              <v-btn
+                icon="mdi-dots-vertical"
+                size="small"
+                variant="text"
+                v-bind="menuProps"
+                @click.stop
+              />
+            </template>
+            <v-list>
+              <v-list-item @click="resetPassword(item as unknown as User)">
+                <v-list-item-title>Reset Password</v-list-item-title>
+              </v-list-item>
+              <v-divider />
+              <v-list-item
+                class="text-error"
+                @click="confirmDeleteUser(item as unknown as User)"
+              >
+                <v-list-item-title>Delete User</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+      </template>
+    </MaterioDataTable>
 
     <!-- Add/Edit User Dialog -->
     <UserFormDialog
@@ -252,29 +227,18 @@
       @close="deleteDialog = false"
       @confirm="handleDeleteConfirm"
     />
-
-    <!-- Mobile FAB -->
-    <v-btn
-      v-if="mobile"
-      class="fab-btn"
-      color="primary"
-      icon="mdi-account-plus"
-      location="bottom end"
-      position="fixed"
-      size="large"
-      @click="openAddUser"
-    />
   </div>
 </template>
 
 <script setup lang="ts">
+  import { computed, onMounted, ref } from 'vue'
+  import { useDisplay } from 'vuetify'
   import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
-import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-import StatCard from '@/components/dumb/shared/StatCard.vue'
-import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
-import type { User, UserFormData, UserRole } from '@/types/user'
-import { computed, onMounted, ref } from 'vue'
-import { useDisplay } from 'vuetify'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+  import StatCard from '@/components/dumb/shared/StatCard.vue'
+  import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+  import type { User, UserFormData, UserRole } from '@/types/user'
 
   const { mobile } = useDisplay()
   const {
@@ -288,14 +252,22 @@ import { useDisplay } from 'vuetify'
   } = useAdminUserManagement()
 
   // Reactive state
-  const searchQuery = ref('')
   const roleFilter = ref('')
   const statusFilter = ref('')
+  const selectedSegment = ref('all')
   const userDialog = ref(false)
   const editingUser = ref<User | null>(null)
   const saving = ref(false)
   const deleteDialog = ref(false)
   const userToDelete = ref<User | null>(null)
+
+  // Segments
+  const segments = [
+    { title: 'All', value: 'all' },
+    { title: 'Admins', value: 'admin' },
+    { title: 'Owners', value: 'owner' },
+    { title: 'Cleaners', value: 'cleaner' },
+  ]
 
   // Filter options
   const roleOptions = [
@@ -309,14 +281,22 @@ import { useDisplay } from 'vuetify'
     { title: 'Inactive', value: 'inactive' },
   ]
 
-  // Table headers
+  // Active filter count
+  const activeFilterCount = computed(() => {
+    let count = 0
+    if (roleFilter.value) count++
+    if (statusFilter.value) count++
+    return count
+  })
+
+  // Table headers with mobileHidden
   const tableHeaders = computed(() => [
-    { title: '', key: 'avatar', sortable: false, width: mobile.value ? 60 : 80 },
+    { title: '', key: 'avatar', sortable: false, width: 50 },
     { title: 'User', key: 'name', sortable: true },
-    { title: 'Role', key: 'role', sortable: true },
-    { title: 'Status', key: 'status', sortable: true },
-    { title: 'Last Activity', key: 'last_sign_in_at', sortable: true },
-    { title: 'Actions', key: 'actions', sortable: false, align: 'end' as const },
+    { title: 'Role', key: 'role', sortable: true, width: '110px', mobileHidden: true },
+    { title: 'Status', key: 'status', sortable: false, width: '100px', mobileHidden: true },
+    { title: 'Last Activity', key: 'last_sign_in_at', sortable: true, width: '140px', mobileHidden: true },
+    { title: '', key: 'actions', sortable: false, align: 'end' as const, width: '60px' },
   ])
 
   // Computed stats
@@ -328,18 +308,17 @@ import { useDisplay } from 'vuetify'
   const filteredUsers = computed(() => {
     let users = [...allUsers.value]
 
-    if (searchQuery.value) {
-      const query = searchQuery.value.toLowerCase()
-      users = users.filter((user: User) =>
-        user.name.toLowerCase().includes(query)
-        || user.email.toLowerCase().includes(query),
-      )
+    // Segment filter
+    if (selectedSegment.value !== 'all') {
+      users = users.filter((user: User) => user.role === selectedSegment.value)
     }
 
+    // Role filter from collapsible filters
     if (roleFilter.value) {
       users = users.filter((user: User) => user.role === roleFilter.value)
     }
 
+    // Status filter from collapsible filters
     if (statusFilter.value) {
       users = users.filter((user: User) => getStatusText(user).toLowerCase() === statusFilter.value)
     }
@@ -349,7 +328,7 @@ import { useDisplay } from 'vuetify'
 
   // Helpers
   function getInitials (name: string): string {
-    return name.split(' ').map(n => n[0]).join('').toUpperCase()
+    return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
   }
 
   function getRoleColor (role: UserRole): string {
@@ -465,82 +444,29 @@ import { useDisplay } from 'vuetify'
 
 <style scoped>
 .admin-system-users {
-  min-height: 100vh;
-  background: rgb(var(--v-theme-background));
-}
-
-.users-content {
-  min-height: 100vh;
-}
-
-.users-header {
-  background: rgb(var(--v-theme-surface));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-  padding: 24px 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .stats-section {
+  flex-shrink: 0;
   background: rgb(var(--v-theme-surface));
   border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
   padding: 16px 0;
 }
 
-.filters-section {
-  background: rgb(var(--v-theme-surface));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-  padding: 16px 0;
-}
-
-.main-content {
-  padding: 24px 0;
-}
-
-.users-table {
-  background: rgb(var(--v-theme-surface));
-}
-
-.users-table :deep(.v-data-table__tbody tr) {
-  cursor: pointer;
-}
-
-.users-table :deep(.v-data-table__tbody tr:hover) {
-  background: rgb(var(--v-theme-surface-variant));
-}
-
-.users-table :deep(.v-data-table__td),
-.users-table :deep(.v-data-table__th) {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-}
-
-.user-name-cell {
-  min-width: 150px;
-}
-
-.user-name {
-  line-height: 1.2;
-}
-
-.user-email {
-  line-height: 1.1;
-  margin-top: 2px;
-}
-
-.stat-card {
-  transition: transform 0.2s;
-}
-
-.stat-card:hover {
-  transform: translateY(-2px);
-}
-
-.fab-btn {
-  margin: 16px;
-}
-
+/* Force fixed-layout table so percentage column widths are respected on mobile */
 @media (max-width: 599px) {
-  .main-content {
-    padding: 12px 0;
+  :deep(.v-table table) {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  :deep(.v-table td),
+  :deep(.v-table th) {
+    overflow: hidden;
   }
 }
 </style>

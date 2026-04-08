@@ -1,220 +1,205 @@
 <template>
   <div class="admin-cleaners-page">
-    <div class="cleaners-content">
-      <!-- Header (Desktop only) -->
-      <div
-        v-if="!mobile"
-        class="cleaners-header"
-      >
-        <v-container fluid>
-          <v-row align="center">
-            <v-col>
-              <h1 class="text-h4 font-weight-bold mb-2">
-                Cleaners
-              </h1>
-              <p class="text-subtitle-1 text-medium-emphasis">
-                Manage cleaner profiles, skills, and availability
-              </p>
-            </v-col>
-            <v-col cols="auto">
-              <v-btn
-                color="primary"
-                prepend-icon="mdi-account-plus"
-                @click="showAddDialog = true"
-              >
-                Add Cleaner
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-container>
-      </div>
-
-      <!-- Stats Cards -->
-      <div class="stats-section">
-        <v-container fluid>
-          <v-row density="compact">
-            <v-col cols="6" md="3">
-              <StatCard color="primary" icon="mdi-account-group" label="Total Cleaners" :value="cleanerStats.total" />
-            </v-col>
-            <v-col cols="6" md="3">
-              <StatCard color="success" icon="mdi-check-circle" label="Available Today" :value="cleanerStats.available" />
-            </v-col>
-            <v-col cols="6" md="3">
-              <StatCard color="warning" icon="mdi-clock-outline" label="Currently Busy" :value="cleanerStats.busy" />
-            </v-col>
-            <v-col cols="6" md="3">
-              <StatCard color="info" icon="mdi-star" label="Avg Rating" value="4.8" />
-            </v-col>
-          </v-row>
-        </v-container>
-      </div>
-
-      <!-- Error Alert -->
-      <v-container
-        v-if="cleanerError"
-        class="py-2"
-        fluid
-      >
-        <v-alert
-          closable
-          type="error"
-          @click:close="cleanerError = null"
-        >
-          {{ cleanerError }}
-        </v-alert>
+    <!-- Stats Cards -->
+    <div class="stats-section">
+      <v-container fluid>
+        <v-row density="compact">
+          <v-col cols="6" md="3">
+            <StatCard color="primary" icon="mdi-account-group" label="Total Cleaners" :value="cleanerStats.total" />
+          </v-col>
+          <v-col cols="6" md="3">
+            <StatCard color="success" icon="mdi-check-circle" label="Available Today" :value="cleanerStats.available" />
+          </v-col>
+          <v-col cols="6" md="3">
+            <StatCard color="warning" icon="mdi-clock-outline" label="Currently Busy" :value="cleanerStats.busy" />
+          </v-col>
+          <v-col cols="6" md="3">
+            <StatCard color="info" icon="mdi-star" label="Avg Rating" value="4.8" />
+          </v-col>
+        </v-row>
       </v-container>
-
-      <!-- Filters and Search -->
-      <div class="filters-section">
-        <v-container fluid>
-          <v-row align="center">
-            <v-col cols="12" md="4">
-              <v-text-field
-                v-model="searchQuery"
-                clearable
-                density="compact"
-                label="Search cleaners..."
-                prepend-inner-icon="mdi-magnify"
-              />
-            </v-col>
-            <v-col cols="6" md="2">
-              <v-select
-                v-model="statusFilter"
-                clearable
-                density="compact"
-                :items="statusOptions"
-                label="Status"
-              />
-            </v-col>
-            <v-col class="d-flex align-center gap-2" cols="12" md="4">
-              <v-chip
-                v-if="filteredCleaners.length !== allCleaners.length"
-                color="primary"
-                size="small"
-                variant="outlined"
-              >
-                {{ filteredCleaners.length }} of {{ allCleaners.length }} cleaners
-              </v-chip>
-            </v-col>
-          </v-row>
-        </v-container>
-      </div>
-
-      <!-- Cleaners Table -->
-      <div class="main-content">
-        <v-container fluid>
-          <v-card>
-            <v-data-table
-              class="cleaners-table"
-              density="compact"
-              :headers="tableHeaders"
-              :items="filteredCleaners"
-              :loading="loading"
-              :mobile-breakpoint="0"
-              :search="searchQuery"
-            >
-              <template #[`item.avatar`]="{ item }">
-                <v-avatar
-                  class="my-1"
-                  color="success"
-                  :size="mobile ? 28 : 32"
-                >
-                  <span class="text-white font-weight-bold">
-                    {{ getInitials(item.name) }}
-                  </span>
-                </v-avatar>
-              </template>
-
-              <template #[`item.name`]="{ item }">
-                <div class="user-name-cell">
-                  <div
-                    class="font-weight-medium"
-                    :class="mobile ? 'text-body-2' : 'text-body-1'"
-                  >
-                    {{ item.name }}
-                  </div>
-                  <div
-                    class="text-medium-emphasis"
-                    :class="mobile ? 'text-caption' : 'text-body-2'"
-                  >
-                    {{ item.email }}
-                  </div>
-                </div>
-              </template>
-
-              <template #[`item.skills`]="{ item }">
-                <div class="d-flex flex-wrap ga-1 py-1">
-                  <v-chip
-                    v-for="skill in item.skills.slice(0, 2)"
-                    :key="skill"
-                    size="x-small"
-                    variant="outlined"
-                  >
-                    {{ skill }}
-                  </v-chip>
-                  <v-chip
-                    v-if="item.skills.length > 2"
-                    size="x-small"
-                    variant="outlined"
-                  >
-                    +{{ item.skills.length - 2 }}
-                  </v-chip>
-                </div>
-              </template>
-
-              <template #[`item.max_daily_bookings`]="{ item }">
-                <v-chip color="info" size="small" variant="tonal">
-                  {{ item.max_daily_bookings }}/day
-                </v-chip>
-              </template>
-
-              <template #[`item.status`]>
-                <v-chip color="success" size="small" variant="flat">
-                  Active
-                </v-chip>
-              </template>
-
-              <template #[`item.actions`]="{ item }">
-                <div class="d-flex align-center gap-1">
-                  <v-btn
-                    icon="mdi-pencil"
-                    size="small"
-                    variant="text"
-                    @click.stop="editCleaner(item)"
-                  />
-                  <v-menu>
-                    <template #activator="{ props: menuProps }">
-                      <v-btn
-                        v-bind="menuProps"
-                        icon="mdi-dots-vertical"
-                        size="small"
-                        variant="text"
-                        @click.stop
-                      />
-                    </template>
-                    <v-list>
-                      <v-list-item @click="viewSchedule(item)">
-                        <template #prepend>
-                          <v-icon>mdi-calendar</v-icon>
-                        </template>
-                        <v-list-item-title>View Schedule</v-list-item-title>
-                      </v-list-item>
-                      <v-divider />
-                      <v-list-item
-                        class="text-error"
-                        @click="confirmDelete(item)"
-                      >
-                        <v-list-item-title>Delete Cleaner</v-list-item-title>
-                      </v-list-item>
-                    </v-list>
-                  </v-menu>
-                </div>
-              </template>
-            </v-data-table>
-          </v-card>
-        </v-container>
-      </div>
     </div>
+
+    <!-- Error Alert -->
+    <v-container
+      v-if="cleanerError"
+      class="py-2"
+      fluid
+    >
+      <v-alert
+        closable
+        type="error"
+        @click:close="cleanerError = null"
+      >
+        {{ cleanerError }}
+      </v-alert>
+    </v-container>
+
+    <!-- Cleaners Data Table -->
+    <MaterioDataTable
+      :active-filter-count="activeFilterCount"
+      :headers="tableHeaders"
+      :items="filteredCleaners"
+      :loading="loading"
+      :search-keys="['name', 'email']"
+      searchable
+      subtitle="Manage cleaner profiles, skills, and availability"
+      title="Cleaners"
+    >
+      <!-- Header actions -->
+      <template #header-actions>
+        <v-btn
+          color="primary"
+          prepend-icon="mdi-account-plus"
+          @click="showAddDialog = true"
+        >
+          Add Cleaner
+        </v-btn>
+      </template>
+
+      <!-- Segment tabs -->
+      <template #segments>
+        <div class="d-flex ga-2 flex-wrap">
+          <v-btn
+            v-for="seg in segments"
+            :key="seg.value"
+            color="primary"
+            density="compact"
+            size="small"
+            :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
+            @click="selectedSegment = seg.value"
+          >
+            {{ seg.title }}
+          </v-btn>
+        </div>
+      </template>
+
+      <!-- Collapsible filters -->
+      <template #filters>
+        <v-row align="center" density="comfortable">
+          <v-col cols="6" md="3" sm="4">
+            <v-select
+              v-model="statusFilter"
+              clearable
+              density="compact"
+              hide-details
+              :items="statusOptions"
+              placeholder="Status"
+              variant="outlined"
+            />
+          </v-col>
+        </v-row>
+      </template>
+
+      <!-- Avatar Column -->
+      <template #[`item.avatar`]="{ item }">
+        <v-avatar
+          class="my-1"
+          color="success"
+          :size="mobile ? 28 : 32"
+        >
+          <span class="text-white font-weight-bold">
+            {{ getInitials(item.name as string) }}
+          </span>
+        </v-avatar>
+      </template>
+
+      <!-- Cleaner Name Column -->
+      <template #[`item.name`]="{ item }">
+        <div style="min-width: 150px">
+          <div
+            class="font-weight-medium"
+            :class="mobile ? 'text-body-2' : 'text-body-1'"
+          >
+            {{ item.name }}
+          </div>
+          <div
+            class="text-medium-emphasis"
+            :class="mobile ? 'text-caption' : 'text-body-2'"
+          >
+            {{ item.email }}
+          </div>
+        </div>
+      </template>
+
+      <!-- Skills Column -->
+      <template #[`item.skills`]="{ item }">
+        <div class="d-flex flex-wrap ga-1 py-1">
+          <v-chip
+            v-for="skill in (item.skills as string[]).slice(0, 2)"
+            :key="skill"
+            size="x-small"
+            variant="outlined"
+          >
+            {{ skill }}
+          </v-chip>
+          <v-chip
+            v-if="(item.skills as string[]).length > 2"
+            size="x-small"
+            variant="outlined"
+          >
+            +{{ (item.skills as string[]).length - 2 }}
+          </v-chip>
+        </div>
+      </template>
+
+      <!-- Capacity Column -->
+      <template #[`item.max_daily_bookings`]="{ item }">
+        <v-chip color="info" size="small" variant="tonal">
+          {{ item.max_daily_bookings }}/day
+        </v-chip>
+      </template>
+
+      <!-- Status Column -->
+      <template #[`item.status`]>
+        <v-chip color="success" size="small" variant="flat">
+          Active
+        </v-chip>
+      </template>
+
+      <!-- Actions Column -->
+      <template #[`item.actions`]="{ item }">
+        <div class="d-flex align-center ga-1">
+          <v-tooltip location="top" text="Edit">
+            <template #activator="{ props: tooltipProps }">
+              <v-btn
+                icon="mdi-pencil-outline"
+                size="small"
+                variant="text"
+                v-bind="tooltipProps"
+                @click.stop="editCleaner(item as unknown as Cleaner)"
+              />
+            </template>
+          </v-tooltip>
+          <v-menu>
+            <template #activator="{ props: menuProps }">
+              <v-btn
+                v-bind="menuProps"
+                icon="mdi-dots-vertical"
+                size="small"
+                variant="text"
+                @click.stop
+              />
+            </template>
+            <v-list>
+              <v-list-item @click="viewSchedule(item as unknown as Cleaner)">
+                <template #prepend>
+                  <v-icon>mdi-calendar</v-icon>
+                </template>
+                <v-list-item-title>View Schedule</v-list-item-title>
+              </v-list-item>
+              <v-divider />
+              <v-list-item
+                class="text-error"
+                @click="confirmDelete(item as unknown as Cleaner)"
+              >
+                <v-list-item-title>Delete Cleaner</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
+      </template>
+    </MaterioDataTable>
 
     <!-- Add/Edit Cleaner Dialog -->
     <v-dialog v-model="showAddDialog" max-width="500px" persistent>
@@ -281,18 +266,6 @@
       @close="deleteDialog = false"
       @confirm="handleDeleteConfirm"
     />
-
-    <!-- Mobile FAB -->
-    <v-btn
-      v-if="mobile"
-      class="fab-btn"
-      color="primary"
-      icon="mdi-account-plus"
-      location="bottom end"
-      position="fixed"
-      size="large"
-      @click="showAddDialog = true"
-    />
   </div>
 </template>
 
@@ -302,6 +275,7 @@
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import StatCard from '@/components/dumb/shared/StatCard.vue'
   import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
 
@@ -310,14 +284,19 @@
   const { allCleaners, loading, error: cleanerError, fetchCleaners, createCleaner, updateCleaner, deleteCleaner } = useCleanerManagement()
 
   // Reactive state
-  const searchQuery = ref('')
   const statusFilter = ref<string | null>(null)
+  const selectedSegment = ref('all')
   const showAddDialog = ref(false)
   const editingCleaner = ref<Cleaner | null>(null)
   const formValid = ref(false)
   const saving = ref(false)
   const deleteDialog = ref(false)
   const cleanerToDelete = ref<Cleaner | null>(null)
+
+  // Segments
+  const segments = [
+    { title: 'All', value: 'all' },
+  ]
 
   // Form data
   const formData = ref({
@@ -350,36 +329,39 @@
     positive: (value: number) => value > 0 || 'Must be greater than 0',
   }
 
+  // Active filter count
+  const activeFilterCount = computed(() => {
+    let count = 0
+    if (statusFilter.value) count++
+    return count
+  })
+
+  // Table headers with mobileHidden
   const tableHeaders = computed(() => [
-    { title: '', key: 'avatar', sortable: false, width: mobile.value ? 60 : 80 },
+    { title: '', key: 'avatar', sortable: false, width: 50 },
     { title: 'Cleaner', key: 'name', sortable: true },
-    { title: 'Skills', key: 'skills', sortable: false },
-    { title: 'Capacity', key: 'max_daily_bookings', sortable: true },
-    { title: 'Status', key: 'status', sortable: false },
-    { title: 'Actions', key: 'actions', sortable: false, align: 'end' as const },
+    { title: 'Skills', key: 'skills', sortable: false, mobileHidden: true },
+    { title: 'Capacity', key: 'max_daily_bookings', sortable: true, width: '110px', mobileHidden: true },
+    { title: 'Status', key: 'status', sortable: false, width: '100px', mobileHidden: true },
+    { title: '', key: 'actions', sortable: false, align: 'end' as const, width: '60px' },
   ])
 
   const filteredCleaners = computed(() => {
-    const query = searchQuery.value.trim().toLowerCase()
-    const selectedStatus = String(statusFilter.value ?? '').toLowerCase()
+    let cleaners = allCleaners.value
 
-    return allCleaners.value.filter((c) => {
-      const matchesStatus = !selectedStatus || selectedStatus === 'all'
-        ? true
-        : c.status.toLowerCase() === selectedStatus
+    // Status filter from collapsible filters
+    if (statusFilter.value) {
+      // Currently all cleaners are 'active' — filter will apply once real status data exists
+      cleaners = cleaners.filter(c => c.status?.toLowerCase() === statusFilter.value)
+    }
 
-      const matchesSearch = !query
-        ? true
-        : c.name.toLowerCase().includes(query) || c.email.toLowerCase().includes(query)
-
-      return matchesStatus && matchesSearch
-    })
+    return cleaners
   })
 
   const cleanerStats = computed(() => ({
     total: allCleaners.value.length,
-    available: Math.floor(allCleaners.value.length * 0.7),
-    busy: Math.floor(allCleaners.value.length * 0.3),
+    available: allCleaners.value.length,
+    busy: 0,
   }))
 
   function getInitials (name: string): string {
@@ -446,65 +428,29 @@
 
 <style scoped>
 .admin-cleaners-page {
-  min-height: 100vh;
-  background: rgb(var(--v-theme-background));
-}
-
-.cleaners-content {
-  min-height: 100vh;
-}
-
-.cleaners-header {
-  background: rgb(var(--v-theme-surface));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-  padding: 24px 0;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 .stats-section {
+  flex-shrink: 0;
   background: rgb(var(--v-theme-surface));
   border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
   padding: 16px 0;
 }
 
-.filters-section {
-  background: rgb(var(--v-theme-surface));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-  padding: 16px 0;
-}
-
-.main-content {
-  padding: 24px 0;
-}
-
-.cleaners-table {
-  background: rgb(var(--v-theme-surface));
-}
-
-.cleaners-table :deep(.v-data-table__tbody tr) {
-  cursor: pointer;
-}
-
-.cleaners-table :deep(.v-data-table__tbody tr:hover) {
-  background: rgb(var(--v-theme-surface-variant));
-}
-
-.cleaners-table :deep(.v-data-table__td),
-.cleaners-table :deep(.v-data-table__th) {
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-}
-
-.user-name-cell {
-  min-width: 150px;
-}
-
-.fab-btn {
-  margin: 16px;
-}
-
+/* Force fixed-layout table so percentage column widths are respected on mobile */
 @media (max-width: 599px) {
-  .main-content {
-    padding: 12px 0;
+  :deep(.v-table table) {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  :deep(.v-table td),
+  :deep(.v-table th) {
+    overflow: hidden;
   }
 }
 </style>

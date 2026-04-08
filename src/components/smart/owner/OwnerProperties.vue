@@ -6,14 +6,19 @@
 <template>
   <div class="owner-properties-page">
     <v-container fluid>
-      <!-- Header -->
-      <div class="d-flex justify-space-between align-center mb-5">
-        <div>
-          <h1 class="text-h4 font-weight-bold">My Properties</h1>
-          <p class="text-body-2 text-medium-emphasis mt-1">Manage your rental properties and settings</p>
+      <!-- Header — H4 Dark Command -->
+      <div class="properties-header mb-5">
+        <div class="properties-header__left">
+          <div class="header-icon-frame">
+            <v-icon color="#14B8A6" size="24">mdi-home-city-outline</v-icon>
+          </div>
+          <div>
+            <h1 class="text-h5 font-weight-bold" style="color: #F1F5F9">My Properties</h1>
+            <p class="text-body-2 mt-1" style="color: #64748B">Manage your rental properties and settings</p>
+          </div>
         </div>
         <v-btn
-          color="primary"
+          class="header-add-btn"
           prepend-icon="mdi-plus"
           @click="handleCreateProperty"
         >
@@ -21,41 +26,32 @@
         </v-btn>
       </div>
 
-      <!-- Stat Cards Row -->
-      <v-row class="mb-5" density="compact">
-        <v-col cols="6" sm="3">
-          <StatCard
-            color="primary"
-            icon="mdi-home-city"
-            label="Total Properties"
-            :value="myProperties.length"
-          />
-        </v-col>
-        <v-col cols="6" sm="3">
-          <StatCard
-            color="success"
-            icon="mdi-check-circle"
-            label="Active"
-            :value="myActiveProperties.length"
-          />
-        </v-col>
-        <v-col cols="6" sm="3">
-          <StatCard
-            color="info"
-            icon="mdi-calendar-multiple"
-            label="Total Bookings"
-            :value="myBookings.length"
-          />
-        </v-col>
-        <v-col cols="6" sm="3">
-          <StatCard
-            color="warning"
-            icon="mdi-swap-horizontal"
-            label="Today's Turns"
-            :value="myTodayTurns.length"
-          />
-        </v-col>
-      </v-row>
+      <!-- C3 — Compact Inline Bar -->
+      <div class="c3-inline-bar mb-5">
+        <div class="c3-cell">
+          <v-icon color="#6366F1" size="20">mdi-home-city</v-icon>
+          <span class="c3-value">{{ myProperties.length }}</span>
+          <span class="c3-label">Properties</span>
+        </div>
+        <div class="c3-divider" />
+        <div class="c3-cell">
+          <v-icon color="#10B981" size="20">mdi-check-circle</v-icon>
+          <span class="c3-value">{{ myActiveProperties.length }}</span>
+          <span class="c3-label">Active</span>
+        </div>
+        <div class="c3-divider" />
+        <div class="c3-cell">
+          <v-icon color="#3B82F6" size="20">mdi-calendar-multiple</v-icon>
+          <span class="c3-value">{{ myBookings.length }}</span>
+          <span class="c3-label">Bookings</span>
+        </div>
+        <div class="c3-divider" />
+        <div class="c3-cell">
+          <v-icon color="#F59E0B" size="20">mdi-swap-horizontal</v-icon>
+          <span class="c3-value">{{ myTodayTurns.length }}</span>
+          <span class="c3-label">Turns</span>
+        </div>
+      </div>
 
       <!-- Data Table -->
       <MaterioDataTable
@@ -223,7 +219,6 @@
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
 import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
 import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
-import StatCard from '@/components/dumb/shared/StatCard.vue'
 import type { Property, PropertyFormData, PropertyRecord } from '@/types'
 import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
@@ -503,6 +498,83 @@ import { formatPropertyAddress } from '@/types/property'
 .owner-properties-page {
   padding: 1rem;
   min-height: calc(100vh - var(--app-bar-height, 64px));
+}
+
+/* H4 — Dark Command */
+.properties-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-radius: 2px;
+  overflow: hidden;
+  min-height: 120px;
+  padding: 24px 28px;
+  background:
+    radial-gradient(ellipse 30% 40% at 90% 30%, rgba(20, 184, 166, 0.5) 0%, transparent 100%),
+    #0F172A;
+}
+
+.properties-header__left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.header-icon-frame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 2px;
+  background: rgba(20, 184, 166, 0.13);
+  border: 1px solid rgba(20, 184, 166, 0.27);
+  flex-shrink: 0;
+}
+
+.header-add-btn {
+  background: #14B8A6 !important;
+  color: #0F172A !important;
+  font-weight: 600;
+  border-radius: 2px;
+}
+
+/* C3 — Compact Inline Bar */
+.c3-inline-bar {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  min-height: 64px;
+  border-radius: 2px;
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  overflow: hidden;
+}
+
+.c3-cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+}
+
+.c3-divider {
+  width: 1px;
+  align-self: stretch;
+  background: #E2E8F0;
+}
+
+.c3-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1E293B;
+  line-height: 1;
+}
+
+.c3-label {
+  font-size: 12px;
+  color: #94A3B8;
 }
 
 /* Property color dot */

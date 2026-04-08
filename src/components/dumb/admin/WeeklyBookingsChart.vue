@@ -82,13 +82,13 @@
   flex: 1;
   height: 24px;
   background: rgba(var(--v-theme-on-surface), 0.06);
-  border-radius: 6px;
+  border-radius: 2px;
   overflow: hidden;
 }
 
 .chart-bar {
   height: 100%;
-  border-radius: 6px;
+  border-radius: 2px;
   min-width: 4px;
   transition: width 0.4s ease;
 }

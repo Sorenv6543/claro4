@@ -1,6 +1,6 @@
 <template>
   <v-container class="d-flex align-center justify-center" style="min-height: 80vh">
-    <v-card class="text-center pa-8" elevation="2" max-width="480" rounded="lg">
+    <v-card class="text-center pa-8" elevation="2" max-width="480">
       <v-icon class="mb-4" color="info" size="64">mdi-account-clock</v-icon>
       <v-card-title class="text-h5 mb-2">Access Coming Soon</v-card-title>
       <v-card-text class="text-body-1 text-medium-emphasis">

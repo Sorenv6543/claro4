@@ -84,7 +84,7 @@ export default createVuetify({
     },
     VCard: {
       elevation: 2,
-      rounded: 'lg',
+      rounded: true,
       class: 'pa-2',
     },
     VChip: {
@@ -93,57 +93,57 @@ export default createVuetify({
     VTextField: {
       variant: 'outlined',
       density: 'comfortable',
-      rounded: 'lg',
+      rounded: true,
       hideDetails: 'auto',
     },
     VSelect: {
       variant: 'outlined',
       density: 'comfortable',
-      rounded: 'lg',
+      rounded: true,
       hideDetails: 'auto',
     },
     VTextarea: {
       variant: 'outlined',
-      rounded: 'lg',
+      rounded: true,
       hideDetails: 'auto',
     },
     VAutocomplete: {
       variant: 'outlined',
       density: 'comfortable',
-      rounded: 'lg',
+      rounded: true,
       hideDetails: 'auto',
     },
     VCombobox: {
       variant: 'outlined',
       density: 'comfortable',
-      rounded: 'lg',
+      rounded: true,
       hideDetails: 'auto',
     },
     VList: {
       bgColor: 'transparent',
-      rounded: 'lg',
+      rounded: true,
     },
     VListItem: {
-      rounded: 'lg',
+      rounded: true,
       minHeight: '40px',
     },
     VNavigationDrawer: {
-      rounded: 'lg',
+      rounded: true,
       elevation: 3,
     },
     VDialog: {
       maxWidth: '700px',
-      rounded: 'lg',
+      rounded: true,
     },
     VAlert: {
-      rounded: 'lg',
+      rounded: true,
       variant: 'tonal',
     },
     VBadge: {
       rounded: 'pill',
     },
     VExpansionPanel: {
-      rounded: 'lg',
+      rounded: true,
       elevation: 0,
     },
   },

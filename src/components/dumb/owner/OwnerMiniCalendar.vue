@@ -116,7 +116,7 @@
 
 .day-cell {
   aspect-ratio: 1;
-  border-radius: 8px;
+  border-radius: 2px;
   cursor: default;
   min-height: 36px;
 }

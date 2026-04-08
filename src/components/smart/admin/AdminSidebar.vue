@@ -16,8 +16,7 @@
         :active="isActive(item.to)"
         color="primary"
         :prepend-icon="isActive(item.to) ? item.filledIcon : item.icon"
-        rounded="lg"
-        :title="item.label"
+               :title="item.label"
         @click="navigateTo(item.to)"
       />
 
@@ -29,8 +28,7 @@
             :active="usersGroupOpen"
             color="primary"
             :prepend-icon="usersGroupOpen ? 'mdi-account-multiple' : 'mdi-account-multiple-outline'"
-            rounded="lg"
-            title="Users"
+                       title="Users"
           />
         </template>
 
@@ -38,24 +36,21 @@
           :active="isActive('/admin/cleaners')"
           color="primary"
           :prepend-icon="isActive('/admin/cleaners') ? 'mdi-account-hard-hat' : 'mdi-account-hard-hat-outline'"
-          rounded="lg"
-          title="Cleaners"
+                   title="Cleaners"
           @click="navigateTo('/admin/cleaners')"
         />
         <v-list-item
           :active="isActive('/admin/property-owners')"
           color="primary"
           :prepend-icon="isActive('/admin/property-owners') ? 'mdi-account-group' : 'mdi-account-group-outline'"
-          rounded="lg"
-          title="Property Owners"
+                   title="Property Owners"
           @click="navigateTo('/admin/property-owners')"
         />
         <v-list-item
           :active="isActive('/admin/users')"
           color="primary"
           :prepend-icon="isActive('/admin/users') ? 'mdi-account-cog' : 'mdi-account-cog-outline'"
-          rounded="lg"
-          title="Administrators"
+                   title="Administrators"
           @click="navigateTo('/admin/users')"
         />
       </v-list-group>
@@ -67,25 +62,25 @@
     <div class="px-4 pt-2 pb-1">
       <div class="text-overline text-medium-emphasis px-1 mb-2" style="font-size:0.67rem">Business Overview</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-        <v-card rounded="lg" variant="outlined">
+        <v-card variant="outlined">
           <v-card-text class="text-center pa-2">
             <div class="text-h6 font-weight-bold text-primary">{{ totalProperties }}</div>
             <div class="text-caption text-medium-emphasis">Properties</div>
           </v-card-text>
         </v-card>
-        <v-card rounded="lg" variant="outlined">
+        <v-card variant="outlined">
           <v-card-text class="text-center pa-2">
             <div class="text-h6 font-weight-bold text-success">{{ activeCleaningsToday }}</div>
             <div class="text-caption text-medium-emphasis">Active</div>
           </v-card-text>
         </v-card>
-        <v-card rounded="lg" variant="outlined">
+        <v-card variant="outlined">
           <v-card-text class="text-center pa-2">
             <div class="text-h6 font-weight-bold text-warning">{{ urgentBookings.length }}</div>
             <div class="text-caption text-medium-emphasis">Urgent</div>
           </v-card-text>
         </v-card>
-        <v-card rounded="lg" variant="outlined">
+        <v-card variant="outlined">
           <v-card-text class="text-center pa-2">
             <div class="text-h6 font-weight-bold text-info">{{ availableCleanersCount }}</div>
             <div class="text-caption text-medium-emphasis">Available</div>
@@ -108,8 +103,7 @@
           :key="booking.id"
           color="error"
           prepend-icon="mdi-alert-circle"
-          rounded="lg"
-          :subtitle="'Turn cleaning needed'"
+                   :subtitle="'Turn cleaning needed'"
           :title="getPropertyName(booking.property_id)"
           @click="viewBooking(booking)"
         />
@@ -118,8 +112,7 @@
           v-if="urgentBookings.length > 3"
           color="primary"
           prepend-icon="mdi-eye"
-          rounded="lg"
-          :title="`View all (${urgentBookings.length})`"
+                   :title="`View all (${urgentBookings.length})`"
           @click="navigateTo('/admin/bookings?filter=urgent')"
         />
       </v-list>
@@ -136,8 +129,7 @@
         :key="item.label"
         color="primary"
         :prepend-icon="item.icon"
-        rounded="lg"
-        :title="item.label"
+               :title="item.label"
         @click="item.action()"
       />
     </v-list>
@@ -160,7 +152,7 @@
                 <v-icon size="16">mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
-            <v-card rounded="lg">
+            <v-card>
               <v-list density="compact">
                 <v-list-item prepend-icon="mdi-account" title="Profile" @click="navigateTo('/admin/profile')" />
                 <v-list-item prepend-icon="mdi-cog" title="Settings" @click="navigateTo('/admin/settings')" />

@@ -1,59 +1,28 @@
 <template>
   <div class="owner-bookings-page">
     <v-container fluid>
-      <!-- Header -->
-      <div class="d-flex justify-space-between align-center mb-5">
-        <div>
-          <h1 class="text-h4 font-weight-bold">My Bookings</h1>
-          <p class="text-body-2 text-medium-emphasis mt-1">Manage your property bookings and cleaning schedules</p>
+      <!-- V4a Gradient Header -->
+      <div class="bookings-header-gradient">
+        <div class="d-flex align-center justify-space-between">
+          <div class="d-flex align-center ga-2">
+            <h1 class="text-h5 font-weight-bold text-white">My Bookings</h1>
+            <v-chip color="rgba(255,255,255,0.25)" size="small" variant="flat">
+              <span class="text-white font-weight-bold">{{ ownerBookingsArray.length }}</span>
+            </v-chip>
+          </div>
+          <v-btn
+            class="header-add-btn-gradient"
+            icon="mdi-plus"
+            size="small"
+            variant="flat"
+            @click="handleCreateBooking"
+          />
         </div>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-plus"
-          @click="handleCreateBooking"
-        >
-          New Booking
-        </v-btn>
       </div>
-
-      <!-- Stat Cards Row -->
-      <v-row class="mb-5" density="compact">
-        <v-col cols="6" sm="3">
-          <StatCard
-            color="primary"
-            icon="mdi-calendar-check"
-            label="Total"
-            :value="ownerBookingsArray.length"
-          />
-        </v-col>
-        <v-col cols="6" sm="3">
-          <StatCard
-            color="warning"
-            icon="mdi-swap-horizontal"
-            label="Turns"
-            :value="turnBookings.length"
-          />
-        </v-col>
-        <v-col cols="6" sm="3">
-          <StatCard
-            color="success"
-            icon="mdi-calendar-today"
-            label="Today"
-            :value="todayBookings.length"
-          />
-        </v-col>
-        <v-col cols="6" sm="3">
-          <StatCard
-            color="info"
-            icon="mdi-calendar-week"
-            label="This Week"
-            :value="upcomingBookings.length"
-          />
-        </v-col>
-      </v-row>
 
       <!-- Data Table -->
       <MaterioDataTable
+        :active-filter-count="activeFilterCount"
         expandable
         :headers="tableHeaders"
         :items="bookingItems"
@@ -61,6 +30,23 @@
         :search-keys="['property_name', 'status', 'booking_type']"
         searchable
       >
+        <!-- Segment tabs -->
+        <template #segments>
+          <div class="d-flex ga-2 flex-wrap">
+            <v-btn
+              v-for="seg in segments"
+              :key="seg.value"
+              :color="selectedSegment === seg.value ? '#4338CA' : undefined"
+              density="compact"
+              size="small"
+              :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
+              @click="selectedSegment = seg.value"
+            >
+              {{ seg.title }}
+            </v-btn>
+          </div>
+        </template>
+
         <!-- Filters -->
         <template #filters>
           <v-row align="center" density="comfortable">
@@ -73,7 +59,6 @@
                 :items="propertyOptions"
                 label="Property"
                 prepend-inner-icon="mdi-home-outline"
-                rounded="lg"
                 variant="outlined"
               />
             </v-col>
@@ -86,7 +71,6 @@
                 :items="statusOptions"
                 label="Status"
                 prepend-inner-icon="mdi-filter-outline"
-                rounded="lg"
                 variant="outlined"
               />
             </v-col>
@@ -99,31 +83,26 @@
                 :items="typeOptions"
                 label="Type"
                 prepend-inner-icon="mdi-tag-outline"
-                rounded="lg"
                 variant="outlined"
               />
             </v-col>
           </v-row>
         </template>
 
-        <!-- Property column with color dot -->
+        <!-- Property column with color bar -->
         <template #[`item.property_name`]="{ item }">
           <div class="d-flex align-center ga-2">
             <div
-              class="property-color-dot"
+              class="property-color-bar"
               :style="{ backgroundColor: getPropertyColor(item.property_id) }"
             />
-            <span class="font-weight-medium">{{ item.property_name }}</span>
+            <span class="font-weight-medium text-body-2">{{ item.property_name }}</span>
           </div>
         </template>
 
         <!-- Dates column -->
         <template #[`item.dates`]="{ item }">
-          <div class="text-body-2">
-            <span>{{ formatDate(item.checkin_date) }}</span>
-            <v-icon class="mx-1" size="14">mdi-arrow-right</v-icon>
-            <span>{{ formatDate(item.checkout_date) }}</span>
-          </div>
+          <span class="text-body-2 dates-mono">{{ formatDateCondensed(item.checkin_date, item.checkout_date) }}</span>
         </template>
 
         <!-- Type chip -->
@@ -237,7 +216,6 @@
 <script setup lang="ts">
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
 import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
-import StatCard from '@/components/dumb/shared/StatCard.vue'
 import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
 import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
 import { useUIStore } from '@/stores/ui'
@@ -253,8 +231,6 @@ import { computed, onMounted, ref } from 'vue'
   // Composables
   const {
     myBookings: ownerBookings,
-    myTodayTurns: todayBookings,
-    myUpcomingCleanings: upcomingBookings,
     fetchMyBookings,
     deleteMyBooking,
   } = useOwnerBookings()
@@ -274,13 +250,25 @@ import { computed, onMounted, ref } from 'vue'
   const loading = ref(false)
   const deleteConfirmOpen = ref(false)
   const bookingToDelete = ref<Booking | null>(null)
+  const selectedSegment = ref('all')
+
+  const segments = [
+    { title: 'All', value: 'all' },
+    { title: 'Pending', value: 'pending' },
+    { title: 'Scheduled', value: 'scheduled' },
+    { title: 'Done', value: 'completed' },
+  ]
+
+  const activeFilterCount = computed(() => {
+    let count = 0
+    if (selectedProperty.value) count++
+    if (selectedStatus.value) count++
+    if (selectedType.value) count++
+    return count
+  })
 
   // Computed
   const ownerBookingsArray = computed(() => ownerBookings.value)
-
-  const turnBookings = computed(() =>
-    ownerBookingsArray.value.filter(b => b.booking_type === 'turn'),
-  )
 
   const propertyOptions = computed(() =>
     ownerProperties.value.map(p => ({
@@ -303,6 +291,11 @@ import { computed, onMounted, ref } from 'vue'
 
   const bookingItems = computed(() => {
     let filtered = ownerBookingsArray.value
+
+    // Segment filter
+    if (selectedSegment.value !== 'all') {
+      filtered = filtered.filter(b => b.status === selectedSegment.value)
+    }
 
     if (selectedProperty.value) {
       filtered = filtered.filter(b => b.property_id === selectedProperty.value)
@@ -327,10 +320,10 @@ import { computed, onMounted, ref } from 'vue'
   const tableHeaders = [
     { title: 'Property', key: 'property_name', sortable: true },
     { title: 'Dates', key: 'dates', sortable: false },
-    { title: 'Type', key: 'booking_type', sortable: true },
-    { title: 'Status', key: 'status', sortable: true },
-    { title: 'Guests', key: 'guest_count', sortable: true, width: '90px' },
-    { title: 'Actions', key: 'actions', sortable: false, width: '100px', align: 'end' as const },
+    { title: 'Type', key: 'booking_type', sortable: true, mobileHidden: true },
+    { title: 'Status', key: 'status', sortable: true, mobileHidden: true },
+    { title: 'Guests', key: 'guest_count', sortable: true, width: '90px', mobileHidden: true },
+    { title: 'Actions', key: 'actions', sortable: false, width: '100px', align: 'end' as const, mobileHidden: true },
   ]
 
   // Methods
@@ -359,12 +352,31 @@ import { computed, onMounted, ref } from 'vue'
   }
 
   function formatDate (dateString: string): string {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const [y, m, d] = dateString.split('-').map(Number)
+    return new Date(y, m - 1, d).toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
       year: 'numeric',
     })
+  }
+
+  function formatDateCondensed (checkinDate: string, checkoutDate: string): string {
+    const [cy, cm, cd] = checkinDate.split('-').map(Number)
+    const [oy, om, od] = checkoutDate.split('-').map(Number)
+    const checkin = new Date(cy, cm - 1, cd)
+    const checkout = new Date(oy, om - 1, od)
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+    const cMonth = months[checkin.getMonth()]
+    const cDay = checkin.getDate()
+    const oMonth = months[checkout.getMonth()]
+    const oDay = checkout.getDate()
+
+    if (cMonth === oMonth) {
+      return `${cMonth} ${cDay}\u2013${oDay}`
+    }
+    return `${cMonth} ${cDay}\u2013${oMonth} ${oDay}`
   }
 
   // Event handlers
@@ -403,8 +415,8 @@ import { computed, onMounted, ref } from 'vue'
         fetchMyBookings(),
         fetchMyProperties(),
       ])
-    } catch (err) {
-      console.error('Failed to load bookings data:', err)
+    } catch (error) {
+      console.error('Failed to load bookings data:', error)
       uiStore.addNotification('error', 'Load Failed', 'Could not load bookings. Please refresh the page.')
     } finally {
       loading.value = false
@@ -414,24 +426,34 @@ import { computed, onMounted, ref } from 'vue'
 
 <style scoped>
 .owner-bookings-page {
-  padding: 1rem;
   min-height: calc(100vh - var(--app-bar-height, 64px));
 }
 
-/* Property color dot */
-.property-color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
+/* V4a Gradient Header */
+.bookings-header-gradient {
+  padding: 16px 20px;
+  background: linear-gradient(160deg, #3730A3 0%, #0284C7 100%);
+  margin: -12px -12px 16px -12px;
+}
+
+.header-add-btn-gradient {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF !important;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Property color bar */
+.property-color-bar {
+  width: 3px;
+  height: 28px;
+  border-radius: 2px;
   flex-shrink: 0;
 }
 
-/* Expanded content */
-.expanded-content {
-  background: rgba(var(--v-theme-on-surface), 0.02);
-}
-
-.expanded-field {
-  padding: 8px 0;
+/* Condensed monospace dates */
+.dates-mono {
+  font-family: 'Geist Mono', 'Roboto Mono', monospace;
+  font-size: 12px;
+  color: #555;
 }
 </style>
