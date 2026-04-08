@@ -85,7 +85,8 @@ describe('useSupabaseBookings', () => {
 
       // Configure the supabase chain to return bookings
       const orderMock = vi.fn().mockResolvedValue({ data: bookings, error: null })
-      const selectMock = vi.fn().mockReturnValue({ order: orderMock })
+      const gteMock = vi.fn().mockReturnValue({ order: orderMock })
+      const selectMock = vi.fn().mockReturnValue({ gte: gteMock })
       supabaseMock.from.mockReturnValue({
         select: selectMock,
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
@@ -120,7 +121,8 @@ describe('useSupabaseBookings', () => {
         data: null,
         error: { message: 'Network error' },
       })
-      const selectMock = vi.fn().mockReturnValue({ order: orderMock })
+      const gteMock = vi.fn().mockReturnValue({ order: orderMock })
+      const selectMock = vi.fn().mockReturnValue({ gte: gteMock })
       supabaseMock.from.mockReturnValue({
         select: selectMock,
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
@@ -155,7 +157,7 @@ describe('useSupabaseBookings', () => {
 
       const insertMock = vi.fn().mockReturnValue(insertPromise)
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: insertMock,
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -193,7 +195,7 @@ describe('useSupabaseBookings', () => {
         error: { message: 'Insert failed' },
       })
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: insertMock,
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -223,7 +225,7 @@ describe('useSupabaseBookings', () => {
       const updateMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: updateMock,
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -258,7 +260,7 @@ describe('useSupabaseBookings', () => {
       const updateMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: updateMock,
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -284,7 +286,7 @@ describe('useSupabaseBookings', () => {
 
     it('throws when booking not found', async () => {
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -308,7 +310,7 @@ describe('useSupabaseBookings', () => {
       const deleteMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: deleteMock,
@@ -342,7 +344,7 @@ describe('useSupabaseBookings', () => {
       const deleteMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: deleteMock,
@@ -369,7 +371,7 @@ describe('useSupabaseBookings', () => {
 
     it('throws when booking not found', async () => {
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -397,7 +399,7 @@ describe('useSupabaseBookings', () => {
       let realtimeCallback: ((payload: any) => void) | null = null
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockReturnValue(insertPromise),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -450,7 +452,7 @@ describe('useSupabaseBookings', () => {
       let realtimeCallback: ((payload: any) => void) | null = null
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -495,7 +497,7 @@ describe('useSupabaseBookings', () => {
       const updateMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: updateMock,
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -522,7 +524,7 @@ describe('useSupabaseBookings', () => {
 
     it('rejects invalid status transition', async () => {
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -553,7 +555,7 @@ describe('useSupabaseBookings', () => {
       const updateMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: updateMock,
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -581,7 +583,7 @@ describe('useSupabaseBookings', () => {
   describe('unsubscribe', () => {
     it('removes the channel and resets connection status', async () => {
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),

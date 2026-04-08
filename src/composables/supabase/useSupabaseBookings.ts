@@ -3,8 +3,12 @@ import type { Booking, BookingFormData } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import { ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
+import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { canTransitionBookingStatus } from '@/utils/businessLogic'
+
+// Default fetch window — only load bookings with checkout_date within this many days ago
+const FETCH_WINDOW_DAYS = 90
 
 // --- Module-level singleton state ---
 let channel: RealtimeChannel | null = null
@@ -22,9 +26,14 @@ export function useSupabaseBookings () {
     bookingStore.error = null
 
     try {
+      const windowDate = new Date()
+      windowDate.setDate(windowDate.getDate() - FETCH_WINDOW_DAYS)
+      const dateWindow = windowDate.toISOString().split('T')[0]
+
       const { data, error: fetchError } = await supabase
         .from('bookings')
         .select('*')
+        .gte('checkout_date', dateWindow)
         .order('checkout_date', { ascending: true })
 
       if (fetchError) {
@@ -47,11 +56,20 @@ export function useSupabaseBookings () {
     }
     connectionStatus.value = 'connecting'
 
+    const authStore = useAuthStore()
+    const subscriptionFilter: { event: string, schema: string, table: string, filter?: string } = {
+      event: '*', schema: 'public', table: 'bookings',
+    }
+    // Scope subscription to owner's own bookings — admin gets all
+    if (authStore.isOwner && authStore.user?.id) {
+      subscriptionFilter.filter = `owner_id=eq.${authStore.user.id}`
+    }
+
     channel = supabase
       .channel('bookings-realtime')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'bookings' },
+        subscriptionFilter as any,
         payload => handleRealtimeEvent(payload),
       )
       .subscribe(status => {
