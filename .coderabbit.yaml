@@ -1,0 +1,32 @@
+language: en-US
+reviews:
+  profile: chill
+  path_instructions:
+    - path: "src/components/dumb/**"
+      instructions: >
+        Dumb components must NOT import stores, composables, or make Supabase calls.
+        They receive data via props and communicate via emits only.
+    - path: "src/components/smart/**"
+      instructions: >
+        Smart components orchestrate data flow. They should use composables from
+        src/composables/ rather than calling Supabase directly.
+    - path: "src/composables/supabase/**"
+      instructions: >
+        Supabase layer — raw DB access only. No business logic, no UI concerns.
+        Check for unbounded queries (missing LIMIT, date windows, or column selection).
+    - path: "src/stores/**"
+      instructions: >
+        Pinia stores are the single source of truth in JS. Check that Map-based
+        collections use cachedMapFilter for filtered access. No UI logic here.
+    - path: "src/utils/**"
+      instructions: >
+        Business logic lives here. Ensure no store or composable imports.
+    - path: "supabase/migrations/**"
+      instructions: >
+        Check RLS policies use STABLE functions. Verify indexes exist for
+        filtered columns. Watch for full-table scan patterns.
+  auto_review:
+    enabled: true
+    drafts: false
+chat:
+  auto_reply: true
