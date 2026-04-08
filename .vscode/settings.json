@@ -4,20 +4,16 @@
   ],
   "hints": {
     "css-prefix-order": "off"
-    
   },
 
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
 
-
   "workbench.editor.alwaysShowEditorActions": true,
   "workbench.editor.autoLockGroups": {
     "workbench.editor.processExplorer": false
   },
-  
   "workbench.editor.centeredLayoutFixedWidth": true,
-  
   "workbench.editor.editorActionsLocation": "default",
   "workbench.editor.enablePreview": true,
   "workbench.editor.enablePreviewFromCodeNavigation": false,
@@ -30,13 +26,11 @@
         "copilot/auto",
         "copilotcli/claude-sonnet-4.6",
         "copilot/claude-opus-4.6",
-        "claude/claude-4.6",
-      
+        "claude/claude-4.6"
       ]
     }
   },
   "chat.mcp.discovery.enabled": {
     "claude-desktop": true
-  },
-  
+  }
 }

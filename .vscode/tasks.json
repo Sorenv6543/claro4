@@ -4,7 +4,7 @@
     {
       "label": "▶ Chrome",
       "type": "shell",
-      "command": "C:\\Users\\Soren\\claro4\\scripts\\chrome-debug.bat",
+      "command": "${workspaceFolder}\\scripts\\chrome-debug.bat",
       "options": {
         "shell": {
           "executable": "C:\\Windows\\System32\\cmd.exe",

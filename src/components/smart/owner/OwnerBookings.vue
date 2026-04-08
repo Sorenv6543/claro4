@@ -38,7 +38,6 @@
               :key="seg.value"
               :color="selectedSegment === seg.value ? '#4338CA' : undefined"
               density="compact"
-              rounded="lg"
               size="small"
               :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
               @click="selectedSegment = seg.value"

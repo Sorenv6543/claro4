@@ -23,7 +23,6 @@
           hide-details
           placeholder="Search..."
           prepend-inner-icon="mdi-magnify"
-          rounded="lg"
           single-line
           variant="outlined"
         />
@@ -38,7 +37,6 @@
             :color="activeFilterCount > 0 ? 'primary' : undefined"
             density="comfortable"
             :icon="showFilters ? 'mdi-tune-variant' : 'mdi-tune'"
-            rounded="lg"
             size="small"
             :variant="activeFilterCount > 0 ? 'tonal' : 'outlined'"
             @click="showFilters = !showFilters"
@@ -56,54 +54,57 @@
         <div v-if="$slots.filters && (!filtersCollapsible || showFilters)" class="mt-3">
           <slot name="filters" />
         </div>
+      </v-expand-transition>
+    </div>
 
-        <!-- Data Table -->
-        <v-data-table
-          v-model:expanded="expandedRows"
-          class="materio-table"
-          :expand-on-click="expandable"
-          :headers="headers"
-          item-value="id"
-          :items="filteredItems"
-          :items-per-page="itemsPerPage"
-          :loading="loading"
-          :row-props="rowProps"
-        >
-          <!-- Pass through all slots from parent -->
-          <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
-            <slot :name="name" v-bind="slotData ?? {}" />
-          </template>
+    <!-- Data Table -->
+    <v-data-table
+      v-model:expanded="expandedRows"
+      class="materio-table"
+      :expand-on-click="expandable"
+      :headers="visibleHeaders"
+      item-value="id"
+      :items="filteredItems"
+      :items-per-page="itemsPerPageLocal"
+      :loading="loading"
+      :row-props="rowProps"
+    >
+      <!-- Pass through all slots from parent -->
+      <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
+        <slot :name="name" v-bind="slotData ?? {}" />
+      </template>
 
-          <!-- Default expanded row slot -->
-          <template v-if="expandable && !$slots['expanded-row']" #expanded-row="{ columns, item }">
-            <tr>
-              <td class="expanded-row-content pa-4" :colspan="columns.length">
-                <slot :item="item" name="expand-content" />
-              </td>
-            </tr>
-          </template>
+      <!-- Default expanded row slot -->
+      <template v-if="expandable && !$slots['expanded-row']" #expanded-row="{ columns, item }">
+        <tr>
+          <td class="expanded-row-content pa-4" :colspan="columns.length">
+            <slot :item="item" name="expand-content" />
+          </td>
+        </tr>
+      </template>
 
-          <!-- Bottom slot with pagination info -->
-          <template #bottom>
-            <div class="d-flex align-center justify-end pa-4 pt-2">
-              <div class="d-flex align-center ga-4">
-                <span class="text-body-2 text-medium-emphasis">Rows per page:</span>
-                <v-select
-                  v-model="itemsPerPageLocal"
-                  density="compact"
-                  hide-details
-                  :items="[5, 10, 15, 25]"
-                  style="max-width: 80px"
-                  variant="outlined"
-                />
-              </div>
-            </div>
-          </template>
-        </v-data-table>
-      </v-expand-transition></div></v-card>
+      <!-- Bottom slot with pagination info -->
+      <template #bottom>
+        <div class="d-flex align-center justify-end pa-4 pt-2">
+          <div class="d-flex align-center ga-4">
+            <span class="text-body-2 text-medium-emphasis">Rows per page:</span>
+            <v-select
+              v-model="itemsPerPageLocal"
+              density="compact"
+              hide-details
+              :items="[5, 10, 15, 25]"
+              style="max-width: 80px"
+              variant="outlined"
+            />
+          </div>
+        </div>
+      </template>
+    </v-data-table>
+  </v-card>
 </template>
 
 <script setup lang="ts">
+  import { useDisplay } from 'vuetify'
   import { computed, ref, watch } from 'vue'
 
   export interface DataTableHeader {
@@ -112,6 +113,7 @@
     sortable?: boolean
     align?: 'start' | 'center' | 'end'
     width?: string | number
+    mobileHidden?: boolean
   }
 
   const props = withDefaults(defineProps<{
@@ -127,6 +129,7 @@
     itemsPerPage?: number
     elevation?: number | string
     rowProps?: Record<string, unknown> | ((data: { item: Record<string, unknown>, index: number }) => Record<string, unknown>)
+    activeFilterCount?: number
   }>(), {
     title: '',
     subtitle: '',
@@ -138,7 +141,10 @@
     itemsPerPage: 10,
     elevation: 24,
     rowProps: undefined,
+    activeFilterCount: 0,
   })
+
+  const { mobile } = useDisplay()
 
   const searchQuery = ref('')
   const expandedRows = ref<string[]>([])
@@ -149,10 +155,9 @@
     itemsPerPageLocal.value = val
   })
 
-  const activeFilterCount = computed(() => {
-    // Count active filters based on slot content
-    // This is a placeholder - customize based on your filter implementation
-    return 0
+  const visibleHeaders = computed(() => {
+    if (!mobile.value) return props.headers
+    return props.headers.filter(h => !h.mobileHidden)
   })
 
   const filteredItems = computed(() => {
