@@ -543,7 +543,8 @@ import { formatPropertyAddress } from '@/types/property'
 .c3-inline-bar {
   display: flex;
   align-items: stretch;
-  height: 64px;
+  flex-wrap: wrap;
+  min-height: 64px;
   border-radius: 2px;
   background: #FFFFFF;
   border: 1px solid #E2E8F0;

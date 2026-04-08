@@ -5,7 +5,7 @@
       :headers="tableHeaders"
       :items="tableItems"
       :items-per-page="25"
-      :loading="false"
+      :loading="tableLoading"
       :row-props="propertyRowProps"
       :search-keys="['propertyName', 'fullAddress', 'ownerName']"
       searchable
@@ -31,7 +31,6 @@
             :key="seg.value"
             color="primary"
             density="compact"
-            rounded="lg"
             size="small"
             :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
             @click="selectedSegment = seg.value"
@@ -251,17 +250,20 @@
 </template>
 
 <script setup lang="ts">
+  import { computed, ref } from 'vue'
   import type { Booking } from '@/types/booking.ts'
   import type { PricingTier, Property } from '@/types/property.ts'
   import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
   import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts'
   import { formatPropertyAddress } from '@/types/property'
-  import { computed, ref } from 'vue'
 
   // Composables
   const { allProperties, updateProperty } = useAdminProperties()
   const { allBookings } = useAdminBookings()
+
+  // Loading state — data arrives via layout's realtime sync
+  const tableLoading = computed(() => allProperties.value.length === 0)
 
   // Reactive state
   const statusFilter = ref('')
@@ -311,10 +313,10 @@
     { title: 'Property', key: 'propertyName', sortable: true },
     { title: 'Owner', key: 'ownerName', sortable: true, width: '140px' },
     { title: 'Tier', key: 'pricing_tier', sortable: true, width: '110px', mobileHidden: true },
-    { title: 'Status', key: 'status', sortable: true, width: '110px', mobileHidden: true },
+    { title: 'Status', key: 'status', sortable: false, width: '110px', mobileHidden: true },
     { title: 'Duration', key: 'cleaning_duration', sortable: true, width: '100px', mobileHidden: true },
     { title: 'Details', key: 'details', sortable: false, width: '110px', mobileHidden: true },
-    { title: '', key: 'actions', sortable: false, width: '100px', align: 'end' as const, mobileHidden: true },
+    { title: '', key: 'actions', sortable: false, width: '60px', align: 'end' as const },
   ])
 
   // Row props: clicking a row opens the detail/edit

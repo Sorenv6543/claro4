@@ -17,7 +17,7 @@
           color="primary"
           :disabled="item.disabled"
           :prepend-icon="isActive(item.to) ? item.filledIcon : item.icon"
-          rounded="lg"
+  
           :title="item.label"
           :to="item.disabled ? undefined : item.to"
           @click="item.disabled ? undefined : onNavItemClick()"
@@ -42,7 +42,7 @@
           class="property-nav-item"
           color="primary"
           prepend-icon="mdi-home"
-          rounded="lg"
+  
           :style="{ '--property-icon-color': propertyColor(property, index) }"
           :title="formatPropertyAddress(property, 'short')"
           :to="`/owner/properties/${property.id}`"
@@ -61,7 +61,7 @@
         :active="isActive(item.to)"
         color="primary"
         :prepend-icon="isActive(item.to) ? item.filledIcon : item.icon"
-        rounded="lg"
+
         :title="item.label"
         :to="item.to"
         @click="onNavItemClick()"

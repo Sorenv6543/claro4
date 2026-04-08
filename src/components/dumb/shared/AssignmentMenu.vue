@@ -51,7 +51,7 @@
 </script>
 
 <template>
-  <v-card elevation="4" rounded="lg" width="320">
+  <v-card elevation="4" width="320">
     <v-tabs v-model="activeTab" density="compact" grow>
       <v-tab :value="0">Cleaner</v-tab>
       <v-tab :value="1">Team</v-tab>

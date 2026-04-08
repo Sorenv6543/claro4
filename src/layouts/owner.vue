@@ -74,6 +74,8 @@
         variant="text"
       />
 
+
+
       <!-- Avatar / user menu -->
       <v-menu location="bottom end">
         <template #activator="{ props: menuProps }">
@@ -115,13 +117,13 @@
 </template>
 
 <script setup lang="ts">
-import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
-import { useCalendarState } from '@/composables/shared/useCalendarState'
-import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
-import { useAuthStore } from '@stores/auth'
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useDisplay } from 'vuetify'
+  import { useAuthStore } from '@stores/auth'
+  import { computed, onMounted, ref } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { useDisplay } from 'vuetify'
+  import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
+  import { useCalendarState } from '@/composables/shared/useCalendarState'
+  import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
 
   const { mdAndUp } = useDisplay()
   const router = useRouter()

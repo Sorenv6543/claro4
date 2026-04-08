@@ -352,7 +352,8 @@ import { computed, onMounted, ref } from 'vue'
   }
 
   function formatDate (dateString: string): string {
-    return new Date(dateString).toLocaleDateString('en-US', {
+    const [y, m, d] = dateString.split('-').map(Number)
+    return new Date(y, m - 1, d).toLocaleDateString('en-US', {
       weekday: 'short',
       month: 'short',
       day: 'numeric',
@@ -361,8 +362,10 @@ import { computed, onMounted, ref } from 'vue'
   }
 
   function formatDateCondensed (checkinDate: string, checkoutDate: string): string {
-    const checkin = new Date(checkinDate)
-    const checkout = new Date(checkoutDate)
+    const [cy, cm, cd] = checkinDate.split('-').map(Number)
+    const [oy, om, od] = checkoutDate.split('-').map(Number)
+    const checkin = new Date(cy, cm - 1, cd)
+    const checkout = new Date(oy, om - 1, od)
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
     const cMonth = months[checkin.getMonth()]

@@ -65,7 +65,6 @@
             :key="seg.value"
             color="primary"
             density="compact"
-            rounded="lg"
             size="small"
             :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
             @click="selectedSegment = seg.value"

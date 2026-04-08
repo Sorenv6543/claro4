@@ -65,7 +65,6 @@
             :key="seg.value"
             color="primary"
             density="compact"
-            rounded="lg"
             size="small"
             :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
             @click="selectedSegment = seg.value"
@@ -297,8 +296,6 @@
   // Segments
   const segments = [
     { title: 'All', value: 'all' },
-    { title: 'Available', value: 'available' },
-    { title: 'Busy', value: 'busy' },
   ]
 
   // Form data
@@ -346,30 +343,25 @@
     { title: 'Skills', key: 'skills', sortable: false, mobileHidden: true },
     { title: 'Capacity', key: 'max_daily_bookings', sortable: true, width: '110px', mobileHidden: true },
     { title: 'Status', key: 'status', sortable: false, width: '100px', mobileHidden: true },
-    { title: '', key: 'actions', sortable: false, align: 'end' as const, width: '100px', mobileHidden: true },
+    { title: '', key: 'actions', sortable: false, align: 'end' as const, width: '60px' },
   ])
 
   const filteredCleaners = computed(() => {
     let cleaners = allCleaners.value
 
-    // Segment filter (placeholder logic -- real availability would come from scheduling data)
-    if (selectedSegment.value === 'available') {
-      // For now, show ~70% as "available" based on index
-      cleaners = cleaners.filter((_, i) => i % 10 < 7)
-    } else if (selectedSegment.value === 'busy') {
-      cleaners = cleaners.filter((_, i) => i % 10 >= 7)
-    }
-
     // Status filter from collapsible filters
-    // (placeholder -- all cleaners currently shown as Active)
+    if (statusFilter.value) {
+      // Currently all cleaners are 'active' — filter will apply once real status data exists
+      cleaners = cleaners.filter(c => c.status?.toLowerCase() === statusFilter.value)
+    }
 
     return cleaners
   })
 
   const cleanerStats = computed(() => ({
     total: allCleaners.value.length,
-    available: Math.floor(allCleaners.value.length * 0.7),
-    busy: Math.floor(allCleaners.value.length * 0.3),
+    available: allCleaners.value.length,
+    busy: 0,
   }))
 
   function getInitials (name: string): string {

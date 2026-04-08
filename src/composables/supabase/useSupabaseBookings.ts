@@ -60,9 +60,11 @@ export function useSupabaseBookings () {
     const subscriptionFilter: { event: string, schema: string, table: string, filter?: string } = {
       event: '*', schema: 'public', table: 'bookings',
     }
-    // Scope subscription to owner's own bookings — admin gets all
+    // Scope subscription by role — admin gets all
     if (authStore.isOwner && authStore.user?.id) {
       subscriptionFilter.filter = `owner_id=eq.${authStore.user.id}`
+    } else if (authStore.isCleaner && authStore.user?.id) {
+      subscriptionFilter.filter = `assigned_cleaner_id=eq.${authStore.user.id}`
     }
 
     channel = supabase

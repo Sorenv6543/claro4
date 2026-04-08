@@ -147,8 +147,8 @@ import { usePropertyStore } from '@/stores/property'
   })
 
   const userInitials = computed(() => {
-    const name =
-      authStore.user?.name
+    const name
+      = authStore.user?.name
         || authStore.user?.email?.split('@')[0]
         || 'A'
     return name

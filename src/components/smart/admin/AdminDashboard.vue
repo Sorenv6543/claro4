@@ -321,7 +321,7 @@ import { computed, onMounted, ref } from 'vue'
           </template>
         </template>
 
-        <v-card v-else class="text-center pa-8 text-medium-emphasis" rounded="lg" variant="outlined">
+        <v-card v-else class="text-center pa-8 text-medium-emphasis" variant="outlined">
           <v-icon class="mb-2" icon="mdi-calendar-check" size="48" />
           <div>No bookings {{ isEveningMode ? 'tomorrow' : 'today' }}</div>
         </v-card>

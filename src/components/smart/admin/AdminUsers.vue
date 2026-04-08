@@ -65,7 +65,6 @@
             :key="seg.value"
             color="primary"
             density="compact"
-            rounded="lg"
             size="small"
             :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
             @click="selectedSegment = seg.value"
@@ -232,14 +231,14 @@
 </template>
 
 <script setup lang="ts">
+  import { computed, onMounted, ref } from 'vue'
+  import { useDisplay } from 'vuetify'
   import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import StatCard from '@/components/dumb/shared/StatCard.vue'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
   import type { User, UserFormData, UserRole } from '@/types/user'
-  import { computed, onMounted, ref } from 'vue'
-  import { useDisplay } from 'vuetify'
 
   const { mobile } = useDisplay()
   const {
@@ -295,9 +294,9 @@
     { title: '', key: 'avatar', sortable: false, width: 50 },
     { title: 'User', key: 'name', sortable: true },
     { title: 'Role', key: 'role', sortable: true, width: '110px', mobileHidden: true },
-    { title: 'Status', key: 'status', sortable: true, width: '100px', mobileHidden: true },
+    { title: 'Status', key: 'status', sortable: false, width: '100px', mobileHidden: true },
     { title: 'Last Activity', key: 'last_sign_in_at', sortable: true, width: '140px', mobileHidden: true },
-    { title: '', key: 'actions', sortable: false, align: 'end' as const, width: '100px', mobileHidden: true },
+    { title: '', key: 'actions', sortable: false, align: 'end' as const, width: '60px' },
   ])
 
   // Computed stats

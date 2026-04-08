@@ -817,7 +817,7 @@ import { computed, nextTick, ref, watch } from 'vue'
   }, { immediate: true })
 
   // Derive owner_id from selected property in create mode
-  watch(() => form.value.property_id, (newPropertyId) => {
+  watch(() => form.value.property_id, newPropertyId => {
     if (props.mode === 'create' && newPropertyId) {
       const property = props.properties.find(p => p.id === newPropertyId)
       if (property) {

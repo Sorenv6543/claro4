@@ -6,7 +6,7 @@
       :headers="tableHeaders"
       :items="tableItems"
       :items-per-page="25"
-      :loading="false"
+      :loading="tableLoading"
       :row-props="bookingRowProps"
       :search-keys="['propertyName', 'ownerName', 'cleanerName', 'status', 'booking_type']"
       searchable
@@ -293,6 +293,8 @@ import { useDisplay } from 'vuetify'
   const { availableCleaners, fetchCleaners } = useCleanerManagement()
   const uiStore = useUIStore()
 
+  const tableLoading = ref(true)
+
   // Data fetching on mount
   onMounted(async () => {
     try {
@@ -304,6 +306,8 @@ import { useDisplay } from 'vuetify'
     } catch (error) {
       console.error('Failed to load bookings data:', error)
       uiStore.addNotification('error', 'Error', 'Failed to load bookings data. Please refresh.')
+    } finally {
+      tableLoading.value = false
     }
   })
 
