@@ -1,6 +1,6 @@
 <template>
   <v-card class="welcome-banner overflow-hidden">
-    <v-row density="compact" no-gutters>
+    <v-row density="compact">
       <!-- Left side: greeting + stat pills -->
       <v-col class="pa-5 d-flex flex-column justify-center" cols="12" md="8">
         <div class="text-h5 font-weight-bold mb-1 text-white">
@@ -104,8 +104,8 @@
 .stat-icon-wrap {
   width: 48px;
   height: 48px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  background: rgba(58, 24, 24, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;
