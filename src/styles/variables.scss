@@ -5,5 +5,5 @@
 // To add more variable overrides, extend the `with (...)` clause below:
 @use 'vuetify/settings' with (
   $body-font-family: ('Inter', sans-serif),
-  $border-radius-root: 6px,
+  $border-radius-root: 2px,
 );

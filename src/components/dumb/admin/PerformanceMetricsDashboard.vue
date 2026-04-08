@@ -781,7 +781,7 @@
   height: 100%;
   padding: 16px;
   border: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-  border-radius: 8px;
+  border-radius: 2px;
 }
 
 .performance-metrics {
@@ -856,7 +856,7 @@
   height: 140px;
   position: relative;
   border: 1px solid rgba(var(--v-border-color), 0.2);
-  border-radius: 4px;
+  border-radius: 2px;
   background: linear-gradient(to top, rgba(var(--v-border-color), 0.1) 0%, transparent 100%);
 }
 
@@ -941,7 +941,7 @@
   gap: 20px;
   padding: 16px;
   border: 1px solid rgba(var(--v-border-color), 0.2);
-  border-radius: 8px;
+  border-radius: 2px;
 }
 
 .baseline-label h4 {

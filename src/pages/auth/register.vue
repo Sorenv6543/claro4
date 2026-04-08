@@ -409,7 +409,7 @@
 /* Radio group styling */
 .v-radio-group {
   border: 1px solid rgba(0, 0, 0, 0.12);
-  border-radius: 8px;
+  border-radius: 2px;
   padding: 16px;
   background: rgba(0, 0, 0, 0.02);
 }

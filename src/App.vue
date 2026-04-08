@@ -79,12 +79,12 @@ html, body {
 
 ::-webkit-scrollbar-track {
   background: rgb(var(--v-theme-surface-variant));
-  border-radius: 8px;
+  border-radius: 2px;
 }
 
 ::-webkit-scrollbar-thumb {
   background: rgba(var(--v-theme-on-surface-variant), 0.5);
-  border-radius: 8px;
+  border-radius: 2px;
 }
 
 /* Loading and transition classes */
@@ -159,7 +159,7 @@ html, body {
   background: rgb(var(--v-theme-error));
   color: rgb(var(--v-theme-on-error));
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 2px;
   font-size: 0.7rem;
   font-weight: bold;
   letter-spacing: 0.5px;
@@ -180,7 +180,7 @@ html, body {
   background: rgb(var(--v-theme-primary));
   color: rgb(var(--v-theme-on-primary));
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: 2px;
   font-size: 0.7rem;
   font-weight: bold;
   letter-spacing: 0.5px;
@@ -316,7 +316,7 @@ html, body {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  border-radius: 12px;
+  border-radius: 2px;
   font-weight: 600;
   font-size: 0.75rem;
   letter-spacing: 0.5px;
@@ -699,7 +699,7 @@ html, body {
 .countdown-timer {
   background: linear-gradient(135deg, rgba(var(--v-theme-error), 0.1), rgba(var(--v-theme-warning), 0.1));
   border: 2px solid rgb(var(--v-theme-warning));
-  border-radius: 8px;
+  border-radius: 2px;
   padding: 8px 12px;
   font-weight: bold;
   text-align: center;

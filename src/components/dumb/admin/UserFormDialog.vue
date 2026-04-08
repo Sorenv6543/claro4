@@ -558,7 +558,7 @@
 
 <style scoped>
 .v-card {
-  border-radius: 12px;
+  border-radius: 2px;
 }
 
 .v-card-title {

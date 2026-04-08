@@ -42,7 +42,7 @@
             <span class="text-caption font-weight-bold">{{ userInitials }}</span>
           </v-avatar>
         </template>
-        <v-card rounded="lg">
+        <v-card>
           <v-list density="comfortable" min-width="160">
             <v-list-item
               prepend-icon="mdi-account-outline"
@@ -92,16 +92,16 @@
 
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { useDisplay } from 'vuetify'
+import { useRouter } from 'vue-router'
+import { useDisplay } from 'vuetify'
 
   import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue'
-  import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
-  import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
-  import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
-  import { useAuthStore } from '@/stores/auth'
-  import { useBookingStore } from '@/stores/booking'
-  import { usePropertyStore } from '@/stores/property'
+import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
+import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
+import { useAuthStore } from '@/stores/auth'
+import { useBookingStore } from '@/stores/booking'
+import { usePropertyStore } from '@/stores/property'
 
   // Composables
   const router = useRouter()
@@ -147,8 +147,8 @@
   })
 
   const userInitials = computed(() => {
-    const name
-      = authStore.user?.name
+    const name =
+      authStore.user?.name
         || authStore.user?.email?.split('@')[0]
         || 'A'
     return name

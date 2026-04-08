@@ -372,7 +372,7 @@
 }
 
 .day-view-card {
-  border-radius: 20px 20px 0 0 !important;
+  border-radius: 2px 2px 0 0 !important;
   max-height: 65vh;
   overflow: hidden;
 }
@@ -380,7 +380,7 @@
 .day-view-header {
   padding: 16px 20px 8px;
   background: rgb(var(--v-theme-surface-variant));
-  border-radius: 20px 20px 0 0;
+  border-radius: 2px 2px 0 0;
 }
 
 .header-content {
@@ -432,7 +432,7 @@
 
 .booking-item {
   padding: 16px;
-  border-radius: 12px;
+  border-radius: 2px;
   background: #fafafa;
   border: 1px solid rgb(var(--v-theme-outline-variant));
   margin-bottom: 20px;
@@ -567,7 +567,7 @@
 }
 
 .empty-state-btn {
-  border-radius: 12px;
+  border-radius: 2px;
   font-weight: 600;
   margin-top: 8px;
 }
@@ -578,7 +578,7 @@
 }
 
 .add-booking-btn {
-  border-radius: 12px;
+  border-radius: 2px;
   font-weight: 600;
 }
 
