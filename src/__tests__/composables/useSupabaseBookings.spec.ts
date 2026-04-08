@@ -55,6 +55,16 @@ describe('useSupabaseBookings', () => {
     vi.resetModules()
     setActivePinia(createPinia())
 
+    // Mock auth store so subscribe() has an authenticated user
+    vi.doMock('@/stores/auth', () => ({
+      useAuthStore: () => ({
+        user: { id: 'admin-1', email: 'admin@test.com', name: 'Test Admin', role: 'admin' },
+        isAdmin: true,
+        isOwner: false,
+        isCleaner: false,
+      }),
+    }))
+
     // Dynamically import supabase to get the mocked version
     const supabaseModule = await import('@/plugins/supabase')
     supabaseMock = supabaseModule.supabase

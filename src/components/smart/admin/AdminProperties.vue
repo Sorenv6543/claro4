@@ -256,14 +256,16 @@
   import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
   import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts'
+  import { usePropertyStore } from '@/stores/property'
   import { formatPropertyAddress } from '@/types/property'
 
   // Composables
   const { allProperties, updateProperty } = useAdminProperties()
   const { allBookings } = useAdminBookings()
+  const propertyStore = usePropertyStore()
 
-  // Loading state — data arrives via layout's realtime sync
-  const tableLoading = computed(() => allProperties.value.length === 0)
+  // Loading state — tracks store's loading ref (set by useSupabaseProperties)
+  const tableLoading = computed(() => propertyStore.loading)
 
   // Reactive state
   const statusFilter = ref('')

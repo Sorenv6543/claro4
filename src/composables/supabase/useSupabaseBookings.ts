@@ -54,9 +54,14 @@ export function useSupabaseBookings () {
     if (channel) {
       return
     }
-    connectionStatus.value = 'connecting'
 
     const authStore = useAuthStore()
+    if (!authStore.user?.id) {
+      console.error('[useSupabaseBookings] subscribe() called without authenticated user — aborting')
+      return
+    }
+
+    connectionStatus.value = 'connecting'
     const subscriptionFilter: { event: string, schema: string, table: string, filter?: string } = {
       event: '*', schema: 'public', table: 'bookings',
     }
