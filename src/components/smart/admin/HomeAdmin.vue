@@ -22,6 +22,7 @@
   <PropertyModal
     :mode="propertyModalMode"
     :open="propertyModalOpen"
+    :owner-id="authStore.user?.id || ''"
     :property="propertyModalData"
     @close="handlePropertyModalClose"
     @delete="handlePropertyModalDelete"
@@ -50,8 +51,8 @@
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   import AdminDashboard from '@/components/smart/admin/AdminDashboard.vue'
-  import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
-  import { useSupabaseProperties } from '@/composables/supabase/useSupabaseProperties'
+  import { useAdminBookings } from '@/composables/admin/useAdminBookings'
+  import { useAdminProperties } from '@/composables/admin/useAdminProperties'
   import { useAuthStore } from '@/stores/auth'
   import { usePropertyStore } from '@/stores/property'
   import { useUIStore } from '@/stores/ui'
@@ -64,8 +65,8 @@
 
   const uiStore = useUIStore()
   const propertyStore = usePropertyStore()
-  const { createProperty: supaCreateProperty, updateProperty: supaUpdateProperty, deleteProperty: supaDeleteProperty } = useSupabaseProperties()
-  const { deleteBooking: supaDeleteBooking } = useSupabaseBookings()
+  const { createProperty, updateProperty, deleteProperty } = useAdminProperties()
+  const { deleteBooking } = useAdminBookings()
   const authStore = useAuthStore()
   const { xs } = useDisplay()
 
@@ -142,11 +143,11 @@
   async function handlePropertyModalSave (formData: PropertyFormData): Promise<void> {
     try {
       if (propertyModalMode.value === 'create') {
-        await supaCreateProperty(formData)
+        await createProperty(formData)
       } else {
         const existingProperty = propertyModalData.value
         if (existingProperty) {
-          await supaUpdateProperty(existingProperty.id, formData)
+          await updateProperty(existingProperty.id, formData)
         }
       }
       uiStore.closeModal('propertyModal')
@@ -190,7 +191,7 @@
 
     if (data?.type === 'booking' && data?.id) {
       try {
-        await supaDeleteBooking(data.id as string)
+        await deleteBooking(data.id as string)
         uiStore.closeModal('eventModal')
       } catch (error) {
         console.error('Failed to delete booking:', error)
@@ -199,7 +200,7 @@
       }
     } else if (data?.type === 'property' && data?.id) {
       try {
-        await supaDeleteProperty(data.id as string)
+        await deleteProperty(data.id as string)
         uiStore.closeModal('propertyModal')
       } catch (error) {
         console.error('Failed to delete property:', error)

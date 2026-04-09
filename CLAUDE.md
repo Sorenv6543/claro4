@@ -316,7 +316,8 @@ Use semantic colors, not hex values:
 ### Existing Dumb Components
 Check `src/components/dumb/{shared,owner,admin}/` before creating new UI — there are 70 existing dumb components (25 shared, 19 owner, 26 admin).
 Key shared ones: `ConfirmationDialog.vue`, `LoadingSpinner.vue`, `ErrorAlert.vue`, `SkeletonLoader.vue`, `EnhancedToast.vue`, `BookingForm.vue`, `MaterioDataTable.vue`, `MaterioFormWizard.vue`, `PropertyCard.vue`, `PropertyModal.vue`, `MobileBottomNav.vue`, `QuickActionsFab.vue`, `SmartNavigationPanel.vue`, `TurnPriorityBadge.vue`
-Key admin ones: `CleanerAssignmentModal.vue`, `AdminBookingForm.vue`, `UrgentTurnsCard.vue`, `PerformanceMetricsDashboard.vue`, `AdminUserWizard.vue`
+Key admin ones: `CleanerAssignmentModal.vue`, `AdminBookingForm.vue`, `UrgentTurnsCard.vue`, `AdminUserWizard.vue`
+Smart admin: `PerformanceMetricsDashboard.vue` (owns its own data lifecycle via `usePerformanceMonitor`)
 Key owner ones: `OwnerBookingForm.vue`, `OwnerCalendarControls.vue`, `OwnerCleaningStatus.vue`
 
 ## Vuetify Reference

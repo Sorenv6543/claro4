@@ -437,18 +437,20 @@ export function useAdminBookings () {
     const results = { success: [] as string[], failed: [] as string[] }
 
     try {
-      // Process each booking assignment
-      for (const bookingId of bookingIds) {
-        try {
-          const result = await assignCleaner(bookingId, cleanerId)
-          if (result) {
-            results.success.push(bookingId)
-          } else {
-            results.failed.push(bookingId)
-          }
-        } catch (err) {
-          console.error(`[useAdminBookings] bulkAssignCleaner failed for booking ${bookingId}:`, err)
-          results.failed.push(bookingId)
+      // Call supabase layer directly to avoid racing shared loading/error/success refs
+      const settledResults = await Promise.allSettled(
+        bookingIds.map(async bookingId => {
+          await supaAssignCleaner(bookingId, cleanerId)
+          return bookingId
+        }),
+      )
+
+      for (let i = 0; i < settledResults.length; i++) {
+        if (settledResults[i].status === 'fulfilled') {
+          results.success.push(bookingIds[i])
+        } else {
+          console.error(`[useAdminBookings] bulkAssignCleaner failed for booking ${bookingIds[i]}:`, (settledResults[i] as PromiseRejectedResult).reason)
+          results.failed.push(bookingIds[i])
         }
       }
 
@@ -486,18 +488,20 @@ export function useAdminBookings () {
     const results = { success: [] as string[], failed: [] as string[] }
 
     try {
-      // Process each booking status update
-      for (const bookingId of bookingIds) {
-        try {
-          const result = await updateBookingStatus(bookingId, status)
-          if (result) {
-            results.success.push(bookingId)
-          } else {
-            results.failed.push(bookingId)
-          }
-        } catch (err) {
-          console.error(`[useAdminBookings] bulkUpdateStatus failed for booking ${bookingId}:`, err)
-          results.failed.push(bookingId)
+      // Call supabase layer directly to avoid racing shared loading/error/success refs
+      const settledResults = await Promise.allSettled(
+        bookingIds.map(async bookingId => {
+          await supaChangeStatus(bookingId, status)
+          return bookingId
+        }),
+      )
+
+      for (let i = 0; i < settledResults.length; i++) {
+        if (settledResults[i].status === 'fulfilled') {
+          results.success.push(bookingIds[i])
+        } else {
+          console.error(`[useAdminBookings] bulkUpdateStatus failed for booking ${bookingIds[i]}:`, (settledResults[i] as PromiseRejectedResult).reason)
+          results.failed.push(bookingIds[i])
         }
       }
 
@@ -595,7 +599,8 @@ export function useAdminBookings () {
     }> = {}
 
     for (const property of allProperties.value) {
-      const propertyBookings = allBookings.value.filter(b => b.property_id === property.id)
+      const propertyBookingsMap = bookingStore.bookingsByProperty(property.id)
+      const propertyBookings = Array.from(propertyBookingsMap.values())
       const turnBookings = propertyBookings.filter(b => b.booking_type === 'turn')
       const completedBookings = propertyBookings.filter(b => b.status === 'completed')
 
