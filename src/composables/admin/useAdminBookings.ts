@@ -595,7 +595,8 @@ export function useAdminBookings () {
     }> = {}
 
     for (const property of allProperties.value) {
-      const propertyBookings = allBookings.value.filter(b => b.property_id === property.id)
+      const propertyBookingsMap = bookingStore.bookingsByProperty(property.id)
+      const propertyBookings = Array.from(propertyBookingsMap.values())
       const turnBookings = propertyBookings.filter(b => b.booking_type === 'turn')
       const completedBookings = propertyBookings.filter(b => b.status === 'completed')
 

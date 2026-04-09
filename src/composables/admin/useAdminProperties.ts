@@ -223,8 +223,8 @@ export function useAdminProperties () {
         continue
       }
 
-      const propertyBookings = Array.from(bookingStore.bookings.values())
-        .filter(booking => booking.property_id === property.id)
+      const propertyBookingsMap = bookingStore.bookingsByProperty(property.id)
+      const propertyBookings = Array.from(propertyBookingsMap.values())
 
       utilizationMap[property.id] = {
         property,
