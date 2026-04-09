@@ -18,13 +18,23 @@ export function calculatePropertyMetrics (
   propertyBookings: Booking[],
 ): { utilizationRate: number, averageGapBetweenBookings: number, turnPercentage: number, revenueProjection: number, cleaningLoad: 'light' | 'moderate' | 'heavy' } {
   const totalDays = 30
+  const now = new Date()
+  const windowStart = new Date(now)
+  windowStart.setDate(windowStart.getDate() - totalDays)
+  const windowStartStr = windowStart.toISOString().split('T')[0]
+  const nowStr = now.toISOString().split('T')[0]
+
+  // Filter bookings to the 30-day window for utilization calculation
+  const windowBookings = propertyBookings.filter(b => b.checkout_date >= windowStartStr && b.checkin_date <= nowStr)
+
   const bookedDays = new Set<string>()
 
-  for (const booking of propertyBookings) {
+  for (const booking of windowBookings) {
     const checkinDate = new Date(booking.checkin_date)
     const checkoutDate = new Date(booking.checkout_date)
-    const currentDate = new Date(checkinDate)
-    while (currentDate <= checkoutDate) {
+    const currentDate = new Date(Math.max(checkinDate.getTime(), windowStart.getTime()))
+    const endDate = new Date(Math.min(checkoutDate.getTime(), now.getTime()))
+    while (currentDate <= endDate) {
       bookedDays.add(currentDate.toISOString().split('T')[0])
       currentDate.setDate(currentDate.getDate() + 1)
     }

@@ -16,6 +16,7 @@
         </span>
         <v-spacer />
         <v-btn
+          :disabled="loading"
           icon="mdi-close"
           size="small"
           variant="text"
@@ -281,6 +282,7 @@
 
   // Computed properties
   function updateModelValue (value: boolean) {
+    if (!value && props.loading) return // block close while loading
     emit('update:modelValue', value)
   }
 
@@ -315,6 +317,7 @@
 
   // Methods
   function closeDialog () {
+    if (props.loading) return
     updateModelValue(false)
     resetForm()
   }

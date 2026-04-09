@@ -437,11 +437,10 @@ export function useAdminBookings () {
     const results = { success: [] as string[], failed: [] as string[] }
 
     try {
-      // Process all assignments concurrently
+      // Call supabase layer directly to avoid racing shared loading/error/success refs
       const settledResults = await Promise.allSettled(
         bookingIds.map(async bookingId => {
-          const result = await assignCleaner(bookingId, cleanerId)
-          if (!result) throw new Error('Assignment returned falsy')
+          await supaAssignCleaner(bookingId, cleanerId)
           return bookingId
         }),
       )
@@ -489,11 +488,10 @@ export function useAdminBookings () {
     const results = { success: [] as string[], failed: [] as string[] }
 
     try {
-      // Process all status updates concurrently
+      // Call supabase layer directly to avoid racing shared loading/error/success refs
       const settledResults = await Promise.allSettled(
         bookingIds.map(async bookingId => {
-          const result = await updateBookingStatus(bookingId, status)
-          if (!result) throw new Error('Status update returned falsy')
+          await supaChangeStatus(bookingId, status)
           return bookingId
         }),
       )

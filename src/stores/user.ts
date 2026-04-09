@@ -16,7 +16,8 @@ export const useUserStore = defineStore('user', () => {
   // Derive user from auth store, with local override for legacy setUser() callers
   const authStore = useAuthStore()
   const localUserOverride = ref<User | null>(null)
-  const user = computed(() => localUserOverride.value || (authStore.user as User | null))
+  // authStore is the primary source; localUserOverride is fallback for legacy callers only
+  const user = computed(() => (authStore.user as User | null) || localUserOverride.value)
 
   // Clear local override when auth session ends — prevents stale auth data
   watch(() => authStore.user, newUser => {
