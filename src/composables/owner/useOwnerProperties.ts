@@ -4,7 +4,7 @@ import { useSupabaseProperties } from '@/composables/supabase/useSupabasePropert
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
-import { canDeactivateProperty } from '@/utils/businessLogic'
+import { calculatePropertyMetrics, canDeactivateProperty } from '@/utils/businessLogic'
 
 /**
  * Owner-specific property composable
@@ -81,61 +81,11 @@ export function useOwnerProperties () {
   /**
    * Calculate property metrics (utilization, revenue, cleaning load)
    */
-  function calculatePropertyMetrics (id: string) {
+  function getPropertyMetrics (id: string) {
     const property = propertyStore.getPropertyById(id)
-    if (!property) {
-      return null
-    }
-
+    if (!property) return null
     const propertyBookings = Array.from(bookingStore.bookingsByProperty(id).values())
-
-    // Utilization rate (booked days / 30-day window)
-    const totalDays = 30
-    const bookedDays = new Set<string>()
-
-    for (const booking of propertyBookings) {
-      const checkinDate = new Date(booking.checkin_date)
-      const checkoutDate = new Date(booking.checkout_date)
-      const currentDate = new Date(checkinDate)
-      while (currentDate <= checkoutDate) {
-        bookedDays.add(currentDate.toISOString().split('T')[0])
-        currentDate.setDate(currentDate.getDate() + 1)
-      }
-    }
-
-    const utilizationRate = bookedDays.size / totalDays
-
-    // Turn percentage
-    const turnBookings = propertyBookings.filter(b => b.booking_type === 'turn')
-    const turnPercentage = propertyBookings.length > 0 ? turnBookings.length / propertyBookings.length : 0
-
-    // Average gap between bookings
-    let totalGapDays = 0
-    let gapCount = 0
-    const sorted = propertyBookings.toSorted((a, b) =>
-      new Date(a.checkin_date).getTime() - new Date(b.checkin_date).getTime(),
-    )
-    for (let i = 0; i < sorted.length - 1; i++) {
-      const currentEnd = new Date(sorted[i].checkout_date)
-      const nextStart = new Date(sorted[i + 1].checkin_date)
-      if (nextStart > currentEnd) {
-        totalGapDays += Math.round((nextStart.getTime() - currentEnd.getTime()) / (1000 * 60 * 60 * 24))
-        gapCount++
-      }
-    }
-    const averageGapBetweenBookings = gapCount > 0 ? totalGapDays / gapCount : 0
-
-    // Revenue projection
-    const revenueMultipliers: Record<PricingTier, number> = { basic: 1, standard: 1.2, premium: 1.5, luxury: 2.5 }
-    const baseRevenue = 100
-    const projectedBookings = Math.round(utilizationRate * 30)
-    const revenueProjection = projectedBookings * baseRevenue * revenueMultipliers[property.pricing_tier]
-
-    // Cleaning load
-    const cleaningLoad: 'light' | 'moderate' | 'heavy'
-      = utilizationRate < 0.3 ? 'light' : (utilizationRate < 0.7 ? 'moderate' : 'heavy')
-
-    return { utilizationRate, averageGapBetweenBookings, turnPercentage, revenueProjection, cleaningLoad }
+    return calculatePropertyMetrics(property, propertyBookings)
   }
 
   /**
@@ -166,7 +116,7 @@ export function useOwnerProperties () {
     let totalCleaningDuration = 0
 
     for (const property of myProperties.value) {
-      const metrics = calculatePropertyMetrics(property.id)
+      const metrics = getPropertyMetrics(property.id)
       if (metrics) {
         totalUtilization += metrics.utilizationRate
         totalRevenue += metrics.revenueProjection
@@ -362,7 +312,7 @@ export function useOwnerProperties () {
       return null
     }
 
-    return calculatePropertyMetrics(id)
+    return getPropertyMetrics(id)
   }
 
   return {

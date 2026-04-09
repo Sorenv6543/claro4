@@ -437,18 +437,21 @@ export function useAdminBookings () {
     const results = { success: [] as string[], failed: [] as string[] }
 
     try {
-      // Process each booking assignment
-      for (const bookingId of bookingIds) {
-        try {
+      // Process all assignments concurrently
+      const settledResults = await Promise.allSettled(
+        bookingIds.map(async bookingId => {
           const result = await assignCleaner(bookingId, cleanerId)
-          if (result) {
-            results.success.push(bookingId)
-          } else {
-            results.failed.push(bookingId)
-          }
-        } catch (err) {
-          console.error(`[useAdminBookings] bulkAssignCleaner failed for booking ${bookingId}:`, err)
-          results.failed.push(bookingId)
+          if (!result) throw new Error('Assignment returned falsy')
+          return bookingId
+        }),
+      )
+
+      for (let i = 0; i < settledResults.length; i++) {
+        if (settledResults[i].status === 'fulfilled') {
+          results.success.push(bookingIds[i])
+        } else {
+          console.error(`[useAdminBookings] bulkAssignCleaner failed for booking ${bookingIds[i]}:`, (settledResults[i] as PromiseRejectedResult).reason)
+          results.failed.push(bookingIds[i])
         }
       }
 
@@ -486,18 +489,21 @@ export function useAdminBookings () {
     const results = { success: [] as string[], failed: [] as string[] }
 
     try {
-      // Process each booking status update
-      for (const bookingId of bookingIds) {
-        try {
+      // Process all status updates concurrently
+      const settledResults = await Promise.allSettled(
+        bookingIds.map(async bookingId => {
           const result = await updateBookingStatus(bookingId, status)
-          if (result) {
-            results.success.push(bookingId)
-          } else {
-            results.failed.push(bookingId)
-          }
-        } catch (err) {
-          console.error(`[useAdminBookings] bulkUpdateStatus failed for booking ${bookingId}:`, err)
-          results.failed.push(bookingId)
+          if (!result) throw new Error('Status update returned falsy')
+          return bookingId
+        }),
+      )
+
+      for (let i = 0; i < settledResults.length; i++) {
+        if (settledResults[i].status === 'fulfilled') {
+          results.success.push(bookingIds[i])
+        } else {
+          console.error(`[useAdminBookings] bulkUpdateStatus failed for booking ${bookingIds[i]}:`, (settledResults[i] as PromiseRejectedResult).reason)
+          results.failed.push(bookingIds[i])
         }
       }
 

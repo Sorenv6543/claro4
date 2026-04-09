@@ -1,17 +1,22 @@
 import type { Booking, Property, User } from '@/types'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
 
 /**
  * User store for the Property Cleaning Scheduler
- * Manages user authentication and user-specific views/filters
- * Uses other stores for actual data, provides user-filtered views
+ * Manages user-specific views/filters and preferences.
+ * Derives user identity from useAuthStore (single source of truth),
+ * with local fallback for backwards compatibility (setUser still works).
+ * Uses other stores for actual data, provides user-filtered views.
  */
 export const useUserStore = defineStore('user', () => {
-  // State
-  const user = ref<User | null>(null)
+  // Derive user from auth store, with local override for legacy setUser() callers
+  const authStore = useAuthStore()
+  const localUserOverride = ref<User | null>(null)
+  const user = computed(() => localUserOverride.value || (authStore.user as User | null))
   const settings = ref({
     notifications: true,
     timezone: 'America/New_York',
@@ -181,10 +186,9 @@ export const useUserStore = defineStore('user', () => {
   })
 
   // Actions
+  /** @deprecated Prefer authStore for user identity. This sets a local override. */
   function setUser (newUser: User | null) {
-    user.value = newUser
-
-    // Clear user-specific data when logging out
+    localUserOverride.value = newUser
     if (!newUser) {
       clearUserPreferences()
     }
