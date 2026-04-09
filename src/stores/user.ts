@@ -1,6 +1,6 @@
 import type { Booking, Property, User } from '@/types'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
@@ -17,6 +17,12 @@ export const useUserStore = defineStore('user', () => {
   const authStore = useAuthStore()
   const localUserOverride = ref<User | null>(null)
   const user = computed(() => localUserOverride.value || (authStore.user as User | null))
+
+  // Clear local override when auth session ends — prevents stale auth data
+  watch(() => authStore.user, newUser => {
+    if (!newUser) localUserOverride.value = null
+  })
+
   const settings = ref({
     notifications: true,
     timezone: 'America/New_York',

@@ -345,7 +345,7 @@
     }
 
     emit('submit', usersToUpdate, newRole.value)
-    closeDialog()
+    // Parent controls close via modelValue after async operation completes
   }
 
   // Watchers

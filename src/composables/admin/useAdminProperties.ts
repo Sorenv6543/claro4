@@ -222,7 +222,7 @@ export function useAdminProperties () {
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Failed to create property'
       loading.value = false
-      return null
+      throw error_
     }
   }
 
@@ -247,7 +247,7 @@ export function useAdminProperties () {
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Failed to update property'
       loading.value = false
-      return false
+      throw error_
     }
   }
 
@@ -272,7 +272,7 @@ export function useAdminProperties () {
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Failed to delete property'
       loading.value = false
-      return false
+      throw error_
     }
   }
 
