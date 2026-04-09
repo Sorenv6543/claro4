@@ -60,6 +60,7 @@ src/components/smart/owner/HomeOwner.vue -
       :initial-data="eventModalMode === 'create' ? eventModalData : undefined"
       :mode="eventModalMode"
       :open="eventModalOpen"
+      :properties="myProperties"
       @close="handleEventModalClose"
       @delete="handleEventModalDelete"
       @save="handleEventModalSave"
@@ -68,6 +69,7 @@ src/components/smart/owner/HomeOwner.vue -
     <PropertyModal
       :mode="propertyModalMode"
       :open="propertyModalOpen"
+      :owner-id="authStore.user?.id || ''"
       :property="propertyModalData"
       @close="handlePropertyModalClose"
       @delete="handlePropertyModalDelete"

@@ -35,6 +35,7 @@
             <v-card-text>
               <PropertyModal
                 mode="edit"
+                :owner-id="property?.owner_id || ''"
                 :property="property"
                 :show="true"
                 @cancel="handleCancel"

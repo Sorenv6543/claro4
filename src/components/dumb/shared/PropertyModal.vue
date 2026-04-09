@@ -495,7 +495,6 @@
 <script setup lang="ts">
   import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
 import MaterioFormWizard from '@/components/dumb/shared/MaterioFormWizard.vue'
-import { useAuthStore } from '@/stores/auth'
 import type { PricingTier, Property, PropertyFormData } from '@/types'
 import { PROPERTY_COLORS } from '@/utils/constants'
 import { computed, onMounted, reactive, ref, watch } from 'vue'
@@ -508,6 +507,7 @@ import type { VForm } from 'vuetify/components'
     property?: Property
     stepper?: boolean
     existingPropertyCount?: number
+    ownerId?: string
   }
 
   interface Emits {
@@ -522,12 +522,10 @@ import type { VForm } from 'vuetify/components'
     property: undefined,
     stepper: false,
     existingPropertyCount: 0,
+    ownerId: '',
   })
 
   const emit = defineEmits<Emits>()
-
-  // STORES
-  const authStore = useAuthStore()
 
   // FORM REFS
   const formRef = ref<VForm | null>(null)
@@ -701,7 +699,7 @@ import type { VForm } from 'vuetify/components'
         contact_name: '',
         contact_phone: '',
         active: true,
-        owner_id: authStore.user?.id || '',
+        owner_id: props.ownerId || '',
         color: assignedColor,
       })
     }
@@ -777,7 +775,7 @@ import type { VForm } from 'vuetify/components'
       contact_name: form.contact_name,
       contact_phone: form.contact_phone,
       active: form.active!,
-      owner_id: form.owner_id || authStore.user?.id || '',
+      owner_id: form.owner_id || props.ownerId || '',
       color: form.color || PROPERTY_COLORS[0],
     }
   }

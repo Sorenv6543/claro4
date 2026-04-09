@@ -122,9 +122,8 @@
 </template>
 
 <script setup lang="ts">
-  import type { User } from '@/types'
+  import type { Booking, User } from '@/types'
   import { computed } from 'vue'
-  import { useBookingStore } from '@/stores/booking'
 
   interface Props {
     visible: boolean
@@ -134,6 +133,7 @@
       busiest: number
     }
     users?: Map<string, User>
+    bookings?: Booking[]
     showOwnerNavigation?: boolean
     showStatusNavigation?: boolean
   }
@@ -145,14 +145,12 @@
 
   const props = withDefaults(defineProps<Props>(), {
     users: () => new Map<string, User>(),
+    bookings: () => [],
     showOwnerNavigation: false,
     showStatusNavigation: false,
   })
 
   const emit = defineEmits<Emits>()
-
-  // Stores
-  const bookingStore = useBookingStore()
 
   // Primary navigation options
   const primaryOptions = computed(() => [
@@ -221,13 +219,12 @@
     // Count upcoming bookings per owner
     const ownerBookingCounts = new Map<string, number>()
 
-    for (const booking of Array.from(bookingStore.bookings.values())
-      .filter(booking => {
-        const checkoutDate = new Date(booking.checkout_date)
-        return checkoutDate >= now
-          && checkoutDate <= nextMonth
-          && booking.status !== 'completed'
-          && booking.status !== 'cancelled'
+    for (const booking of props.bookings.filter(booking => {
+      const checkoutDate = new Date(booking.checkout_date)
+      return checkoutDate >= now
+        && checkoutDate <= nextMonth
+        && booking.status !== 'completed'
+        && booking.status !== 'cancelled'
     })) {
       const count = ownerBookingCounts.get(booking.owner_id) || 0
       ownerBookingCounts.set(booking.owner_id, count + 1)
@@ -259,9 +256,8 @@
       unassigned: 0,
     }
 
-    for (const booking of Array.from(bookingStore.bookings.values())
-      .filter(booking => {
-        const checkoutDate = new Date(booking.checkout_date)
+    for (const booking of props.bookings.filter(booking => {
+      const checkoutDate = new Date(booking.checkout_date)
       return checkoutDate >= now
     })) {
       if (booking.status === 'pending') statusCounts.pending++

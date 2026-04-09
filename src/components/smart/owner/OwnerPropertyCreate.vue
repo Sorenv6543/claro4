@@ -35,6 +35,7 @@
             <v-card-text>
               <PropertyModal
                 mode="create"
+                :owner-id="authStore.user?.id || ''"
                 :show="true"
                 @cancel="handleCancel"
                 @save="handleSave"

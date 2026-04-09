@@ -228,28 +228,24 @@
 <script setup lang="ts">
   import type { User, UserRole } from '@/types'
   import { computed, ref, watch } from 'vue'
-  import { useAdminErrorHandler } from '@/composables/admin/useAdminErrorHandler'
-  import { useAuthStore } from '@/stores/auth'
 
   // Props and Emits
   interface Props {
     modelValue: boolean
     selectedUsers: User[]
+    loading?: boolean
   }
 
-  const props = defineProps<Props>()
+  const props = withDefaults(defineProps<Props>(), {
+    loading: false,
+  })
 
   const emit = defineEmits<{
     'update:modelValue': [value: boolean]
-    'saved': []
+    'submit': [users: User[], newRole: UserRole]
   }>()
 
-  // Composables
-  const authStore = useAuthStore()
-  const { handleError } = useAdminErrorHandler()
-
   // Form state
-  const loading = ref(false)
   const newRole = ref<UserRole | null>(null)
   const confirmChange = ref(false)
 
@@ -337,50 +333,19 @@
     return colors[role] || 'grey'
   }
 
-  async function handleSubmit () {
+  function handleSubmit () {
     if (!newRole.value) return
 
-    try {
-      loading.value = true
+    // Filter out users who already have the target role
+    const usersToUpdate = props.selectedUsers.filter(user => user.role !== newRole.value)
 
-      // Filter out users who already have the target role
-      const usersToUpdate = props.selectedUsers.filter(user => user.role !== newRole.value)
-
-      if (usersToUpdate.length === 0) {
-        // Show message that no changes are needed
-        console.log('No users need role changes')
-        closeDialog()
-        return
-      }
-
-      // Update each user's role
-      const updatePromises = usersToUpdate.map(user =>
-        authStore.changeUserRole(user.id, newRole.value!),
-      )
-
-      const results = await Promise.allSettled(updatePromises)
-
-      // Check for failures
-      const failures = results.filter(result => result.status === 'rejected')
-
-      if (failures.length > 0) {
-        console.error('Some role updates failed:', failures)
-      // Still emit saved to refresh the list, but show partial success message
-      }
-
-      const successCount = usersToUpdate.length - failures.length
-      console.log(`Successfully updated ${successCount} out of ${usersToUpdate.length} users`)
-
-      emit('saved')
+    if (usersToUpdate.length === 0) {
       closeDialog()
-    } catch (error) {
-      handleError(error, {
-        operation: 'bulk_role_change',
-        component: 'BulkRoleChangeDialog',
-      })
-    } finally {
-      loading.value = false
+      return
     }
+
+    emit('submit', usersToUpdate, newRole.value)
+    closeDialog()
   }
 
   // Watchers

@@ -365,7 +365,6 @@
   import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
   import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
   import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
-  import { usePropertyStore } from '@/stores/property'
   import { formatPropertyAddress } from '@/types/property'
 
   // PROPS & EMITS
@@ -374,6 +373,7 @@
     mode?: 'create' | 'edit'
     booking?: Booking
     initialData?: Partial<BookingFormData>
+    properties?: Property[]
   }
 
   interface Emits {
@@ -387,12 +387,10 @@
     mode: 'create',
     booking: undefined,
     initialData: undefined,
+    properties: () => [],
   })
 
   const emit = defineEmits<Emits>()
-
-  // STORES
-  const propertyStore = usePropertyStore()
 
   // FORM REFS
   const formRef = ref<VForm | null>(null)
@@ -445,7 +443,7 @@
   })
 
   const propertiesArray = computed(() => {
-    return propertyStore.activeProperties.map((p: Property) => ({
+    return props.properties.map((p: Property) => ({
       ...p,
       displayAddress: formatPropertyAddress(p, 'short'),
     }))
@@ -485,7 +483,7 @@
   const propertyRules = [
     (v: string) => !!v || 'Property is required',
     (v: string) => {
-      const property = propertyStore.getPropertyById(v)
+      const property = props.properties.find(p => p.id === v)
       return !!property || 'Selected property does not exist'
     },
   ]

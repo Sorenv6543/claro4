@@ -192,6 +192,7 @@
       :existing-property-count="myProperties.length"
       :mode="propertyModalMode"
       :open="propertyModalOpen"
+      :owner-id="authStore.user?.id || ''"
       :property="propertyModalData"
       :stepper="propertyModalMode === 'create'"
       @close="handlePropertyModalClose"

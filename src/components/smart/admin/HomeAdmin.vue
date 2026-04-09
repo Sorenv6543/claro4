@@ -22,6 +22,7 @@
   <PropertyModal
     :mode="propertyModalMode"
     :open="propertyModalOpen"
+    :owner-id="authStore.user?.id || ''"
     :property="propertyModalData"
     @close="handlePropertyModalClose"
     @delete="handlePropertyModalDelete"
