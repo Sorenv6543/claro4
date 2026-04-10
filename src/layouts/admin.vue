@@ -1,7 +1,12 @@
-<!-- layouts/admin.vue - Full admin layout with sidebar and top app bar -->
+<!--
+  AdminLayout.vue
+
+  Main layout for admin-facing pages, including the dashboard, user management, and settings.
+  Contains the app bar with navigation and user menu, and a sidebar for page navigation and stats.
+-->
 <template>
   <v-app class="admin-layout">
-    <!-- Admin App Bar — matches owner nav bar style -->
+    <!-- Admin app bar with admin-specific controls (user menu, notifications) -->
     <v-app-bar
       border="b"
       color="surface"
@@ -14,7 +19,7 @@
         @click="toggleSidebar"
       />
 
-      <v-app-bar-title class="flex-grow-0" style="min-width:auto">
+      <v-app-bar-title class="flex-grow-0" style="min-width: auto">
         <span class="text-h6 font-weight-bold text-primary">Claro</span>
       </v-app-bar-title>
 
@@ -42,7 +47,8 @@
             <span class="text-caption font-weight-bold">{{ userInitials }}</span>
           </v-avatar>
         </template>
-        <v-card>
+
+        <v-card rounded="lg">
           <v-list density="comfortable" min-width="160">
             <v-list-item
               prepend-icon="mdi-account-outline"
@@ -92,16 +98,16 @@
 
 <script setup lang="ts">
   import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useDisplay } from 'vuetify'
+  import { useRouter } from 'vue-router'
+  import { useDisplay } from 'vuetify'
 
   import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue'
-import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
-import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
-import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
-import { useAuthStore } from '@/stores/auth'
-import { useBookingStore } from '@/stores/booking'
-import { usePropertyStore } from '@/stores/property'
+  import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
+  import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
+  import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
+  import { useAuthStore } from '@/stores/auth'
+  import { useBookingStore } from '@/stores/booking'
+  import { usePropertyStore } from '@/stores/property'
 
   // Composables
   const router = useRouter()

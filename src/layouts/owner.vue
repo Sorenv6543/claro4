@@ -1,3 +1,11 @@
+  <!----
+  OwnerLayout.vue
+
+  Main layout for owner-facing pages, including the dashboard/schedule and profile.
+  Contains the app bar with navigation and calendar controls, and a sidebar for page navigation.
+  SECTION - The calendar controls (month/year display and view toggle) are only shown on the schedule/dashboard page.
+-->
+
 <!-- src/layouts/owner.vue -->
 <template>
   <v-app class="owner-layout">
@@ -73,9 +81,6 @@
         size="small"
         variant="text"
       />
-
-
-
       <!-- Avatar / user menu -->
       <v-menu location="bottom end">
         <template #activator="{ props: menuProps }">
@@ -117,13 +122,13 @@
 </template>
 
 <script setup lang="ts">
-  import { useAuthStore } from '@stores/auth'
-  import { computed, onMounted, ref } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
-  import { useDisplay } from 'vuetify'
   import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
-  import { useCalendarState } from '@/composables/shared/useCalendarState'
-  import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
+import { useCalendarState } from '@/composables/shared/useCalendarState'
+import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
+import { useAuthStore } from '@stores/auth'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useDisplay } from 'vuetify'
 
   const { mdAndUp } = useDisplay()
   const router = useRouter()

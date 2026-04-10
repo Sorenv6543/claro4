@@ -104,7 +104,11 @@
       "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr view 20 --json title,body,files)",
       "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr diff 20 --patch)",
       "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" pr view 20 --json state,isDraft,reviews)",
-      "Bash('/c/Program Files/GitHub CLI/gh.exe' pr comment 20 --body ':*)"
+      "Bash('/c/Program Files/GitHub CLI/gh.exe' pr comment 20 --body ':*)",
+      "mcp__claude_ai_Mermaid_Chart__validate_and_render_mermaid_diagram",
+      "Bash(grep -l \"useUserStore\\\\|useAuthStore\" src/**/*.vue src/**/*.ts)",
+      "Bash(grep -l \"state\\\\|store\\\\|source of truth\\\\|consolidat\" /c/Users/Soren/claro4/docs/superpowers/specs/*.md)",
+      "Bash(grep -l \"auth store\\\\|consolidat\\\\|source of truth\" /c/Users/Soren/claro4/docs/superpowers/specs/*.md)"
     ],
     "deny": [
       "Bash(rm -rf:*)",
