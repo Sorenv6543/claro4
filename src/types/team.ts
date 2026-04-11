@@ -14,6 +14,8 @@ export interface CleanerTeam {
 
 export type CleanerTeamFormData = Omit<CleanerTeam, 'id' | 'created_at' | 'updated_at'>
 
+export type CleanerTeamMap = Map<string, CleanerTeam>
+
 export function isCleanerTeam (obj: unknown): obj is CleanerTeam {
   if (!obj || typeof obj !== 'object') {
     return false

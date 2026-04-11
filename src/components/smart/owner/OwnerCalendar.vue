@@ -28,7 +28,7 @@
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when a calendar route is visited.
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
-  import { useCalendarState } from '@/composables/shared/useCalendarState'
+  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
 
   const FullCalendar = defineAsyncComponent({
     loader: () => import('@/components/smart/shared/FullCalendar.vue'),
@@ -64,7 +64,7 @@
 
   const emit = defineEmits<Emits>()
 
-  const { goToDate: calendarStateGoToDate } = useCalendarState()
+  const { goToDate: calendarStateGoToDate } = useOwnerCalendarState()
 
   // ===== REFS AND REACTIVE DATA =====
   const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)

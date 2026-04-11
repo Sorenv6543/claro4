@@ -218,10 +218,15 @@
   import { useDisplay } from 'vuetify'
   import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import StatCard from '@/components/dumb/shared/StatCard.vue'
-  import { supabase } from '@/plugins/supabase'
+  import { useSupabaseUserProfiles } from '@/composables/supabase/useSupabaseUserProfiles'
+  import { usePropertyStore } from '@/stores/property'
+  import { useUserProfileStore } from '@/stores/userProfile'
 
   const router = useRouter()
   const { mobile } = useDisplay()
+  const supaUserProfiles = useSupabaseUserProfiles()
+  const userProfileStore = useUserProfileStore()
+  const propertyStore = usePropertyStore()
 
   const loading = ref(false)
   const fetchError = ref<string | null>(null)
@@ -327,28 +332,22 @@
     loading.value = true
     fetchError.value = null
     try {
-      const { data: owners, error: ownerError } = await supabase
-        .from('user_profiles')
-        .select('id, name, email, company_name, created_at, last_sign_in_at')
-        .eq('role', 'owner')
-        .order('name')
+      await supaUserProfiles.fetchByRole('owner')
 
-      if (ownerError) throw ownerError
-
-      const { data: properties, error: propError } = await supabase
-        .from('properties')
-        .select('id, address_street, owner_id')
-
-      if (propError) throw propError
-
+      // Properties are already loaded by useRealtimeSync — read from store
       const propsByOwner = new Map<string, { id: string, address_street: string }[]>()
-      for (const p of properties ?? []) {
+      for (const p of propertyStore.propertiesArray) {
         if (!propsByOwner.has(p.owner_id)) propsByOwner.set(p.owner_id, [])
         propsByOwner.get(p.owner_id)!.push({ id: p.id, address_street: p.address_street })
       }
 
-      propertyOwners.value = (owners ?? []).map(o => ({
-        ...o,
+      propertyOwners.value = userProfileStore.ownersArray.map(o => ({
+        id: o.id,
+        name: o.name,
+        email: o.email,
+        company_name: o.company_name ?? null,
+        created_at: o.created_at ?? null,
+        last_sign_in_at: o.last_sign_in_at ?? null,
         properties: propsByOwner.get(o.id) ?? [],
       }))
     } catch (error) {

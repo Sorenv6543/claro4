@@ -123,7 +123,7 @@
 
 <script setup lang="ts">
   import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
-import { useCalendarState } from '@/composables/shared/useCalendarState'
+import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
 import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
 import { useAuthStore } from '@stores/auth'
 import { computed, onMounted, ref } from 'vue'
@@ -134,7 +134,7 @@ import { useDisplay } from 'vuetify'
   const router = useRouter()
   const route = useRoute()
   const authStore = useAuthStore()
-  const calendarState = useCalendarState()
+  const calendarState = useOwnerCalendarState()
   const { init: initRealtimeSync } = useRealtimeSync()
 
   const sidebarOpen = ref(mdAndUp.value)

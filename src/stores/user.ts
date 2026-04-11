@@ -1,6 +1,6 @@
 import type { Booking, Property, User } from '@/types'
 import { defineStore } from 'pinia'
-import { computed, ref, watch } from 'vue'
+import { computed, ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
@@ -8,21 +8,12 @@ import { usePropertyStore } from '@/stores/property'
 /**
  * User store for the Property Cleaning Scheduler
  * Manages user-specific views/filters and preferences.
- * Derives user identity from useAuthStore (single source of truth),
- * with local fallback for backwards compatibility (setUser still works).
+ * User identity comes exclusively from useAuthStore (single source of truth).
  * Uses other stores for actual data, provides user-filtered views.
  */
 export const useUserStore = defineStore('user', () => {
-  // Derive user from auth store, with local override for legacy setUser() callers
   const authStore = useAuthStore()
-  const localUserOverride = ref<User | null>(null)
-  // authStore is the primary source; localUserOverride is fallback for legacy callers only
-  const user = computed(() => (authStore.user as User | null) || localUserOverride.value)
-
-  // Clear local override when auth session ends — prevents stale auth data
-  watch(() => authStore.user, newUser => {
-    if (!newUser) localUserOverride.value = null
-  })
+  const user = computed(() => authStore.user as User | null)
 
   const settings = ref({
     notifications: true,
@@ -193,14 +184,6 @@ export const useUserStore = defineStore('user', () => {
   })
 
   // Actions
-  /** @deprecated Prefer authStore for user identity. This sets a local override. */
-  function setUser (newUser: User | null) {
-    localUserOverride.value = newUser
-    if (!newUser) {
-      clearUserPreferences()
-    }
-  }
-
   function updateSettings (newSettings: Partial<typeof settings.value>) {
     settings.value = {
       ...settings.value,
@@ -298,7 +281,6 @@ export const useUserStore = defineStore('user', () => {
     recentProperties,
 
     // Actions
-    setUser,
     updateSettings,
     toggleFavoriteProperty,
     addRecentlyViewedProperty,

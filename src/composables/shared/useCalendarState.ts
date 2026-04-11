@@ -6,39 +6,32 @@ import { useUIStore } from '@/stores/ui'
 
 const __DEV__ = import.meta.env.DEV
 
-// ============================================================================
-// SINGLETON STATE — shared across all consumers (layout, pages, components)
-// ============================================================================
-
-const currentView = ref<'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'>('dayGridMonth')
-const currentDate = ref<Date>(new Date())
-const dateRange = ref<{ start: Date, end: Date }>({
-  start: new Date(),
-  end: new Date(new Date().setDate(new Date().getDate() + 7)),
-})
-
-const showPendingBookings = ref<boolean>(true)
-const showScheduledBookings = ref<boolean>(true)
-const showInProgressBookings = ref<boolean>(true)
-const showCompletedBookings = ref<boolean>(false)
-const showCancelledBookings = ref<boolean>(false)
-const showTurnBookings = ref<boolean>(true)
-const showStandardBookings = ref<boolean>(true)
-
-const selectedPropertyIds = ref<Set<string>>(new Set())
-
-const viewMode = ref<'ranges' | 'events'>('events')
-
-// ============================================================================
-
 /**
- * Composable for calendar view state management
- * Controls calendar display options, date ranges, and filtering
- *
- * State is module-scoped (singleton) so layout + page + components share
- * the same currentDate / currentView.
+ * Factory composable for calendar view state management.
+ * Each call creates an isolated set of reactive state.
+ * Role-specific wrappers (useAdminCalendarState, useOwnerCalendarState)
+ * hold their own singleton instance so admin and owner state are independent.
  */
 export function useCalendarState () {
+  // Fresh state per call — no module-scoped singletons
+  const currentView = ref<'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'>('dayGridMonth')
+  const currentDate = ref<Date>(new Date())
+  const dateRange = ref<{ start: Date, end: Date }>({
+    start: new Date(),
+    end: new Date(new Date().setDate(new Date().getDate() + 7)),
+  })
+
+  const showPendingBookings = ref<boolean>(true)
+  const showScheduledBookings = ref<boolean>(true)
+  const showInProgressBookings = ref<boolean>(true)
+  const showCompletedBookings = ref<boolean>(false)
+  const showCancelledBookings = ref<boolean>(false)
+  const showTurnBookings = ref<boolean>(true)
+  const showStandardBookings = ref<boolean>(true)
+
+  const selectedPropertyIds = ref<Set<string>>(new Set())
+
+  const viewMode = ref<'ranges' | 'events'>('events')
   if (!getActivePinia()) {
     throw new Error('[useCalendarState] Pinia is not installed. This composable must be called within a Vue setup() context with Pinia active.')
   }

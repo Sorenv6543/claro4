@@ -16,7 +16,7 @@ export * from './router'
 
 // Team types
 export { isCleanerTeam } from './team'
-export type { CleanerTeam, CleanerTeamFormData } from './team'
+export type { CleanerTeam, CleanerTeamFormData, CleanerTeamMap } from './team'
 
 // UI types - export everything except UserRole
 export type {

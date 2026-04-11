@@ -1,5 +1,4 @@
 import { onMounted, onUnmounted } from 'vue'
-import { useCalendarState } from './useCalendarState'
 
 /**
  * Swipe Navigation Composable
@@ -7,10 +6,11 @@ import { useCalendarState } from './useCalendarState'
  * - Swipe left: Next month
  * - Swipe right: Previous month
  * - Mobile-optimized with touch detection
+ *
+ * Accepts a calendar state with prev/next functions so it works
+ * with any role-specific calendar instance (admin or owner).
  */
-export function useSwipeNavigation () {
-  const calendarState = useCalendarState()
-
+export function useSwipeNavigation (calendarState: { prev: () => void, next: () => void }) {
   // Touch/Swipe Navigation Variables
   let touchStartX = 0
   let touchStartY = 0
@@ -75,9 +75,6 @@ export function useSwipeNavigation () {
   })
 
   return {
-    // Extend base calendar state
-    ...calendarState,
-
     // Touch navigation functions (for manual attachment if needed)
     handleTouchStart,
     handleTouchMove,

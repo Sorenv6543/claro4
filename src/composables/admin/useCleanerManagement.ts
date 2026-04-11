@@ -1,9 +1,12 @@
-import type { CleanerTeam } from '@/types/team'
 import type { Cleaner } from '@/types/user.ts'
 import { computed, ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
+import { useSupabaseCleanerTeams } from '@/composables/supabase/useSupabaseCleanerTeams'
+import { useSupabaseUserProfiles } from '@/composables/supabase/useSupabaseUserProfiles'
 import { useAuthStore } from '@/stores/auth.ts'
 import { useBookingStore } from '@/stores/booking.ts'
+import { useCleanerTeamStore } from '@/stores/cleanerTeam'
+import { useUserProfileStore } from '@/stores/userProfile'
 
 /**
  * Admin-only cleaner management composable
@@ -74,6 +77,12 @@ export function useCleanerManagement () {
   // Get stores
   const authStore = useAuthStore()
   const bookingStore = useBookingStore()
+  const userProfileStore = useUserProfileStore()
+  const cleanerTeamStore = useCleanerTeamStore()
+
+  // Composables for Supabase access
+  const supaUserProfiles = useSupabaseUserProfiles()
+  const supaCleanerTeams = useSupabaseCleanerTeams()
 
   // Admin-specific state
   const loading = ref<boolean>(false)
@@ -83,16 +92,17 @@ export function useCleanerManagement () {
   // Get current admin user ID
   const currentAdminId = computed(() => authStore.user?.id)
 
-  // State — populated by fetchCleaners()
-  const cleaners = ref<Cleaner[]>([])
-
-  // State — populated by fetchTeams()
-  const teams = ref<CleanerTeam[]>([])
-
   /**
    * All cleaners in the system (admin-only access)
+   * Derived from userProfileStore — applies Cleaner-specific defaults
    */
-  const allCleaners = computed((): Cleaner[] => cleaners.value)
+  const allCleaners = computed((): Cleaner[] => {
+    return userProfileStore.cleanersArray.map(user => ({
+      ...user,
+      skills: user.skills ?? [],
+      max_daily_bookings: user.max_daily_bookings ?? 4,
+    })) as Cleaner[]
+  })
 
   /**
    * Get available cleaners (not at max capacity)
@@ -238,23 +248,8 @@ export function useCleanerManagement () {
     error.value = null
 
     try {
-      const { data, error: supabaseError } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('role', 'cleaner')
-        .order('name', { ascending: true })
-
-      if (supabaseError) {
-        throw supabaseError
-      }
-
-      cleaners.value = (data ?? []).map(row => ({
-        ...row,
-        skills: row.skills ?? [],
-        max_daily_bookings: row.max_daily_bookings ?? 4,
-      })) as Cleaner[]
-
-      success.value = `Loaded ${cleaners.value.length} cleaners from system`
+      await supaUserProfiles.fetchByRole('cleaner')
+      success.value = `Loaded ${allCleaners.value.length} cleaners from system`
       return true
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Unable to load cleaner data.'
@@ -271,16 +266,8 @@ export function useCleanerManagement () {
     loading.value = true
     error.value = null
     try {
-      const { data, error: fetchError } = await supabase
-        .from('cleaner_teams')
-        .select('*')
-        .eq('active', true)
-        .order('name')
-      if (fetchError) {
-        throw fetchError
-      }
-      teams.value = (data ?? []) as CleanerTeam[]
-      success.value = `Loaded ${teams.value.length} teams`
+      await supaCleanerTeams.fetchActive()
+      success.value = `Loaded ${allTeams.value.length} teams`
       return true
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Failed to fetch teams'
@@ -294,7 +281,7 @@ export function useCleanerManagement () {
   /**
    * All cleaner teams in the system (admin-only access)
    */
-  const allTeams = computed(() => teams.value)
+  const allTeams = computed(() => cleanerTeamStore.activeTeamsArray)
 
   /**
    * Create new cleaner (admin-only operation)
@@ -400,24 +387,14 @@ export function useCleanerManagement () {
         }
       }
 
-      const { error: updateError } = await supabase
-        .from('user_profiles')
-        .update({
-          name: data.name ?? cleaner.name,
-          email: data.email ?? cleaner.email,
-          skills: data.skills ?? cleaner.skills,
-          max_daily_bookings: data.max_daily_bookings ?? cleaner.max_daily_bookings,
-          location_lat: data.location_lat ?? cleaner.location_lat,
-          location_lng: data.location_lng ?? cleaner.location_lng,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', cleanerId)
-
-      if (updateError) {
-        throw updateError
-      }
-
-      await fetchCleaners()
+      await supaUserProfiles.updateProfile(cleanerId, {
+        name: data.name ?? cleaner.name,
+        email: data.email ?? cleaner.email,
+        skills: data.skills ?? cleaner.skills,
+        max_daily_bookings: data.max_daily_bookings ?? cleaner.max_daily_bookings,
+        location_lat: data.location_lat ?? cleaner.location_lat,
+        location_lng: data.location_lng ?? cleaner.location_lng,
+      })
       success.value = `Successfully updated cleaner: ${cleaner.name}`
       loading.value = false
       return true

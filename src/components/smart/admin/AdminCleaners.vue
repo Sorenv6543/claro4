@@ -349,10 +349,10 @@
   const filteredCleaners = computed(() => {
     let cleaners = allCleaners.value
 
-    // Status filter from collapsible filters
-    if (statusFilter.value) {
-      // Currently all cleaners are 'active' — filter will apply once real status data exists
-      cleaners = cleaners.filter(c => c.status?.toLowerCase() === statusFilter.value)
+    // Status filter — no-op until `status` field is added to the Cleaner type.
+    // All cleaners are currently treated as 'active'.
+    if (statusFilter.value && statusFilter.value !== 'active') {
+      cleaners = []
     }
 
     return cleaners

@@ -407,22 +407,21 @@ describe('Performance Regression Tests', () => {
 
   describe('Bundle Performance Validation', () => {
     it('should validate role-based chunking strategy', () => {
-      // Mock bundle analysis results
+      // Mock bundle analysis results — only chunks that manualChunks actually produces
       const expectedChunks = [
-        'admin-components',
-        'owner-components',
-        'shared-ui',
-        'admin-logic',
-        'owner-logic',
-        'shared-logic',
+        'admin-app',
+        'owner-app',
+        'app-core',
         'vuetify',
         'vue-core',
         'calendar',
+        'supabase',
+        'vendor',
       ]
 
       // In a real test, this would analyze actual build output
       for (const chunkType of expectedChunks) {
-        expect(chunkType).toMatch(/^(admin|owner|shared|vuetify|vue-core|calendar)/)
+        expect(chunkType).toMatch(/^(admin|owner|app|vuetify|vue-core|calendar|supabase|vendor)/)
       }
 
       // Validate chunk count is reasonable
@@ -433,15 +432,14 @@ describe('Performance Regression Tests', () => {
     it('should maintain bundle size targets', () => {
       // Mock bundle sizes based on current achievements
       const bundleSizes = {
-        'admin-components': 169, // KB
-        'owner-components': 59,
-        'shared-ui': 84,
-        'admin-logic': 54,
-        'owner-logic': 19,
-        'shared-logic': 33,
+        'admin-app': 54, // KB
+        'owner-app': 19,
+        'app-core': 84,
         'vuetify': 874,
         'vue-core': 683,
         'calendar': 581,
+        'supabase': 169,
+        'vendor': 100,
       }
 
       const totalSize = Object.values(bundleSizes).reduce((sum, size) => sum + size, 0)
@@ -450,9 +448,9 @@ describe('Performance Regression Tests', () => {
       expect(totalSize).toBeLessThan(3000) // <3MB total
 
       // Role-specific chunks should be optimally sized
-      expect(bundleSizes['owner-components']).toBeLessThan(100) // Owner components lightweight
-      expect(bundleSizes['admin-components']).toBeLessThan(250) // Admin components larger but reasonable
-      expect(bundleSizes['shared-ui']).toBeLessThan(150) // Shared components optimized
+      expect(bundleSizes['owner-app']).toBeLessThan(100) // Owner app lightweight
+      expect(bundleSizes['admin-app']).toBeLessThan(250) // Admin app larger but reasonable
+      expect(bundleSizes['app-core']).toBeLessThan(150) // Shared core optimized
     })
   })
 

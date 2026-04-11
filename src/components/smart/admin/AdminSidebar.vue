@@ -82,8 +82,8 @@
         </v-card>
         <v-card variant="outlined">
           <v-card-text class="text-center pa-2">
-            <div class="text-h6 font-weight-bold text-info">{{ availableCleanersCount }}</div>
-            <div class="text-caption text-medium-emphasis">Available</div>
+            <div class="text-h6 font-weight-bold text-info">{{ totalCleanersCount }}</div>
+            <div class="text-caption text-medium-emphasis">Cleaners</div>
           </v-card-text>
         </v-card>
       </div>
