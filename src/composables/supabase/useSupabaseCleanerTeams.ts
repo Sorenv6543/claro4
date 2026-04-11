@@ -43,10 +43,9 @@ export function useSupabaseCleanerTeams () {
       if (fetchError) {
         throw fetchError
       }
-      // Merge into store — only update active teams, don't clear inactive
-      for (const team of (data ?? []) as CleanerTeam[]) {
-        cleanerTeamStore.setTeam(team.id, team)
-      }
+      // Replace store contents with the current active set so teams that
+      // are no longer active are not left behind as stale active entries.
+      cleanerTeamStore.setTeams((data ?? []) as CleanerTeam[])
     } catch (error) {
       cleanerTeamStore.error = error instanceof Error ? error.message : 'Failed to fetch active teams'
       console.error('[useSupabaseCleanerTeams] fetchActive error:', error)
