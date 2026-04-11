@@ -109,7 +109,7 @@ src/components/smart/owner/HomeOwner.vue -
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
 
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
-  import { useCalendarState } from '@/composables/shared/useCalendarState'
+  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
   // Business logic composables
 
   // Import event logger for component communication
@@ -154,7 +154,7 @@ src/components/smart/owner/HomeOwner.vue -
     filterBookings,
     setCalendarView,
     viewMode,
-  } = useCalendarState()
+  } = useOwnerCalendarState()
 
   // ============================================================================
   // LOCAL STATE

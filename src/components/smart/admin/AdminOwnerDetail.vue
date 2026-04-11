@@ -363,22 +363,24 @@
 </template>
 
 <script setup lang="ts">
-  import type { Property } from '@/types/property'
+  import type { Property, PropertyFormData } from '@/types/property'
   import type { User } from '@/types/user'
-  import { onMounted, ref, watch } from 'vue'
-  // Watch for edit dialog opening from the card
-  // OwnerDetailCard emits 'edit' which sets showEditDialog
-  // We need to populate form data when it opens
+  import { computed, onMounted, ref, watch } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import OwnerDetailCard from '@/components/dumb/admin/OwnerDetailCard.vue'
   import OwnerPropertyList from '@/components/dumb/admin/OwnerPropertyList.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import { supabase } from '@/plugins/supabase'
+  import { useSupabaseProperties } from '@/composables/supabase/useSupabaseProperties'
+  import { useSupabaseUserProfiles } from '@/composables/supabase/useSupabaseUserProfiles'
+  import { usePropertyStore } from '@/stores/property'
 
   import { formatPropertyAddress } from '@/types/property'
 
   const route = useRoute()
   const router = useRouter()
+  const supaUserProfiles = useSupabaseUserProfiles()
+  const supaProperties = useSupabaseProperties()
+  const propertyStore = usePropertyStore()
 
   const loading = ref(true)
   const saving = ref(false)
@@ -450,34 +452,30 @@
     { title: 'Luxury', value: 'luxury' },
   ]
 
+  // Properties for the current owner — derived from propertyStore (already loaded by useRealtimeSync)
+  const ownerProperties = computed(() => {
+    const ownerId = route.params.id as string
+    if (!ownerId) return []
+    return Array.from(propertyStore.propertiesByOwner(ownerId).values())
+  })
+
   // Fetch
   async function fetchOwnerData () {
     const ownerId = route.params.id as string
     loading.value = true
 
     try {
-      const { data: ownerData, error: ownerErr } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', ownerId)
-        .single()
-
-      if (ownerErr) throw ownerErr
-      owner.value = ownerData as User
+      const ownerData = await supaUserProfiles.fetchById(ownerId)
+      if (!ownerData) throw new Error('Owner not found')
+      owner.value = ownerData
 
       // Set avatar color deterministically from id
       let hash = 0
       for (const ch of ownerId) hash = ch.codePointAt(0)! + ((hash << 5) - hash)
       avatarColor.value = COLORS[Math.abs(hash) % COLORS.length]
 
-      const { data: propData, error: propErr } = await supabase
-        .from('properties')
-        .select('*')
-        .eq('owner_id', ownerId)
-        .order('address_street')
-
-      if (propErr) throw propErr
-      properties.value = (propData ?? []) as Property[]
+      // Properties come from propertyStore (loaded by useRealtimeSync)
+      properties.value = ownerProperties.value
     } catch (error) {
       console.error('Failed to load owner:', error)
       owner.value = null
@@ -496,21 +494,15 @@
     if (!owner.value) return
     saving.value = true
     try {
-      const { error } = await supabase
-        .from('user_profiles')
-        .update({
-          name: editForm.value.name,
-          company_name: editForm.value.company_name || null,
-          timezone: editForm.value.timezone,
-          language: editForm.value.language,
-          notifications_enabled: editForm.value.notifications_enabled,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', owner.value.id)
-
-      if (error) throw error
+      const updated = await supaUserProfiles.updateProfile(owner.value.id, {
+        name: editForm.value.name,
+        company_name: editForm.value.company_name || undefined,
+        timezone: editForm.value.timezone,
+        language: editForm.value.language,
+        notifications_enabled: editForm.value.notifications_enabled,
+      })
+      owner.value = updated
       showEditDialog.value = false
-      await fetchOwnerData()
     } catch (error) {
       console.error('Failed to update owner:', error)
     } finally {
@@ -559,38 +551,45 @@
     if (!owner.value) return
     saving.value = true
     try {
-      const payload = {
-        owner_id: owner.value.id,
-        address_street: propForm.value.address_street,
-        address_unit: propForm.value.address_unit || undefined,
-        address_city: propForm.value.address_city,
-        address_state: propForm.value.address_state,
-        address_zip: propForm.value.address_zip,
-        bedrooms: propForm.value.bedrooms,
-        bathrooms: propForm.value.bathrooms,
-        square_feet: propForm.value.square_feet,
-        property_type: propForm.value.property_type,
-        cleaning_duration: propForm.value.cleaning_duration,
-        special_instructions: propForm.value.special_instructions || null,
-        pricing_tier: propForm.value.pricing_tier,
-        active: propForm.value.active,
-      }
-
       if (editingProperty.value) {
-        const { error } = await supabase
-          .from('properties')
-          .update({ ...payload, updated_at: new Date().toISOString() })
-          .eq('id', editingProperty.value.id)
-        if (error) throw error
+        await supaProperties.updateProperty(editingProperty.value.id, {
+          owner_id: owner.value.id,
+          address_street: propForm.value.address_street,
+          address_unit: propForm.value.address_unit || undefined,
+          address_city: propForm.value.address_city,
+          address_state: propForm.value.address_state,
+          address_zip: propForm.value.address_zip,
+          bedrooms: propForm.value.bedrooms ?? undefined,
+          bathrooms: propForm.value.bathrooms ?? undefined,
+          square_feet: propForm.value.square_feet ?? undefined,
+          property_type: propForm.value.property_type as Property['property_type'],
+          cleaning_duration: propForm.value.cleaning_duration,
+          special_instructions: propForm.value.special_instructions || undefined,
+          pricing_tier: propForm.value.pricing_tier as Property['pricing_tier'],
+          active: propForm.value.active,
+        })
       } else {
-        const { error } = await supabase
-          .from('properties')
-          .insert(payload)
-        if (error) throw error
+        await supaProperties.createProperty({
+          owner_id: owner.value.id,
+          address_street: propForm.value.address_street,
+          address_unit: propForm.value.address_unit || undefined,
+          address_city: propForm.value.address_city,
+          address_state: propForm.value.address_state,
+          address_zip: propForm.value.address_zip,
+          bedrooms: propForm.value.bedrooms ?? undefined,
+          bathrooms: propForm.value.bathrooms ?? undefined,
+          square_feet: propForm.value.square_feet ?? undefined,
+          property_type: propForm.value.property_type as Property['property_type'],
+          cleaning_duration: propForm.value.cleaning_duration,
+          special_instructions: propForm.value.special_instructions || undefined,
+          pricing_tier: propForm.value.pricing_tier as Property['pricing_tier'],
+          active: propForm.value.active,
+          color: '',
+        } as PropertyFormData)
       }
 
       showPropertyDialog.value = false
-      await fetchOwnerData()
+      properties.value = ownerProperties.value
     } catch (error) {
       console.error('Failed to save property:', error)
     } finally {
@@ -601,14 +600,10 @@
   async function deleteProperty () {
     if (!propertyToDelete.value) return
     try {
-      const { error } = await supabase
-        .from('properties')
-        .delete()
-        .eq('id', propertyToDelete.value.id)
-      if (error) throw error
+      await supaProperties.deleteProperty(propertyToDelete.value.id)
       showDeleteDialog.value = false
       propertyToDelete.value = null
-      await fetchOwnerData()
+      properties.value = ownerProperties.value
     } catch (error) {
       console.error('Failed to delete property:', error)
     }

@@ -180,7 +180,6 @@ import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 
 
   import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts'
 import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
-import { useCalendarState } from '@/composables/shared/useCalendarState'
 import { useUIStore } from '@/stores/ui'
 import { isCleaner } from '@/types/user'
 import { subtractOneDay } from '@/utils/calendarHelpers'
@@ -213,7 +212,7 @@ import { subtractOneDay } from '@/utils/calendarHelpers'
   const calendarProperties = computed(() => Array.from(allProperties.value.values()))
 
   // Shared calendar state (singleton) — gives us viewMode
-  const { viewMode } = useCalendarState()
+  const { viewMode } = useAdminCalendarState()
 
   // Additional composables for admin functionality
   const { updateBooking, deleteBooking, createBooking, assignCleanerToBooking } = useAdminBookings()

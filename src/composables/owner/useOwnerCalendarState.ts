@@ -18,8 +18,10 @@ import { formatPropertyAddress } from '@/types/property'
  * - Owner-scoped turn alerts and property filtering
  * - Owner-friendly error messages and validation
  */
-export function useOwnerCalendarState () {
-  // Get shared functionality and stores
+// Module-level singleton — created once, shared across all owner consumers
+let _instance: ReturnType<typeof createOwnerCalendarState> | null = null
+
+function createOwnerCalendarState () {
   const baseCalendarState = useCalendarState()
   const ownerBookings = useOwnerBookings()
   const authStore = useAuthStore()
@@ -375,4 +377,16 @@ export function useOwnerCalendarState () {
     getTimeUntilCheckout,
     calculateUrgencyLevel,
   }
+}
+
+export function useOwnerCalendarState () {
+  if (!_instance) {
+    _instance = createOwnerCalendarState()
+  }
+  return _instance
+}
+
+/** Reset the singleton — only for use in test setup (vi.resetModules or beforeEach). */
+export function __resetOwnerCalendarStateForTesting () {
+  _instance = null
 }

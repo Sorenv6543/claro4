@@ -112,3 +112,5 @@ export function isCleaner (user: User): user is Cleaner {
     && typeof user.max_daily_bookings === 'number'
   )
 }
+
+export type UserMap = Map<string, User>

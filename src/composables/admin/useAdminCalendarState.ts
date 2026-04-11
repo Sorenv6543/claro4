@@ -17,8 +17,10 @@ import { formatPropertyAddress } from '@/types/property'
  * - System-wide calendar management
  * - Cleaner assignment calendar logic
  */
-export function useAdminCalendarState () {
-  // Get shared functionality and stores
+// Module-level singleton — created once, shared across all admin consumers
+let _instance: ReturnType<typeof createAdminCalendarState> | null = null
+
+function createAdminCalendarState () {
   const baseCalendarState = useCalendarState()
   const bookingStore = useBookingStore()
   const propertyStore = usePropertyStore()
@@ -306,6 +308,7 @@ export function useAdminCalendarState () {
     // Calendar state from base composable
     currentView: baseCalendarState.currentView,
     currentDate: baseCalendarState.currentDate,
+    viewMode: baseCalendarState.viewMode,
 
     // Computed properties (system-wide, no filtering)
     allBookings,
@@ -334,4 +337,16 @@ export function useAdminCalendarState () {
     getBookingColor,
     getBookingBorderColor,
   }
+}
+
+export function useAdminCalendarState () {
+  if (!_instance) {
+    _instance = createAdminCalendarState()
+  }
+  return _instance
+}
+
+/** Reset the singleton — only for use in test setup (vi.resetModules or beforeEach). */
+export function __resetAdminCalendarStateForTesting () {
+  _instance = null
 }

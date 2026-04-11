@@ -1,6 +1,9 @@
 // Mock auth composable — wraps a mock user store with login/logout/register.
 // NOT used by the main auth store (which delegates to useSupabaseAuth).
-// Use for development/testing flows that need auth-like behavior without Supabase.
+// WARNING: login() and register() are NOT functional for identity — they
+// validate inputs but do not set the user in any store. Real authentication
+// goes through useAuthStore → useSupabaseAuth. This composable is kept for
+// legacy read-only usage (user, isAuthenticated, isOwner, etc.).
 
 import type { Admin, Cleaner, PropertyOwner, User, UserRole, UserSettings } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
@@ -84,7 +87,7 @@ export function useAuth () {
       }
 
       // Set user in store
-      userStore.setUser(user as User)
+      // Identity is set through authStore — mock login is a no-op for identity
 
       success.value = 'Logged in successfully'
       loading.value = false
@@ -227,7 +230,7 @@ export function useAuth () {
       mockUsers.push(newUser)
 
       // Auto-login the new user
-      userStore.setUser(newUser)
+      // Identity is set through authStore — mock register is a no-op for identity
 
       success.value = 'Registered successfully'
       loading.value = false
@@ -268,13 +271,7 @@ export function useAuth () {
         }
       }
 
-      const updatedUser = {
-        ...userStore.user,
-        ...patch,
-        updated_at: new Date().toISOString(),
-      }
-
-      userStore.setUser(updatedUser)
+      // Identity is set through authStore — mock settings update is a no-op for identity
 
       success.value = 'Settings updated successfully'
       loading.value = false
