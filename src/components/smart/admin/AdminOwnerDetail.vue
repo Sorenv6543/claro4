@@ -456,10 +456,7 @@
   const ownerProperties = computed(() => {
     const ownerId = route.params.id as string
     if (!ownerId) return []
-    const ownerPropsMap = propertyStore.propertiesByOwner(ownerId)
-    return Array.isArray(ownerPropsMap)
-      ? ownerPropsMap
-      : Array.from(ownerPropsMap.values())
+    return Array.from(propertyStore.propertiesByOwner(ownerId).values())
   })
 
   // Fetch
