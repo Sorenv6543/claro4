@@ -45,8 +45,18 @@ export function useSupabaseUserProfiles () {
       if (fetchError) {
         throw fetchError
       }
-      // Merge into store — don't clear existing profiles of other roles
-      for (const profile of (data ?? []) as User[]) {
+
+      const fetchedProfiles = (data ?? []) as User[]
+      const fetchedIds = new Set(fetchedProfiles.map(profile => profile.id))
+
+      // Replace only the requested role subset in the store, keeping other roles intact
+      for (const [profileId, existingProfile] of userProfileStore.userProfiles.entries()) {
+        if (existingProfile.role === role && !fetchedIds.has(profileId)) {
+          userProfileStore.userProfiles.delete(profileId)
+        }
+      }
+
+      for (const profile of fetchedProfiles) {
         userProfileStore.setUserProfile(profile.id, profile)
       }
     } catch (error) {
