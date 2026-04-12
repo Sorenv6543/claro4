@@ -1,4 +1,4 @@
-import type { Booking, BookingStatus } from '@/types/booking'
+import type { Booking, BookingStatus, BookingWithMetadata } from '@/types/booking'
 import type { PricingTier, Property } from '@/types/property'
 
 /** Revenue multipliers by pricing tier */
@@ -110,7 +110,7 @@ export function calculateBookingPriority (booking: Booking): 'low' | 'normal' | 
  * Calculate the cleaning window for a booking
  * @deprecated Use the cleaning_window metadata from BookingWithMetadata instead.
  */
-export function getCleaningWindow (booking: Booking, property: Property): {
+export function getCleaningWindow (booking: BookingWithMetadata, property: Property): {
   start: string
   end: string
   duration: number

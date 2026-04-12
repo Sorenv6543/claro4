@@ -118,9 +118,7 @@
       "C:\\Users\\Soren\\.claude\\projects\\C--Users-Soren-claro4\\memory"
     ]
   },
-  "enabledMcpjsonServers": [
-    "vuetify-mcp"
-  ],
+  "enabledMcpjsonServers": ["vuetify-mcp"],
   "hooks": {
     "PreToolUse": [
       {
@@ -158,9 +156,6 @@
     ]
   },
   "enabledPlugins": {
-    "context7@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "playwright@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": false
+ 
   }
 }

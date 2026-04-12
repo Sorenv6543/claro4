@@ -29,6 +29,14 @@ vi.mock('@/plugins/supabase', () => {
       signUp: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
       signInWithPassword: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
       signOut: vi.fn().mockResolvedValue({ error: null }),
+      resetPasswordForEmail: vi.fn().mockResolvedValue({ data: null, error: null }),
+      admin: {
+        deleteUser: vi.fn().mockResolvedValue({ data: null, error: null }),
+        createUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+      },
+    },
+    functions: {
+      invoke: vi.fn().mockResolvedValue({ data: null, error: null }),
     },
   }
   return {

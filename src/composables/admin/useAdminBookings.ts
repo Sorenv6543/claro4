@@ -1,12 +1,13 @@
 import type { Booking, BookingFormData, BookingStatus, BookingType } from '@/types'
 
+import { computed, ref } from 'vue'
+
 import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
 import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
 import { buildAssignmentUpdate, calculateBookingPriority } from '@/utils/businessLogic'
-import { computed, ref } from 'vue'
 
 /**
  * Admin-specific booking composable
@@ -255,11 +256,18 @@ export function useAdminBookings () {
       loading.value = true
       error.value = null
 
+      if (!bookingData.property_id || !bookingData.owner_id) {
+        throw new Error('property_id and owner_id are required to create a booking')
+      }
+      if (!bookingData.checkout_date || !bookingData.checkin_date) {
+        throw new Error('checkout_date and checkin_date are required to create a booking')
+      }
+
       const formData: BookingFormData = {
-        property_id: (bookingData.property_id as string) || '',
-        owner_id: (bookingData.owner_id as string) || '',
-        checkout_date: (bookingData.checkout_date as string) || new Date().toISOString(),
-        checkin_date: (bookingData.checkin_date as string) || new Date().toISOString(),
+        property_id: bookingData.property_id as string,
+        owner_id: bookingData.owner_id as string,
+        checkout_date: bookingData.checkout_date as string,
+        checkin_date: bookingData.checkin_date as string,
         checkin_time: (bookingData.checkin_time as string) || '15:00:00',
         checkout_time: (bookingData.checkout_time as string) || '11:00:00',
         status: (bookingData.status as BookingStatus) || 'pending',
@@ -445,11 +453,11 @@ export function useAdminBookings () {
         }),
       )
 
-      for (let i = 0; i < settledResults.length; i++) {
-        if (settledResults[i].status === 'fulfilled') {
+      for (const [i, settledResult] of settledResults.entries()) {
+        if (settledResult.status === 'fulfilled') {
           results.success.push(bookingIds[i])
         } else {
-          console.error(`[useAdminBookings] bulkAssignCleaner failed for booking ${bookingIds[i]}:`, (settledResults[i] as PromiseRejectedResult).reason)
+          console.error(`[useAdminBookings] bulkAssignCleaner failed for booking ${bookingIds[i]}:`, settledResult.reason)
           results.failed.push(bookingIds[i])
         }
       }
@@ -465,8 +473,9 @@ export function useAdminBookings () {
 
       loading.value = false
       return results
-    } catch {
-      error.value = 'Bulk assignment operation failed. System error occurred.'
+    } catch (err) {
+      console.error('[useAdminBookings] bulkAssignCleaner error:', err)
+      error.value = `Bulk assignment failed: ${err instanceof Error ? err.message : 'System error occurred'}`
       loading.value = false
       return { success: [], failed: bookingIds }
     }
@@ -496,11 +505,11 @@ export function useAdminBookings () {
         }),
       )
 
-      for (let i = 0; i < settledResults.length; i++) {
-        if (settledResults[i].status === 'fulfilled') {
+      for (const [i, settledResult] of settledResults.entries()) {
+        if (settledResult.status === 'fulfilled') {
           results.success.push(bookingIds[i])
         } else {
-          console.error(`[useAdminBookings] bulkUpdateStatus failed for booking ${bookingIds[i]}:`, (settledResults[i] as PromiseRejectedResult).reason)
+          console.error(`[useAdminBookings] bulkUpdateStatus failed for booking ${bookingIds[i]}:`, settledResult.reason)
           results.failed.push(bookingIds[i])
         }
       }
@@ -516,8 +525,9 @@ export function useAdminBookings () {
 
       loading.value = false
       return results
-    } catch {
-      error.value = 'Bulk status update operation failed. System error occurred.'
+    } catch (err) {
+      console.error('[useAdminBookings] bulkUpdateStatus error:', err)
+      error.value = `Bulk status update failed: ${err instanceof Error ? err.message : 'System error occurred'}`
       loading.value = false
       return { success: [], failed: bookingIds }
     }
@@ -730,6 +740,7 @@ export function useAdminBookings () {
         return true
       } catch (error_) {
         error.value = error_ instanceof Error ? error_.message : 'Failed to assign team'
+        console.error('[useAdminBookings] assignTeamToBooking error:', error_)
         return false
       } finally {
         loading.value = false
@@ -744,6 +755,7 @@ export function useAdminBookings () {
         return true
       } catch (error_) {
         error.value = error_ instanceof Error ? error_.message : 'Failed to assign group'
+        console.error('[useAdminBookings] assignGroupToBooking error:', error_)
         return false
       } finally {
         loading.value = false
