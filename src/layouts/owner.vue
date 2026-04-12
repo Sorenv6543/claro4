@@ -73,43 +73,72 @@
         </v-btn-toggle>
       </template>
 
-      <!-- Notification bell -->
-      <v-btn
-        aria-label="Notifications"
-        class="mr-1"
-        icon="mdi-bell-outline"
-        size="small"
-        variant="text"
-      />
-      <!-- Avatar / user menu -->
-      <v-menu location="bottom end">
-        <template #activator="{ props: menuProps }">
-          <v-avatar
-            v-bind="menuProps"
-            class="mr-2"
-            color="primary"
-            size="28"
-            style="cursor: pointer"
+      <!-- Right-side nav icons (Materio style) -->
+      <div class="appbar-icons">
+        <ThemePicker />
+
+        <v-btn aria-label="Favorites" icon variant="text">
+          <v-icon size="22">mdi-star-outline</v-icon>
+        </v-btn>
+
+        <v-btn aria-label="Notifications" icon variant="text">
+          <v-badge
+            color="error"
+            :content="notificationCount"
+            dot
+            :model-value="notificationCount > 0"
           >
-            <span class="text-caption font-weight-bold">{{ userInitials }}</span>
-          </v-avatar>
-        </template>
-        <v-card>
-          <v-list density="comfortable" min-width="160">
-            <v-list-item
-              prepend-icon="mdi-account-outline"
-              title="Profile"
-              :to="'/owner/profile'"
-            />
-            <v-divider />
-            <v-list-item
-              prepend-icon="mdi-logout"
-              title="Sign Out"
-              @click="handleSignOut"
-            />
-          </v-list>
-        </v-card>
-      </v-menu>
+            <v-icon size="22">mdi-bell-outline</v-icon>
+          </v-badge>
+        </v-btn>
+
+        <!-- Avatar / user menu -->
+        <v-menu location="bottom end">
+          <template #activator="{ props: menuProps }">
+            <div class="avatar-wrapper ml-1 mr-2" v-bind="menuProps">
+              <v-avatar
+                color="primary"
+                size="36"
+                style="cursor: pointer"
+              >
+                <span class="text-caption font-weight-bold">{{ userInitials }}</span>
+              </v-avatar>
+              <span class="avatar-status" />
+            </div>
+          </template>
+          <v-card min-width="200">
+            <div class="d-flex align-center ga-3 pa-4 pb-2">
+              <v-avatar color="primary" size="38">
+                <span class="text-caption font-weight-bold">{{ userInitials }}</span>
+              </v-avatar>
+              <div>
+                <div class="text-body-2 font-weight-medium">{{ authStore.user?.name || 'User' }}</div>
+                <div class="text-caption text-medium-emphasis">{{ authStore.user?.email }}</div>
+              </div>
+            </div>
+            <v-divider class="my-1" />
+            <v-list density="comfortable">
+              <v-list-item
+                prepend-icon="mdi-account-outline"
+                title="Profile"
+                :to="'/owner/profile'"
+              />
+              <v-list-item
+                prepend-icon="mdi-cog-outline"
+                title="Settings"
+                :to="'/owner/settings'"
+              />
+              <v-divider class="my-1" />
+              <v-list-item
+                class="text-error"
+                prepend-icon="mdi-logout"
+                title="Sign Out"
+                @click="handleSignOut"
+              />
+            </v-list>
+          </v-card>
+        </v-menu>
+      </div>
     </v-app-bar>
 
     <OwnerNavigationDrawer v-model="sidebarOpen" />
@@ -123,12 +152,13 @@
 
 <script setup lang="ts">
   import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
-import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
-import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
-import { useAuthStore } from '@stores/auth'
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useDisplay } from 'vuetify'
+  import ThemePicker from '@/components/dumb/shared/ThemePicker.vue'
+  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
+  import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
+  import { useAuthStore } from '@stores/auth'
+  import { computed, onMounted, ref } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { useDisplay } from 'vuetify'
 
   const { mdAndUp } = useDisplay()
   const router = useRouter()
@@ -139,6 +169,7 @@ import { useDisplay } from 'vuetify'
 
   const sidebarOpen = ref(mdAndUp.value)
   const viewMode = calendarState.viewMode
+  const notificationCount = ref(0)
 
   onMounted(() => {
     initRealtimeSync().catch((error: unknown) => {
@@ -190,5 +221,23 @@ import { useDisplay } from 'vuetify'
   flex: 1;
   min-height: 0;
   background: rgb(var(--v-theme-background));
+}
+
+/* Avatar with online status dot */
+.avatar-wrapper {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.avatar-status {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 10px;
+  height: 10px;
+  background-color: rgb(var(--v-theme-success));
+  border: 2px solid rgb(var(--v-theme-surface));
+  border-radius: 50%;
 }
 </style>

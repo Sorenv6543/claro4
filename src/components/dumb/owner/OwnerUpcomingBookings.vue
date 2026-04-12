@@ -11,7 +11,7 @@
         <v-list-item class="px-4 py-2">
           <template #prepend>
             <div
-              class="date-badge d-flex flex-column align-center justify-center mr-3 rounded-lg"
+              class="date-badge d-flex flex-column align-center justify-center mr-3"
               :style="{ background: `${booking.propertyColor}18` }"
             >
               <div class="text-caption font-weight-bold" :style="{ color: booking.propertyColor }">
@@ -111,6 +111,7 @@ import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/cons
   width: 48px;
   height: 48px;
   min-width: 48px;
+  border-radius: var(--claro-radius-sm, 2px);
 }
 
 :deep(.dashboard-card__content) {

@@ -105,7 +105,7 @@
   width: 48px;
   height: 48px;
   border-radius: 2px;
-  background: rgba(58, 24, 24, 0.2);
+  background: rgba(255, 255, 255, 0.2);
   display: flex;
   align-items: center;
   justify-content: center;

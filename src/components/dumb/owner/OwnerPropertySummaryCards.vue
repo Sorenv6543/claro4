@@ -9,7 +9,7 @@
         <div
           v-for="(property, index) in properties"
           :key="index"
-          class="property-row d-flex align-center ga-3 pa-3 rounded-lg"
+          class="property-row d-flex align-center ga-3 pa-3"
         >
           <!-- Color dot -->
           <div
@@ -80,6 +80,7 @@
 
 .property-row {
   background: rgba(var(--v-theme-on-surface), 0.03);
+  border-radius: var(--claro-radius-sm, 2px);
   transition: background-color 0.15s ease;
 }
 

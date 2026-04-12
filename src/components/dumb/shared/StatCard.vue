@@ -1,5 +1,5 @@
 <template>
-  <v-card class="stat-card" elevation="24">
+  <v-card class="stat-card" :elevation="0">
     <div class="stat-card__body">
       <div class="stat-card__info">
         <span class="stat-card__value">{{ value }}</span>
@@ -57,7 +57,8 @@
 <style scoped>
 .stat-card {
   background: var(--claro-card-bg, rgb(var(--v-theme-surface))) !important;
-  border-radius: var(--claro-radius-md, 8px) !important;
+  border-radius: var(--claro-radius-md, 2px) !important;
+  box-shadow: var(--claro-shadow-sm) !important;
   padding: var(--claro-space-lg, 24px);
 }
 

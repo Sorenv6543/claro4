@@ -62,13 +62,10 @@
         :search-keys="['display_name', 'full_address', 'property_type']"
         searchable
       >
-        <!-- Property column with color dot and address -->
+        <!-- Property column with house icon and address -->
         <template #[`item.display_name`]="{ item }">
-          <div class="d-flex align-center ga-2">
-            <div
-              class="property-color-dot"
-              :style="{ backgroundColor: item.color }"
-            />
+          <div class="d-flex align-center ga-3">
+            <v-icon :color="item.color" size="22">{{ getPropertyIcon(item.property_type) }}</v-icon>
             <div>
               <div class="font-weight-medium">{{ item.display_name }}</div>
               <div class="text-caption text-medium-emphasis">{{ item.full_address }}</div>
@@ -578,13 +575,6 @@ import { formatPropertyAddress } from '@/types/property'
   color: #94A3B8;
 }
 
-/* Property color dot */
-.property-color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
 
 /* Expanded content */
 .expanded-content {

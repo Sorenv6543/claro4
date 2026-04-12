@@ -77,8 +77,10 @@
       <!-- Default expanded row slot -->
       <template v-if="expandable && !$slots['expanded-row']" #expanded-row="{ columns, item }">
         <tr>
-          <td class="expanded-row-content pa-4" :colspan="columns.length">
-            <slot :item="item" name="expand-content" />
+          <td class="expanded-row-content" :colspan="columns.length">
+            <div class="expand-animate pa-4">
+              <slot :item="item" name="expand-content" />
+            </div>
           </td>
         </tr>
       </template>
@@ -207,6 +209,22 @@
 .expanded-row-content {
   background: rgba(var(--v-theme-on-surface), 0.02);
   border-bottom: thin solid rgba(var(--v-theme-on-surface), 0.08);
+  padding: 0 !important;
+}
+
+.expand-animate {
+  animation: expandRow 0.25s ease-out;
+}
+
+@keyframes expandRow {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .materio-table :deep(.v-data-table__tr--expanded td) {

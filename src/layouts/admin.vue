@@ -25,45 +25,71 @@
 
       <v-spacer />
 
-      <!-- Notification bell -->
-      <v-btn
-        aria-label="Notifications"
-        class="mr-1"
-        icon="mdi-bell-outline"
-        size="small"
-        variant="text"
-      />
+      <!-- Right-side nav icons -->
+      <div class="d-flex align-center ga-1">
+        <!-- Theme picker -->
+        <ThemePicker />
 
-      <!-- Avatar / user menu -->
-      <v-menu location="bottom end">
-        <template #activator="{ props: menuProps }">
-          <v-avatar
-            v-bind="menuProps"
-            class="mr-2"
-            color="primary"
-            size="28"
-            style="cursor: pointer"
+        <!-- Notification bell with badge -->
+        <v-btn
+          aria-label="Notifications"
+          icon
+          size="small"
+          variant="text"
+        >
+          <v-badge
+            color="error"
+            :content="notificationCount"
+            :model-value="notificationCount > 0"
+            offset-x="-2"
+            offset-y="-2"
           >
-            <span class="text-caption font-weight-bold">{{ userInitials }}</span>
-          </v-avatar>
-        </template>
+            <v-icon>mdi-bell-outline</v-icon>
+          </v-badge>
+        </v-btn>
 
-        <v-card rounded="lg">
-          <v-list density="comfortable" min-width="160">
-            <v-list-item
-              prepend-icon="mdi-account-outline"
-              title="Profile"
-              to="/admin/profile"
-            />
-            <v-divider />
-            <v-list-item
-              prepend-icon="mdi-logout"
-              title="Sign Out"
-              @click="handleSignOut"
-            />
-          </v-list>
-        </v-card>
-      </v-menu>
+        <!-- Avatar / user menu -->
+        <v-menu location="bottom end">
+          <template #activator="{ props: menuProps }">
+            <div class="avatar-wrapper ml-1 mr-2" v-bind="menuProps">
+              <v-avatar
+                color="primary"
+                size="34"
+                style="cursor: pointer"
+              >
+                <span class="text-caption font-weight-bold">{{ userInitials }}</span>
+              </v-avatar>
+              <span class="avatar-status" />
+            </div>
+          </template>
+          <v-card min-width="200">
+            <div class="d-flex align-center ga-3 pa-4 pb-2">
+              <v-avatar color="primary" size="38">
+                <span class="text-caption font-weight-bold">{{ userInitials }}</span>
+              </v-avatar>
+              <div>
+                <div class="text-body-2 font-weight-medium">{{ authStore.user?.name || 'Admin' }}</div>
+                <div class="text-caption text-medium-emphasis">{{ authStore.user?.email }}</div>
+              </div>
+            </div>
+            <v-divider class="my-1" />
+            <v-list density="comfortable">
+              <v-list-item
+                prepend-icon="mdi-account-outline"
+                title="Profile"
+                to="/admin/profile"
+              />
+              <v-divider class="my-1" />
+              <v-list-item
+                class="text-error"
+                prepend-icon="mdi-logout"
+                title="Sign Out"
+                @click="handleSignOut"
+              />
+            </v-list>
+          </v-card>
+        </v-menu>
+      </div>
     </v-app-bar>
 
     <!-- Admin Sidebar -->
@@ -102,6 +128,7 @@
   import { useDisplay } from 'vuetify'
 
   import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue'
+  import ThemePicker from '@/components/dumb/shared/ThemePicker.vue'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
   import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
   import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
@@ -124,6 +151,7 @@
   const currentDate = ref(new Date())
   const isSidebarOpen = ref(mdAndUp.value)
   const loading = ref<boolean>(false)
+  const notificationCount = ref(0)
 
   const bookings = computed(() => Array.from(bookingStore.bookings.values()))
   const properties = computed(() => Array.from(propertyStore.properties.values()))
@@ -232,3 +260,22 @@
     }
   })
 </script>
+
+<style scoped>
+.avatar-wrapper {
+  position: relative;
+  display: inline-flex;
+  cursor: pointer;
+}
+
+.avatar-status {
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
+  width: 10px;
+  height: 10px;
+  background-color: rgb(var(--v-theme-success));
+  border: 2px solid rgb(var(--v-theme-surface));
+  border-radius: 50%;
+}
+</style>

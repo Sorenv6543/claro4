@@ -2,7 +2,7 @@
   <v-card
     class="dashboard-card"
     :class="{ 'dashboard-card--accent': !!accentColor, 'dashboard-card--flat': flat }"
-    :elevation="flat ? 0 : 24"
+    :elevation="0"
     :style="accentColor ? { '--card-accent': accentColor } : undefined"
   >
     <!-- Header: shown when title/icon prop provided OR #header slot is used -->
@@ -65,7 +65,8 @@
 <style scoped>
 .dashboard-card {
   background: var(--claro-card-bg, rgb(var(--v-theme-surface))) !important;
-  border-radius: var(--claro-radius-md, 8px) !important;
+  border-radius: var(--claro-radius-md, 2px) !important;
+  box-shadow: var(--claro-shadow-sm) !important;
   padding: var(--claro-card-padding, 0);
 }
 

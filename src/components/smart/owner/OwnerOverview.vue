@@ -1,5 +1,5 @@
 <template>
-  <v-container class="owner-overview pa-4" fluid>
+  <v-container class="owner-overview" fluid>
     <v-progress-linear v-if="loading" class="mb-4" color="primary" indeterminate />
 
     <!-- Welcome Banner -->
@@ -283,6 +283,11 @@
 
 <style scoped>
 .owner-overview {
-  max-width: 1400px;
+  max-width: 1440px;
+  padding: var(--claro-space-xl, 32px) var(--claro-content-padding, 24px);
+}
+
+.owner-overview :deep(.v-row + .v-row) {
+  margin-top: var(--claro-section-gap, 32px);
 }
 </style>

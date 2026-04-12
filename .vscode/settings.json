@@ -15,7 +15,7 @@
   },
   "workbench.editor.centeredLayoutFixedWidth": true,
   "workbench.editor.editorActionsLocation": "default",
-  "workbench.editor.enablePreview": true,
+  "workbench.editor.enablePreview": false,
   "workbench.editor.enablePreviewFromCodeNavigation": false,
   "workbench.editor.enablePreviewFromQuickOpen": true,
   "workbench.editor.revealIfOpen": true,

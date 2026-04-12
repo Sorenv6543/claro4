@@ -1,4 +1,6 @@
 # Pencil-to-Vuetify Restyle Workflow
+STUB - // this workflow need to implement the vuetify mcp for reading the component API and understanding which tokens can be applied directly vs. which require wrappers. It also needs the pencil mcp for reading the token file and applying it to the theme. The workflow should also include steps for creating wrapper components where necessary, and a git strategy for safe commits and rollbacks.
+
 
 **Date:** 2026-04-01
 **Scope:** Full app restyle using Materio .pen component library as visual source of truth
@@ -210,7 +212,7 @@ Repeatable playbook for restyling any page using all three MCPs:
 11. Update the page — swap stock Vuetify usage for wrappers where applicable
 
 ### Phase 5: Verify & Sync Back
-12. **Chrome DevTools MCP** `take_screenshot()` — "after" screenshot
+12. **Chrome DevTools ** `take_screenshot()` — "after" screenshot
 13. Compare before/after visually
 14. If tokens changed: **Pencil MCP** `set_variables()` to sync back to .pen
 15. **Pencil MCP** `get_screenshot()` — verify .pen still reflects code
