@@ -252,6 +252,70 @@ Don't override these unless necessary:
 - `VAlert`: `variant="tonal"`, `rounded="lg"`
 - `VChip/VBadge`: `rounded="pill"`
 
+### Elevation = Hierarchy
+Use `elevation` prop (0–24), NEVER raw CSS `box-shadow` (except hover effects). In MD3 dark themes, elevation applies surface tint, not just shadow.
+
+| Role | Elevation | Examples |
+|------|-----------|----------|
+| Page background | 0 | `v-main`, `v-container` |
+| Grouped/nested content | 1–2 | Secondary cards inside a layout |
+| Primary content card | 2–4 | Booking cards, property cards |
+| Floating action / popover | 6–8 | FABs, menus, popovers |
+| Modal / dialog | 12–16 | `v-dialog`, `v-bottom-sheet` |
+
+### v-card Variant Selection
+Don't default every card to `elevated` — select by purpose:
+
+| Variant | When to use |
+|---------|-------------|
+| `elevated` | Primary content — bookings, properties, dashboard widgets |
+| `tonal` | Secondary info — stats, role badges, status indicators |
+| `outlined` | Form sections, non-interactive containers, settings groups |
+| `flat` | Nested inside another card, subtle visual grouping |
+| `text` | Inline links, minimal action areas |
+
+### Transitions
+Wrap conditional content in Vuetify transition components. Never use raw CSS transitions for show/hide when a Vuetify transition exists:
+- `v-fade-transition` — dialogs, overlays, content swaps, loading states
+- `v-expand-transition` — collapsible panels, accordion cards, detail reveals
+- `v-slide-x-transition` — list insertions, drawer reveals, horizontal navigation
+- `v-slide-y-transition` — dropdown menus, vertical reveals
+- `v-scale-transition` — FABs appearing, chips being added, badge pops
+
+### Loading, Empty, and Error States
+Every data-dependent component MUST handle all three:
+- **Loading**: `v-skeleton-loader` with `type` strings (e.g. `type="card, list-item-three-line@3"`). Use existing `SkeletonLoader.vue` if applicable.
+- **Empty**: `v-empty-state` (Vuetify 4 native) with icon, title, text, and an action slot
+- **Error**: Use existing `ErrorAlert.vue` from `src/components/dumb/shared/`
+
+### Notification Patterns
+- `v-snackbar` — transient feedback (saved, deleted, synced) — auto-dismiss 4–6s. Use existing `EnhancedToast.vue`.
+- `v-banner` — persistent info (offline notice, trial expiry) — user must dismiss
+- `v-bottom-sheet` — contextual action menus on mobile
+
+### Responsive Patterns
+Use `useDisplay` from Vuetify for breakpoint-aware layouts. Never use CSS media queries for layout decisions Vuetify can handle reactively.
+
+```ts
+import { useDisplay } from 'vuetify'
+const { mobile, mdAndUp, lgAndUp, smAndDown } = useDisplay()
+```
+
+Key patterns:
+- **Nav drawer**: `:permanent="mdAndUp"` / `:temporary="!mdAndUp"`
+- **Bottom sheet on mobile, dialog on desktop**: `v-bottom-sheet v-if="mobile"` / `v-dialog v-else`
+- **Responsive grid**: `cols="12" sm="6" lg="4"` — never nest `v-row` more than 2 levels deep
+- **Data table → card list on mobile**: `v-data-table v-if="!mobile"` / card loop `v-else`
+
+### Design Depth — Forbidden
+- No raw CSS `box-shadow` — use `elevation` prop
+- No CSS media queries for layout logic `useDisplay` handles
+- No data components without loading/empty/error states
+- No hardcoded hex colors — use theme tokens
+- No conditional content without a Vuetify transition
+- No `v-row` nested more than 2 levels deep
+- No new notification components without checking `EnhancedToast.vue` first
+
 ### Layout Patterns
 ```vue
 <!-- Standard form layout -->
