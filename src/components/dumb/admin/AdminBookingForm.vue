@@ -453,13 +453,13 @@
 
 <script setup lang="ts">
   import type { Booking, BookingFormData } from '@/types/booking'
-import type { Property } from '@/types/property'
-import { formatPropertyAddress } from '@/types/property'
-import type { Cleaner } from '@/types/user'
-import { isCleaner } from '@/types/user'
-import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
-import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
-import { computed, nextTick, ref, watch } from 'vue'
+  import type { Property } from '@/types/property'
+  import type { Cleaner } from '@/types/user'
+  import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
+  import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
+  import { computed, nextTick, ref, watch } from 'vue'
+  import { formatPropertyAddress } from '@/types/property'
+  import { isCleaner } from '@/types/user'
 
   // Props
   interface Props {
@@ -548,7 +548,7 @@ import { computed, nextTick, ref, watch } from 'vue'
   })
 
   const availableCleaners = computed(() => {
-    return props.cleaners.filter(isCleaner)
+    return props.cleaners.filter(c => isCleaner(c))
   })
 
   const selectedCleaner = computed(() => {

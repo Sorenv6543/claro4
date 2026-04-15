@@ -394,9 +394,9 @@
       await deleteCleaner(cleanerToDelete.value.id)
       deleteDialog.value = false
       cleanerToDelete.value = null
-    } catch (err) {
-      console.error('Failed to delete cleaner:', err)
-      cleanerError.value = err instanceof Error ? err.message : 'Failed to delete cleaner. Please try again.'
+    } catch (error) {
+      console.error('Failed to delete cleaner:', error)
+      cleanerError.value = error instanceof Error ? error.message : 'Failed to delete cleaner. Please try again.'
     }
   }
 
@@ -407,9 +407,9 @@
         ? updateCleaner(editingCleaner.value.id, formData.value)
         : createCleaner(formData.value))
       closeDialog()
-    } catch (err) {
-      console.error('Failed to save cleaner:', err)
-      cleanerError.value = err instanceof Error ? err.message : 'Failed to save cleaner. Please try again.'
+    } catch (error) {
+      console.error('Failed to save cleaner:', error)
+      cleanerError.value = error instanceof Error ? error.message : 'Failed to save cleaner. Please try again.'
     } finally {
       saving.value = false
     }

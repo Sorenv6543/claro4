@@ -551,8 +551,8 @@
     if (!owner.value) return
     saving.value = true
     try {
-      if (editingProperty.value) {
-        await supaProperties.updateProperty(editingProperty.value.id, {
+      await (editingProperty.value
+        ? supaProperties.updateProperty(editingProperty.value.id, {
           owner_id: owner.value.id,
           address_street: propForm.value.address_street,
           address_unit: propForm.value.address_unit || undefined,
@@ -568,8 +568,7 @@
           pricing_tier: propForm.value.pricing_tier as Property['pricing_tier'],
           active: propForm.value.active,
         })
-      } else {
-        await supaProperties.createProperty({
+        : supaProperties.createProperty({
           owner_id: owner.value.id,
           address_street: propForm.value.address_street,
           address_unit: propForm.value.address_unit || undefined,
@@ -585,8 +584,7 @@
           pricing_tier: propForm.value.pricing_tier as Property['pricing_tier'],
           active: propForm.value.active,
           color: '',
-        } as PropertyFormData)
-      }
+        } as PropertyFormData))
 
       showPropertyDialog.value = false
       properties.value = ownerProperties.value

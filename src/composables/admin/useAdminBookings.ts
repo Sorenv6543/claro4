@@ -473,9 +473,9 @@ export function useAdminBookings () {
 
       loading.value = false
       return results
-    } catch (err) {
-      console.error('[useAdminBookings] bulkAssignCleaner error:', err)
-      error.value = `Bulk assignment failed: ${err instanceof Error ? err.message : 'System error occurred'}`
+    } catch (error_) {
+      console.error('[useAdminBookings] bulkAssignCleaner error:', error_)
+      error.value = `Bulk assignment failed: ${error_ instanceof Error ? error_.message : 'System error occurred'}`
       loading.value = false
       return { success: [], failed: bookingIds }
     }
@@ -525,9 +525,9 @@ export function useAdminBookings () {
 
       loading.value = false
       return results
-    } catch (err) {
-      console.error('[useAdminBookings] bulkUpdateStatus error:', err)
-      error.value = `Bulk status update failed: ${err instanceof Error ? err.message : 'System error occurred'}`
+    } catch (error_) {
+      console.error('[useAdminBookings] bulkUpdateStatus error:', error_)
+      error.value = `Bulk status update failed: ${error_ instanceof Error ? error_.message : 'System error occurred'}`
       loading.value = false
       return { success: [], failed: bookingIds }
     }

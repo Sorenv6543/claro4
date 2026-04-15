@@ -168,21 +168,21 @@
 </template>
 
 <script setup lang="ts">
+  import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, BookingFormData } from '@/types/booking.ts'
-import type { Cleaner } from '@/types/user.ts'
-import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
-import type { EventResizeDoneArg } from '@fullcalendar/interaction'
+  import type { Cleaner } from '@/types/user.ts'
 
+  import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
   import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
-import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
-import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
-import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
+  import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
+  import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
 
   import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts'
-import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
-import { useUIStore } from '@/stores/ui'
-import { isCleaner } from '@/types/user'
-import { subtractOneDay } from '@/utils/calendarHelpers'
+  import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
+  import { useUIStore } from '@/stores/ui'
+  import { isCleaner } from '@/types/user'
+  import { subtractOneDay } from '@/utils/calendarHelpers'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when the schedule route is visited.
@@ -502,7 +502,7 @@ import { subtractOneDay } from '@/utils/calendarHelpers'
   }
 
   function openCleanerAssignmentModal (booking: Booking): void {
-    const cleaners = allUsers.value.filter(isCleaner)
+    const cleaners = allUsers.value.filter(u => isCleaner(u))
 
     cleanerAssignmentModal.value = {
       show: true,

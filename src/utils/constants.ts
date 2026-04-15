@@ -26,7 +26,6 @@ export function getBookingStatusColor (status: string): string {
     }
     case 'cancelled': { return 'error'
     }
-    case 'pending':
     default: { return 'warning'
     }
   }
