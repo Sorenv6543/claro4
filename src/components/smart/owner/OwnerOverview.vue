@@ -16,6 +16,46 @@
       </v-col>
     </v-row>
 
+    <!-- Booking Stats -->
+    <v-row>
+      <v-col cols="6" md="3">
+        <BookingStatsCard
+          icon="mdi-calendar-check"
+          icon-color="primary"
+          subtitle="All time"
+          title="Total Bookings"
+          :value="bookingStats.total"
+        />
+      </v-col>
+      <v-col cols="6" md="3">
+        <BookingStatsCard
+          icon="mdi-calendar-clock"
+          icon-color="success"
+          subtitle="Non-cancelled"
+          title="Active Bookings"
+          :value="activeBookingCount"
+        />
+      </v-col>
+      <v-col cols="6" md="3">
+        <BookingStatsCard
+          icon="mdi-swap-horizontal"
+          icon-color="warning"
+          subtitle="Same-day stays"
+          title="Turn Bookings"
+          :value="bookingStats.turns"
+        />
+      </v-col>
+      <v-col cols="6" md="3">
+        <BookingStatsCard
+          icon="mdi-home-group"
+          icon-color="info"
+          subtitle="In portfolio"
+          title="Properties"
+          :value="myProperties.length"
+        />
+      </v-col>
+    </v-row>
+
     <!-- Urgent Turns Banner (conditional) -->
     <v-row v-if="urgentTurns.length > 0">
       <v-col cols="12">
@@ -57,6 +97,7 @@
   import type { Property } from '@/types/property'
   import type { PropertyColor } from '@/utils/constants'
   import { computed, onMounted, ref } from 'vue'
+  import BookingStatsCard from '@/components/dumb/owner/BookingStatsCard.vue'
   import OwnerCleaningStatus from '@/components/dumb/owner/OwnerCleaningStatus.vue'
   import OwnerMiniCalendar from '@/components/dumb/owner/OwnerMiniCalendar.vue'
   import OwnerPropertySummaryCards from '@/components/dumb/owner/OwnerPropertySummaryCards.vue'
