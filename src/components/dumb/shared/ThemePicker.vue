@@ -10,9 +10,9 @@
         <v-btn
           icon
           v-bind="menuProps"
-          size="small"
+          variant="text"
         >
-          <v-icon>mdi-palette</v-icon>
+          <v-icon size="22">mdi-white-balance-sunny</v-icon>
           <v-tooltip
             activator="parent"
             location="bottom"

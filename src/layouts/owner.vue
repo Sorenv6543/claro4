@@ -151,14 +151,14 @@
 </template>
 
 <script setup lang="ts">
-  import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
-  import ThemePicker from '@/components/dumb/shared/ThemePicker.vue'
-  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
-  import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
   import { useAuthStore } from '@stores/auth'
   import { computed, onMounted, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
+  import ThemePicker from '@/components/dumb/shared/ThemePicker.vue'
+  import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
+  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
+  import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
 
   const { mdAndUp } = useDisplay()
   const router = useRouter()
@@ -213,14 +213,27 @@
 </script>
 
 <style scoped>
-/* Ensure height chain propagates through v-main for full-height pages (calendar).
-   Vuetify 4 removed .v-main__wrap — content is placed directly inside .v-main. */
 :deep(.v-main) {
   display: flex;
   flex-direction: column;
   flex: 1;
   min-height: 0;
   background: rgb(var(--v-theme-background));
+}
+
+/* Materio-style app bar icons */
+.appbar-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.appbar-icons :deep(.v-btn) {
+  color: rgba(var(--v-theme-on-surface), 0.68);
+}
+
+.appbar-icons :deep(.v-btn:hover) {
+  color: rgba(var(--v-theme-on-surface), 0.9);
 }
 
 /* Avatar with online status dot */

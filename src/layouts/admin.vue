@@ -25,26 +25,22 @@
 
       <v-spacer />
 
-      <!-- Right-side nav icons -->
-      <div class="d-flex align-center ga-1">
-        <!-- Theme picker -->
+      <!-- Right-side nav icons (Materio style) -->
+      <div class="appbar-icons">
         <ThemePicker />
 
-        <!-- Notification bell with badge -->
-        <v-btn
-          aria-label="Notifications"
-          icon
-          size="small"
-          variant="text"
-        >
+        <v-btn aria-label="Favorites" icon variant="text">
+          <v-icon size="22">mdi-star-outline</v-icon>
+        </v-btn>
+
+        <v-btn aria-label="Notifications" icon variant="text">
           <v-badge
             color="error"
             :content="notificationCount"
+            dot
             :model-value="notificationCount > 0"
-            offset-x="-2"
-            offset-y="-2"
           >
-            <v-icon>mdi-bell-outline</v-icon>
+            <v-icon size="22">mdi-bell-outline</v-icon>
           </v-badge>
         </v-btn>
 
@@ -54,7 +50,7 @@
             <div class="avatar-wrapper ml-1 mr-2" v-bind="menuProps">
               <v-avatar
                 color="primary"
-                size="34"
+                size="36"
                 style="cursor: pointer"
               >
                 <span class="text-caption font-weight-bold">{{ userInitials }}</span>
@@ -127,8 +123,8 @@
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
 
-  import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue'
   import ThemePicker from '@/components/dumb/shared/ThemePicker.vue'
+  import AdminSidebar from '@/components/smart/admin/AdminSidebar.vue'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
   import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
   import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
@@ -262,6 +258,22 @@
 </script>
 
 <style scoped>
+/* Materio-style app bar icons */
+.appbar-icons {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.appbar-icons :deep(.v-btn) {
+  color: rgba(var(--v-theme-on-surface), 0.68);
+}
+
+.appbar-icons :deep(.v-btn:hover) {
+  color: rgba(var(--v-theme-on-surface), 0.9);
+}
+
+/* Avatar with online status dot */
 .avatar-wrapper {
   position: relative;
   display: inline-flex;
