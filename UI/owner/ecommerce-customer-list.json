@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/ecommerce/customer/list",
+  "title": "E-commerce Customer List",
+  "category": "apps",
+  "screenshot": "apps/ecommerce-customer-list.png",
+  "summary": "Customer list page with a searchable data table showing customer name with avatar, customer ID, country flag, orders count, total spent, and a three-dot action menu per row. Right-side drawer for adding a new customer with form fields for basic and shipping information. Top bar has search and 'Add Customer' button.",
+  "components": ["v-card", "v-data-table", "v-avatar", "v-chip", "v-btn", "v-text-field", "v-icon", "v-navigation-drawer", "v-select"],
+  "layout": {
+    "type": "split",
+    "columns": "Full-width data table with right-side add-customer drawer",
+    "sections": ["search-bar", "customer-table", "add-customer-drawer"]
+  },
+  "patterns": ["data-table-with-search", "avatar-list", "form-standard"],
+  "colors": ["primary"],
+  "interactions": ["sortable-table", "pagination", "row-action-menu", "drawer-form"]
+}

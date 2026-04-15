@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/calendar",
+  "title": "Calendar",
+  "category": "apps",
+  "screenshot": "apps/calendar.png",
+  "summary": "Full calendar app with left sidebar containing a mini date picker and event filter checkboxes color-coded by category. Main area shows a monthly calendar grid (March 2026) with colored event bars spanning multiple days. Right-side drawer for adding events with form fields. View toggle buttons for month/week/day/list.",
+  "components": ["v-card", "v-btn", "v-checkbox", "v-text-field", "v-select", "v-date-picker", "v-menu"],
+  "layout": {
+    "type": "split",
+    "columns": "Left sidebar (~20%) with date picker and filters, main calendar area (~60%), right drawer (~20%) for event form",
+    "sections": ["date-picker-sidebar", "event-filters", "calendar-grid", "add-event-drawer"]
+  },
+  "patterns": ["calendar-view", "filter-checkbox-list", "form-standard"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["event-click", "date-navigation", "view-toggle", "event-drag", "filter-toggle"]
+}

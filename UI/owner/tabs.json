@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/components/tabs",
+  "title": "Tabs",
+  "category": "components",
+  "screenshot": "components/tabs.png",
+  "summary": "Comprehensive showcase of v-tabs in a 2-column grid. Demonstrates basic tabs, stacked icon-and-text, grow/fill mode, vertical orientation, vertical pill style, alignment options, pagination overflow, custom icons, programmatic model, dynamic add/remove, groups, and custom content tabs with rich panel content.",
+  "components": ["v-tabs", "v-tab", "v-tabs-window", "v-tabs-window-item", "v-card", "v-card-title", "v-card-text", "v-icon", "v-btn", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "stacked", "grow", "vertical", "vertical-pill", "alignment", "pagination", "custom-icons", "programmatic", "dynamic", "groups", "custom-content"]
+  },
+  "patterns": ["component-showcase", "tab-panel"],
+  "colors": ["primary"],
+  "interactions": ["tab-switch", "dynamic-add-remove"]
+}

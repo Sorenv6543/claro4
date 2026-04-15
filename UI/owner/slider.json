@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/slider",
+  "title": "Slider",
+  "category": "forms",
+  "screenshot": "forms/slider.png",
+  "summary": "Comprehensive showcase of v-slider in a 2-column grid. Demonstrates basic, disabled/readonly, color variants, icons, step increments, validation, min/max, thumb variants (label, size, color), tick marks, vertical orientation, appended text field, and appended with prepend patterns.",
+  "components": ["v-slider", "v-card", "v-card-title", "v-card-text", "v-row", "v-col", "v-text-field", "v-icon"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "disabled-readonly", "colors", "icons", "step", "validation", "min-max", "size", "thumbs", "ticks", "vertical", "appended-text-field", "appended-prepend"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary", "secondary", "success", "error", "warning", "info"],
+  "interactions": ["slider-drag", "thumb-label"]
+}

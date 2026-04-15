@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/ecommerce/referrals",
+  "title": "E-commerce Referrals",
+  "category": "apps",
+  "screenshot": "apps/ecommerce-referrals.png",
+  "summary": "Referral program page with top stat cards (total earnings, commission, discount, revenue trend percentage). A 'How to use' stepper section with numbered steps explaining the referral flow. Right side has an 'Invite your friends' card with a share link and social icons. Below is a 'Referred Users' data table with user avatars, referred ID, status chips, value, earnings, and pagination.",
+  "components": ["v-card", "v-chip", "v-data-table", "v-avatar", "v-btn", "v-icon", "v-text-field", "v-stepper"],
+  "layout": {
+    "type": "grid",
+    "columns": "Top row: 4 stat cards. Middle row: how-to-use steps (60%) + invite card (40%). Bottom: full-width referral table",
+    "sections": ["stat-cards", "how-to-use-stepper", "invite-card", "referred-users-table"]
+  },
+  "patterns": ["stat-card-with-icon", "data-table-with-search", "step-guide", "share-link-card"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["copy-link", "social-share", "sortable-table", "pagination"]
+}

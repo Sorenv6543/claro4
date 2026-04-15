@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/extensions/tour",
+  "title": "Tour",
+  "category": "extensions",
+  "screenshot": "extensions/tour.png",
+  "summary": "Simple page with a 'Start Tour' button that triggers a guided product tour overlay. The page is minimal with just a card containing the tour trigger button, demonstrating integration of a step-by-step onboarding tour library.",
+  "components": ["v-card", "v-card-title", "v-card-text", "v-btn"],
+  "layout": {
+    "type": "single-column",
+    "columns": "single centered card",
+    "sections": ["tour-trigger"]
+  },
+  "patterns": ["guided-tour"],
+  "colors": ["primary"],
+  "interactions": ["start-tour", "step-navigation"]
+}

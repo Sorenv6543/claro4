@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/permissions",
+  "title": "Permissions",
+  "category": "apps",
+  "screenshot": "apps/permissions.png",
+  "summary": "Permissions management page with a searchable data table listing permission names, assigned-to chips showing role tags (Administrator, Manager, Users, Support, Restricted), creation dates, and a three-dot action menu per row. Permissions include Management, Normal, API Control, Repository, Support, etc. Each role assignment is shown as a colored chip.",
+  "components": ["v-card", "v-chip", "v-data-table", "v-btn", "v-text-field", "v-icon"],
+  "layout": {
+    "type": "single-column",
+    "columns": "Full-width permissions data table",
+    "sections": ["search-bar", "permissions-table"]
+  },
+  "patterns": ["permission-table", "data-table-with-search"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["sortable-table", "pagination", "row-action-menu", "add-permission"]
+}

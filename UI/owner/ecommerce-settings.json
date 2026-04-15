@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/ecommerce/settings",
+  "title": "E-commerce Settings",
+  "category": "apps",
+  "screenshot": "apps/ecommerce-settings.png",
+  "summary": "Settings page with left vertical tab navigation (Payments, Checkout, Shipping, Locations, Notifications) and main content area showing a 'Getting Started' profile form. Sections include store name/email fields with an info alert, billing information with address fields, time zone and units of measurement selects, store currency, and order ID format configuration. Save button at bottom right.",
+  "components": ["v-card", "v-tabs", "v-tab", "v-text-field", "v-select", "v-btn", "v-alert", "v-switch", "v-divider"],
+  "layout": {
+    "type": "split",
+    "columns": "Left vertical tab navigation (~20%), main settings form area (~80%)",
+    "sections": ["settings-tabs", "profile-form", "billing-information", "timezone-units", "store-currency", "order-format"]
+  },
+  "patterns": ["tab-panel", "form-standard"],
+  "colors": ["primary", "warning"],
+  "interactions": ["tab-switching", "form-submit"]
+}
