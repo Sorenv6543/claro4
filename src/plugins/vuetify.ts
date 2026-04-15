@@ -83,9 +83,8 @@ export default createVuetify({
       elevation: 1,
     },
     VCard: {
-      elevation: 2,
+      elevation: 0,
       rounded: true,
-      class: 'pa-2',
     },
     VChip: {
       rounded: 'pill',

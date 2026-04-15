@@ -56,9 +56,6 @@
 
 <style scoped>
 .stat-card {
-  background: var(--claro-card-bg, rgb(var(--v-theme-surface))) !important;
-  border-radius: var(--claro-radius-md, 2px) !important;
-  box-shadow: var(--claro-shadow-sm) !important;
   padding: var(--claro-space-lg, 24px);
 }
 

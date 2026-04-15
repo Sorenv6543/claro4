@@ -1,7 +1,6 @@
 <template>
   <v-card
     class="admin-calendar-controls"
-    elevation="24"
   >
     <v-card-title class="text-subtitle-1 py-2 d-flex align-center">
       <v-icon class="mr-2">

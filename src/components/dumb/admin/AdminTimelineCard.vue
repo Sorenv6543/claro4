@@ -1,8 +1,8 @@
 <script setup lang="ts">
-  import type { Booking } from '@/types/booking';
+  import type { Booking } from '@/types/booking'
 
-  import { getBookingStatusColor } from '@/utils/constants';
-import { computed } from 'vue';
+  import { computed } from 'vue'
+  import { getBookingStatusColor } from '@/utils/constants'
 
   const props = defineProps<{
     booking: Booking
@@ -58,7 +58,6 @@ import { computed } from 'vue';
   <v-card
     class="mb-2"
     :class="cardClass"
-    variant="elevated"
   >
     <v-card-text class="d-flex align-center ga-3 py-2 px-3">
       <div class="text-subtitle-2 font-weight-bold text-medium-emphasis" style="min-width: 48px;">

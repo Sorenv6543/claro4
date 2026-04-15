@@ -21,18 +21,24 @@ html, body {
   }
 }
 
+/* ─── Materio Card Base ────────────────────────────────────────────── */
+.v-card {
+  background: var(--claro-card-bg, rgb(var(--v-theme-surface)));
+  box-shadow: var(--claro-shadow-sm) !important;
+}
+
 /* ─── Subtle Micro Animations ─────────────────────────────────────── */
 @media (prefers-reduced-motion: no-preference) {
-  /* Cards lift with purple shadow on hover.
+  /* Cards: subtle lift on hover.
      Exclude data table rows and calendar cells — they're too dense. */
   .v-card:not(.v-data-table .v-card):not(.v-calendar .v-card) {
-    transition-property: box-shadow, opacity, background, --v-elevation-overlay, transform;
+    transition-property: box-shadow, opacity, background, transform;
     transition-duration: 0.25s;
     transition-timing-function: ease;
 
     &:hover {
-      box-shadow: var(--claro-shadow-lg);
-      transform: translateY(-2px);
+      box-shadow: var(--claro-shadow-md) !important;
+      transform: translateY(-1px);
     }
   }
 

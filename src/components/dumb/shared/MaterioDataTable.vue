@@ -106,8 +106,8 @@
 </template>
 
 <script setup lang="ts">
-  import { useDisplay } from 'vuetify'
   import { computed, ref, watch } from 'vue'
+  import { useDisplay } from 'vuetify'
 
   export interface DataTableHeader {
     title: string
@@ -141,7 +141,7 @@
     filtersCollapsible: true,
     searchKeys: () => [],
     itemsPerPage: 10,
-    elevation: 24,
+    elevation: 0,
     rowProps: undefined,
     activeFilterCount: 0,
   })
@@ -179,7 +179,6 @@
 
 <style scoped>
 .materio-data-table {
-  border-radius: var(--claro-radius-md, 8px) !important;
   overflow: hidden;
 }
 
