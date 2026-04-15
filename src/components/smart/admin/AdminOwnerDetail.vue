@@ -1,5 +1,14 @@
 <template>
   <div class="admin-owner-detail">
+    <v-snackbar
+      v-model="showSaveError"
+      color="error"
+      location="top"
+      :timeout="6000"
+    >
+      {{ saveError }}
+    </v-snackbar>
+
     <v-container
       class="pa-4 pa-md-6"
       fluid
@@ -384,6 +393,11 @@
 
   const loading = ref(true)
   const saving = ref(false)
+  const saveError = ref<string | null>(null)
+  const showSaveError = computed({
+    get: () => !!saveError.value,
+    set: (val: boolean) => { if (!val) saveError.value = null },
+  })
   const owner = ref<User | null>(null)
   const properties = ref<Property[]>([])
 
@@ -485,8 +499,12 @@
   }
 
   // Copy to clipboard
-  function copyToClipboard (text: string) {
-    navigator.clipboard.writeText(text)
+  async function copyToClipboard (text: string) {
+    try {
+      await navigator.clipboard.writeText(text)
+    } catch (error) {
+      console.error('Clipboard write failed:', error)
+    }
   }
 
   // Save owner profile
@@ -502,9 +520,11 @@
         notifications_enabled: editForm.value.notifications_enabled,
       })
       owner.value = updated
+      saveError.value = null
       showEditDialog.value = false
     } catch (error) {
       console.error('Failed to update owner:', error)
+      saveError.value = error instanceof Error ? error.message : 'Failed to update owner profile. Please try again.'
     } finally {
       saving.value = false
     }
@@ -586,10 +606,12 @@
           color: '',
         } as PropertyFormData))
 
+      saveError.value = null
       showPropertyDialog.value = false
       properties.value = ownerProperties.value
     } catch (error) {
       console.error('Failed to save property:', error)
+      saveError.value = error instanceof Error ? error.message : 'Failed to save property. Please try again.'
     } finally {
       saving.value = false
     }
@@ -599,11 +621,13 @@
     if (!propertyToDelete.value) return
     try {
       await supaProperties.deleteProperty(propertyToDelete.value.id)
+      saveError.value = null
       showDeleteDialog.value = false
       propertyToDelete.value = null
       properties.value = ownerProperties.value
     } catch (error) {
       console.error('Failed to delete property:', error)
+      saveError.value = error instanceof Error ? error.message : 'Failed to delete property. Please try again.'
     }
   }
   watch(showEditDialog, val => {

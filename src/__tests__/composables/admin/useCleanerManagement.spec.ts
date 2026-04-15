@@ -92,8 +92,8 @@ describe('useCleanerManagement', () => {
   })
 
   // ===== CRITICAL BUG: assignCleanerToBooking DB Persistence =====
-  describe('assignCleanerToBooking - DB Persistence Bug', () => {
-    it('updates local store but does NOT persist to database (known bug)', async () => {
+  describe('assignCleanerToBooking - DB Persistence', () => {
+    it('updates local store and persists to Supabase', async () => {
       setAdminUser(authStore, 'admin1')
 
       // Add a cleaner to the store
@@ -137,17 +137,16 @@ describe('useCleanerManagement', () => {
       expect(updatedBooking?.assigned_cleaner_id).toBe('c1')
       expect(updatedBooking?.status).toBe('scheduled')
 
-      // BUG: supabase.from('bookings') is never called for update
-      // This documents that local state is updated but DB is not synced
+      // FIXED: supabase.from('bookings') is now called for the update
       const fromCalls = vi.mocked(supabase.from).mock.calls
       const bookingsFromCalls = fromCalls.filter(call => call[0] === 'bookings')
-      expect(bookingsFromCalls).toHaveLength(0)
+      expect(bookingsFromCalls.length).toBeGreaterThan(0)
     })
   })
 
-  // ===== CRITICAL BUG: unassignCleanerFromBooking setTimeout Mock =====
-  describe('unassignCleanerFromBooking - setTimeout Mock Bug', () => {
-    it('uses setTimeout mock instead of real database call (known bug)', async () => {
+  // ===== FIXED: unassignCleanerFromBooking now persists to Supabase =====
+  describe('unassignCleanerFromBooking - DB Persistence', () => {
+    it('updates local store and persists to Supabase', async () => {
       setAdminUser(authStore, 'admin1')
 
       // Add a cleaner and booking with assignment
@@ -191,10 +190,10 @@ describe('useCleanerManagement', () => {
       expect(updatedBooking?.assigned_cleaner_id).toBeNull()
       expect(updatedBooking?.status).toBe('pending')
 
-      // BUG: Only used setTimeout, no real DB call
+      // FIXED: supabase.from('bookings') is now called for the update
       const fromCalls = vi.mocked(supabase.from).mock.calls
       const bookingsFromCalls = fromCalls.filter(call => call[0] === 'bookings')
-      expect(bookingsFromCalls).toHaveLength(0)
+      expect(bookingsFromCalls.length).toBeGreaterThan(0)
     })
   })
 
