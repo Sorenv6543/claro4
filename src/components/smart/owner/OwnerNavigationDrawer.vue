@@ -88,13 +88,13 @@
 
 <script setup lang="ts">
   import type { Property } from '@/types/property'
-import { formatPropertyAddress } from '@/types/property'
-import { PROPERTY_COLORS } from '@/utils/constants'
-import { useOwnerProperties } from '@composables/owner/useOwnerProperties'
-import { useAuthStore } from '@stores/auth'
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-import { useDisplay } from 'vuetify'
+  import { useOwnerProperties } from '@composables/owner/useOwnerProperties'
+  import { useAuthStore } from '@stores/auth'
+  import { computed } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { useDisplay } from 'vuetify'
+  import { formatPropertyAddress } from '@/types/property'
+  import { PROPERTY_COLORS } from '@/utils/constants'
 
   defineProps<{
     modelValue: boolean

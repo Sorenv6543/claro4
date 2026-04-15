@@ -1,49 +1,48 @@
 <template>
   <DashboardCard icon="mdi-calendar-month" :title="monthLabel">
-      <!-- Day-of-week headers -->
-      <div class="calendar-grid mb-1">
-        <div
-          v-for="dayName in dayNames"
-          :key="dayName"
-          class="day-header text-caption text-medium-emphasis text-center font-weight-medium"
-        >
-          {{ dayName }}
+    <!-- Day-of-week headers -->
+    <div class="calendar-grid mb-1">
+      <div
+        v-for="dayName in dayNames"
+        :key="dayName"
+        class="day-header text-caption text-medium-emphasis text-center font-weight-medium"
+      >
+        {{ dayName }}
+      </div>
+    </div>
+
+    <!-- Day cells -->
+    <div class="calendar-grid">
+      <!-- Leading empty cells -->
+      <div v-for="n in startOffset" :key="'empty-' + n" class="day-cell" />
+
+      <!-- Actual days -->
+      <div
+        v-for="day in daysInMonth"
+        :key="day"
+        class="day-cell d-flex flex-column align-center justify-center"
+        :class="{ 'today-cell': isToday(day) }"
+      >
+        <span class="text-body-2" :class="{ 'font-weight-bold': isToday(day) }">
+          {{ day }}
+        </span>
+        <!-- Booking dots -->
+        <div class="dot-row d-flex ga-1 mt-0">
+          <div
+            v-for="(dot, dotIndex) in getDayDots(day)"
+            :key="dotIndex"
+            class="booking-dot"
+            :style="{ background: dot.color }"
+          />
         </div>
       </div>
-
-      <!-- Day cells -->
-      <div class="calendar-grid">
-        <!-- Leading empty cells -->
-        <div v-for="n in startOffset" :key="'empty-' + n" class="day-cell" />
-
-        <!-- Actual days -->
-        <div
-          v-for="day in daysInMonth"
-          :key="day"
-          class="day-cell d-flex flex-column align-center justify-center"
-          :class="{ 'today-cell': isToday(day) }"
-        >
-          <span class="text-body-2" :class="{ 'font-weight-bold': isToday(day) }">
-            {{ day }}
-          </span>
-          <!-- Booking dots -->
-          <div class="dot-row d-flex ga-1 mt-0">
-            <div
-              v-for="(dot, dotIndex) in getDayDots(day)"
-              :key="dotIndex"
-              class="booking-dot"
-              :style="{ background: dot.color }"
-            />
-          </div>
-        </div>
-      </div>
+    </div>
   </DashboardCard>
 </template>
 
 <script setup lang="ts">
   import { computed } from 'vue'
   import DashboardCard from '@/components/dumb/shared/DashboardCard.vue'
-
 
   interface BookingDate {
     date: string

@@ -67,10 +67,10 @@
 </template>
 
 <script setup lang="ts">
+  import type { BookingStatus, BookingType } from '@/types'
+  import type { PROPERTY_COLORS } from '@/utils/constants'
   import DashboardCard from '@/components/dumb/shared/DashboardCard.vue'
-import type { BookingStatus, BookingType } from '@/types'
-import type { PROPERTY_COLORS } from '@/utils/constants'
-import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/constants'
+  import { formatStatus, getBookingStatusColor as statusColor } from '@/utils/constants'
 
   interface UpcomingBooking {
     property: string

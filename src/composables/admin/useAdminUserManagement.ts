@@ -1,7 +1,7 @@
 import type { User, UserRole } from '@/types/user'
 import { computed, ref } from 'vue'
-import { supabase } from '@/plugins/supabase'
 import { useSupabaseUserProfiles } from '@/composables/supabase/useSupabaseUserProfiles'
+import { supabase } from '@/plugins/supabase'
 import { useUserProfileStore } from '@/stores/userProfile'
 
 // Module-level singleton state

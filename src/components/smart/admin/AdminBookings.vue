@@ -273,18 +273,18 @@
 </template>
 
 <script setup lang="ts">
+  import type { Booking, BookingFormData } from '@/types/booking'
+  import { computed, onMounted, ref } from 'vue'
+  import { useDisplay } from 'vuetify'
   import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
-import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
-import { useAdminBookings } from '@/composables/admin/useAdminBookings'
-import { useAdminProperties } from '@/composables/admin/useAdminProperties'
-import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
-import { useUIStore } from '@/stores/ui'
-import type { Booking, BookingFormData } from '@/types/booking'
-import { formatPropertyAddress } from '@/types/property'
-import { getBookingStatusColor } from '@/utils/constants'
-import { computed, onMounted, ref } from 'vue'
-import { useDisplay } from 'vuetify'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+  import { useAdminBookings } from '@/composables/admin/useAdminBookings'
+  import { useAdminProperties } from '@/composables/admin/useAdminProperties'
+  import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
+  import { useUIStore } from '@/stores/ui'
+  import { formatPropertyAddress } from '@/types/property'
+  import { getBookingStatusColor } from '@/utils/constants'
 
   // Composables
   const { mobile } = useDisplay()

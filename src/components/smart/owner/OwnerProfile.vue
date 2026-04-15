@@ -339,9 +339,9 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useAuthStore } from '@/stores/auth'
-  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+  import { useAuthStore } from '@/stores/auth'
 
   defineOptions({
     name: 'OwnerProfileComponent',

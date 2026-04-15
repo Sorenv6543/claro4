@@ -1,26 +1,26 @@
 <template>
   <DashboardCard icon="mdi-history" title="Recent Activity">
-      <div v-if="activities.length === 0" class="text-center text-medium-emphasis py-6">
-        <v-icon class="mb-2" size="48">mdi-clock-outline</v-icon>
-        <div class="text-body-2">No recent activity</div>
-      </div>
+    <div v-if="activities.length === 0" class="text-center text-medium-emphasis py-6">
+      <v-icon class="mb-2" size="48">mdi-clock-outline</v-icon>
+      <div class="text-body-2">No recent activity</div>
+    </div>
 
-      <v-timeline v-else density="compact" side="end" truncate-line="both">
-        <v-timeline-item
-          v-for="(activity, index) in activities"
-          :key="index"
-          :dot-color="activityColor(activity.type)"
-          :icon="activityIcon(activity.type)"
-          size="x-small"
-        >
-          <div class="d-flex flex-column">
-            <div class="text-body-2">{{ activity.description }}</div>
-            <div class="text-caption text-medium-emphasis">
-              {{ relativeTime(activity.timestamp) }}
-            </div>
+    <v-timeline v-else density="compact" side="end" truncate-line="both">
+      <v-timeline-item
+        v-for="(activity, index) in activities"
+        :key="index"
+        :dot-color="activityColor(activity.type)"
+        :icon="activityIcon(activity.type)"
+        size="x-small"
+      >
+        <div class="d-flex flex-column">
+          <div class="text-body-2">{{ activity.description }}</div>
+          <div class="text-caption text-medium-emphasis">
+            {{ relativeTime(activity.timestamp) }}
           </div>
-        </v-timeline-item>
-      </v-timeline>
+        </div>
+      </v-timeline-item>
+    </v-timeline>
   </DashboardCard>
 </template>
 

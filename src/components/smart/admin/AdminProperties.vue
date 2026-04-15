@@ -250,9 +250,9 @@
 </template>
 
 <script setup lang="ts">
-  import { computed, ref } from 'vue'
   import type { Booking } from '@/types/booking.ts'
   import type { PricingTier, Property } from '@/types/property.ts'
+  import { computed, ref } from 'vue'
   import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
   import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts'

@@ -26,7 +26,7 @@ function makeSession (overrides: Partial<Session> = {}): Session {
     token_type: 'bearer',
     expires_in: 3600,
     refresh_token: 'refresh-token-123',
-    expires_at: Date.now() + 3600000,
+    expires_at: Date.now() + 3_600_000,
     ...overrides,
   } as Session
 }
@@ -1082,13 +1082,13 @@ describe('useSupabaseAuth', () => {
 
   describe('Profile load deduplication (profileLoadPromise guard)', () => {
     it('does not trigger concurrent profile loads', async () => {
-      const mockSession = makeSession()
-      const mockProfile = makeUserProfile()
+      const _mockSession = makeSession()
+      const _mockProfile = makeUserProfile()
 
       // Use a slow-resolving promise to verify deduplication
-      let resolveProfileQuery!: (value: any) => void
+      let _resolveProfileQuery!: (value: any) => void
       const profileQueryPromise = new Promise(resolve => {
-        resolveProfileQuery = resolve
+        _resolveProfileQuery = resolve
       })
 
       const selectMock = vi.fn().mockReturnValueOnce({
@@ -1148,7 +1148,9 @@ describe('useSupabaseAuth', () => {
 
       let authStateCallback: ((event: string, session: any) => void) | null = null
       vi.mocked(supabaseMock.auth.onAuthStateChange).mockImplementationOnce(
-        (callback: any) => { authStateCallback = callback },
+        (callback: any) => {
+          authStateCallback = callback
+        },
       )
 
       const auth = await getComposable()
@@ -1191,7 +1193,9 @@ describe('useSupabaseAuth', () => {
 
       let authStateCallback: ((event: string, session: any) => void) | null = null
       vi.mocked(supabaseMock.auth.onAuthStateChange).mockImplementationOnce(
-        (callback: any) => { authStateCallback = callback },
+        (callback: any) => {
+          authStateCallback = callback
+        },
       )
 
       const auth = await getComposable()
@@ -1231,7 +1235,9 @@ describe('useSupabaseAuth', () => {
 
       let authStateCallback: ((event: string, session: any) => void) | null = null
       vi.mocked(supabaseMock.auth.onAuthStateChange).mockImplementationOnce(
-        (callback: any) => { authStateCallback = callback },
+        (callback: any) => {
+          authStateCallback = callback
+        },
       )
 
       const auth = await getComposable()

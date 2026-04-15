@@ -214,15 +214,15 @@
 </template>
 
 <script setup lang="ts">
+  import type { Booking, ModalData } from '@/types'
+  import { computed, onMounted, ref } from 'vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
-import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
-import { useUIStore } from '@/stores/ui'
-import type { Booking, ModalData } from '@/types'
-import { formatPropertyAddress } from '@/types/property'
-import { formatStatus, getBookingStatusColor } from '@/utils/constants'
-import { computed, onMounted, ref } from 'vue'
+  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+  import { useUIStore } from '@/stores/ui'
+  import { formatPropertyAddress } from '@/types/property'
+  import { formatStatus, getBookingStatusColor } from '@/utils/constants'
 
   defineOptions({
     name: 'OwnerBookingsComponent',

@@ -83,7 +83,9 @@ export function useOwnerProperties () {
    */
   function getPropertyMetrics (id: string) {
     const property = propertyStore.getPropertyById(id)
-    if (!property) return null
+    if (!property) {
+      return null
+    }
     const propertyBookings = Array.from(bookingStore.bookingsByProperty(id).values())
     return calculatePropertyMetrics(property, propertyBookings)
   }

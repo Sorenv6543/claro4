@@ -16,7 +16,7 @@
         :active="isActive(item.to)"
         color="primary"
         :prepend-icon="isActive(item.to) ? item.filledIcon : item.icon"
-               :title="item.label"
+        :title="item.label"
         @click="navigateTo(item.to)"
       />
 
@@ -28,7 +28,7 @@
             :active="usersGroupOpen"
             color="primary"
             :prepend-icon="usersGroupOpen ? 'mdi-account-multiple' : 'mdi-account-multiple-outline'"
-                       title="Users"
+            title="Users"
           />
         </template>
 
@@ -36,21 +36,21 @@
           :active="isActive('/admin/cleaners')"
           color="primary"
           :prepend-icon="isActive('/admin/cleaners') ? 'mdi-account-hard-hat' : 'mdi-account-hard-hat-outline'"
-                   title="Cleaners"
+          title="Cleaners"
           @click="navigateTo('/admin/cleaners')"
         />
         <v-list-item
           :active="isActive('/admin/property-owners')"
           color="primary"
           :prepend-icon="isActive('/admin/property-owners') ? 'mdi-account-group' : 'mdi-account-group-outline'"
-                   title="Property Owners"
+          title="Property Owners"
           @click="navigateTo('/admin/property-owners')"
         />
         <v-list-item
           :active="isActive('/admin/users')"
           color="primary"
           :prepend-icon="isActive('/admin/users') ? 'mdi-account-cog' : 'mdi-account-cog-outline'"
-                   title="Administrators"
+          title="Administrators"
           @click="navigateTo('/admin/users')"
         />
       </v-list-group>
@@ -103,7 +103,7 @@
           :key="booking.id"
           color="error"
           prepend-icon="mdi-alert-circle"
-                   :subtitle="'Turn cleaning needed'"
+          :subtitle="'Turn cleaning needed'"
           :title="getPropertyName(booking.property_id)"
           @click="viewBooking(booking)"
         />
@@ -112,7 +112,7 @@
           v-if="urgentBookings.length > 3"
           color="primary"
           prepend-icon="mdi-eye"
-                   :title="`View all (${urgentBookings.length})`"
+          :title="`View all (${urgentBookings.length})`"
           @click="navigateTo('/admin/bookings?filter=urgent')"
         />
       </v-list>
@@ -129,7 +129,7 @@
         :key="item.label"
         color="primary"
         :prepend-icon="item.icon"
-               :title="item.label"
+        :title="item.label"
         @click="item.action()"
       />
     </v-list>
@@ -168,13 +168,13 @@
 </template>
 
 <script setup lang="ts">
+  import type { Booking } from '@/types/booking.ts'
+  import type { Property } from '@/types/property.ts'
+  import { computed } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { useDisplay } from 'vuetify'
   import { useAuthStore } from '@/stores/auth.ts'
-import type { Booking } from '@/types/booking.ts'
-import { formatPropertyAddress } from '@/types/property'
-import type { Property } from '@/types/property.ts'
-import { computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useDisplay } from 'vuetify'
+  import { formatPropertyAddress } from '@/types/property'
 
   interface Props {
     modelValue?: boolean

@@ -188,7 +188,9 @@ export function useSupabaseUserProfiles () {
         .single()
 
       if (fetchError) {
-        if (fetchError.code === 'PGRST116') return null
+        if (fetchError.code === 'PGRST116') {
+          return null
+        }
         throw fetchError
       }
 

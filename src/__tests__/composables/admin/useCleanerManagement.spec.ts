@@ -2,11 +2,11 @@ import type { Booking, Cleaner } from '@/types'
 import { createPinia, setActivePinia } from 'pinia'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
+import { supabase } from '@/plugins/supabase'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
-import { useUserProfileStore } from '@/stores/userProfile'
 import { useCleanerTeamStore } from '@/stores/cleanerTeam'
-import { supabase } from '@/plugins/supabase'
+import { useUserProfileStore } from '@/stores/userProfile'
 import { setAdminUser } from '../../utils/test-utils'
 
 // Mock Supabase composables
@@ -27,14 +27,14 @@ describe('useCleanerManagement', () => {
   let authStore: ReturnType<typeof useAuthStore>
   let bookingStore: ReturnType<typeof useBookingStore>
   let userProfileStore: ReturnType<typeof useUserProfileStore>
-  let cleanerTeamStore: ReturnType<typeof useCleanerTeamStore>
+  let _cleanerTeamStore: ReturnType<typeof useCleanerTeamStore>
 
   beforeEach(() => {
     setActivePinia(createPinia())
     authStore = useAuthStore()
     bookingStore = useBookingStore()
     userProfileStore = useUserProfileStore()
-    cleanerTeamStore = useCleanerTeamStore()
+    _cleanerTeamStore = useCleanerTeamStore()
 
     // Reset supabase mocks between tests
     vi.mocked(supabase.from).mockClear()

@@ -231,6 +231,7 @@
 </template>
 
 <script setup lang="ts">
+  import type { User, UserFormData, UserRole } from '@/types/user'
   import { computed, onMounted, ref } from 'vue'
   import { useDisplay } from 'vuetify'
   import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
@@ -238,7 +239,6 @@
   import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import StatCard from '@/components/dumb/shared/StatCard.vue'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
-  import type { User, UserFormData, UserRole } from '@/types/user'
 
   const { mobile } = useDisplay()
   const {

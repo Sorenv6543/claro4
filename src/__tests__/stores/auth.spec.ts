@@ -1,8 +1,8 @@
+import type { User } from '@/types'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { supabase } from '@/plugins/supabase'
 import { useAuthStore } from '@/stores/auth'
-import type { User } from '@/types'
 
 /**
  * Test suite for the Auth Pinia store (src/stores/auth.ts)
@@ -47,11 +47,13 @@ describe('Auth Store', () => {
       setItem: vi.fn((key, value) => {
         localStorageMock[key] = value
       }),
-      removeItem: vi.fn((key) => {
+      removeItem: vi.fn(key => {
         delete localStorageMock[key]
       }),
       clear: vi.fn(() => {
-        Object.keys(localStorageMock).forEach(key => delete localStorageMock[key])
+        for (const key of Object.keys(localStorageMock)) {
+          delete localStorageMock[key]
+        }
       }),
       key: vi.fn(),
       length: 0,
@@ -348,7 +350,7 @@ describe('Auth Store', () => {
       }
 
       // Need to re-access computed after setting user
-      const adminStore = useAuthStore()
+      const _adminStore = useAuthStore()
       // Create new store instance to pick up user
       setActivePinia(createPinia())
       const freshStore = useAuthStore()
@@ -955,6 +957,7 @@ describe('Auth Store', () => {
       const store = useAuthStore()
 
       vi.mocked(supabase.auth.signInWithPassword).mockRejectedValueOnce(
+        // eslint-disable-next-line unicorn/error-message
         new Error(''),
       )
 

@@ -41,7 +41,7 @@
               class="mb-3 turn-list-item hover-elevate"
               :class="booking.priority === 'urgent' ? 'urgent-priority' : 'high-priority'"
               elevation="1"
-                           :value="booking.id"
+              :value="booking.id"
             >
               <template #prepend>
                 <v-avatar

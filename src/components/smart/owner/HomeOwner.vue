@@ -108,8 +108,8 @@ src/components/smart/owner/HomeOwner.vue -
   import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
 
-  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   // Business logic composables
 
   // Import event logger for component communication

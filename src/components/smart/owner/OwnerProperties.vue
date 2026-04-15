@@ -214,18 +214,18 @@
 </template>
 
 <script setup lang="ts">
+  import type { Property, PropertyFormData, PropertyRecord } from '@/types'
+  import { computed, onMounted } from 'vue'
+  import { useRouter } from 'vue-router'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
-import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
-import type { Property, PropertyFormData, PropertyRecord } from '@/types'
-import { computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
 
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
-import { useAuthStore } from '@/stores/auth'
-import { useUIStore } from '@/stores/ui'
-import { formatPropertyAddress } from '@/types/property'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+  import { useAuthStore } from '@/stores/auth'
+  import { useUIStore } from '@/stores/ui'
+  import { formatPropertyAddress } from '@/types/property'
 
   // Component metadata
   defineOptions({
@@ -574,7 +574,6 @@ import { formatPropertyAddress } from '@/types/property'
   font-size: 12px;
   color: #94A3B8;
 }
-
 
 /* Expanded content */
 .expanded-content {
