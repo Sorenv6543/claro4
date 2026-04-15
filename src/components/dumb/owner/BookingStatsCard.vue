@@ -3,7 +3,7 @@
     <div class="booking-stats-card__header">
       <v-avatar
         :color="iconColor"
-        rounded="lg"
+        rounded
         size="40"
       >
         <v-icon color="white" :icon="icon" size="20" />

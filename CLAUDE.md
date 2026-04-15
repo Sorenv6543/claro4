@@ -246,14 +246,14 @@ The app is a Progressive Web App configured via `vite-plugin-pwa` (production bu
 ### Component Defaults (already configured globally)
 Don't override these unless necessary:
 - `VBtn`: `variant="flat"`, `rounded`, no uppercase
-- `VCard`: `elevation="2"`, `rounded="lg"`, `pa-2`
+- `VCard`: `elevation="0"`, `rounded` (global `box-shadow: var(--claro-shadow-sm)` in `main.scss` provides baseline shadow)
 - `VTextField`, `VSelect`, `VTextarea`, `VAutocomplete`, `VCombobox`: `variant="outlined"`, `density="comfortable"`, `rounded="lg"`, `hideDetails="auto"`
 - `VDialog`: `max-width="700px"`, `rounded="lg"`
 - `VAlert`: `variant="tonal"`, `rounded="lg"`
 - `VChip/VBadge`: `rounded="pill"`
 
 ### Elevation = Hierarchy
-Use `elevation` prop (0–24), NEVER raw CSS `box-shadow` (except hover effects). In MD3 dark themes, elevation applies surface tint, not just shadow.
+All `v-card` components receive a baseline `box-shadow: var(--claro-shadow-sm)` via `main.scss` (Materio flat style). This overrides Vuetify's elevation system for cards specifically. For non-card components, use the `elevation` prop (0–24). NEVER add raw CSS `box-shadow` to individual components (except hover effects).
 
 | Role | Elevation | Examples |
 |------|-----------|----------|
@@ -308,7 +308,7 @@ Key patterns:
 - **Data table → card list on mobile**: `v-data-table v-if="!mobile"` / card loop `v-else`
 
 ### Design Depth — Forbidden
-- No raw CSS `box-shadow` — use `elevation` prop
+- No raw CSS `box-shadow` on individual components — cards use global `--claro-shadow-sm`, others use `elevation` prop
 - No CSS media queries for layout logic `useDisplay` handles
 - No data components without loading/empty/error states
 - No hardcoded hex colors — use theme tokens
