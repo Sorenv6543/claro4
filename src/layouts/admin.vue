@@ -8,8 +8,7 @@
   <v-app class="admin-layout">
     <!-- Admin app bar with admin-specific controls (user menu, notifications) -->
     <v-app-bar
-      border="b"
-      color="surface"
+      color="transparent"
       flat
       height="64"
       order="-1"

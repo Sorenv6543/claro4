@@ -10,8 +10,7 @@
 <template>
   <v-app class="owner-layout">
     <v-app-bar
-      border="b"
-      color="surface"
+      color="transparent"
       flat
       height="64"
       order="-1"
