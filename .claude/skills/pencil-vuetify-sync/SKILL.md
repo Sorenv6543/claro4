@@ -172,15 +172,23 @@ Always ask the user for:
 
 ### Step 3: Research Vuetify APIs
 
-Use the Vuetify MCP to look up component APIs before writing code. This matters because
-Vuetify 4 has specific props/slots that absorb styling — using them correctly means less
-custom CSS.
+For each Vuetify component the design implies (VCard, VBtn, VChip, etc.), look up
+reference material in this order:
 
-For each Vuetify component the design implies (VCard, VBtn, VChip, etc.):
-- `mcp__claude_ai_vuetify__get_component_api_by_version({ component: "VCard", version: "v4" })`
-- Identify which design properties map to existing Vuetify props vs. need custom CSS
-- Check if Vuetify global defaults (configured in `src/plugins/vuetify.ts`) already
-  handle the styling — if a default covers it, don't override per-component
+1. **Read local file first**: `docs/references/vuetify-components/{v-component}.md`
+   - Check the **"Claro4 Default"** column in Design Props — if a global default already
+     sets the prop, don't re-specify it per-component
+   - Use the **"Design→Code Cheatsheet"** to map visual intent to exact props
+   - Check **"Composable Hooks"** to understand what built-in behavior you get for free
+   - Check **"SASS Hooks"** to find CSS override points when props aren't enough
+   - Find any component quickly via `docs/references/vuetify-component-index.md`
+
+2. **Call Vuetify MCP only if the local file is insufficient**:
+   `mcp__claude_ai_vuetify__get_component_api_by_version({ component: "VCard", version: "v4" })`
+
+3. For decisions crossing multiple components (e.g. `useDefaults` cascade, theme scoping):
+   - Read `docs/references/vuetify-composition-patterns.md`
+   - For SASS variable overrides: read `docs/references/vuetify-sass-architecture.md`
 
 ### Step 4: Generate the Component
 
@@ -260,10 +268,17 @@ Use when the user wants to restyle an existing page to match the .pen design.
 
 ### Phase 3: Research Vuetify APIs
 7. Read the page component file and list every Vuetify component used (VCard, VBtn, etc.)
-8. For each, look up the API:
-   `mcp__claude_ai_vuetify__get_component_api_by_version({ component: "VCard", version: "v4" })`
-9. For each component, decide: can the design be achieved with existing Vuetify props +
-   tokens, or does it need a wrapper? Document the decision.
+8. For each component, look up the local reference file **first**:
+   - Open `docs/references/vuetify-component-index.md` to find the file path
+   - Read `docs/references/vuetify-components/{v-component}.md`
+   - Check "Claro4 Default" column — know which props are already globally set
+   - Check "SASS Hooks" — find the right CSS override point for styling decisions
+   - Only call the Vuetify MCP if local file is insufficient:
+     `mcp__claude_ai_vuetify__get_component_api_by_version({ component: "VCard", version: "v4" })`
+9. For decisions about `useDefaults` cascade, theme scoping, or slot composition:
+   read `docs/references/vuetify-composition-patterns.md`
+10. For each component, decide: can the design be achieved with existing Vuetify props +
+    tokens, or does it need a wrapper? Document the decision.
 
 ### Phase 4: Implement
 10. **Token sync** — run Workflow 1 (Design → Code) if tokens have drifted

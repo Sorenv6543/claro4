@@ -386,7 +386,27 @@ Key owner ones: `OwnerBookingForm.vue`, `OwnerCalendarControls.vue`, `OwnerClean
 
 ## Vuetify Reference
 
-For Vuetify 4 API questions, use the `vuetify-mcp` server directly — it has dedicated tools for component API, directives, feature guides, and breaking changes. Do not use Context7 for Vuetify.
+### Local Reference Files (check these first)
+
+68 per-component reference files live in `docs/references/vuetify-components/` — one per component (e.g. `v-card.md`, `v-btn.md`). Each covers:
+- **Design Props** — which props absorb design intent and whether Claro4 already sets a global default
+- **Slot Anatomy** — named slots and what sub-components they accept
+- **SASS Hooks** — CSS classes emitted, SASS variables, CSS custom properties
+- **Design→Code Cheatsheet** — maps visual intent to specific props/values
+
+Two architecture guides:
+- `docs/references/vuetify-sass-architecture.md` — SASS settings layer, component style structure, custom token hookpoints
+- `docs/references/vuetify-composition-patterns.md` — `useDefaults` cascade, `useTheme`/`useDisplay`/`useLocale`, slot composition, anti-patterns
+
+Component index (all 68 components by category): `docs/references/vuetify-component-index.md`
+
+**Lookup order for any Vuetify component question:**
+1. Read the local `docs/references/vuetify-components/{v-component}.md` — has Claro4-specific context the MCP lacks
+2. If the local file is insufficient, call the `vuetify-mcp` server
+
+### Vuetify MCP
+
+For Vuetify 4 API questions not covered by local files, use the `vuetify-mcp` server directly — it has dedicated tools for component API, directives, feature guides, and breaking changes. Do not use Context7 for Vuetify.
 
 ## MCP Workflow for UI/UX Development
 
