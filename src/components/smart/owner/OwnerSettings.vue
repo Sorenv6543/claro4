@@ -150,19 +150,10 @@
           <v-card>
             <v-card-text>
               <h6 class="text-h6 mb-4">Change Password</h6>
+              <v-alert class="mb-4" density="compact" type="warning" variant="tonal">
+                Password change is not yet available. This will be enabled in a future update.
+              </v-alert>
               <v-form ref="passwordFormRef" v-model="passwordFormValid" @submit.prevent="savePassword">
-                <v-row>
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      v-model="passwordForm.current"
-                      label="Current Password"
-                      :type="showCurrentPassword ? 'text' : 'password'"
-                      :append-inner-icon="showCurrentPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
-                      :rules="[rules.required]"
-                      @click:append-inner="showCurrentPassword = !showCurrentPassword"
-                    />
-                  </v-col>
-                </v-row>
                 <v-row>
                   <v-col cols="12" md="6">
                     <v-text-field
@@ -197,12 +188,11 @@
                   <v-btn
                     color="primary"
                     type="submit"
-                    :loading="savingPassword"
-                    :disabled="!passwordFormValid"
+                    disabled
                   >
                     Change Password
                   </v-btn>
-                  <v-btn variant="outlined" @click="resetPasswordForm">
+                  <v-btn variant="outlined" disabled>
                     Reset
                   </v-btn>
                 </div>
@@ -254,6 +244,7 @@
                 </div>
                 <v-switch
                   v-model="notificationsForm.notifications_enabled"
+                  aria-label="Push Notifications"
                   color="primary"
                   hide-details
                   inset
@@ -264,50 +255,56 @@
               <v-divider class="my-4" />
 
               <h6 class="text-overline text-medium-emphasis mb-3">Email Notifications</h6>
+              <v-alert class="mb-4" density="compact" type="info" variant="tonal">
+                Email notification preferences coming soon.
+              </v-alert>
 
               <div class="d-flex align-center justify-space-between mb-3">
                 <div>
-                  <div class="text-body-2 font-weight-medium">Booking Confirmations</div>
+                  <div class="text-body-2 font-weight-medium text-medium-emphasis">Booking Confirmations</div>
                   <div class="text-caption text-medium-emphasis">Get notified when bookings are confirmed</div>
                 </div>
                 <v-switch
                   v-model="notificationsForm.emailBookings"
+                  aria-label="Booking Confirmations"
                   color="primary"
+                  disabled
                   hide-details
                   inset
-                  @update:model-value="saveNotificationSettings"
                 />
               </div>
 
               <div class="d-flex align-center justify-space-between mb-3">
                 <div>
-                  <div class="text-body-2 font-weight-medium">Cleaning Updates</div>
+                  <div class="text-body-2 font-weight-medium text-medium-emphasis">Cleaning Updates</div>
                   <div class="text-caption text-medium-emphasis">
                     Receive updates when cleaning tasks are completed
                   </div>
                 </div>
                 <v-switch
                   v-model="notificationsForm.emailCleaning"
+                  aria-label="Cleaning Updates"
                   color="primary"
+                  disabled
                   hide-details
                   inset
-                  @update:model-value="saveNotificationSettings"
                 />
               </div>
 
               <div class="d-flex align-center justify-space-between">
                 <div>
-                  <div class="text-body-2 font-weight-medium">Weekly Summary</div>
+                  <div class="text-body-2 font-weight-medium text-medium-emphasis">Weekly Summary</div>
                   <div class="text-caption text-medium-emphasis">
                     Get a weekly summary of your properties and bookings
                   </div>
                 </div>
                 <v-switch
                   v-model="notificationsForm.emailWeekly"
+                  aria-label="Weekly Summary"
                   color="primary"
+                  disabled
                   hide-details
                   inset
-                  @update:model-value="saveNotificationSettings"
                 />
               </div>
             </v-card-text>
@@ -396,47 +393,32 @@
       } else {
         showNotification(authStore.error || 'Failed to save settings', 'error')
       }
+    } catch (error) {
+      console.error('Failed to save account settings:', error)
+      showNotification('Failed to save settings', 'error')
     } finally {
       saving.value = false
     }
   }
 
   // --- Password form ---
+  // Password form is disabled — Supabase auth.updateUser requires session-based
+  // re-authentication before password change. Will be implemented when the
+  // re-auth flow (signInWithPassword verification) is added.
   const passwordFormRef = ref<VForm | null>(null)
   const passwordFormValid = ref(false)
-  const savingPassword = ref(false)
-  const showCurrentPassword = ref(false)
   const showNewPassword = ref(false)
   const showConfirmPassword = ref(false)
 
   const passwordForm = reactive({
-    current: '',
     newPassword: '',
     confirm: '',
   })
 
-  function resetPasswordForm () {
-    passwordForm.current = ''
-    passwordForm.newPassword = ''
-    passwordForm.confirm = ''
-    passwordFormRef.value?.resetValidation()
-    showCurrentPassword.value = false
-    showNewPassword.value = false
-    showConfirmPassword.value = false
-  }
-
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function savePassword () {
-    const { valid } = await passwordFormRef.value!.validate()
-    if (!valid) return
-
-    savingPassword.value = true
-    try {
-      // TODO: Implement password change via Supabase auth.updateUser
-      showNotification('Password change is not yet implemented', 'info')
-    } finally {
-      savingPassword.value = false
-      resetPasswordForm()
-    }
+    // TODO: Implement via supabase.auth.signInWithPassword (verify current session)
+    // then supabase.auth.updateUser({ password: passwordForm.newPassword })
   }
 
   // --- Notification form ---
@@ -453,6 +435,7 @@
   }, { immediate: true })
 
   async function saveNotificationSettings () {
+    const previousValue = !notificationsForm.notifications_enabled
     try {
       const success = await authStore.updateUserProfile({
         notifications_enabled: notificationsForm.notifications_enabled,
@@ -460,9 +443,12 @@
       if (success) {
         showNotification('Notification preferences updated', 'success')
       } else {
+        notificationsForm.notifications_enabled = previousValue
         showNotification('Failed to update notification preferences', 'error')
       }
-    } catch {
+    } catch (error) {
+      console.error('Failed to save notification settings:', error)
+      notificationsForm.notifications_enabled = previousValue
       showNotification('Failed to update notification preferences', 'error')
     }
   }
