@@ -374,6 +374,7 @@
 <script setup lang="ts">
   import type { Property, PropertyFormData } from '@/types/property'
   import type { User } from '@/types/user'
+  import type { VForm } from 'vuetify/components'
   import { computed, onMounted, ref, watch } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import OwnerDetailCard from '@/components/dumb/admin/OwnerDetailCard.vue'
@@ -407,6 +408,7 @@
 
   // Edit owner dialog
   const showEditDialog = ref(false)
+  const editFormRef = ref<VForm | null>(null)
   const editFormValid = ref(false)
   const editForm = ref({
     name: '',
@@ -419,6 +421,7 @@
 
   // Property dialog
   const showPropertyDialog = ref(false)
+  const propFormRef = ref<VForm | null>(null)
   const propFormValid = ref(false)
   const editingProperty = ref<Property | null>(null)
   const propForm = ref({
@@ -502,14 +505,21 @@
   async function copyToClipboard (text: string) {
     try {
       await navigator.clipboard.writeText(text)
+      saveError.value = null
+      copiedFeedback.value = true
+      setTimeout(() => { copiedFeedback.value = false }, 2000)
     } catch (error) {
       console.error('Clipboard write failed:', error)
+      saveError.value = 'Copy failed — please select and copy manually'
     }
   }
+  const copiedFeedback = ref(false)
 
   // Save owner profile
   async function saveOwnerProfile () {
     if (!owner.value) return
+    const { valid } = await editFormRef.value!.validate()
+    if (!valid) return
     saving.value = true
     try {
       const updated = await supaUserProfiles.updateProfile(owner.value.id, {
@@ -569,42 +579,30 @@
 
   async function saveProperty () {
     if (!owner.value) return
+    const { valid } = await propFormRef.value!.validate()
+    if (!valid) return
     saving.value = true
     try {
+      const payload = {
+        owner_id: owner.value.id,
+        address_street: propForm.value.address_street,
+        address_unit: propForm.value.address_unit || undefined,
+        address_city: propForm.value.address_city,
+        address_state: propForm.value.address_state,
+        address_zip: propForm.value.address_zip,
+        bedrooms: propForm.value.bedrooms ?? undefined,
+        bathrooms: propForm.value.bathrooms ?? undefined,
+        square_feet: propForm.value.square_feet ?? undefined,
+        property_type: propForm.value.property_type as Property['property_type'],
+        cleaning_duration: propForm.value.cleaning_duration,
+        special_instructions: propForm.value.special_instructions || undefined,
+        pricing_tier: propForm.value.pricing_tier as Property['pricing_tier'],
+        active: propForm.value.active,
+      }
+
       await (editingProperty.value
-        ? supaProperties.updateProperty(editingProperty.value.id, {
-          owner_id: owner.value.id,
-          address_street: propForm.value.address_street,
-          address_unit: propForm.value.address_unit || undefined,
-          address_city: propForm.value.address_city,
-          address_state: propForm.value.address_state,
-          address_zip: propForm.value.address_zip,
-          bedrooms: propForm.value.bedrooms ?? undefined,
-          bathrooms: propForm.value.bathrooms ?? undefined,
-          square_feet: propForm.value.square_feet ?? undefined,
-          property_type: propForm.value.property_type as Property['property_type'],
-          cleaning_duration: propForm.value.cleaning_duration,
-          special_instructions: propForm.value.special_instructions || undefined,
-          pricing_tier: propForm.value.pricing_tier as Property['pricing_tier'],
-          active: propForm.value.active,
-        })
-        : supaProperties.createProperty({
-          owner_id: owner.value.id,
-          address_street: propForm.value.address_street,
-          address_unit: propForm.value.address_unit || undefined,
-          address_city: propForm.value.address_city,
-          address_state: propForm.value.address_state,
-          address_zip: propForm.value.address_zip,
-          bedrooms: propForm.value.bedrooms ?? undefined,
-          bathrooms: propForm.value.bathrooms ?? undefined,
-          square_feet: propForm.value.square_feet ?? undefined,
-          property_type: propForm.value.property_type as Property['property_type'],
-          cleaning_duration: propForm.value.cleaning_duration,
-          special_instructions: propForm.value.special_instructions || undefined,
-          pricing_tier: propForm.value.pricing_tier as Property['pricing_tier'],
-          active: propForm.value.active,
-          color: '',
-        } as PropertyFormData))
+        ? supaProperties.updateProperty(editingProperty.value.id, payload)
+        : supaProperties.createProperty({ ...payload, color: '' } as PropertyFormData))
 
       saveError.value = null
       showPropertyDialog.value = false
