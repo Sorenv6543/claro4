@@ -144,6 +144,12 @@
       filledIcon: 'mdi-home',
       to: '/owner/properties',
     },
+    {
+      label: 'Charts',
+      icon: 'mdi-chart-line',
+      filledIcon: 'mdi-chart-line',
+      to: '/owner/charts',
+    },
   ]
 
   const accountItems = [
