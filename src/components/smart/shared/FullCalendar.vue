@@ -834,9 +834,11 @@
 }
 
 .fc-event.transition-out {
+  /* Set FC's internal text-color var so .fc-event-main inherits dark text */
+  --fc-event-text-color: rgb(var(--v-theme-on-surface));
   background-color: #FDD835 !important; /* Material yellow-darken-1 — no theme token for yellow */
   border-color:     #FDD835 !important;
-  color:            rgb(var(--v-theme-on-surface)) !important; /* dark text for contrast on yellow */
+  color:            rgb(var(--v-theme-on-surface)) !important;
 }
 
 .fc-event.transition-highlight {
