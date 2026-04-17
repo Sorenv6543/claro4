@@ -246,10 +246,12 @@
 .appbar-icons {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 0;
 }
 
 .appbar-icons :deep(.v-btn) {
+  min-width: 36px;
+  padding: 0 6px;
   color: rgba(var(--v-theme-on-surface), 0.68);
   box-shadow: none !important;
   background: transparent !important;
