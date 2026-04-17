@@ -707,12 +707,15 @@
   border: 1px solid var(--cal-border) !important;
 }
 
-/* Event pill — flat colored bar, tokenised */
+/* Event pill — flat colored bar, tokenised. Horizontal inset narrows the
+   pill ~4px so it doesn't collide with cell borders. */
 :deep(.fc-event) {
   border-radius: var(--cal-event-radius) !important;
   padding:       var(--cal-event-padding);
   font-weight:   var(--cal-event-font-weight);
   color:         var(--cal-event-text);
+  margin-left:   2px !important;
+  margin-right:  2px !important;
   box-shadow:    none !important;
   transition:    filter 0.15s ease, opacity 0.15s ease;
 }
