@@ -938,39 +938,32 @@
 
 <!-- Unscoped: FullCalendar renders its own DOM outside Vue's scoping -->
 <style>
+/* Unscoped: FullCalendar renders event DOM outside Vue's scoping.
+   viewMode === 'events' events (IN / TURN / OUT) use theme-mapped colors. */
 .fc-event.transition-event {
-  border-radius: 2px !important;
-  font-weight: 700;
+  border-radius: var(--cal-event-radius, 2px) !important;
+  font-weight: 600;
   border: none !important;
+  color: #fff !important;
 }
 
 .fc-event.transition-in {
-  --fc-event-bg-color: #43a047;
-  --fc-event-border-color: #43a047;
-  background-color: #43a047 !important;
-  border-color: #43a047 !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-success)) !important;
+  border-color:     rgb(var(--v-theme-success)) !important;
 }
 
 .fc-event.transition-turn {
-  --fc-event-bg-color: #e65100;
-  --fc-event-border-color: #e65100;
-  background-color: #e65100 !important;
-  border-color: #e65100 !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-warning)) !important;
+  border-color:     rgb(var(--v-theme-warning)) !important;
 }
 
 .fc-event.transition-out {
-  --fc-event-bg-color: #546e7a;
-  --fc-event-border-color: #546e7a;
-  background-color: #546e7a !important;
-  border-color: #546e7a !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-on-surface-variant)) !important;
+  border-color:     rgb(var(--v-theme-on-surface-variant)) !important;
 }
 
 .fc-event.transition-highlight {
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.6) !important;
-  transform: scale(1.05);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 0 0 2px rgb(var(--v-theme-primary) / 0.6) !important;
+  transition: box-shadow 0.3s ease;
 }
 </style>
