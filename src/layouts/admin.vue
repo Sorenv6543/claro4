@@ -29,7 +29,7 @@
         <ThemePicker />
 
         <v-btn aria-label="Favorites" icon variant="text">
-          <v-icon size="22">mdi-star-outline</v-icon>
+          <v-icon size="26">mdi-star-outline</v-icon>
         </v-btn>
 
         <v-btn aria-label="Notifications" icon variant="text">
@@ -39,7 +39,7 @@
             dot
             :model-value="notificationCount > 0"
           >
-            <v-icon size="22">mdi-bell-outline</v-icon>
+            <v-icon size="26">mdi-bell-outline</v-icon>
           </v-badge>
         </v-btn>
 
@@ -257,7 +257,26 @@
 </script>
 
 <style scoped>
-/* Materio-style app bar icons */
+/* Frosted-glass backdrop so scrolled content doesn't show through the transparent app bar */
+.admin-layout :deep(.v-app-bar) {
+  background: rgba(var(--v-theme-background), 0.72) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Strip button chrome from the hamburger nav icon too */
+.admin-layout :deep(.v-app-bar-nav-icon) {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.admin-layout :deep(.v-app-bar-nav-icon .v-icon) {
+  font-size: 26px;
+}
+
+/* Materio-style app bar icons — plain icons (no button chrome) */
 .appbar-icons {
   display: flex;
   align-items: center;
@@ -266,10 +285,18 @@
 
 .appbar-icons :deep(.v-btn) {
   color: rgba(var(--v-theme-on-surface), 0.68);
+  box-shadow: none !important;
+  background: transparent !important;
 }
 
 .appbar-icons :deep(.v-btn:hover) {
   color: rgba(var(--v-theme-on-surface), 0.9);
+  background: rgba(var(--v-theme-on-surface), 0.06) !important;
+}
+
+.appbar-icons :deep(.v-btn__overlay),
+.appbar-icons :deep(.v-btn__underlay) {
+  display: none;
 }
 
 /* Avatar with online status dot */

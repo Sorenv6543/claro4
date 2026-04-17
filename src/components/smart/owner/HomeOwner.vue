@@ -25,6 +25,7 @@ src/components/smart/owner/HomeOwner.vue -
       <div class="calendar-view-toggle">
         <v-btn-toggle
           v-model="viewMode"
+          aria-label="Calendar view mode"
           color="primary"
           density="compact"
           mandatory
@@ -56,13 +57,16 @@ src/components/smart/owner/HomeOwner.vue -
       </div>
     </div>
 
-    <!-- Floating calendar navigation pill — mobile only -->
-    <CalendarNavPill
-      v-if="mobile"
-      :label="pillMonthLabel"
-      @next="calendarNext()"
-      @prev="calendarPrev()"
-    />
+    <!-- Floating calendar navigation pill — mobile only. Teleported to body so
+         position:fixed escapes any transformed/overflow-hidden parent. -->
+    <Teleport to="body">
+      <CalendarNavPill
+        v-if="mobile"
+        :label="pillMonthLabel"
+        @next="calendarNext()"
+        @prev="calendarPrev()"
+      />
+    </Teleport>
 
     <!-- Day View Bottom Sheet -->
     <OwnerDayViewBottomSheet

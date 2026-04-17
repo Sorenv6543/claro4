@@ -1,9 +1,11 @@
-  <!----
+<!----
   OwnerLayout.vue
 
   Main layout for owner-facing pages, including the dashboard/schedule and profile.
-  Contains the app bar with navigation and calendar controls, and a sidebar for page navigation.
-  SECTION - The calendar controls (month/year display and view toggle) are only shown on the schedule/dashboard page.
+  Contains the app bar with navigation, prev/next calendar controls (desktop only on
+  the schedule page), and a sidebar for page navigation. The Range/Event view toggle
+  lives inside HomeOwner.vue; on mobile the prev/next/month label moves into a
+  floating CalendarNavPill rendered by HomeOwner.vue.
 -->
 
 <!-- src/layouts/owner.vue -->
@@ -61,11 +63,11 @@
       <div class="appbar-icons">
         <ThemePicker />
 
-        <v-btn aria-label="Favorites" class="appbar-icon-btn" icon variant="text">
+        <v-btn aria-label="Favorites" icon variant="text">
           <v-icon size="26">mdi-star-outline</v-icon>
         </v-btn>
 
-        <v-btn aria-label="Notifications" class="appbar-icon-btn" icon variant="text">
+        <v-btn aria-label="Notifications" icon variant="text">
           <v-badge
             color="error"
             :content="notificationCount"
