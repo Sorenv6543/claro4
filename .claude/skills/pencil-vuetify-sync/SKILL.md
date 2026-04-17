@@ -226,7 +226,9 @@ Smart components cannot be `shared` — they are always role-specific.
 
 <!-- Use CSS custom properties for non-color tokens -->
 <div :style="{ padding: 'var(--claro-space-md)', borderRadius: 'var(--claro-radius-lg)' }">
+```
 
+```vue
 <!-- Or in <style scoped> -->
 <style scoped>
 .card-content {
@@ -281,27 +283,27 @@ Use when the user wants to restyle an existing page to match the .pen design.
     tokens, or does it need a wrapper? Document the decision.
 
 ### Phase 4: Implement
-10. **Token sync** — run Workflow 1 (Design → Code) if tokens have drifted
-11. **Find hardcoded values** — in the page file and its child components:
+11. **Token sync** — run Workflow 1 (Design → Code) if tokens have drifted
+12. **Find hardcoded values** — in the page file and its child components:
     - Grep for hex color codes: `#[0-9a-fA-F]{3,8}`
     - Grep for hardcoded pixel values in style blocks: `\d+px` that should be tokens
     - Grep for raw `box-shadow` CSS that should use `elevation` prop
-12. **Replace hardcoded values** with token references:
+13. **Replace hardcoded values** with token references:
     - Hex colors → Vuetify semantic colors (`color="primary"`) or `var(--claro-*)`
     - Hardcoded px → `var(--claro-space-*)`, `var(--claro-radius-*)`, etc.
     - Raw box-shadow → Vuetify `elevation` prop
-13. **Create wrapper components** only where stock Vuetify + tokens can't express the design
-14. **Update the page component** to use wrappers where applicable
-15. **Commit each visual unit separately** before moving to the next:
+14. **Create wrapper components** only where stock Vuetify + tokens can't express the design
+15. **Update the page component** to use wrappers where applicable
+16. **Commit each visual unit separately** before moving to the next:
     - `restyle: update {PageName} to consume design tokens`
     - `wrapper: add {WrapperName} for {purpose}`
 
 ### Phase 5: Verify & Sync Back
-16. Take a Chrome DevTools screenshot — "after" screenshot
-17. Compare before/after visually — check elevation, spacing, colors, transitions
-18. If tokens changed: `mcp__pencil__set_variables(filePath, variables)` to sync back to .pen
-19. Run `pnpm build:fast` and `pnpm test:run`
-20. **Final commit** if verification required fixes: `restyle: fix {PageName} post-verification`
+17. Take a Chrome DevTools screenshot — "after" screenshot
+18. Compare before/after visually — check elevation, spacing, colors, transitions
+19. If tokens changed: `mcp__pencil__set_variables(filePath, variables)` to sync back to .pen
+20. Run `pnpm build:fast` and `pnpm test:run`
+21. **Final commit** if verification required fixes: `restyle: fix {PageName} post-verification`
 
 ## Git Commit Convention
 

@@ -14633,18 +14633,6 @@
     },
     {
       "type": "frame",
-      "id": "8MuCg",
-      "x": -320,
-      "y": 626,
-      "name": "OwnerChartGallery",
-      "reusable": true,
-      "width": 860,
-      "height": "fit_content(1811)",
-      "layout": "vertical",
-      "gap": 24
-    },
-    {
-      "type": "frame",
       "id": "gaGuS",
       "x": -6519,
       "y": 5379,
