@@ -488,18 +488,22 @@ export function useCleanerManagement () {
         throw new Error('Booking not found')
       }
 
+      if (booking.status === 'completed' || booking.status === 'cancelled') {
+        throw new Error(`Cannot change cleaner assignment for ${booking.status} bookings`)
+      }
+
       // Check cleaner availability
       const availability = await getCleanerAvailability(cleanerId, booking.checkout_date.split('T')[0])
       if (!availability.isAvailable) {
         throw new Error(`Cleaner ${cleaner.name} is not available on ${booking.checkout_date.split('T')[0]} (${availability.currentBookings}/${availability.maxBookings} bookings)`)
       }
 
-      // Persist to Supabase (optimistic update with rollback handled by useSupabaseBookings)
+      // Only promote 'pending' → 'scheduled'; preserve in-flight statuses
       await supaBookings.updateBooking(bookingId, {
         assigned_cleaner_id: cleanerId,
         assigned_team_id: null,
         assigned_group_ids: null,
-        status: 'scheduled' as const,
+        status: booking.status === 'pending' ? 'scheduled' : booking.status,
       })
 
       success.value = `Successfully assigned ${cleaner.name} to booking ${bookingId}`
@@ -535,13 +539,17 @@ export function useCleanerManagement () {
         throw new Error('Booking is not assigned to any cleaner')
       }
 
+      if (booking.status === 'completed' || booking.status === 'cancelled') {
+        throw new Error(`Cannot change cleaner assignment for ${booking.status} bookings`)
+      }
+
       const cleaner = allCleaners.value.find(c => c.id === booking.assigned_cleaner_id)
       const cleanerName = cleaner?.name || 'Unknown Cleaner'
 
-      // Persist to Supabase (optimistic update with rollback handled by useSupabaseBookings)
+      // Only revert 'scheduled' → 'pending'; preserve in-flight statuses
       await supaBookings.updateBooking(bookingId, {
         assigned_cleaner_id: null,
-        status: 'pending' as const,
+        status: booking.status === 'scheduled' ? 'pending' : booking.status,
       })
 
       success.value = `Successfully unassigned ${cleanerName} from booking ${bookingId}`
