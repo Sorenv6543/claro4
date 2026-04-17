@@ -21,21 +21,6 @@ src/components/smart/owner/HomeOwner.vue -
 
     <!-- Calendar -->
     <div v-else class="calendar-layout">
-      <!-- View mode toggle (Range / Event) — desktop only; mobile uses the app-bar icon -->
-      <div v-if="!mobile" class="calendar-view-toggle">
-        <v-btn-toggle
-          v-model="viewMode"
-          aria-label="Calendar view mode"
-          color="primary"
-          density="compact"
-          mandatory
-          rounded="pill"
-        >
-          <v-btn class="text-none" size="small" value="ranges">Range</v-btn>
-          <v-btn class="text-none" size="small" value="events">Event</v-btn>
-        </v-btn-toggle>
-      </div>
-
       <!-- Calendar Content -->
       <div class="calendar-content">
         <OwnerCalendar
@@ -734,11 +719,6 @@ src/components/smart/owner/HomeOwner.vue -
   flex-direction: column;
 }
 
-.calendar-view-toggle {
-  display: flex;
-  justify-content: flex-end;
-  padding: var(--claro-space-sm) var(--claro-space-md) 0;
-}
 
 /* Leave room below the calendar grid for the floating pill on mobile */
 @media (max-width: 599px) {
