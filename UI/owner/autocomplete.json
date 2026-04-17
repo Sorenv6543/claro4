@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/autocomplete",
+  "title": "Autocomplete",
+  "category": "forms",
+  "screenshot": "forms/autocomplete.png",
+  "summary": "Showcase of v-autocomplete in a 2-column grid. Demonstrates basic usage, density options, variant styles, multiple selection, clearable, chips display, custom filter logic, async items, state/country selection, and validation patterns.",
+  "components": ["v-autocomplete", "v-card", "v-card-title", "v-card-text", "v-row", "v-col", "v-chip"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "density", "variant", "multiple", "clearable", "chips", "custom-filter", "async-items", "state-selection", "validation"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary"],
+  "interactions": ["type-ahead-search", "chip-remove", "dropdown-select"]
+}

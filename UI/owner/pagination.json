@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/components/pagination",
+  "title": "Pagination",
+  "category": "components",
+  "screenshot": "components/pagination.png",
+  "summary": "Showcase of v-pagination in a 2-column grid. Demonstrates basic, outline style, circle shape, disabled state, icons (custom prev/next), length control, total-visible pages, color variants, and size variations. Each card shows pagination controls.",
+  "components": ["v-pagination", "v-card", "v-card-title", "v-card-text", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "outline", "circle", "disabled", "icons", "length", "total-visible", "color", "size"]
+  },
+  "patterns": ["component-showcase"],
+  "colors": ["primary", "secondary", "success", "info", "warning", "error"],
+  "interactions": ["page-navigation"]
+}

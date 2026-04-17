@@ -1,5 +1,6 @@
 import type { Cleaner } from '@/types/user.ts'
 import { computed, ref } from 'vue'
+import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useSupabaseCleanerTeams } from '@/composables/supabase/useSupabaseCleanerTeams'
 import { useSupabaseUserProfiles } from '@/composables/supabase/useSupabaseUserProfiles'
 import { supabase } from '@/plugins/supabase'
@@ -83,6 +84,7 @@ export function useCleanerManagement () {
   // Composables for Supabase access
   const supaUserProfiles = useSupabaseUserProfiles()
   const supaCleanerTeams = useSupabaseCleanerTeams()
+  const supaBookings = useSupabaseBookings()
 
   // Admin-specific state
   const loading = ref<boolean>(false)
@@ -252,6 +254,7 @@ export function useCleanerManagement () {
       success.value = `Loaded ${allCleaners.value.length} cleaners from system`
       return true
     } catch (error_) {
+      console.error('[useCleanerManagement] fetchCleaners error:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Unable to load cleaner data.'
       return false
     } finally {
@@ -334,6 +337,7 @@ export function useCleanerManagement () {
       loading.value = false
       return newCleanerId
     } catch (error_) {
+      console.error('[useCleanerManagement] createCleaner error:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Unable to create cleaner. Business impact: Medium - reduced system capacity.'
       loading.value = false
       return null
@@ -399,6 +403,7 @@ export function useCleanerManagement () {
       loading.value = false
       return true
     } catch (error_) {
+      console.error('[useCleanerManagement] updateCleaner error:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Unable to update cleaner. Business impact: Medium - cleaner operations may be affected.'
       loading.value = false
       return false
@@ -449,6 +454,7 @@ export function useCleanerManagement () {
       loading.value = false
       return true
     } catch (error_) {
+      console.error('[useCleanerManagement] deleteCleaner error:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Unable to delete cleaner. Business impact: High - system integrity may be affected.'
       loading.value = false
       return false
@@ -482,26 +488,29 @@ export function useCleanerManagement () {
         throw new Error('Booking not found')
       }
 
+      if (booking.status === 'completed' || booking.status === 'cancelled') {
+        throw new Error(`Cannot change cleaner assignment for ${booking.status} bookings`)
+      }
+
       // Check cleaner availability
       const availability = await getCleanerAvailability(cleanerId, booking.checkout_date.split('T')[0])
       if (!availability.isAvailable) {
         throw new Error(`Cleaner ${cleaner.name} is not available on ${booking.checkout_date.split('T')[0]} (${availability.currentBookings}/${availability.maxBookings} bookings)`)
       }
 
-      // Update booking in store — clear other assignment types to maintain mutual exclusivity
-      const updatedBooking = {
-        ...booking,
+      // Only promote 'pending' → 'scheduled'; preserve in-flight statuses
+      await supaBookings.updateBooking(bookingId, {
         assigned_cleaner_id: cleanerId,
         assigned_team_id: null,
         assigned_group_ids: null,
-        status: 'scheduled' as const,
-      }
-      bookingStore.bookings.set(bookingId, updatedBooking)
+        status: booking.status === 'pending' ? 'scheduled' : booking.status,
+      })
 
       success.value = `Successfully assigned ${cleaner.name} to booking ${bookingId}`
       loading.value = false
       return true
     } catch (error_) {
+      console.error('[useCleanerManagement] assignCleanerToBooking error:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Unable to assign cleaner. Business impact: High - booking may remain unassigned.'
       loading.value = false
       return false
@@ -530,20 +539,24 @@ export function useCleanerManagement () {
         throw new Error('Booking is not assigned to any cleaner')
       }
 
+      if (booking.status === 'completed' || booking.status === 'cancelled') {
+        throw new Error(`Cannot change cleaner assignment for ${booking.status} bookings`)
+      }
+
       const cleaner = allCleaners.value.find(c => c.id === booking.assigned_cleaner_id)
       const cleanerName = cleaner?.name || 'Unknown Cleaner'
 
-      // In a real app, this would make an API call to unassign the cleaner
-      await new Promise(resolve => setTimeout(resolve, 400))
-
-      // Update booking in store (simulate the unassignment)
-      const updatedBooking = { ...booking, assigned_cleaner_id: null, status: 'pending' as const }
-      bookingStore.bookings.set(bookingId, updatedBooking)
+      // Only revert 'scheduled' → 'pending'; preserve in-flight statuses
+      await supaBookings.updateBooking(bookingId, {
+        assigned_cleaner_id: null,
+        status: booking.status === 'scheduled' ? 'pending' : booking.status,
+      })
 
       success.value = `Successfully unassigned ${cleanerName} from booking ${bookingId}`
       loading.value = false
       return true
     } catch (error_) {
+      console.error('[useCleanerManagement] unassignCleanerFromBooking error:', error_)
       error.value = error_ instanceof Error ? error_.message : 'Unable to unassign cleaner. Business impact: Medium - assignment status may be inconsistent.'
       loading.value = false
       return false

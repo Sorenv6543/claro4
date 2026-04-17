@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/apps/ecommerce/manage-review",
+  "title": "E-commerce Manage Reviews",
+  "category": "apps",
+  "screenshot": "apps/ecommerce-manage-review.png",
+  "summary": "Review management page with top stats showing total reviews count with star rating breakdown bar and a 'Reviews statistics' bar chart. Below is a tabbed data table (All, Published, Pending, Deleted) listing product reviews with product image, reviewer name with colored link, review text snippet, date, and star ratings. Each row has a three-dot action menu.",
+  "components": ["v-card", "v-chip", "v-tabs", "v-tab", "v-data-table", "v-rating", "v-avatar", "v-btn", "v-icon", "v-progress-linear"],
+  "layout": {
+    "type": "single-column",
+    "columns": "Full-width stats row at top, full-width tabbed review table below",
+    "sections": ["review-summary-stats", "reviews-bar-chart", "review-tabs", "review-table"]
+  },
+  "patterns": ["data-table-with-search", "tab-panel", "bar-chart", "star-rating-breakdown"],
+  "colors": ["primary", "success", "warning", "error"],
+  "interactions": ["tab-switching", "sortable-table", "pagination", "row-action-menu"]
+}

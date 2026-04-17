@@ -1,22 +1,35 @@
-/* Calendar event color tokens — mapped to Vuetify 4 theme variables.
-   Imported once in main.ts. All calendar event colors read from here.
-   Background/border colors now come from property.color (set inline by calendarHelpers.ts).
-   These tokens are kept for turn-type event accent styling (e.g., text, badges). */
+/* Calendar design tokens — Materio flat style.
+   Vuetify's --v-theme-* vars expand to comma-separated RGB (e.g. "46,38,61"),
+   so only the legacy rgba(R,G,B,a) syntax composes correctly. The modern
+   rgb(R G B / a) space/slash form silently produces invalid CSS here. */
 :root {
-  --cal-turn-urgent:   rgb(var(--v-theme-error));
-  --cal-turn-high:     rgb(var(--v-theme-warning));
-  --cal-turn-normal:   rgb(var(--v-theme-secondary));
-  --cal-turn-low:      rgb(var(--v-theme-on-surface-variant, 128 128 128));
+  /* Grid */
+  --cal-border:                    rgba(var(--v-theme-on-surface), 0.1);
+  --cal-bg:                        rgb(var(--v-theme-surface));
+  --cal-today-bg:                  rgba(var(--v-theme-primary), 0.06);
+  --cal-day-num:                   rgba(var(--v-theme-on-surface), 0.72);
+  --cal-day-num-muted:             rgba(var(--v-theme-on-surface), 0.28);
 
-  --cal-std-urgent:    rgb(var(--v-theme-error));
-  --cal-std-high:      rgb(var(--v-theme-warning));
-  --cal-std-normal:    rgb(var(--v-theme-primary));
-  --cal-std-low:       rgb(var(--v-theme-success));
+  /* Header row */
+  --cal-header-bg:                 rgba(var(--v-theme-on-surface), 0.72);
+  --cal-header-text:               #fff;
+
+  /* Event pill */
+  --cal-event-radius:              2px;
+  --cal-event-text:                #fff;
+  --cal-event-padding:             4px 8px;
+  --cal-event-font-weight:         500;
+
+  /* Transition events (events-mode IN/TURN/OUT) — IN/TURN map to theme tokens;
+     OUT yellow is hardcoded because the theme has no yellow token. */
+  --cal-event-out-bg:              #FDD835;
+  --cal-event-out-text:            rgb(var(--v-theme-on-surface));
+
+  /* Status */
+  --cal-event-completed-opacity:   0.6;
+
+  /* Time chip */
+  --cal-time-chip-bg:              rgba(0, 0, 0, 0.18);
+  --cal-time-chip-text:            #fff;
+  --cal-time-chip-radius:          2px;
 }
-
-/* Turn events get a distinct left border accent to distinguish from standard bookings,
-   but background/border come from the property's color field. */
-.fc-event.type-turn { border-left: 4px solid var(--cal-turn-urgent) !important; }
-.fc-event.type-turn.priority-high   { border-left-color: var(--cal-turn-high)   !important; }
-.fc-event.type-turn.priority-normal { border-left-color: var(--cal-turn-normal) !important; }
-.fc-event.type-turn.priority-low    { border-left-color: var(--cal-turn-low)    !important; }

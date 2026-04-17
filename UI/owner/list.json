@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/components/list",
+  "title": "List",
+  "category": "components",
+  "screenshot": "components/list.png",
+  "summary": "Showcase of v-list component in a 2-column grid. Demonstrates basic list, densely packed, nav-style, rounded items, two-line and three-line lists with subtitles, user list with avatars, sub-groups/nested, action lists with checkboxes and switches, color-coded, and progress lists with colored indicators.",
+  "components": ["v-list", "v-list-item", "v-list-item-title", "v-list-item-subtitle", "v-list-group", "v-avatar", "v-icon", "v-checkbox", "v-switch", "v-card", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "dense", "nav", "rounded", "two-line", "three-line", "user-list", "sub-group", "action-list", "color-list", "progress-list", "shaped"]
+  },
+  "patterns": ["component-showcase", "avatar-list", "progress-list"],
+  "colors": ["primary", "success", "warning", "error", "info"],
+  "interactions": ["list-item-click", "checkbox-toggle", "nested-expand"]
+}

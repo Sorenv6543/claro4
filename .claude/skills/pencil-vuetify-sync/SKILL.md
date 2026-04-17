@@ -172,15 +172,23 @@ Always ask the user for:
 
 ### Step 3: Research Vuetify APIs
 
-Use the Vuetify MCP to look up component APIs before writing code. This matters because
-Vuetify 4 has specific props/slots that absorb styling — using them correctly means less
-custom CSS.
+For each Vuetify component the design implies (VCard, VBtn, VChip, etc.), look up
+reference material in this order:
 
-For each Vuetify component the design implies (VCard, VBtn, VChip, etc.):
-- `mcp__claude_ai_vuetify__get_component_api_by_version({ component: "VCard", version: "v4" })`
-- Identify which design properties map to existing Vuetify props vs. need custom CSS
-- Check if Vuetify global defaults (configured in `src/plugins/vuetify.ts`) already
-  handle the styling — if a default covers it, don't override per-component
+1. **Read local file first**: `docs/references/vuetify-components/{v-component}.md`
+   - Check the **"Claro4 Default"** column in Design Props — if a global default already
+     sets the prop, don't re-specify it per-component
+   - Use the **"Design→Code Cheatsheet"** to map visual intent to exact props
+   - Check **"Composable Hooks"** to understand what built-in behavior you get for free
+   - Check **"SASS Hooks"** to find CSS override points when props aren't enough
+   - Find any component quickly via `docs/references/vuetify-component-index.md`
+
+2. **Call Vuetify MCP only if the local file is insufficient**:
+   `mcp__claude_ai_vuetify__get_component_api_by_version({ component: "VCard", version: "v4" })`
+
+3. For decisions crossing multiple components (e.g. `useDefaults` cascade, theme scoping):
+   - Read `docs/references/vuetify-composition-patterns.md`
+   - For SASS variable overrides: read `docs/references/vuetify-sass-architecture.md`
 
 ### Step 4: Generate the Component
 
@@ -218,7 +226,9 @@ Smart components cannot be `shared` — they are always role-specific.
 
 <!-- Use CSS custom properties for non-color tokens -->
 <div :style="{ padding: 'var(--claro-space-md)', borderRadius: 'var(--claro-radius-lg)' }">
+```
 
+```vue
 <!-- Or in <style scoped> -->
 <style scoped>
 .card-content {
@@ -260,33 +270,40 @@ Use when the user wants to restyle an existing page to match the .pen design.
 
 ### Phase 3: Research Vuetify APIs
 7. Read the page component file and list every Vuetify component used (VCard, VBtn, etc.)
-8. For each, look up the API:
-   `mcp__claude_ai_vuetify__get_component_api_by_version({ component: "VCard", version: "v4" })`
-9. For each component, decide: can the design be achieved with existing Vuetify props +
-   tokens, or does it need a wrapper? Document the decision.
+8. For each component, look up the local reference file **first**:
+   - Open `docs/references/vuetify-component-index.md` to find the file path
+   - Read `docs/references/vuetify-components/{v-component}.md`
+   - Check "Claro4 Default" column — know which props are already globally set
+   - Check "SASS Hooks" — find the right CSS override point for styling decisions
+   - Only call the Vuetify MCP if local file is insufficient:
+     `mcp__claude_ai_vuetify__get_component_api_by_version({ component: "VCard", version: "v4" })`
+9. For decisions about `useDefaults` cascade, theme scoping, or slot composition:
+   read `docs/references/vuetify-composition-patterns.md`
+10. For each component, decide: can the design be achieved with existing Vuetify props +
+    tokens, or does it need a wrapper? Document the decision.
 
 ### Phase 4: Implement
-10. **Token sync** — run Workflow 1 (Design → Code) if tokens have drifted
-11. **Find hardcoded values** — in the page file and its child components:
+11. **Token sync** — run Workflow 1 (Design → Code) if tokens have drifted
+12. **Find hardcoded values** — in the page file and its child components:
     - Grep for hex color codes: `#[0-9a-fA-F]{3,8}`
     - Grep for hardcoded pixel values in style blocks: `\d+px` that should be tokens
     - Grep for raw `box-shadow` CSS that should use `elevation` prop
-12. **Replace hardcoded values** with token references:
+13. **Replace hardcoded values** with token references:
     - Hex colors → Vuetify semantic colors (`color="primary"`) or `var(--claro-*)`
     - Hardcoded px → `var(--claro-space-*)`, `var(--claro-radius-*)`, etc.
     - Raw box-shadow → Vuetify `elevation` prop
-13. **Create wrapper components** only where stock Vuetify + tokens can't express the design
-14. **Update the page component** to use wrappers where applicable
-15. **Commit each visual unit separately** before moving to the next:
+14. **Create wrapper components** only where stock Vuetify + tokens can't express the design
+15. **Update the page component** to use wrappers where applicable
+16. **Commit each visual unit separately** before moving to the next:
     - `restyle: update {PageName} to consume design tokens`
     - `wrapper: add {WrapperName} for {purpose}`
 
 ### Phase 5: Verify & Sync Back
-16. Take a Chrome DevTools screenshot — "after" screenshot
-17. Compare before/after visually — check elevation, spacing, colors, transitions
-18. If tokens changed: `mcp__pencil__set_variables(filePath, variables)` to sync back to .pen
-19. Run `pnpm build:fast` and `pnpm test:run`
-20. **Final commit** if verification required fixes: `restyle: fix {PageName} post-verification`
+17. Take a Chrome DevTools screenshot — "after" screenshot
+18. Compare before/after visually — check elevation, spacing, colors, transitions
+19. If tokens changed: `mcp__pencil__set_variables(filePath, variables)` to sync back to .pen
+20. Run `pnpm build:fast` and `pnpm test:run`
+21. **Final commit** if verification required fixes: `restyle: fix {PageName} post-verification`
 
 ## Git Commit Convention
 

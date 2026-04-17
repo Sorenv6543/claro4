@@ -14,6 +14,7 @@
     DateSelectArg,
     DatesSetArg,
     EventClickArg,
+    EventContentArg,
     EventDropArg,
   } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
@@ -179,7 +180,6 @@
 
     // Custom rendering
     eventContent: renderEventContent,
-    eventDidMount: handleEventDidMount,
 
     // Business hours (optional)
     businessHours: {
@@ -212,84 +212,6 @@
     calendarOptions.dayMaxEvents = opts.dayMaxEvents
     calendarOptions.eventDisplay = opts.eventDisplay
   })
-
-  // Position labelled badges on the event bar at specific date columns.
-  // Events spanning more than one week row are split into segments (one per row). We scope
-  // the cell lookup to the same <tr> so the badge only appears on the correct segment.
-  // Reads and writes are separated to avoid forced reflows.
-
-  interface BadgeMeasurement {
-    eventEl: HTMLElement
-    leftPct: number
-    widthPct: number
-    className: string
-    label: string
-    harness: HTMLElement | null
-  }
-
-  // Phase 1: DOM reads only — no style mutations
-  function measureBadge (eventEl: HTMLElement, dateStr: string, className: string, label: string): BadgeMeasurement | null {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null
-
-    const eventRow = eventEl.closest('tr')
-    if (!eventRow) return null
-    const cell = eventRow.querySelector(`td.fc-day[data-date="${dateStr}"]`)
-    if (!cell) return null
-
-    const eventRect = eventEl.getBoundingClientRect()
-    const cellRect = cell.getBoundingClientRect()
-    if (eventRect.width === 0) return null
-
-    const leftPct = ((cellRect.left - eventRect.left) / eventRect.width) * 100
-    const widthPct = (cellRect.width / eventRect.width) * 100
-    const harness = eventEl.closest('.fc-daygrid-event-harness') as HTMLElement | null
-
-    return { eventEl, leftPct, widthPct, className, label, harness }
-  }
-
-  // Phase 2: DOM writes only — no layout queries
-  function applyBadge (m: BadgeMeasurement) {
-    const badge = document.createElement('div')
-    badge.className = m.className
-    badge.textContent = m.label
-    badge.style.left = `${m.leftPct}%`
-    badge.style.width = `${m.widthPct}%`
-
-    if (m.harness) {
-      m.harness.style.overflow = 'visible'
-    }
-    m.eventEl.style.position = 'relative'
-    m.eventEl.style.overflow = 'visible'
-    m.eventEl.append(badge)
-  }
-
-  // After an event segment mounts, add TURN and OUT badges at the appropriate day columns.
-  function handleEventDidMount (info: { event: { extendedProps: Record<string, unknown> }, el: HTMLElement }) {
-    if (props.viewMode === 'events') return
-    const booking = info.event.extendedProps?.booking as Booking | undefined
-    if (!booking) return
-
-    requestAnimationFrame(() => {
-      const eventEl = info.el
-      if (!eventEl.isConnected) return
-
-      // Phase 1: all reads
-      const measurements: BadgeMeasurement[] = []
-      if (booking.turn_date) {
-        const m = measureBadge(eventEl, booking.turn_date, 'turn-event-badge', 'TURN')
-        if (m) measurements.push(m)
-      }
-      if (booking.checkout_date && booking.checkout_date !== booking.turn_date) {
-        const m = measureBadge(eventEl, booking.checkout_date, 'checkout-event-badge', 'OUT')
-        if (m) measurements.push(m)
-      }
-
-      // Phase 2: all writes
-      for (const m of measurements) {
-        applyBadge(m)
-      }
-    })
-  }
 
   // Event handlers
   function handleDateSelect (selectInfo: DateSelectArg): void {
@@ -352,120 +274,70 @@
     emit('event-resize', resizeInfo)
   }
 
-  // Custom event rendering with enhanced visual variety
-  function renderEventContent (eventInfo: {
-    event: {
-      extendedProps: {
-        booking: Booking
-        property: Property
-        transitionType?: string
-      }
-    }
-  }) {
-    // Events mode: simplified rendering
+  function formatTimeChip (hhmm: string | null | undefined): string | null {
+    if (!hhmm) return null
+    const [hStr, mStr] = hhmm.split(':')
+    const h = Number.parseInt(hStr, 10)
+    const m = Number.parseInt(mStr, 10)
+    if (!Number.isFinite(h) || !Number.isFinite(m)) return null
+    const period = h < 12 ? 'a' : 'p'
+    const h12 = h % 12 === 0 ? 12 : h % 12
+    return m === 0 ? `${h12}${period}` : `${h12}:${String(m).padStart(2, '0')}${period}`
+  }
+
+  function renderEventContent (eventInfo: EventContentArg) {
+    // Events mode: single-line "IN · Property" pill
     if (props.viewMode === 'events') {
-      const transitionType = eventInfo.event.extendedProps.transitionType || 'in'
+      const transitionType = eventInfo.event.extendedProps?.transitionType as 'in' | 'turn' | 'out' | undefined
+      const property = eventInfo.event.extendedProps?.property as Property | undefined
+
+      // transitionType is always set by bookingToTransitionEvents — missing means data corruption
+      if (!transitionType) {
+        console.error('[FullCalendar] events-mode event missing transitionType', { eventId: eventInfo.event.id })
+        return { html: '<div class="fc-event-content-wrapper fc-event-error">?</div>' }
+      }
+
+      if (!property) {
+        console.error('[FullCalendar] events-mode event missing property in extendedProps', { eventId: eventInfo.event.id })
+      }
       const label = transitionType.toUpperCase()
-      const booking = eventInfo.event.extendedProps.booking as Booking
-      const property = eventInfo.event.extendedProps.property as Property
-      const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Property'
+      const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Unknown property'
 
       return {
         html: `
-        <div class="fc-event-content-wrapper transition-${escapeHtml(transitionType)}">
-          <div class="fc-event-title">${escapeHtml(label)} · ${escapeHtml(propertyLabel)}</div>
-          <div class="fc-event-subtitle">${escapeHtml(booking.status.toUpperCase())}</div>
-        </div>
+          <div class="fc-event-content-wrapper transition-${escapeHtml(transitionType)}">
+            <div class="fc-event-lines">
+              <div class="fc-event-title">${escapeHtml(label)} · ${escapeHtml(propertyLabel)}</div>
+            </div>
+          </div>
         `,
       }
     }
 
-    // Ranges mode: existing logic below...
-    const booking = eventInfo.event.extendedProps.booking as Booking
-    const property = eventInfo.event.extendedProps.property as Property
-
-    // Get priority icon
-    const getPriorityIcon = (priority: string, type: string) => {
-      if (type === 'turn') {
-        switch (priority) {
-          case 'urgent': {
-            return '🚨'
-          }
-          case 'high': {
-            return '🔥'
-          }
-          case 'normal': {
-            return '🏠'
-          }
-          case 'low': {
-            return '🧹'
-          }
-          default: {
-            return '🏠'
-          }
-        }
-      } else {
-        switch (priority) {
-          case 'urgent': {
-            return '⚡'
-          }
-          case 'high': {
-            return '⭐'
-          }
-          case 'normal': {
-            return '🏠'
-          }
-          case 'low': {
-            return '✨'
-          }
-          default: {
-            return '🏠'
-          }
-        }
-      }
+    // Ranges mode: optional time chip + property name
+    const booking = eventInfo.event.extendedProps?.booking as Booking | undefined
+    const property = eventInfo.event.extendedProps?.property as Property | undefined
+    if (!booking) {
+      console.error('[FullCalendar] ranges-mode event missing booking in extendedProps', { eventId: eventInfo.event.id })
+      return { html: '<div class="fc-event-content-wrapper fc-event-error">Data error</div>' }
     }
 
-    // Get status badge
-    const getStatusBadge = (status: string) => {
-      switch (status) {
-        case 'completed': {
-          return '✅'
-        }
-        case 'pending': {
-          return '⏳'
-        }
-        case 'confirmed': {
-          return '📋'
-        }
-        case 'in_progress': {
-          return '🔄'
-        }
-        default: {
-          return '📋'
-        }
-      }
+    if (!property) {
+      console.error('[FullCalendar] ranges-mode event missing property in extendedProps', { eventId: eventInfo.event.id, bookingId: booking.id })
     }
-
-    const priorityIcon = getPriorityIcon(
-      booking.priority || 'normal',
-      booking.booking_type,
-    )
-    const statusBadge = getStatusBadge(booking.status || 'pending')
-
-    const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Property'
+    const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Unknown property'
+    const timeChip = eventInfo.isStart ? formatTimeChip(booking.checkin_time) : null
+    const chipHtml = timeChip ? `<span class="fc-event-time-chip">${escapeHtml(timeChip)}</span>` : ''
 
     return {
       html: `
-      <div class="fc-event-content-wrapper booking-${escapeHtml(booking.booking_type)} priority-${escapeHtml(booking.priority)}">
-        <div class="fc-event-title">
-          ${priorityIcon} ${escapeHtml(propertyLabel)}
+        <div class="fc-event-content-wrapper">
+          ${chipHtml}
+          <div class="fc-event-lines">
+            <div class="fc-event-title">${escapeHtml(propertyLabel)}</div>
+          </div>
         </div>
-        <div class="fc-event-subtitle">
-          ${statusBadge} ${escapeHtml(booking.status.toUpperCase())}
-          ${booking.guest_count ? ` • ${escapeHtml(String(booking.guest_count))}👥` : ''}
-        </div>
-      </div>
-    `,
+      `,
     }
   }
 
@@ -798,15 +670,15 @@
   padding: 0 !important;
   flex: 1;
   min-height: 0;
-}
 
-.custom-calendar {
-  --fc-border-color: rgba(100, 140, 180, 0.2);
-  --fc-button-bg-color: rgb(var(--v-theme-primary));
-  --fc-button-border-color: rgb(var(--v-theme-primary));
-  --fc-button-hover-bg-color: rgb(var(--v-theme-primary));
-  --fc-button-active-bg-color: rgb(var(--v-theme-primary));
-  --fc-today-bg-color: rgb(var(--v-theme-primary), 0.1);
+  /* Map design tokens to FullCalendar's --fc-* vars */
+  --fc-border-color:     var(--cal-border);
+  --fc-page-bg-color:    var(--cal-bg);
+  --fc-today-bg-color:   var(--cal-today-bg);
+  --fc-button-bg-color:         rgb(var(--v-theme-primary));
+  --fc-button-border-color:     rgb(var(--v-theme-primary));
+  --fc-button-hover-bg-color:   rgb(var(--v-theme-primary));
+  --fc-button-active-bg-color:  rgb(var(--v-theme-primary));
 }
 
 /* Hide empty FullCalendar toolbar — controls are in the app bar */
@@ -814,187 +686,83 @@
   display: none !important;
 }
 
-/* Turn booking highlighting */
-:deep(.fc-event.booking-turn) {
-  font-weight: bold;
-  border-width: 2px !important;
-  position: relative;
+:deep(.fc-col-header-cell) {
+  background: var(--cal-header-bg) !important;
+  border-color: var(--cal-header-bg) !important;
 }
-
-/* TURN label overlaid on the event bar at the turn day column */
-:deep(.turn-event-badge) {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #e65100, #bf360c);
-  color: #fff;
-  font-size: 0.6em;
-  font-weight: 800;
-  letter-spacing: 1px;
+:deep(.fc-col-header-cell-cushion) {
+  color: var(--cal-header-text) !important;
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 5;
-  border-left: 2px solid rgba(255, 255, 255, 0.3);
-  border-right: 2px solid rgba(255, 255, 255, 0.3);
-  overflow: hidden;
+  text-decoration: none;
+  padding: 8px 4px;
 }
 
-/* Shimmer sweep across the badge */
-:deep(.turn-event-badge)::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.08) 25%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.08) 75%,
-    transparent 100%
-  );
-  will-change: transform;
-  animation: turn-shimmer 2.5s ease-in-out infinite;
+:deep(.fc-daygrid-day-number) {
+  color: var(--cal-day-num);
+  font-weight: 500;
+  text-decoration: none;
+}
+:deep(.fc-day-other .fc-daygrid-day-number) {
+  color: var(--cal-day-num-muted);
 }
 
-@keyframes turn-shimmer {
-  0% { transform: translateX(-100%); }
-  60% { transform: translateX(100%); }
-  100% { transform: translateX(100%); }
+/* Explicit cell borders — FullCalendar's default --fc-border-color cascades inconsistently across scrollgrid sections */
+:deep(.fc-daygrid-day),
+:deep(.fc-col-header-cell),
+:deep(.fc-scrollgrid),
+:deep(.fc-scrollgrid-section > td),
+:deep(.fc-scrollgrid-section > th) {
+  border: 1px solid var(--cal-border) !important;
 }
 
-/* OUT (checkout) label overlaid on the event bar at the checkout day column */
-:deep(.checkout-event-badge) {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #546e7a, #455a64);
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.6em;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 5;
-  border-left: 2px solid rgba(255, 255, 255, 0.2);
-  border-right: 2px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
-}
-
-/* Shimmer sweep across the OUT badge */
-:deep(.checkout-event-badge)::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.06) 25%,
-    rgba(255, 255, 255, 0.18) 50%,
-    rgba(255, 255, 255, 0.06) 75%,
-    transparent 100%
-  );
-  will-change: transform;
-  animation: turn-shimmer 3s ease-in-out infinite;
-}
-
-/* Standard booking styling */
-.fc-event.booking-standard {
-  border-width: 2px !important;
-  position: relative;
-}
-
-.fc-event.booking-standard::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(45deg, currentColor, transparent, currentColor);
-  border-radius: 2px 2px 0 0;
-}
-
-/* Add elevation to all booking events */
+/* 2px horizontal margin keeps the pill from colliding with cell borders */
 :deep(.fc-event) {
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.1),
-    0 1px 2px rgba(0, 0, 0, 0.06) !important;
-  transition: all 0.2s ease !important;
-  border-radius: 2px !important;
+  border-radius: var(--cal-event-radius) !important;
+  padding:       var(--cal-event-padding);
+  font-weight:   var(--cal-event-font-weight);
+  color:         var(--cal-event-text);
+  margin-left:   2px !important;
+  margin-right:  2px !important;
+  box-shadow:    none !important;
+  transition:    filter 0.15s ease, opacity 0.15s ease;
 }
+:deep(.fc-event:hover)    { filter: brightness(1.05); cursor: grab; }
+:deep(.fc-event:active)   { cursor: grabbing; }
+:deep(.fc-event-dragging) { opacity: 0.75 !important; }
+:deep(.fc-event-mirror)   { opacity: 0.6 !important; }
 
-:deep(.fc-event:hover) {
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  transform: translateY(-1px) !important;
-  cursor: grab !important;
-}
-
-:deep(.fc-event:active) {
-  cursor: grabbing !important;
-}
-
-/* Drag feedback */
-:deep(.fc-event-dragging) {
-  opacity: 0.75 !important;
-  transform: rotate(2deg) !important;
-  z-index: 999 !important;
-}
-
-:deep(.fc-event-mirror) {
-  opacity: 0.8 !important;
-  transform: rotate(-2deg) !important;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0.7);
-  }
-
-  70% {
-    box-shadow: 0 0 0 10px rgba(var(--v-theme-error), 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0);
-  }
-}
-
-/* Status-based styling */
-.fc-event.status-pending {
-  opacity: 0.8;
-}
-
-.fc-event.status-completed {
-  opacity: 0.6;
+/* Completed bookings: dim + strikethrough; keep property color for attribution */
+:deep(.fc-event.status-completed) {
+  opacity:         var(--cal-event-completed-opacity);
   text-decoration: line-through;
 }
 
-/* Custom event content */
-.fc-event-content-wrapper {
-  padding: 2px;
+:deep(.fc-event-content-wrapper) {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
+:deep(.fc-event-time-chip) {
+  background:     var(--cal-time-chip-bg);
+  color:          var(--cal-time-chip-text);
+  border-radius:  var(--cal-time-chip-radius);
+  padding:        0 4px;
+  font-size:      0.65em;
+  font-weight:    700;
+  line-height:    1.4;
+  flex:           0 0 auto;
+}
+:deep(.fc-event-lines)    { min-width: 0; flex: 1 1 auto; }
+:deep(.fc-event-title)    { font-size: 0.8rem; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:deep(.fc-event-subtitle) { font-size: 0.7rem; line-height: 1.1; opacity: 0.85; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.fc-event-subtitle {
-  font-size: 0.75em;
-  opacity: 0.9;
-  margin-top: 1px;
-}
+/* Month view: single-line pills; week/day view keeps the subtitle */
+:deep(.fc-daygrid-event .fc-event-subtitle)  { display: none; }
+:deep(.fc-timegrid-event .fc-event-subtitle) { display: block; }
 
 /* Force hide any FullCalendar popovers/tooltips */
 :deep(.fc-popover),
@@ -1008,124 +776,86 @@
   pointer-events: none !important;
 }
 
-/* Mobile viewport specific fixes with proper height calculations */
 @media (max-width: 959px) {
   .calendar-container {
     position: relative;
-    /* Use calculated height instead of 100% */
     height: calc(
       100vh - 56px - 60px - env(safe-area-inset-top) -
         env(safe-area-inset-bottom) - 20px
     ) !important;
     min-height: 400px;
-    /* Minimum height for very small screens */
     max-height: calc(100vh - 100px);
-    /* Maximum height to prevent overflow */
   }
-
   .custom-calendar {
     position: relative;
     height: 100% !important;
     width: 100% !important;
   }
-
-  /* Ensure FullCalendar takes full available space on mobile */
-  :deep(.fc) {
-    height: 100% !important;
-    width: 100% !important;
-  }
-
-  :deep(.fc-view-harness) {
-    height: 100% !important;
-    width: 100% !important;
-  }
-
+  :deep(.fc)              { height: 100% !important; width: 100% !important; }
+  :deep(.fc-view-harness) { height: 100% !important; width: 100% !important; }
   :deep(.fc-scroller) {
     height: 100% !important;
     overflow-y: auto !important;
-    /* Smooth scrolling on mobile */
     -webkit-overflow-scrolling: touch;
   }
-
-  /* Fix for mobile browser address bar height changes */
-  :deep(.fc-daygrid-body) {
-    min-height: 300px;
-    /* Ensure minimum content height */
-  }
-
-  /* Prevent horizontal scrolling on mobile */
-  :deep(.fc-daygrid-day-frame) {
-    min-height: 40px;
-  }
-
-  /* Mobile-optimized event spacing */
+  :deep(.fc-daygrid-body)      { min-height: 300px; }
+  :deep(.fc-daygrid-day-frame) { min-height: 40px; }
   :deep(.fc-event) {
     margin: 1px 0;
     font-size: 0.75rem;
   }
 }
 
-/* Desktop-specific booking size optimization */
 @media (min-width: 960px) {
   :deep(.fc-event) {
     font-size: 0.75rem !important;
     min-height: 22px !important;
-    padding: 2px 4px !important;
     margin: 1px 0 !important;
   }
-
-  :deep(.fc-event-title) {
-    font-size: 0.75rem !important;
-    line-height: 1.1 !important;
-  }
-
-  :deep(.fc-event-subtitle) {
-    font-size: 0.65rem !important;
-    line-height: 1 !important;
-  }
-
-  :deep(.fc-daygrid-day-frame) {
-    min-height: 120px !important;
-  }
-
+  :deep(.fc-event-title)    { font-size: 0.75rem !important; line-height: 1.1 !important; }
+  :deep(.fc-event-subtitle) { font-size: 0.65rem !important; line-height: 1 !important; }
+  :deep(.fc-daygrid-day-frame) { min-height: 120px !important; }
 }
 </style>
 
-<!-- Unscoped: FullCalendar renders its own DOM outside Vue's scoping -->
+<!-- Unscoped: FullCalendar renders event DOM outside Vue's scoping -->
 <style>
 .fc-event.transition-event {
-  border-radius: 2px !important;
-  font-weight: 700;
+  border-radius: var(--cal-event-radius, 2px) !important;
+  font-weight: 600;
   border: none !important;
+  color: #fff !important;
 }
 
 .fc-event.transition-in {
-  --fc-event-bg-color: #43a047;
-  --fc-event-border-color: #43a047;
-  background-color: #43a047 !important;
-  border-color: #43a047 !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-success)) !important;
+  border-color:     rgb(var(--v-theme-success)) !important;
 }
 
 .fc-event.transition-turn {
-  --fc-event-bg-color: #e65100;
-  --fc-event-border-color: #e65100;
-  background-color: #e65100 !important;
-  border-color: #e65100 !important;
-  color: white !important;
+  background-color: rgb(var(--v-theme-error)) !important;
+  border-color:     rgb(var(--v-theme-error)) !important;
 }
 
 .fc-event.transition-out {
-  --fc-event-bg-color: #546e7a;
-  --fc-event-border-color: #546e7a;
-  background-color: #546e7a !important;
-  border-color: #546e7a !important;
-  color: white !important;
+  /* Set FC's internal text-color var so .fc-event-main inherits dark text */
+  --fc-event-text-color: var(--cal-event-out-text);
+  background-color: var(--cal-event-out-bg) !important;
+  border-color:     var(--cal-event-out-bg) !important;
+  color:            var(--cal-event-out-text) !important;
 }
 
 .fc-event.transition-highlight {
-  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.6) !important;
-  transform: scale(1.05);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.6) !important;
+  transition: box-shadow 0.3s ease;
+}
+
+/* Visible marker when event data is malformed (missing booking / transitionType) */
+.fc-event-error {
+  background: repeating-linear-gradient(45deg, #c62828, #c62828 6px, #ad1f1f 6px, #ad1f1f 12px);
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+  padding: 0 4px;
 }
 </style>

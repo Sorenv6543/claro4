@@ -12,7 +12,7 @@
           v-bind="menuProps"
           variant="text"
         >
-          <v-icon size="22">mdi-white-balance-sunny</v-icon>
+          <v-icon size="26">mdi-white-balance-sunny</v-icon>
           <v-tooltip
             activator="parent"
             location="bottom"

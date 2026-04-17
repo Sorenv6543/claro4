@@ -142,7 +142,7 @@ dist/
 - Mobile-optimized interface
 - Personal calendar view with own bookings only
 
-**Access**: `/owner/dashboard`
+**Access**: `/owner/overview`
 
 ### **Business Admin Interface**  
 **Target Users**: 1 business admin managing all operations

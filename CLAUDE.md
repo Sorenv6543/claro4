@@ -246,14 +246,14 @@ The app is a Progressive Web App configured via `vite-plugin-pwa` (production bu
 ### Component Defaults (already configured globally)
 Don't override these unless necessary:
 - `VBtn`: `variant="flat"`, `rounded`, no uppercase
-- `VCard`: `elevation="2"`, `rounded="lg"`, `pa-2`
+- `VCard`: `elevation="0"`, `rounded` (global `box-shadow: var(--claro-shadow-sm)` in `main.scss` provides baseline shadow)
 - `VTextField`, `VSelect`, `VTextarea`, `VAutocomplete`, `VCombobox`: `variant="outlined"`, `density="comfortable"`, `rounded="lg"`, `hideDetails="auto"`
 - `VDialog`: `max-width="700px"`, `rounded="lg"`
 - `VAlert`: `variant="tonal"`, `rounded="lg"`
 - `VChip/VBadge`: `rounded="pill"`
 
 ### Elevation = Hierarchy
-Use `elevation` prop (0–24), NEVER raw CSS `box-shadow` (except hover effects). In MD3 dark themes, elevation applies surface tint, not just shadow.
+All `v-card` components receive a baseline `box-shadow: var(--claro-shadow-sm)` via `main.scss` (Materio flat style). This overrides Vuetify's elevation system for cards specifically. For non-card components, use the `elevation` prop (0–24). NEVER add raw CSS `box-shadow` to individual components (except hover effects).
 
 | Role | Elevation | Examples |
 |------|-----------|----------|
@@ -308,7 +308,7 @@ Key patterns:
 - **Data table → card list on mobile**: `v-data-table v-if="!mobile"` / card loop `v-else`
 
 ### Design Depth — Forbidden
-- No raw CSS `box-shadow` — use `elevation` prop
+- No raw CSS `box-shadow` on individual components — cards use global `--claro-shadow-sm`, others use `elevation` prop
 - No CSS media queries for layout logic `useDisplay` handles
 - No data components without loading/empty/error states
 - No hardcoded hex colors — use theme tokens
@@ -386,7 +386,27 @@ Key owner ones: `OwnerBookingForm.vue`, `OwnerCalendarControls.vue`, `OwnerClean
 
 ## Vuetify Reference
 
-For Vuetify 4 API questions, use the `vuetify-mcp` server directly — it has dedicated tools for component API, directives, feature guides, and breaking changes. Do not use Context7 for Vuetify.
+### Local Reference Files (check these first)
+
+68 per-component reference files live in `docs/references/vuetify-components/` — one per component (e.g. `v-card.md`, `v-btn.md`). Each covers:
+- **Design Props** — which props absorb design intent and whether Claro4 already sets a global default
+- **Slot Anatomy** — named slots and what sub-components they accept
+- **SASS Hooks** — CSS classes emitted, SASS variables, CSS custom properties
+- **Design→Code Cheatsheet** — maps visual intent to specific props/values
+
+Two architecture guides:
+- `docs/references/vuetify-sass-architecture.md` — SASS settings layer, component style structure, custom token hookpoints
+- `docs/references/vuetify-composition-patterns.md` — `useDefaults` cascade, `useTheme`/`useDisplay`/`useLocale`, slot composition, anti-patterns
+
+Component index (all 68 components by category): `docs/references/vuetify-component-index.md`
+
+**Lookup order for any Vuetify component question:**
+1. Read the local `docs/references/vuetify-components/{v-component}.md` — has Claro4-specific context the MCP lacks
+2. If the local file is insufficient, call the `vuetify-mcp` server
+
+### Vuetify MCP
+
+For Vuetify 4 API questions not covered by local files, use the `vuetify-mcp` server directly — it has dedicated tools for component API, directives, feature guides, and breaking changes. Do not use Context7 for Vuetify.
 
 ## MCP Workflow for UI/UX Development
 

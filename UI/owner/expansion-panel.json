@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/components/expansion-panel",
+  "title": "Expansion Panel",
+  "category": "components",
+  "screenshot": "components/expansion-panel.png",
+  "summary": "Showcase of v-expansion-panels in a 2-column grid. Demonstrates basic accordion, accordion mode, inset, popout, custom icon, model/programmatic control, and customized styled panels. Each card shows a set of expandable panels with titles and content.",
+  "components": ["v-expansion-panels", "v-expansion-panel", "v-expansion-panel-title", "v-expansion-panel-text", "v-card", "v-card-title", "v-card-text", "v-row", "v-col"],
+  "layout": {
+    "type": "grid",
+    "columns": "2-column grid of demo cards",
+    "sections": ["basic", "accordion", "inset", "popout", "custom-icon", "model", "customized"]
+  },
+  "patterns": ["component-showcase", "faq-accordion"],
+  "colors": ["primary", "error"],
+  "interactions": ["expand-collapse", "accordion-toggle"]
+}

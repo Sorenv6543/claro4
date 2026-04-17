@@ -1,34 +1,40 @@
-  <!----
+<!----
   OwnerLayout.vue
 
   Main layout for owner-facing pages, including the dashboard/schedule and profile.
-  Contains the app bar with navigation and calendar controls, and a sidebar for page navigation.
-  SECTION - The calendar controls (month/year display and view toggle) are only shown on the schedule/dashboard page.
+  Contains the app bar with navigation, prev/next calendar controls (desktop only on
+  the schedule page), and a sidebar for page navigation. The Range/Event view toggle
+  lives inside HomeOwner.vue; on mobile the prev/next/month label moves into a
+  floating CalendarNavPill rendered by HomeOwner.vue.
 -->
 
 <!-- src/layouts/owner.vue -->
 <template>
   <v-app class="owner-layout">
     <v-app-bar
-      border="b"
-      color="surface"
+      color="transparent"
       flat
       height="64"
       order="-1"
     >
-      <!-- Hamburger -->
-      <v-app-bar-nav-icon
-        :icon="sidebarOpen ? 'mdi-menu-open' : 'mdi-menu'"
+      <!-- Brand logo — occupies sidebar-width area on desktop -->
+      <div class="brand-area">
+        <span class="brand-logo text-primary">Claro</span>
+      </div>
+
+      <!-- Sidebar toggle — sits at the vertical right edge of the sidebar on desktop -->
+      <v-btn
+        :aria-label="sidebarOpen ? 'Close sidebar' : 'Open sidebar'"
+        class="sidebar-toggle-btn"
+        icon
+        variant="text"
         @click="sidebarOpen = !sidebarOpen"
-      />
+      >
+        <v-icon size="26">{{ sidebarOpen ? 'mdi-menu-open' : 'mdi-menu' }}</v-icon>
+      </v-btn>
 
-      <!-- Logo -->
-      <v-app-bar-title class="flex-grow-0" style="min-width:auto">
-        <span class="text-h6 font-weight-bold text-primary">Claro</span>
-      </v-app-bar-title>
-
-      <!-- Calendar controls — visible only on the schedule page -->
-      <template v-if="isCalendarPage">
+      <!-- Calendar controls — only on schedule page, desktop only (mobile uses bottom pill) -->
+      <template v-if="isCalendarPage && !mobile">
         <v-divider class="mx-3 my-0 d-none d-sm-flex" vertical />
 
         <v-btn
@@ -58,27 +64,30 @@
 
       <v-spacer />
 
-      <!-- View mode toggle (Ranges / Events) -->
-      <template v-if="isCalendarPage">
-        <v-btn-toggle
-          v-model="viewMode"
-          class="mr-2"
-          color="primary"
-          density="compact"
-          mandatory
-          rounded="pill"
-        >
-          <v-btn class="text-none" size="small" value="ranges">Range</v-btn>
-          <v-btn class="text-none" size="small" value="events">Event</v-btn>
-        </v-btn-toggle>
-      </template>
-
       <!-- Right-side nav icons (Materio style) -->
       <div class="appbar-icons">
+        <!-- Calendar view-mode toggle — only on calendar page, separated from layout icons -->
+        <template v-if="isCalendarPage">
+          <v-btn
+            :aria-label="viewMode === 'ranges' ? 'Switch to event view' : 'Switch to range view'"
+            icon
+            variant="text"
+            @click="viewMode = viewMode === 'ranges' ? 'events' : 'ranges'"
+          >
+            <v-icon size="26">
+              {{ viewMode === 'ranges' ? 'mdi-calendar-range' : 'mdi-calendar-check-outline' }}
+            </v-icon>
+            <v-tooltip activator="parent" content-class="claro-tooltip" location="bottom">
+              {{ viewMode === 'ranges' ? 'Switch to event view' : 'Switch to range view' }}
+            </v-tooltip>
+          </v-btn>
+          <v-divider class="appbar-icons-divider" vertical />
+        </template>
+
         <ThemePicker />
 
         <v-btn aria-label="Favorites" icon variant="text">
-          <v-icon size="22">mdi-star-outline</v-icon>
+          <v-icon size="26">mdi-star-outline</v-icon>
         </v-btn>
 
         <v-btn aria-label="Notifications" icon variant="text">
@@ -88,7 +97,7 @@
             dot
             :model-value="notificationCount > 0"
           >
-            <v-icon size="22">mdi-bell-outline</v-icon>
+            <v-icon size="26">mdi-bell-outline</v-icon>
           </v-badge>
         </v-btn>
 
@@ -160,7 +169,7 @@
   import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
   import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
 
-  const { mdAndUp } = useDisplay()
+  const { mdAndUp, mobile } = useDisplay()
   const router = useRouter()
   const route = useRoute()
   const authStore = useAuthStore()
@@ -168,8 +177,8 @@
   const { init: initRealtimeSync } = useRealtimeSync()
 
   const sidebarOpen = ref(mdAndUp.value)
-  const viewMode = calendarState.viewMode
   const notificationCount = ref(0)
+  const viewMode = calendarState.viewMode
 
   onMounted(() => {
     initRealtimeSync().catch((error: unknown) => {
@@ -221,19 +230,87 @@
   background: rgb(var(--v-theme-background));
 }
 
-/* Materio-style app bar icons */
+/* Frosted-glass backdrop so scrolled content doesn't show through the transparent app bar */
+.owner-layout :deep(.v-app-bar) {
+  background: rgba(var(--v-theme-background), 0.72) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+/* Strip button chrome from the hamburger nav icon too */
+.owner-layout :deep(.v-app-bar-nav-icon) {
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.owner-layout :deep(.v-app-bar-nav-icon .v-icon) {
+  font-size: 26px;
+}
+
+.brand-area {
+  display: flex;
+  padding-left: 0;
+}
+
+@media (min-width: 960px) {
+  .brand-area {
+    width: 188px;
+    padding-left: 24px;
+  }
+}
+
+.brand-logo {
+  font-size: 27px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
+  line-height: 1;
+}
+
+/* Sidebar toggle button — same look as other app-bar icons, no button chrome */
+.sidebar-toggle-btn {
+  box-shadow: none !important;
+  background: transparent !important;
+  min-width: 36px;
+  padding: 0 6px;
+  color: rgba(var(--v-theme-on-surface), 0.68);
+}
+
+.sidebar-toggle-btn:hover {
+  color: rgba(var(--v-theme-on-surface), 0.9);
+  background: rgba(var(--v-theme-on-surface), 0.06) !important;
+}
+
+/* Materio-style app bar icons — plain icons (no button chrome) */
 .appbar-icons {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0;
 }
 
 .appbar-icons :deep(.v-btn) {
+  min-width: 36px;
+  padding: 0 6px;
   color: rgba(var(--v-theme-on-surface), 0.68);
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
+.appbar-icons-divider {
+  height: 24px;
+  margin: 0 6px;
+  opacity: 0.5;
 }
 
 .appbar-icons :deep(.v-btn:hover) {
   color: rgba(var(--v-theme-on-surface), 0.9);
+  background: rgba(var(--v-theme-on-surface), 0.06) !important;
+}
+
+.appbar-icons :deep(.v-btn__overlay),
+.appbar-icons :deep(.v-btn__underlay) {
+  display: none;
 }
 
 /* Avatar with online status dot */

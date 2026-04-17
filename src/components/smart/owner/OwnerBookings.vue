@@ -1,23 +1,26 @@
 <template>
   <div class="owner-bookings-page">
-    <v-container fluid>
-      <!-- V4a Gradient Header -->
-      <div class="bookings-header-gradient">
-        <div class="d-flex align-center justify-space-between">
-          <div class="d-flex align-center ga-2">
-            <h1 class="text-h5 font-weight-bold text-white">My Bookings</h1>
-            <v-chip color="rgba(255,255,255,0.25)" size="small" variant="flat">
-              <span class="text-white font-weight-bold">{{ ownerBookingsArray.length }}</span>
+    <v-container class="pt-0">
+      <!-- Flat page header (no gradient) -->
+      <div class="page-header">
+        <div class="page-header__main">
+          <div class="page-header__title-row">
+            <h1 class="text-h5 font-weight-bold page-heading">My Bookings</h1>
+            <v-chip color="primary" size="small" variant="tonal">
+              {{ ownerBookingsArray.length }}
             </v-chip>
           </div>
-          <v-btn
-            class="header-add-btn-gradient"
-            icon="mdi-plus"
-            size="small"
-            variant="flat"
-            @click="handleCreateBooking"
-          />
+          <p class="text-body-2 page-subheading">
+            View and manage your upcoming and past bookings
+          </p>
         </div>
+        <v-btn
+          class="flex-shrink-0"
+          color="primary"
+          icon="mdi-plus"
+          size="small"
+          @click="handleCreateBooking"
+        />
       </div>
 
       <!-- Data Table -->
@@ -426,20 +429,7 @@
 
 <style scoped>
 .owner-bookings-page {
-  min-height: calc(100vh - var(--app-bar-height, 64px));
-}
-
-/* V4a Gradient Header */
-.bookings-header-gradient {
-  padding: 16px 20px;
-  background: linear-gradient(160deg, #3730A3 0%, #0284C7 100%);
-  margin: -12px -12px 16px -12px;
-}
-
-.header-add-btn-gradient {
-  background: rgba(255, 255, 255, 0.2) !important;
-  color: #FFFFFF !important;
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  min-height: calc(100vh - var(--app-bar-height, 32px));
 }
 
 /* Property color bar */

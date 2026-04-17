@@ -1,0 +1,16 @@
+{
+  "url": "https://demos.themeselection.com/materio-vuetify-vuejs-admin-template/demo-1/forms/form-validation",
+  "title": "Form Validation",
+  "category": "forms",
+  "screenshot": "forms/form-validation.png",
+  "summary": "Demonstrates form validation patterns in stacked cards. Shows simple form validation with required fields, multiple validation rules on a single field (email format, password match), and a grid of validation type examples (required, email, URL, number, min/max length, regex). Error messages shown inline below fields.",
+  "components": ["v-form", "v-text-field", "v-select", "v-btn", "v-card", "v-card-title", "v-card-text", "v-row", "v-col"],
+  "layout": {
+    "type": "single-column",
+    "columns": "full-width stacked cards, validation types in 2-column grid",
+    "sections": ["simple-validation", "multiple-rules", "validation-types"]
+  },
+  "patterns": ["form-standard", "form-validation-showcase"],
+  "colors": ["primary", "error"],
+  "interactions": ["inline-validation", "submit-validation"]
+}
