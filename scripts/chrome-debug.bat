@@ -25,7 +25,6 @@ start "" "%CHROME_EXE%" ^
   --user-data-dir="%DEBUG_PROFILE%" ^
   --no-first-run ^
   --no-default-browser-check ^
-  --no-sandbox ^
   --disable-background-networking ^
   --window-size=1280,720
 
