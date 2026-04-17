@@ -14,6 +14,7 @@
     DateSelectArg,
     DatesSetArg,
     EventClickArg,
+    EventContentArg,
     EventDropArg,
   } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
@@ -179,7 +180,6 @@
 
     // Custom rendering
     eventContent: renderEventContent,
-    eventDidMount: handleEventDidMount,
 
     // Business hours (optional)
     businessHours: {
@@ -212,84 +212,6 @@
     calendarOptions.dayMaxEvents = opts.dayMaxEvents
     calendarOptions.eventDisplay = opts.eventDisplay
   })
-
-  // Position labelled badges on the event bar at specific date columns.
-  // Events spanning more than one week row are split into segments (one per row). We scope
-  // the cell lookup to the same <tr> so the badge only appears on the correct segment.
-  // Reads and writes are separated to avoid forced reflows.
-
-  interface BadgeMeasurement {
-    eventEl: HTMLElement
-    leftPct: number
-    widthPct: number
-    className: string
-    label: string
-    harness: HTMLElement | null
-  }
-
-  // Phase 1: DOM reads only — no style mutations
-  function measureBadge (eventEl: HTMLElement, dateStr: string, className: string, label: string): BadgeMeasurement | null {
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return null
-
-    const eventRow = eventEl.closest('tr')
-    if (!eventRow) return null
-    const cell = eventRow.querySelector(`td.fc-day[data-date="${dateStr}"]`)
-    if (!cell) return null
-
-    const eventRect = eventEl.getBoundingClientRect()
-    const cellRect = cell.getBoundingClientRect()
-    if (eventRect.width === 0) return null
-
-    const leftPct = ((cellRect.left - eventRect.left) / eventRect.width) * 100
-    const widthPct = (cellRect.width / eventRect.width) * 100
-    const harness = eventEl.closest('.fc-daygrid-event-harness') as HTMLElement | null
-
-    return { eventEl, leftPct, widthPct, className, label, harness }
-  }
-
-  // Phase 2: DOM writes only — no layout queries
-  function applyBadge (m: BadgeMeasurement) {
-    const badge = document.createElement('div')
-    badge.className = m.className
-    badge.textContent = m.label
-    badge.style.left = `${m.leftPct}%`
-    badge.style.width = `${m.widthPct}%`
-
-    if (m.harness) {
-      m.harness.style.overflow = 'visible'
-    }
-    m.eventEl.style.position = 'relative'
-    m.eventEl.style.overflow = 'visible'
-    m.eventEl.append(badge)
-  }
-
-  // After an event segment mounts, add TURN and OUT badges at the appropriate day columns.
-  function handleEventDidMount (info: { event: { extendedProps: Record<string, unknown> }, el: HTMLElement }) {
-    if (props.viewMode === 'events') return
-    const booking = info.event.extendedProps?.booking as Booking | undefined
-    if (!booking) return
-
-    requestAnimationFrame(() => {
-      const eventEl = info.el
-      if (!eventEl.isConnected) return
-
-      // Phase 1: all reads
-      const measurements: BadgeMeasurement[] = []
-      if (booking.turn_date) {
-        const m = measureBadge(eventEl, booking.turn_date, 'turn-event-badge', 'TURN')
-        if (m) measurements.push(m)
-      }
-      if (booking.checkout_date && booking.checkout_date !== booking.turn_date) {
-        const m = measureBadge(eventEl, booking.checkout_date, 'checkout-event-badge', 'OUT')
-        if (m) measurements.push(m)
-      }
-
-      // Phase 2: all writes
-      for (const m of measurements) {
-        applyBadge(m)
-      }
-    })
-  }
 
   // Event handlers
   function handleDateSelect (selectInfo: DateSelectArg): void {
@@ -352,120 +274,57 @@
     emit('event-resize', resizeInfo)
   }
 
-  // Custom event rendering with enhanced visual variety
-  function renderEventContent (eventInfo: {
-    event: {
-      extendedProps: {
-        booking: Booking
-        property: Property
-        transitionType?: string
-      }
-    }
-  }) {
-    // Events mode: simplified rendering
+  // Compact 12h label for the event start-time chip. '15:00' → '3p', '09:30' → '9:30a', '00:00' → '12a'
+  function formatTimeChip (hhmm: string | null | undefined): string | null {
+    if (!hhmm) return null
+    const [hStr, mStr] = hhmm.split(':')
+    const h = Number.parseInt(hStr, 10)
+    const m = Number.parseInt(mStr, 10)
+    if (!Number.isFinite(h) || !Number.isFinite(m)) return null
+    const period = h < 12 ? 'a' : 'p'
+    const h12 = h % 12 === 0 ? 12 : h % 12
+    return m === 0 ? `${h12}${period}` : `${h12}:${String(m).padStart(2, '0')}${period}`
+  }
+
+  function renderEventContent (eventInfo: EventContentArg) {
+    // Events mode: single-line "IN · Property" pill
     if (props.viewMode === 'events') {
-      const transitionType = eventInfo.event.extendedProps.transitionType || 'in'
+      const transitionType = (eventInfo.event.extendedProps?.transitionType as string | undefined) || 'in'
       const label = transitionType.toUpperCase()
-      const booking = eventInfo.event.extendedProps.booking as Booking
-      const property = eventInfo.event.extendedProps.property as Property
+      const property = eventInfo.event.extendedProps?.property as Property | undefined
       const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Property'
 
       return {
         html: `
-        <div class="fc-event-content-wrapper transition-${escapeHtml(transitionType)}">
-          <div class="fc-event-title">${escapeHtml(label)} · ${escapeHtml(propertyLabel)}</div>
-          <div class="fc-event-subtitle">${escapeHtml(booking.status.toUpperCase())}</div>
-        </div>
+          <div class="fc-event-content-wrapper transition-${escapeHtml(transitionType)}">
+            <div class="fc-event-lines">
+              <div class="fc-event-title">${escapeHtml(label)} · ${escapeHtml(propertyLabel)}</div>
+            </div>
+          </div>
         `,
       }
     }
 
-    // Ranges mode: existing logic below...
-    const booking = eventInfo.event.extendedProps.booking as Booking
-    const property = eventInfo.event.extendedProps.property as Property
-
-    // Get priority icon
-    const getPriorityIcon = (priority: string, type: string) => {
-      if (type === 'turn') {
-        switch (priority) {
-          case 'urgent': {
-            return '🚨'
-          }
-          case 'high': {
-            return '🔥'
-          }
-          case 'normal': {
-            return '🏠'
-          }
-          case 'low': {
-            return '🧹'
-          }
-          default: {
-            return '🏠'
-          }
-        }
-      } else {
-        switch (priority) {
-          case 'urgent': {
-            return '⚡'
-          }
-          case 'high': {
-            return '⭐'
-          }
-          case 'normal': {
-            return '🏠'
-          }
-          case 'low': {
-            return '✨'
-          }
-          default: {
-            return '🏠'
-          }
-        }
-      }
+    // Ranges mode: optional time chip + property name
+    const booking = eventInfo.event.extendedProps?.booking as Booking | undefined
+    const property = eventInfo.event.extendedProps?.property as Property | undefined
+    if (!booking) {
+      return { html: '' }
     }
-
-    // Get status badge
-    const getStatusBadge = (status: string) => {
-      switch (status) {
-        case 'completed': {
-          return '✅'
-        }
-        case 'pending': {
-          return '⏳'
-        }
-        case 'confirmed': {
-          return '📋'
-        }
-        case 'in_progress': {
-          return '🔄'
-        }
-        default: {
-          return '📋'
-        }
-      }
-    }
-
-    const priorityIcon = getPriorityIcon(
-      booking.priority || 'normal',
-      booking.booking_type,
-    )
-    const statusBadge = getStatusBadge(booking.status || 'pending')
 
     const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Property'
+    const timeChip = eventInfo.isStart ? formatTimeChip(booking.checkin_time) : null
+    const chipHtml = timeChip ? `<span class="fc-event-time-chip">${escapeHtml(timeChip)}</span>` : ''
 
     return {
       html: `
-      <div class="fc-event-content-wrapper booking-${escapeHtml(booking.booking_type)} priority-${escapeHtml(booking.priority)}">
-        <div class="fc-event-title">
-          ${priorityIcon} ${escapeHtml(propertyLabel)}
+        <div class="fc-event-content-wrapper">
+          ${chipHtml}
+          <div class="fc-event-lines">
+            <div class="fc-event-title">${escapeHtml(propertyLabel)}</div>
+          </div>
         </div>
-        <div class="fc-event-subtitle">
-          ${statusBadge} ${escapeHtml(booking.status.toUpperCase())}
-          ${booking.guest_count ? ` • ${escapeHtml(String(booking.guest_count))}👥` : ''}
-        </div>
-      </div>
-    `,
+      `,
     }
   }
 
