@@ -26,8 +26,8 @@
         <span class="text-h6 font-weight-bold text-primary">Claro</span>
       </v-app-bar-title>
 
-      <!-- Calendar controls — visible only on the schedule page -->
-      <template v-if="isCalendarPage">
+      <!-- Calendar controls — only on schedule page, desktop only (mobile uses bottom pill) -->
+      <template v-if="isCalendarPage && !mobile">
         <v-divider class="mx-3 my-0 d-none d-sm-flex" vertical />
 
         <v-btn
@@ -144,7 +144,7 @@
   import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
   import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
 
-  const { mdAndUp } = useDisplay()
+  const { mdAndUp, mobile } = useDisplay()
   const router = useRouter()
   const route = useRoute()
   const authStore = useAuthStore()
