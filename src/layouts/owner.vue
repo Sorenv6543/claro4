@@ -160,14 +160,14 @@
 </template>
 
 <script setup lang="ts">
-  import { useAuthStore } from '@stores/auth'
-  import { computed, onMounted, ref } from 'vue'
-  import { useRoute, useRouter } from 'vue-router'
-  import { useDisplay } from 'vuetify'
   import ThemePicker from '@/components/dumb/shared/ThemePicker.vue'
-  import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
-  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
-  import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
+import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
+import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
+import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
+import { useAuthStore } from '@stores/auth'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useDisplay } from 'vuetify'
 
   const { mdAndUp, mobile } = useDisplay()
   const router = useRouter()
@@ -252,21 +252,21 @@
 /* Brand "Claro" — occupies sidebar-width area on desktop so toggle aligns with sidebar edge */
 .brand-area {
   display: flex;
-  align-items: center;
-  padding-left: 20px;
+  /* align-items: center; */
+  padding-left: 0px;
 }
 
 @media (min-width: 960px) {
   .brand-area {
-    width: 264px;
+    width: 188px;
     padding-left: 24px;
   }
 }
 
 .brand-logo {
-  font-size: 22px;
-  font-weight: 900;
-  letter-spacing: 0.8px;
+  font-size: 27px;
+  font-weight: 500;
+  letter-spacing: 0.2px;
   line-height: 1;
 }
 
