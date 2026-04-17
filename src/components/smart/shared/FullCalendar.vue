@@ -834,8 +834,9 @@
 }
 
 .fc-event.transition-out {
-  background-color: rgb(var(--v-theme-info)) !important;
-  border-color:     rgb(var(--v-theme-info)) !important;
+  background-color: #FDD835 !important; /* Material yellow-darken-1 — no theme token for yellow */
+  border-color:     #FDD835 !important;
+  color:            rgb(var(--v-theme-on-surface)) !important; /* dark text for contrast on yellow */
 }
 
 .fc-event.transition-highlight {
