@@ -26,7 +26,6 @@
   --cal-event-out-text:            rgb(var(--v-theme-on-surface));
 
   /* Status */
-  --cal-event-completed-bg:        rgba(var(--v-theme-on-surface), 0.28);
   --cal-event-completed-opacity:   0.6;
 
   /* Time chip */

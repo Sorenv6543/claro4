@@ -728,12 +728,13 @@
 :deep(.fc-event-dragging) { opacity: 0.75 !important; }
 :deep(.fc-event-mirror)   { opacity: 0.6 !important; }
 
-/* Completed bookings: dim + neutral gray (overrides inline property.color) */
+/* Completed bookings: dim + strikethrough; keep property color for attribution */
 :deep(.fc-event.status-completed) {
-  background-color: var(--cal-event-completed-bg) !important;
-  border-color:     var(--cal-event-completed-bg) !important;
-  opacity:          var(--cal-event-completed-opacity);
-  text-decoration:  none;
+  opacity:         var(--cal-event-completed-opacity);
+  text-decoration: line-through;
+}
+:deep(.fc-event.status-completed .fc-event-title) {
+  text-decoration: line-through;
 }
 
 :deep(.fc-event-content-wrapper) {
