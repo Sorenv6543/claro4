@@ -101,10 +101,10 @@ export function getMobileCalendarOptions () {
   const { width } = getViewportDimensions()
 
   if (width <= 599) {
-    // Mobile phone - show 2 bookings before +more link for better UX
+    // Mobile phone - show 3 bookings before +more link
     return {
       height: calculateCalendarHeight(),
-      dayMaxEvents: 2,
+      dayMaxEvents: 3,
       eventDisplay: 'block',
       headerToolbar: false,
       initialView: 'dayGridMonth',
