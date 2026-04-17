@@ -829,13 +829,13 @@
 }
 
 .fc-event.transition-turn {
-  background-color: rgb(var(--v-theme-warning)) !important;
-  border-color:     rgb(var(--v-theme-warning)) !important;
+  background-color: rgb(var(--v-theme-error)) !important;
+  border-color:     rgb(var(--v-theme-error)) !important;
 }
 
 .fc-event.transition-out {
-  background-color: rgba(var(--v-theme-on-surface), 0.72) !important;
-  border-color:     rgba(var(--v-theme-on-surface), 0.72) !important;
+  background-color: rgb(var(--v-theme-info)) !important;
+  border-color:     rgb(var(--v-theme-info)) !important;
 }
 
 .fc-event.transition-highlight {
