@@ -56,6 +56,14 @@ src/components/smart/owner/HomeOwner.vue -
       </div>
     </div>
 
+    <!-- Floating calendar navigation pill — mobile only -->
+    <CalendarNavPill
+      v-if="mobile"
+      :label="pillMonthLabel"
+      @next="calendarNext()"
+      @prev="calendarPrev()"
+    />
+
     <!-- Day View Bottom Sheet -->
     <OwnerDayViewBottomSheet
       v-model:visible="dayViewVisible"
@@ -113,6 +121,8 @@ src/components/smart/owner/HomeOwner.vue -
   import type { Booking, BookingFormData, Property, PropertyFormData } from '@/types'
   // Real-time sync will auto-initialize when user is authenticated
   import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+  import { useDisplay } from 'vuetify'
+  import CalendarNavPill from '@/components/dumb/owner/CalendarNavPill.vue'
   import OwnerDayViewBottomSheet from '@/components/dumb/owner/OwnerDayViewBottomSheet.vue'
   import BookingForm from '@/components/dumb/shared/BookingForm.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
@@ -168,7 +178,16 @@ src/components/smart/owner/HomeOwner.vue -
     filterBookings,
     setCalendarView,
     viewMode,
+    prev: calendarPrev,
+    next: calendarNext,
   } = useOwnerCalendarState()
+
+  const { mobile } = useDisplay()
+
+  // Short label for the floating pill (e.g. "Apr 2026")
+  const pillMonthLabel = computed(() =>
+    currentDate.value.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
+  )
 
   // ============================================================================
   // LOCAL STATE
@@ -715,6 +734,13 @@ src/components/smart/owner/HomeOwner.vue -
   display: flex;
   justify-content: flex-end;
   padding: var(--claro-space-sm) var(--claro-space-md) 0;
+}
+
+/* Leave room below the calendar grid for the floating pill on mobile */
+@media (max-width: 599px) {
+  .calendar-content {
+    padding-bottom: 88px;
+  }
 }
 
 .calendar-content {
