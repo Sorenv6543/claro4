@@ -46,8 +46,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--claro-space-sm);
-  padding: 4px var(--claro-space-sm);
-  border-radius: 9999px;
+  padding: var(--claro-space-xs) var(--claro-space-sm);
+  border-radius: var(--claro-radius-pill);
 
   background: rgba(var(--v-theme-background), 0.72);
   backdrop-filter: blur(12px);
@@ -61,7 +61,7 @@
 
 .calendar-nav-pill__label {
   font-size: 14px;
-  font-weight: 600;
+  font-weight: var(--claro-font-weight-semibold);
   color: rgb(var(--v-theme-on-surface));
   min-width: 110px;
   text-align: center;
