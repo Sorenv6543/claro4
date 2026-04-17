@@ -58,6 +58,9 @@
   --claro-space-lg: 24px;
   --claro-space-xl: 32px;
 
+  /* Gap between page heading and its subheading */
+  --claro-heading-sub-gap: var(--claro-space-xs);
+
   /* ─── Shape / Border Radii ────────────────────────────────────────── */
   --claro-radius-sm:   2px;
   --claro-radius-md:   2px;

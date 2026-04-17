@@ -10,7 +10,7 @@ html, body {
   height: 100%;
   width: 100%;
   overflow-x: hidden;
-
+  background-color: rgb(var(--v-theme-background));
 }
 
 
@@ -25,6 +25,48 @@ html, body {
 .v-card {
   background: var(--claro-card-bg, rgb(var(--v-theme-surface)));
   box-shadow: var(--claro-shadow-sm) !important;
+}
+
+/* Reusable flat page header — no gradient, heading flush to top, subheading gap via token */
+.page-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--claro-space-md);
+  margin: 0 0 var(--claro-space-lg) 0;
+}
+
+.page-header__main {
+  min-width: 0;
+  flex: 1;
+}
+
+.page-header__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--claro-space-sm);
+}
+
+.page-heading {
+  margin: 0;
+  line-height: 1.2;
+}
+
+.page-subheading {
+  margin: var(--claro-heading-sub-gap) 0 0 0;
+  color: var(--claro-text-secondary);
+}
+
+/* Readable tooltip (dark bg + white text) — Vuetify tooltips teleport, so needs to be global */
+.claro-tooltip.v-overlay__content {
+  background: rgba(17, 24, 39, 0.95) !important;
+  color: #ffffff !important;
+  padding: 6px 10px !important;
+  font-size: 12px !important;
+  line-height: 1.3 !important;
+  border-radius: 4px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  max-width: 260px;
 }
 
 /* ─── Subtle Micro Animations ─────────────────────────────────────── */

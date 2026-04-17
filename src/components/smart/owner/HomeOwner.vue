@@ -734,9 +734,7 @@ src/components/smart/owner/HomeOwner.vue -
   position: relative;
 }
 
-/* ================================================================ */
 /* CALENDAR ENHANCEMENTS */
-/* ================================================================ */
 
 /* Enhanced turn booking styling for owners */
 :deep(.fc-event.booking-turn) {
@@ -768,6 +766,4 @@ src/components/smart/owner/HomeOwner.vue -
     transform: scale(1);
   }
 }
-
-/* ================================================================ */
 </style>

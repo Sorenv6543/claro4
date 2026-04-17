@@ -5,21 +5,35 @@
 
 <template>
   <div class="owner-properties-page">
-    <v-container fluid>
-      <!-- Header — H4 Dark Command -->
-      <div class="properties-header mb-5">
-        <div class="properties-header__left">
-          <div class="header-icon-frame">
-            <v-icon color="#14B8A6" size="24">mdi-home-city-outline</v-icon>
+    <v-container class="pt-0" fluid>
+      <!-- Flat page header (no gradient) -->
+      <div class="page-header">
+        <div class="page-header__main">
+          <div class="page-header__title-row">
+            <h1 class="text-h5 font-weight-bold page-heading">My Properties</h1>
+            <v-chip color="primary" size="small" variant="tonal">
+              {{ myProperties.length }}
+            </v-chip>
           </div>
-          <div>
-            <h1 class="text-h5 font-weight-bold" style="color: #F1F5F9">My Properties</h1>
-            <p class="text-body-2 mt-1" style="color: #64748B">Manage your rental properties and settings</p>
-          </div>
+          <p class="text-body-2 page-subheading">
+            Manage your rental properties and settings
+          </p>
         </div>
         <v-btn
-          class="header-add-btn"
+          v-if="mobile"
+          aria-label="Add Property"
+          class="flex-shrink-0"
+          color="primary"
+          icon="mdi-plus"
+          size="small"
+          @click="handleCreateProperty"
+        />
+        <v-btn
+          v-else
+          class="flex-shrink-0"
+          color="primary"
           prepend-icon="mdi-plus"
+          size="small"
           @click="handleCreateProperty"
         >
           Add Property
@@ -60,16 +74,33 @@
         :items="propertyItems"
         :loading="false"
         :search-keys="['display_name', 'full_address', 'property_type']"
-        searchable
+        :searchable="!mobile"
       >
-        <!-- Property column with house icon and address -->
+        <!-- Segment tabs -->
+        <template v-if="!mobile" #segments>
+          <div class="d-flex ga-2 flex-wrap">
+            <v-btn
+              v-for="seg in segments"
+              :key="seg.value"
+              :color="selectedSegment === seg.value ? '#4338CA' : undefined"
+              density="compact"
+              size="small"
+              :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
+              @click="selectedSegment = seg.value"
+            >
+              {{ seg.title }}
+            </v-btn>
+          </div>
+        </template>
+
+        <!-- Property column with color bar -->
         <template #[`item.display_name`]="{ item }">
-          <div class="d-flex align-center ga-3">
-            <v-icon :color="item.color" size="22">{{ getPropertyIcon(item.property_type) }}</v-icon>
-            <div>
-              <div class="font-weight-medium">{{ item.display_name }}</div>
-              <div class="text-caption text-medium-emphasis">{{ item.full_address }}</div>
-            </div>
+          <div class="d-flex align-center ga-2">
+            <div
+              class="property-color-bar"
+              :style="{ backgroundColor: item.color || '#9E9E9E' }"
+            />
+            <span class="font-weight-medium text-body-2">{{ item.display_name }}</span>
           </div>
         </template>
 
@@ -125,19 +156,31 @@
               variant="text"
               @click.stop="editProperty(item)"
             />
-            <v-btn
-              color="error"
-              icon="mdi-delete-outline"
-              size="small"
-              variant="text"
-              @click.stop="handleDeleteProperty(item.id)"
-            />
+            <v-tooltip
+              content-class="claro-tooltip"
+              location="start"
+              :offset="6"
+              :text="item.booking_count > 0 ? `Cannot delete — ${item.booking_count} booking${item.booking_count === 1 ? '' : 's'} exist` : 'Delete property'"
+            >
+              <template #activator="{ props: tooltipProps }">
+                <div v-bind="tooltipProps">
+                  <v-btn
+                    color="error"
+                    :disabled="item.booking_count > 0"
+                    icon="mdi-delete-outline"
+                    size="small"
+                    variant="text"
+                    @click.stop="handleDeleteProperty(item.id)"
+                  />
+                </div>
+              </template>
+            </v-tooltip>
           </div>
         </template>
 
         <!-- Expanded row content -->
         <template #expand-content="{ item }">
-          <div class="expanded-content pa-4">
+          <div class="expanded-content pa-4" color="error">
             <v-row density="compact">
               <v-col cols="12" md="3" sm="6">
                 <div class="expanded-field">
@@ -169,6 +212,37 @@
                 </div>
               </v-col>
             </v-row>
+
+            <!-- Mobile-only actions (Actions column hidden on mobile) -->
+            <div class="expanded-actions d-flex d-md-none ga-2 mt-3">
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-eye-outline"
+                size="small"
+                variant="tonal"
+                @click.stop="viewProperty(item)"
+              >
+                View
+              </v-btn>
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-pencil-outline"
+                size="small"
+                variant="tonal"
+                @click.stop="editProperty(item)"
+              >
+                Edit
+              </v-btn>
+              <v-btn
+                color="error"
+                prepend-icon="mdi-delete-outline"
+                size="small"
+                variant="tonal"
+                @click.stop="handleDeleteProperty(item.id)"
+              >
+                Delete
+              </v-btn>
+            </div>
           </div>
         </template>
       </MaterioDataTable>
@@ -214,18 +288,19 @@
 </template>
 
 <script setup lang="ts">
-  import type { Property, PropertyFormData, PropertyRecord } from '@/types'
-  import { computed, onMounted } from 'vue'
-  import { useRouter } from 'vue-router'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
-  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+import type { Property, PropertyFormData, PropertyRecord } from '@/types'
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useDisplay } from 'vuetify'
 
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
-  import { useAuthStore } from '@/stores/auth'
-  import { useUIStore } from '@/stores/ui'
-  import { formatPropertyAddress } from '@/types/property'
+import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+import { useAuthStore } from '@/stores/auth'
+import { useUIStore } from '@/stores/ui'
+import { formatPropertyAddress } from '@/types/property'
 
   // Component metadata
   defineOptions({
@@ -235,6 +310,7 @@
   const uiStore = useUIStore()
   const authStore = useAuthStore()
   const router = useRouter()
+  const { mobile } = useDisplay()
 
   const {
     myProperties,
@@ -255,21 +331,46 @@
   // Table headers
   const tableHeaders = [
     { title: 'Property', key: 'display_name', sortable: true },
-    { title: 'Beds', key: 'bedrooms', sortable: true, width: '80px' },
-    { title: 'Baths', key: 'bathrooms', sortable: true, width: '80px' },
-    { title: 'Type', key: 'property_type', sortable: true },
+    { title: 'Beds', key: 'bedrooms', sortable: true, width: '80px', mobileHidden: true },
+    { title: 'Baths', key: 'bathrooms', sortable: true, width: '80px', mobileHidden: true },
+    { title: 'Type', key: 'property_type', sortable: true, mobileHidden: true },
     { title: 'Status', key: 'active', sortable: true },
-    { title: 'Actions', key: 'actions', sortable: false, width: '130px', align: 'end' as const },
+    { title: 'Actions', key: 'actions', sortable: false, width: '130px', align: 'end' as const, mobileHidden: true },
   ]
 
+  // Segment tabs
+  const selectedSegment = ref('all')
+
+  const segments = [
+    { title: 'All', value: 'all' },
+    { title: 'Active', value: 'active' },
+    { title: 'Inactive', value: 'inactive' },
+  ]
+
+  // Count bookings per property so we can block deletion when bookings exist
+  const bookingCountByProperty = computed(() => {
+    const counts = new Map<string, number>()
+    for (const booking of myBookings.value) {
+      counts.set(booking.property_id, (counts.get(booking.property_id) ?? 0) + 1)
+    }
+    return counts
+  })
+
   // Computed property items for the table
-  const propertyItems = computed(() =>
-    myProperties.value.map(property => ({
+  const propertyItems = computed(() => {
+    let items = myProperties.value
+    if (selectedSegment.value === 'active') {
+      items = items.filter(p => p.active)
+    } else if (selectedSegment.value === 'inactive') {
+      items = items.filter(p => !p.active)
+    }
+    return items.map(property => ({
       ...property,
       display_name: formatPropertyAddress(property, 'short'),
       full_address: formatPropertyAddress(property),
-    })),
-  )
+      booking_count: bookingCountByProperty.value.get(property.id) ?? 0,
+    }))
+  })
 
   // ============================================================================
   // UI STATE - SAME MODAL MANAGEMENT AS HomeOwner
@@ -348,9 +449,24 @@
     const property = myProperties.value.find(p => p.id === propertyId)
     if (!property) return
 
+    const bookingCount = bookingCountByProperty.value.get(propertyId) ?? 0
+    const label = formatPropertyAddress(property, 'short')
+
+    if (bookingCount > 0) {
+      uiStore.openConfirmDialog('confirmDialog', {
+        title: 'Cannot Delete Property',
+        message: `"${label}" has ${bookingCount} booking${bookingCount === 1 ? '' : 's'}. Please delete or complete them before removing this property.`,
+        confirmText: 'View Bookings',
+        cancelText: 'OK',
+        dangerous: false,
+        data: { type: 'property-blocked', id: propertyId },
+      })
+      return
+    }
+
     uiStore.openConfirmDialog('confirmDialog', {
       title: 'Delete Property',
-      message: `Are you sure you want to delete "${formatPropertyAddress(property, 'short')}"? This will also delete all associated bookings. This action cannot be undone.`,
+      message: `Are you sure you want to delete "${label}"? This action cannot be undone.`,
       confirmText: 'Delete',
       cancelText: 'Cancel',
       dangerous: true,
@@ -428,14 +544,7 @@
       return
     }
 
-    uiStore.openConfirmDialog('confirmDialog', {
-      title: 'Delete Property',
-      message: `Are you sure you want to delete "${formatPropertyAddress(property, 'short')}"? This will also delete all associated bookings. This action cannot be undone.`,
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
-      dangerous: true,
-      data: { type: 'property', id: propertyId },
-    })
+    await handleDeleteProperty(propertyId)
   }
 
   // ============================================================================
@@ -444,6 +553,12 @@
 
   async function handleConfirmDialogConfirm (): Promise<void> {
     const data = confirmDialogData.value
+
+    if (data?.type === 'property-blocked') {
+      uiStore.closeConfirmDialog('confirmDialog')
+      router.push('/owner/bookings')
+      return
+    }
 
     if (data?.type === 'property' && data?.id) {
       try {
@@ -494,47 +609,8 @@
 
 <style scoped>
 .owner-properties-page {
-  padding: 1rem;
-  min-height: calc(100vh - var(--app-bar-height, 64px));
-}
-
-/* H4 — Dark Command */
-.properties-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-radius: 2px;
-  overflow: hidden;
-  min-height: 120px;
-  padding: 24px 28px;
-  background:
-    radial-gradient(ellipse 30% 40% at 90% 30%, rgba(20, 184, 166, 0.5) 0%, transparent 100%),
-    #0F172A;
-}
-
-.properties-header__left {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.header-icon-frame {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 2px;
-  background: rgba(20, 184, 166, 0.13);
-  border: 1px solid rgba(20, 184, 166, 0.27);
-  flex-shrink: 0;
-}
-
-.header-add-btn {
-  background: #14B8A6 !important;
-  color: #0F172A !important;
-  font-weight: 600;
-  border-radius: 2px;
+  padding: 0 1rem 1rem 1rem;
+  min-height: calc(100vh - var(--app-bar-height, 32px));
 }
 
 /* C3 — Compact Inline Bar */
@@ -575,9 +651,17 @@
   color: #94A3B8;
 }
 
+/* Property color bar (matches OwnerBookings) */
+.property-color-bar {
+  width: 3px;
+  height: 28px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
 /* Expanded content */
 .expanded-content {
-  background: rgba(var(--v-theme-on-surface), 0.02);
+  background: rgba(var(--v-theme-on-surface), 0.03);
 }
 
 .expanded-field {
