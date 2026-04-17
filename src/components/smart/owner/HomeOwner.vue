@@ -21,8 +21,8 @@ src/components/smart/owner/HomeOwner.vue -
 
     <!-- Calendar -->
     <div v-else class="calendar-layout">
-      <!-- View mode toggle (Range / Event) — moved out of app bar -->
-      <div class="calendar-view-toggle">
+      <!-- View mode toggle (Range / Event) — desktop only; mobile uses the app-bar icon -->
+      <div v-if="!mobile" class="calendar-view-toggle">
         <v-btn-toggle
           v-model="viewMode"
           aria-label="Calendar view mode"

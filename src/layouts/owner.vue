@@ -61,6 +61,22 @@
 
       <!-- Right-side nav icons (Materio style) -->
       <div class="appbar-icons">
+        <!-- Calendar view-mode toggle — mobile only, calendar page only -->
+        <v-btn
+          v-if="isCalendarPage && mobile"
+          :aria-label="viewMode === 'ranges' ? 'Switch to event view' : 'Switch to range view'"
+          icon
+          variant="text"
+          @click="viewMode = viewMode === 'ranges' ? 'events' : 'ranges'"
+        >
+          <v-icon size="26">
+            {{ viewMode === 'ranges' ? 'mdi-calendar-range' : 'mdi-calendar-check-outline' }}
+          </v-icon>
+          <v-tooltip activator="parent" content-class="claro-tooltip" location="bottom">
+            {{ viewMode === 'ranges' ? 'Switch to event view' : 'Switch to range view' }}
+          </v-tooltip>
+        </v-btn>
+
         <ThemePicker />
 
         <v-btn aria-label="Favorites" icon variant="text">
@@ -155,6 +171,7 @@
 
   const sidebarOpen = ref(mdAndUp.value)
   const notificationCount = ref(0)
+  const viewMode = calendarState.viewMode
 
   onMounted(() => {
     initRealtimeSync().catch((error: unknown) => {
@@ -229,7 +246,7 @@
 .appbar-icons {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
 }
 
 .appbar-icons :deep(.v-btn) {
