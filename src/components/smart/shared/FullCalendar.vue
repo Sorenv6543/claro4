@@ -297,6 +297,9 @@
         return { html: '<div class="fc-event-content-wrapper fc-event-error">?</div>' }
       }
 
+      if (!property) {
+        console.error('[FullCalendar] events-mode event missing property in extendedProps', { eventId: eventInfo.event.id })
+      }
       const label = transitionType.toUpperCase()
       const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Unknown property'
 
@@ -319,6 +322,9 @@
       return { html: '<div class="fc-event-content-wrapper fc-event-error">Data error</div>' }
     }
 
+    if (!property) {
+      console.error('[FullCalendar] ranges-mode event missing property in extendedProps', { eventId: eventInfo.event.id, bookingId: booking.id })
+    }
     const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Unknown property'
     const timeChip = eventInfo.isStart ? formatTimeChip(booking.checkin_time) : null
     const chipHtml = timeChip ? `<span class="fc-event-time-chip">${escapeHtml(timeChip)}</span>` : ''
@@ -731,9 +737,6 @@
 /* Completed bookings: dim + strikethrough; keep property color for attribution */
 :deep(.fc-event.status-completed) {
   opacity:         var(--cal-event-completed-opacity);
-  text-decoration: line-through;
-}
-:deep(.fc-event.status-completed .fc-event-title) {
   text-decoration: line-through;
 }
 
