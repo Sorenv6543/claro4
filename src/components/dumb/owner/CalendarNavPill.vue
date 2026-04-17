@@ -1,5 +1,5 @@
 <template>
-  <div class="calendar-nav-pill" role="toolbar" aria-label="Calendar navigation">
+  <div aria-label="Calendar navigation" class="calendar-nav-pill" role="toolbar">
     <v-btn
       aria-label="Previous period"
       class="calendar-nav-pill__btn"

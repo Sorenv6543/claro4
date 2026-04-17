@@ -129,7 +129,7 @@
         datasets: [
           {
             label: 'Revenue',
-            data: [4200, 5100, 6800, 5900, 8200, 9500, 9100, 10200, 7600, 6400, 5200, 4800],
+            data: [4200, 5100, 6800, 5900, 8200, 9500, 9100, 10_200, 7600, 6400, 5200, 4800],
             borderColor: CHART_COLORS.info,
             backgroundColor: withAlpha(CHART_COLORS.info, 0.15),
             fill: true,

@@ -235,6 +235,7 @@
               </v-btn>
               <v-btn
                 color="error"
+                :disabled="item.booking_count > 0"
                 prepend-icon="mdi-delete-outline"
                 size="small"
                 variant="tonal"
@@ -288,19 +289,19 @@
 </template>
 
 <script setup lang="ts">
+  import type { Property, PropertyFormData, PropertyRecord } from '@/types'
+  import { computed, onMounted, ref } from 'vue'
+  import { useRouter } from 'vue-router'
+  import { useDisplay } from 'vuetify'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
-import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
-import type { Property, PropertyFormData, PropertyRecord } from '@/types'
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useDisplay } from 'vuetify'
+  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
 
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
-import { useAuthStore } from '@/stores/auth'
-import { useUIStore } from '@/stores/ui'
-import { formatPropertyAddress } from '@/types/property'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+  import { useAuthStore } from '@/stores/auth'
+  import { useUIStore } from '@/stores/ui'
+  import { formatPropertyAddress } from '@/types/property'
 
   // Component metadata
   defineOptions({
@@ -610,7 +611,7 @@ import { formatPropertyAddress } from '@/types/property'
 <style scoped>
 .owner-properties-page {
   padding: 0 1rem 1rem 1rem;
-  min-height: calc(100vh - var(--app-bar-height, 32px));
+  min-height: calc(100vh - var(--app-bar-height, 64px));
 }
 
 /* C3 — Compact Inline Bar */

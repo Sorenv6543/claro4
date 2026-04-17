@@ -372,9 +372,9 @@
 </template>
 
 <script setup lang="ts">
+  import type { VForm } from 'vuetify/components'
   import type { Property, PropertyFormData } from '@/types/property'
   import type { User } from '@/types/user'
-  import type { VForm } from 'vuetify/components'
   import { computed, onMounted, ref, watch } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import OwnerDetailCard from '@/components/dumb/admin/OwnerDetailCard.vue'
@@ -383,8 +383,8 @@
   import { useSupabaseProperties } from '@/composables/supabase/useSupabaseProperties'
   import { useSupabaseUserProfiles } from '@/composables/supabase/useSupabaseUserProfiles'
   import { usePropertyStore } from '@/stores/property'
-
   import { formatPropertyAddress } from '@/types/property'
+  import { PROPERTY_COLORS } from '@/utils/constants'
 
   const route = useRoute()
   const router = useRouter()
@@ -397,7 +397,9 @@
   const saveError = ref<string | null>(null)
   const showSaveError = computed({
     get: () => !!saveError.value,
-    set: (val: boolean) => { if (!val) saveError.value = null },
+    set: (val: boolean) => {
+      if (!val) saveError.value = null
+    },
   })
   const owner = ref<User | null>(null)
   const properties = ref<Property[]>([])
@@ -507,7 +509,9 @@
       await navigator.clipboard.writeText(text)
       saveError.value = null
       copiedFeedback.value = true
-      setTimeout(() => { copiedFeedback.value = false }, 2000)
+      setTimeout(() => {
+        copiedFeedback.value = false
+      }, 2000)
     } catch (error) {
       console.error('Clipboard write failed:', error)
       saveError.value = 'Copy failed — please select and copy manually'
@@ -602,7 +606,10 @@
 
       await (editingProperty.value
         ? supaProperties.updateProperty(editingProperty.value.id, payload)
-        : supaProperties.createProperty({ ...payload, color: '' } as PropertyFormData))
+        : supaProperties.createProperty({
+          ...payload,
+          color: PROPERTY_COLORS[properties.value.length % PROPERTY_COLORS.length],
+        } as PropertyFormData))
 
       saveError.value = null
       showPropertyDialog.value = false

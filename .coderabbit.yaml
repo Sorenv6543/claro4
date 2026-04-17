@@ -3,6 +3,7 @@ reviews:
   profile: chill
   path_filters:
     - "!UI/**"
+    - "!ui/**"
     - "!docs/references/**"
     - "!docs/superpowers/**"
     - "!design/**"

@@ -88,12 +88,6 @@
   min-height: 100vh;
 }
 
-/* Auth card styling (will be applied to child components) */
-:deep(.v-card) {
-  border-radius: 2px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
 /* Footer styling */
 .v-footer {
   backdrop-filter: blur(10px);

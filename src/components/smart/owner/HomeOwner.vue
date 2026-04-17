@@ -719,7 +719,6 @@ src/components/smart/owner/HomeOwner.vue -
   flex-direction: column;
 }
 
-
 /* Leave room below the calendar grid for the floating pill on mobile */
 @media (max-width: 599px) {
   .calendar-content {
