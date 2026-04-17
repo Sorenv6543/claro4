@@ -798,15 +798,15 @@
   padding: 0 !important;
   flex: 1;
   min-height: 0;
-}
 
-.custom-calendar {
-  --fc-border-color: rgba(100, 140, 180, 0.2);
-  --fc-button-bg-color: rgb(var(--v-theme-primary));
-  --fc-button-border-color: rgb(var(--v-theme-primary));
-  --fc-button-hover-bg-color: rgb(var(--v-theme-primary));
-  --fc-button-active-bg-color: rgb(var(--v-theme-primary));
-  --fc-today-bg-color: rgb(var(--v-theme-primary), 0.1);
+  /* Bridge calendar-tokens.css into FullCalendar's CSS variable system */
+  --fc-border-color:     var(--cal-border);
+  --fc-page-bg-color:    var(--cal-bg);
+  --fc-today-bg-color:   var(--cal-today-bg);
+  --fc-button-bg-color:         rgb(var(--v-theme-primary));
+  --fc-button-border-color:     rgb(var(--v-theme-primary));
+  --fc-button-hover-bg-color:   rgb(var(--v-theme-primary));
+  --fc-button-active-bg-color:  rgb(var(--v-theme-primary));
 }
 
 /* Hide empty FullCalendar toolbar — controls are in the app bar */
@@ -814,187 +814,72 @@
   display: none !important;
 }
 
-/* Turn booking highlighting */
-:deep(.fc-event.booking-turn) {
-  font-weight: bold;
-  border-width: 2px !important;
-  position: relative;
-}
-
-/* TURN label overlaid on the event bar at the turn day column */
-:deep(.turn-event-badge) {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #e65100, #bf360c);
-  color: #fff;
-  font-size: 0.6em;
-  font-weight: 800;
-  letter-spacing: 1px;
+/* Day-of-week header row — subtle label strip */
+:deep(.fc-col-header-cell-cushion) {
+  color: var(--cal-day-num-muted);
+  font-weight: 500;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 5;
-  border-left: 2px solid rgba(255, 255, 255, 0.3);
-  border-right: 2px solid rgba(255, 255, 255, 0.3);
-  overflow: hidden;
+  text-decoration: none;
 }
 
-/* Shimmer sweep across the badge */
-:deep(.turn-event-badge)::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.08) 25%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0.08) 75%,
-    transparent 100%
-  );
-  will-change: transform;
-  animation: turn-shimmer 2.5s ease-in-out infinite;
+/* Day numbers — current month vs prev/next month */
+:deep(.fc-daygrid-day-number) {
+  color: var(--cal-day-num);
+  font-weight: 500;
+  text-decoration: none;
+}
+:deep(.fc-day-other .fc-daygrid-day-number) {
+  color: var(--cal-day-num-muted);
 }
 
-@keyframes turn-shimmer {
-  0% { transform: translateX(-100%); }
-  60% { transform: translateX(100%); }
-  100% { transform: translateX(100%); }
-}
-
-/* OUT (checkout) label overlaid on the event bar at the checkout day column */
-:deep(.checkout-event-badge) {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, #546e7a, #455a64);
-  color: rgba(255, 255, 255, 0.85);
-  font-size: 0.6em;
-  font-weight: 800;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  text-align: center;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 5;
-  border-left: 2px solid rgba(255, 255, 255, 0.2);
-  border-right: 2px solid rgba(255, 255, 255, 0.2);
-  overflow: hidden;
-}
-
-/* Shimmer sweep across the OUT badge */
-:deep(.checkout-event-badge)::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.06) 25%,
-    rgba(255, 255, 255, 0.18) 50%,
-    rgba(255, 255, 255, 0.06) 75%,
-    transparent 100%
-  );
-  will-change: transform;
-  animation: turn-shimmer 3s ease-in-out infinite;
-}
-
-/* Standard booking styling */
-.fc-event.booking-standard {
-  border-width: 2px !important;
-  position: relative;
-}
-
-.fc-event.booking-standard::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(45deg, currentColor, transparent, currentColor);
-  border-radius: 2px 2px 0 0;
-}
-
-/* Add elevation to all booking events */
+/* Event pill — flat colored bar, tokenised */
 :deep(.fc-event) {
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.1),
-    0 1px 2px rgba(0, 0, 0, 0.06) !important;
-  transition: all 0.2s ease !important;
-  border-radius: 2px !important;
+  border-radius: var(--cal-event-radius) !important;
+  padding:       var(--cal-event-padding);
+  font-weight:   var(--cal-event-font-weight);
+  color:         var(--cal-event-text);
+  box-shadow:    none !important;
+  transition:    filter 0.15s ease, opacity 0.15s ease;
+}
+:deep(.fc-event:hover)    { filter: brightness(1.05); cursor: grab; }
+:deep(.fc-event:active)   { cursor: grabbing; }
+:deep(.fc-event-dragging) { opacity: 0.75 !important; }
+:deep(.fc-event-mirror)   { opacity: 0.6 !important; }
+
+/* Completed bookings: dim + neutral gray (overrides inline property.color) */
+:deep(.fc-event.status-completed) {
+  background-color: var(--cal-event-completed-bg) !important;
+  border-color:     var(--cal-event-completed-bg) !important;
+  opacity:          var(--cal-event-completed-opacity);
+  text-decoration:  none;
 }
 
-:deep(.fc-event:hover) {
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.15),
-    0 2px 4px rgba(0, 0, 0, 0.1) !important;
-  transform: translateY(-1px) !important;
-  cursor: grab !important;
+/* Event content layout — wrapped in :deep() because FullCalendar renders these into non-Vue DOM */
+:deep(.fc-event-content-wrapper) {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
 }
-
-:deep(.fc-event:active) {
-  cursor: grabbing !important;
+:deep(.fc-event-time-chip) {
+  background:     var(--cal-time-chip-bg);
+  color:          var(--cal-time-chip-text);
+  border-radius:  var(--cal-time-chip-radius);
+  padding:        0 4px;
+  font-size:      0.65em;
+  font-weight:    700;
+  line-height:    1.4;
+  flex:           0 0 auto;
 }
+:deep(.fc-event-lines)    { min-width: 0; flex: 1 1 auto; }
+:deep(.fc-event-title)    { font-size: 0.8rem; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:deep(.fc-event-subtitle) { font-size: 0.7rem; line-height: 1.1; opacity: 0.85; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Drag feedback */
-:deep(.fc-event-dragging) {
-  opacity: 0.75 !important;
-  transform: rotate(2deg) !important;
-  z-index: 999 !important;
-}
-
-:deep(.fc-event-mirror) {
-  opacity: 0.8 !important;
-  transform: rotate(-2deg) !important;
-}
-
-@keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0.7);
-  }
-
-  70% {
-    box-shadow: 0 0 0 10px rgba(var(--v-theme-error), 0);
-  }
-
-  100% {
-    box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0);
-  }
-}
-
-/* Status-based styling */
-.fc-event.status-pending {
-  opacity: 0.8;
-}
-
-.fc-event.status-completed {
-  opacity: 0.6;
-  text-decoration: line-through;
-}
-
-/* Custom event content */
-.fc-event-content-wrapper {
-  padding: 2px;
-}
-
-.fc-event-subtitle {
-  font-size: 0.75em;
-  opacity: 0.9;
-  margin-top: 1px;
-}
+/* Month-view pills are single-line — hide the subtitle; timegrid (week/day) keeps it */
+:deep(.fc-daygrid-event .fc-event-subtitle)  { display: none; }
+:deep(.fc-timegrid-event .fc-event-subtitle) { display: block; }
 
 /* Force hide any FullCalendar popovers/tooltips */
 :deep(.fc-popover),
@@ -1008,86 +893,46 @@
   pointer-events: none !important;
 }
 
-/* Mobile viewport specific fixes with proper height calculations */
+/* Mobile viewport fixes — unchanged from prior version */
 @media (max-width: 959px) {
   .calendar-container {
     position: relative;
-    /* Use calculated height instead of 100% */
     height: calc(
       100vh - 56px - 60px - env(safe-area-inset-top) -
         env(safe-area-inset-bottom) - 20px
     ) !important;
     min-height: 400px;
-    /* Minimum height for very small screens */
     max-height: calc(100vh - 100px);
-    /* Maximum height to prevent overflow */
   }
-
   .custom-calendar {
     position: relative;
     height: 100% !important;
     width: 100% !important;
   }
-
-  /* Ensure FullCalendar takes full available space on mobile */
-  :deep(.fc) {
-    height: 100% !important;
-    width: 100% !important;
-  }
-
-  :deep(.fc-view-harness) {
-    height: 100% !important;
-    width: 100% !important;
-  }
-
+  :deep(.fc)              { height: 100% !important; width: 100% !important; }
+  :deep(.fc-view-harness) { height: 100% !important; width: 100% !important; }
   :deep(.fc-scroller) {
     height: 100% !important;
     overflow-y: auto !important;
-    /* Smooth scrolling on mobile */
     -webkit-overflow-scrolling: touch;
   }
-
-  /* Fix for mobile browser address bar height changes */
-  :deep(.fc-daygrid-body) {
-    min-height: 300px;
-    /* Ensure minimum content height */
-  }
-
-  /* Prevent horizontal scrolling on mobile */
-  :deep(.fc-daygrid-day-frame) {
-    min-height: 40px;
-  }
-
-  /* Mobile-optimized event spacing */
+  :deep(.fc-daygrid-body)      { min-height: 300px; }
+  :deep(.fc-daygrid-day-frame) { min-height: 40px; }
   :deep(.fc-event) {
     margin: 1px 0;
     font-size: 0.75rem;
   }
 }
 
-/* Desktop-specific booking size optimization */
 @media (min-width: 960px) {
   :deep(.fc-event) {
     font-size: 0.75rem !important;
     min-height: 22px !important;
-    padding: 2px 4px !important;
     margin: 1px 0 !important;
   }
-
-  :deep(.fc-event-title) {
-    font-size: 0.75rem !important;
-    line-height: 1.1 !important;
-  }
-
-  :deep(.fc-event-subtitle) {
-    font-size: 0.65rem !important;
-    line-height: 1 !important;
-  }
-
-  :deep(.fc-daygrid-day-frame) {
-    min-height: 120px !important;
-  }
-
+  :deep(.fc-event-title)    { font-size: 0.75rem !important; line-height: 1.1 !important; }
+  :deep(.fc-event-subtitle) { font-size: 0.65rem !important; line-height: 1 !important; }
+  :deep(.fc-daygrid-day-frame) { min-height: 120px !important; }
 }
 </style>
 
