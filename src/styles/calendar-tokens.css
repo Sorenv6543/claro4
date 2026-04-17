@@ -1,22 +1,27 @@
-/* Calendar event color tokens — mapped to Vuetify 4 theme variables.
-   Imported once in main.ts. All calendar event colors read from here.
-   Background/border colors now come from property.color (set inline by calendarHelpers.ts).
-   These tokens are kept for turn-type event accent styling (e.g., text, badges). */
+/* Calendar design tokens — Materio flat style.
+   Imported once in main.ts. FullCalendar.vue consumes these exclusively
+   for grid chrome, event pills, completed-state, and the time chip.
+   Event background/border still come from property.color (inline, set by calendarHelpers.ts). */
 :root {
-  --cal-turn-urgent:   rgb(var(--v-theme-error));
-  --cal-turn-high:     rgb(var(--v-theme-warning));
-  --cal-turn-normal:   rgb(var(--v-theme-secondary));
-  --cal-turn-low:      rgb(var(--v-theme-on-surface-variant, 128 128 128));
+  /* Grid */
+  --cal-border:                    rgb(var(--v-theme-on-surface) / 0.08);
+  --cal-bg:                        rgb(var(--v-theme-surface));
+  --cal-today-bg:                  rgb(var(--v-theme-primary) / 0.06);
+  --cal-day-num:                   rgb(var(--v-theme-on-surface) / 0.72);
+  --cal-day-num-muted:             rgb(var(--v-theme-on-surface) / 0.28);
 
-  --cal-std-urgent:    rgb(var(--v-theme-error));
-  --cal-std-high:      rgb(var(--v-theme-warning));
-  --cal-std-normal:    rgb(var(--v-theme-primary));
-  --cal-std-low:       rgb(var(--v-theme-success));
+  /* Event pill */
+  --cal-event-radius:              2px;
+  --cal-event-text:                #fff;
+  --cal-event-padding:             4px 8px;
+  --cal-event-font-weight:         500;
+
+  /* Status */
+  --cal-event-completed-bg:        rgb(var(--v-theme-on-surface) / 0.28);
+  --cal-event-completed-opacity:   0.6;
+
+  /* Time chip */
+  --cal-time-chip-bg:              rgb(0 0 0 / 0.18);
+  --cal-time-chip-text:            #fff;
+  --cal-time-chip-radius:          2px;
 }
-
-/* Turn events get a distinct left border accent to distinguish from standard bookings,
-   but background/border come from the property's color field. */
-.fc-event.type-turn { border-left: 4px solid var(--cal-turn-urgent) !important; }
-.fc-event.type-turn.priority-high   { border-left-color: var(--cal-turn-high)   !important; }
-.fc-event.type-turn.priority-normal { border-left-color: var(--cal-turn-normal) !important; }
-.fc-event.type-turn.priority-low    { border-left-color: var(--cal-turn-low)    !important; }
