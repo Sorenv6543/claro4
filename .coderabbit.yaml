@@ -1,6 +1,14 @@
 language: en-US
 reviews:
   profile: chill
+  path_filters:
+    - "!UI/**"
+    - "!docs/references/**"
+    - "!docs/superpowers/**"
+    - "!design/**"
+    - "!.tmp-screenshots/**"
+    - "!**/*.pen"
+    - "!**/*.png"
   path_instructions:
     - path: "src/components/dumb/**"
       instructions: >
