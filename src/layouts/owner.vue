@@ -17,16 +17,21 @@
       height="64"
       order="-1"
     >
-      <!-- Hamburger -->
-      <v-app-bar-nav-icon
-        :icon="sidebarOpen ? 'mdi-menu-open' : 'mdi-menu'"
-        @click="sidebarOpen = !sidebarOpen"
-      />
+      <!-- Brand logo — occupies sidebar-width area on desktop -->
+      <div class="brand-area">
+        <span class="brand-logo text-primary">Claro</span>
+      </div>
 
-      <!-- Logo -->
-      <v-app-bar-title class="flex-grow-0" style="min-width:auto">
-        <span class="text-h6 font-weight-bold text-primary">Claro</span>
-      </v-app-bar-title>
+      <!-- Sidebar toggle — sits at the vertical right edge of the sidebar on desktop -->
+      <v-btn
+        :aria-label="sidebarOpen ? 'Close sidebar' : 'Open sidebar'"
+        class="sidebar-toggle-btn"
+        icon
+        variant="text"
+        @click="sidebarOpen = !sidebarOpen"
+      >
+        <v-icon size="26">{{ sidebarOpen ? 'mdi-menu-open' : 'mdi-menu' }}</v-icon>
+      </v-btn>
 
       <!-- Calendar controls — only on schedule page, desktop only (mobile uses bottom pill) -->
       <template v-if="isCalendarPage && !mobile">
@@ -242,6 +247,41 @@
 
 .owner-layout :deep(.v-app-bar-nav-icon .v-icon) {
   font-size: 26px;
+}
+
+/* Brand "Claro" — occupies sidebar-width area on desktop so toggle aligns with sidebar edge */
+.brand-area {
+  display: flex;
+  align-items: center;
+  padding-left: 20px;
+}
+
+@media (min-width: 960px) {
+  .brand-area {
+    width: 264px;
+    padding-left: 24px;
+  }
+}
+
+.brand-logo {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  line-height: 1;
+}
+
+/* Sidebar toggle button — same look as other app-bar icons, no button chrome */
+.sidebar-toggle-btn {
+  box-shadow: none !important;
+  background: transparent !important;
+  min-width: 36px;
+  padding: 0 6px;
+  color: rgba(var(--v-theme-on-surface), 0.68);
+}
+
+.sidebar-toggle-btn:hover {
+  color: rgba(var(--v-theme-on-surface), 0.9);
+  background: rgba(var(--v-theme-on-surface), 0.06) !important;
 }
 
 /* Materio-style app bar icons — plain icons (no button chrome) */

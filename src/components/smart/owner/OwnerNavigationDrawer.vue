@@ -30,24 +30,6 @@
       </template>
     </v-list>
 
-    <!-- My Properties list -->
-    <div v-if="properties.length > 0" class="mt-1">
-      <div class="text-overline text-medium-emphasis px-5 mb-1" style="font-size:0.67rem">My Properties</div>
-      <v-list class="pa-0" density="compact" nav>
-        <v-list-item
-          v-for="(property, index) in properties"
-          :key="property.id"
-          :active="isActive(`/owner/properties/${property.id}`)"
-          class="property-nav-item"
-          color="primary"
-          prepend-icon="mdi-home"
-          :style="{ '--property-icon-color': propertyColor(property, index) }"
-          :title="formatPropertyAddress(property, 'short')"
-          :to="`/owner/properties/${property.id}`"
-          @click="onNavItemClick()"
-        />
-      </v-list>
-    </div>
     <v-divider class="mx-4 my-1" />
 
     <!-- Account section -->
@@ -87,14 +69,10 @@
 </template>
 
 <script setup lang="ts">
-  import type { Property } from '@/types/property'
-  import { useOwnerProperties } from '@composables/owner/useOwnerProperties'
   import { useAuthStore } from '@stores/auth'
   import { computed } from 'vue'
   import { useRoute } from 'vue-router'
   import { useDisplay } from 'vuetify'
-  import { formatPropertyAddress } from '@/types/property'
-  import { PROPERTY_COLORS } from '@/utils/constants'
 
   defineProps<{
     modelValue: boolean
@@ -107,8 +85,6 @@
   const route = useRoute()
   const { mdAndUp } = useDisplay()
   const authStore = useAuthStore()
-  // useOwnerProperties exports `myProperties` — alias it for clarity in this component
-  const { myProperties: properties } = useOwnerProperties()
 
   // ── Nav items ──────────────────────────────────────────────────
   const navItems = [
@@ -119,7 +95,7 @@
       to: '/owner/overview',
     },
     {
-      label: 'Schedule',
+      label: 'Calendar',
       icon: 'mdi-calendar-month-outline',
       filledIcon: 'mdi-calendar-month',
       to: '/owner/dashboard',
@@ -145,7 +121,7 @@
       to: '/owner/properties',
     },
     {
-      label: 'Charts',
+      label: 'Reports',
       icon: 'mdi-chart-line',
       filledIcon: 'mdi-chart-line',
       to: '/owner/charts',
@@ -165,11 +141,6 @@
   function isActive (itemPath: string): boolean {
     if (itemPath === route.path) return true
     return route.path.startsWith(itemPath + '/')
-  }
-
-  // ── Property colors ────────────────────────────────────────────
-  function propertyColor (property: Property, index: number): string {
-    return property.color ?? PROPERTY_COLORS[index % PROPERTY_COLORS.length]
   }
 
   // ── User info ──────────────────────────────────────────────────
@@ -198,17 +169,6 @@
   }
 </script>
 
-<style scoped>
-.property-nav-item :deep(.v-list-item__prepend) {
-  width: 56px;
-  padding-left: 8px;
-}
-
-.property-nav-item :deep(.v-list-item__prepend .v-icon) {
-  color: var(--property-icon-color) !important;
-  opacity: 0.8;
-}
-</style>
 
 <!-- Non-scoped: temporary drawers are teleported to v-app root, so scoped CSS can't reach them.
      Scoped to .owner-layout to avoid affecting admin drawers. -->
