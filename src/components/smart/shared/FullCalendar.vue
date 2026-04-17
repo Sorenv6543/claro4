@@ -274,7 +274,6 @@
     emit('event-resize', resizeInfo)
   }
 
-  // Compact 12h label for the event start-time chip. '15:00' → '3p', '09:30' → '9:30a', '00:00' → '12a'
   function formatTimeChip (hhmm: string | null | undefined): string | null {
     if (!hhmm) return null
     const [hStr, mStr] = hhmm.split(':')
@@ -289,10 +288,17 @@
   function renderEventContent (eventInfo: EventContentArg) {
     // Events mode: single-line "IN · Property" pill
     if (props.viewMode === 'events') {
-      const transitionType = (eventInfo.event.extendedProps?.transitionType as string | undefined) || 'in'
-      const label = transitionType.toUpperCase()
+      const transitionType = eventInfo.event.extendedProps?.transitionType as 'in' | 'turn' | 'out' | undefined
       const property = eventInfo.event.extendedProps?.property as Property | undefined
-      const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Property'
+
+      // transitionType is always set by bookingToTransitionEvents — missing means data corruption
+      if (!transitionType) {
+        console.error('[FullCalendar] events-mode event missing transitionType', { eventId: eventInfo.event.id })
+        return { html: '<div class="fc-event-content-wrapper fc-event-error">?</div>' }
+      }
+
+      const label = transitionType.toUpperCase()
+      const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Unknown property'
 
       return {
         html: `
@@ -309,10 +315,11 @@
     const booking = eventInfo.event.extendedProps?.booking as Booking | undefined
     const property = eventInfo.event.extendedProps?.property as Property | undefined
     if (!booking) {
-      return { html: '' }
+      console.error('[FullCalendar] ranges-mode event missing booking in extendedProps', { eventId: eventInfo.event.id })
+      return { html: '<div class="fc-event-content-wrapper fc-event-error">Data error</div>' }
     }
 
-    const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Property'
+    const propertyLabel = property ? formatPropertyAddress(property, 'short') : 'Unknown property'
     const timeChip = eventInfo.isStart ? formatTimeChip(booking.checkin_time) : null
     const chipHtml = timeChip ? `<span class="fc-event-time-chip">${escapeHtml(timeChip)}</span>` : ''
 
@@ -658,7 +665,7 @@
   flex: 1;
   min-height: 0;
 
-  /* Bridge calendar-tokens.css into FullCalendar's CSS variable system */
+  /* Map design tokens to FullCalendar's --fc-* vars */
   --fc-border-color:     var(--cal-border);
   --fc-page-bg-color:    var(--cal-bg);
   --fc-today-bg-color:   var(--cal-today-bg);
@@ -673,7 +680,6 @@
   display: none !important;
 }
 
-/* Day-of-week header row — filled gray bar with white text */
 :deep(.fc-col-header-cell) {
   background: var(--cal-header-bg) !important;
   border-color: var(--cal-header-bg) !important;
@@ -688,7 +694,6 @@
   padding: 8px 4px;
 }
 
-/* Day numbers — current month vs prev/next month */
 :deep(.fc-daygrid-day-number) {
   color: var(--cal-day-num);
   font-weight: 500;
@@ -698,7 +703,7 @@
   color: var(--cal-day-num-muted);
 }
 
-/* Grid lines — explicit borders on cells so FullCalendar's default --fc-border-color wins over any overrides */
+/* Explicit cell borders — FullCalendar's default --fc-border-color cascades inconsistently across scrollgrid sections */
 :deep(.fc-daygrid-day),
 :deep(.fc-col-header-cell),
 :deep(.fc-scrollgrid),
@@ -707,8 +712,7 @@
   border: 1px solid var(--cal-border) !important;
 }
 
-/* Event pill — flat colored bar, tokenised. Horizontal inset narrows the
-   pill ~4px so it doesn't collide with cell borders. */
+/* 2px horizontal margin keeps the pill from colliding with cell borders */
 :deep(.fc-event) {
   border-radius: var(--cal-event-radius) !important;
   padding:       var(--cal-event-padding);
@@ -732,7 +736,6 @@
   text-decoration:  none;
 }
 
-/* Event content layout — wrapped in :deep() because FullCalendar renders these into non-Vue DOM */
 :deep(.fc-event-content-wrapper) {
   display: flex;
   align-items: center;
@@ -753,7 +756,7 @@
 :deep(.fc-event-title)    { font-size: 0.8rem; line-height: 1.15; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 :deep(.fc-event-subtitle) { font-size: 0.7rem; line-height: 1.1; opacity: 0.85; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-/* Month-view pills are single-line — hide the subtitle; timegrid (week/day) keeps it */
+/* Month view: single-line pills; week/day view keeps the subtitle */
 :deep(.fc-daygrid-event .fc-event-subtitle)  { display: none; }
 :deep(.fc-timegrid-event .fc-event-subtitle) { display: block; }
 
@@ -769,7 +772,6 @@
   pointer-events: none !important;
 }
 
-/* Mobile viewport fixes — unchanged from prior version */
 @media (max-width: 959px) {
   .calendar-container {
     position: relative;
@@ -812,10 +814,8 @@
 }
 </style>
 
-<!-- Unscoped: FullCalendar renders its own DOM outside Vue's scoping -->
+<!-- Unscoped: FullCalendar renders event DOM outside Vue's scoping -->
 <style>
-/* Unscoped: FullCalendar renders event DOM outside Vue's scoping.
-   viewMode === 'events' events (IN / TURN / OUT) use theme-mapped colors. */
 .fc-event.transition-event {
   border-radius: var(--cal-event-radius, 2px) !important;
   font-weight: 600;
@@ -835,14 +835,23 @@
 
 .fc-event.transition-out {
   /* Set FC's internal text-color var so .fc-event-main inherits dark text */
-  --fc-event-text-color: rgb(var(--v-theme-on-surface));
-  background-color: #FDD835 !important; /* Material yellow-darken-1 — no theme token for yellow */
-  border-color:     #FDD835 !important;
-  color:            rgb(var(--v-theme-on-surface)) !important;
+  --fc-event-text-color: var(--cal-event-out-text);
+  background-color: var(--cal-event-out-bg) !important;
+  border-color:     var(--cal-event-out-bg) !important;
+  color:            var(--cal-event-out-text) !important;
 }
 
 .fc-event.transition-highlight {
   box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.6) !important;
   transition: box-shadow 0.3s ease;
+}
+
+/* Visible marker when event data is malformed (missing booking / transitionType) */
+.fc-event-error {
+  background: repeating-linear-gradient(45deg, #c62828, #c62828 6px, #ad1f1f 6px, #ad1f1f 12px);
+  color: #fff;
+  font-weight: 700;
+  text-align: center;
+  padding: 0 4px;
 }
 </style>

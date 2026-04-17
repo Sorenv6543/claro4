@@ -1,12 +1,7 @@
 /* Calendar design tokens — Materio flat style.
-   Imported once in main.ts. FullCalendar.vue consumes these exclusively
-   for grid chrome, event pills, completed-state, and the time chip.
-   Event background/border still come from property.color (inline, set by calendarHelpers.ts).
-
-   Note: Vuetify's --v-theme-* vars expand to comma-separated RGB (e.g. "46,38,61"),
-   which only compose with the legacy rgba() syntax (rgba(R,G,B,alpha)).
-   The modern space/slash syntax (rgb(R G B / alpha)) produces invalid CSS when
-   pasted alongside Vuetify's commas — shorthands silently fall back to defaults. */
+   Vuetify's --v-theme-* vars expand to comma-separated RGB (e.g. "46,38,61"),
+   so only the legacy rgba(R,G,B,a) syntax composes correctly. The modern
+   rgb(R G B / a) space/slash form silently produces invalid CSS here. */
 :root {
   /* Grid */
   --cal-border:                    rgba(var(--v-theme-on-surface), 0.1);
@@ -24,6 +19,11 @@
   --cal-event-text:                #fff;
   --cal-event-padding:             4px 8px;
   --cal-event-font-weight:         500;
+
+  /* Transition events (events-mode IN/TURN/OUT) — IN/TURN map to theme tokens;
+     OUT yellow is hardcoded because the theme has no yellow token. */
+  --cal-event-out-bg:              #FDD835;
+  --cal-event-out-text:            rgb(var(--v-theme-on-surface));
 
   /* Status */
   --cal-event-completed-bg:        rgba(var(--v-theme-on-surface), 0.28);

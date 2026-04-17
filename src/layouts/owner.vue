@@ -160,14 +160,14 @@
 </template>
 
 <script setup lang="ts">
+  import { useAuthStore } from '@stores/auth'
+  import { computed, onMounted, ref } from 'vue'
+  import { useRoute, useRouter } from 'vue-router'
+  import { useDisplay } from 'vuetify'
   import ThemePicker from '@/components/dumb/shared/ThemePicker.vue'
-import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
-import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
-import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
-import { useAuthStore } from '@stores/auth'
-import { computed, onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useDisplay } from 'vuetify'
+  import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
+  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
+  import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
 
   const { mdAndUp, mobile } = useDisplay()
   const router = useRouter()
@@ -249,11 +249,9 @@ import { useDisplay } from 'vuetify'
   font-size: 26px;
 }
 
-/* Brand "Claro" — occupies sidebar-width area on desktop so toggle aligns with sidebar edge */
 .brand-area {
   display: flex;
-  /* align-items: center; */
-  padding-left: 0px;
+  padding-left: 0;
 }
 
 @media (min-width: 960px) {

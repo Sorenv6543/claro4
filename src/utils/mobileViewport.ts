@@ -101,7 +101,6 @@ export function getMobileCalendarOptions () {
   const { width } = getViewportDimensions()
 
   if (width <= 599) {
-    // Mobile phone - show 3 bookings before +more link
     return {
       height: calculateCalendarHeight(),
       dayMaxEvents: 3,
