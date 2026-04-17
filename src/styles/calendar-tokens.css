@@ -1,14 +1,23 @@
 /* Calendar design tokens — Materio flat style.
    Imported once in main.ts. FullCalendar.vue consumes these exclusively
    for grid chrome, event pills, completed-state, and the time chip.
-   Event background/border still come from property.color (inline, set by calendarHelpers.ts). */
+   Event background/border still come from property.color (inline, set by calendarHelpers.ts).
+
+   Note: Vuetify's --v-theme-* vars expand to comma-separated RGB (e.g. "46,38,61"),
+   which only compose with the legacy rgba() syntax (rgba(R,G,B,alpha)).
+   The modern space/slash syntax (rgb(R G B / alpha)) produces invalid CSS when
+   pasted alongside Vuetify's commas — shorthands silently fall back to defaults. */
 :root {
   /* Grid */
-  --cal-border:                    rgb(var(--v-theme-on-surface) / 0.08);
+  --cal-border:                    rgba(var(--v-theme-on-surface), 0.1);
   --cal-bg:                        rgb(var(--v-theme-surface));
-  --cal-today-bg:                  rgb(var(--v-theme-primary) / 0.06);
-  --cal-day-num:                   rgb(var(--v-theme-on-surface) / 0.72);
-  --cal-day-num-muted:             rgb(var(--v-theme-on-surface) / 0.28);
+  --cal-today-bg:                  rgba(var(--v-theme-primary), 0.06);
+  --cal-day-num:                   rgba(var(--v-theme-on-surface), 0.72);
+  --cal-day-num-muted:             rgba(var(--v-theme-on-surface), 0.28);
+
+  /* Header row */
+  --cal-header-bg:                 rgba(var(--v-theme-on-surface), 0.72);
+  --cal-header-text:               #fff;
 
   /* Event pill */
   --cal-event-radius:              2px;
@@ -17,11 +26,11 @@
   --cal-event-font-weight:         500;
 
   /* Status */
-  --cal-event-completed-bg:        rgb(var(--v-theme-on-surface) / 0.28);
+  --cal-event-completed-bg:        rgba(var(--v-theme-on-surface), 0.28);
   --cal-event-completed-opacity:   0.6;
 
   /* Time chip */
-  --cal-time-chip-bg:              rgb(0 0 0 / 0.18);
+  --cal-time-chip-bg:              rgba(0, 0, 0, 0.18);
   --cal-time-chip-text:            #fff;
   --cal-time-chip-radius:          2px;
 }

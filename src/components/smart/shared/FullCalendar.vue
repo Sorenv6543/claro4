@@ -673,14 +673,19 @@
   display: none !important;
 }
 
-/* Day-of-week header row — subtle label strip */
+/* Day-of-week header row — filled gray bar with white text */
+:deep(.fc-col-header-cell) {
+  background: var(--cal-header-bg) !important;
+  border-color: var(--cal-header-bg) !important;
+}
 :deep(.fc-col-header-cell-cushion) {
-  color: var(--cal-day-num-muted);
+  color: var(--cal-header-text) !important;
   font-weight: 500;
   font-size: 0.72rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   text-decoration: none;
+  padding: 8px 4px;
 }
 
 /* Day numbers — current month vs prev/next month */
@@ -691,6 +696,15 @@
 }
 :deep(.fc-day-other .fc-daygrid-day-number) {
   color: var(--cal-day-num-muted);
+}
+
+/* Grid lines — explicit borders on cells so FullCalendar's default --fc-border-color wins over any overrides */
+:deep(.fc-daygrid-day),
+:deep(.fc-col-header-cell),
+:deep(.fc-scrollgrid),
+:deep(.fc-scrollgrid-section > td),
+:deep(.fc-scrollgrid-section > th) {
+  border: 1px solid var(--cal-border) !important;
 }
 
 /* Event pill — flat colored bar, tokenised */
@@ -817,12 +831,12 @@
 }
 
 .fc-event.transition-out {
-  background-color: rgb(var(--v-theme-on-surface-variant)) !important;
-  border-color:     rgb(var(--v-theme-on-surface-variant)) !important;
+  background-color: rgba(var(--v-theme-on-surface), 0.72) !important;
+  border-color:     rgba(var(--v-theme-on-surface), 0.72) !important;
 }
 
 .fc-event.transition-highlight {
-  box-shadow: 0 0 0 2px rgb(var(--v-theme-primary) / 0.6) !important;
+  box-shadow: 0 0 0 2px rgba(var(--v-theme-primary), 0.6) !important;
   transition: box-shadow 0.3s ease;
 }
 </style>
