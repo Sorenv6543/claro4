@@ -21,6 +21,20 @@ src/components/smart/owner/HomeOwner.vue -
 
     <!-- Calendar -->
     <div v-else class="calendar-layout">
+      <!-- View mode toggle (Range / Event) — moved out of app bar -->
+      <div class="calendar-view-toggle">
+        <v-btn-toggle
+          v-model="viewMode"
+          color="primary"
+          density="compact"
+          mandatory
+          rounded="pill"
+        >
+          <v-btn class="text-none" size="small" value="ranges">Range</v-btn>
+          <v-btn class="text-none" size="small" value="events">Event</v-btn>
+        </v-btn-toggle>
+      </div>
+
       <!-- Calendar Content -->
       <div class="calendar-content">
         <OwnerCalendar
@@ -695,6 +709,12 @@ src/components/smart/owner/HomeOwner.vue -
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.calendar-view-toggle {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--claro-space-sm) var(--claro-space-md) 0;
 }
 
 .calendar-content {

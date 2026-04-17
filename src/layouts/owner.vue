@@ -152,7 +152,6 @@
   const { init: initRealtimeSync } = useRealtimeSync()
 
   const sidebarOpen = ref(mdAndUp.value)
-  const viewMode = calendarState.viewMode
   const notificationCount = ref(0)
 
   onMounted(() => {
