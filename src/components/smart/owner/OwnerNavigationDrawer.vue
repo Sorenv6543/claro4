@@ -86,9 +86,9 @@
   const { mdAndUp } = useDisplay()
   const authStore = useAuthStore()
 
-  // Mirrors --claro-drawer-width responsive scale from src/styles/tokens.css.
-  // Permanent on md+ uses the canonical 260px; temporary overlay on smaller
-  // viewports uses 280px for readability.
+  // 260 on md+ (permanent), 280 below (temporary overlay — wider for
+  // readability when slid in). The CSS token --claro-drawer-width in
+  // tokens.css is documentary only; this computed owns width selection.
   const drawerWidth = computed(() => mdAndUp.value ? 260 : 280)
 
   // ── Nav items ──────────────────────────────────────────────────

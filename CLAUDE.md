@@ -244,13 +244,14 @@ The app is a Progressive Web App configured via `vite-plugin-pwa` (production bu
 - **Config**: `src/plugins/vuetify.ts` - theme colors, component defaults, breakpoints
 
 ### Component Defaults (already configured globally)
-Don't override these unless necessary:
-- `VBtn`: `variant="flat"`, `rounded`, no uppercase
-- `VCard`: `elevation="0"`, `rounded` (global `box-shadow: var(--claro-shadow-sm)` in `main.scss` provides baseline shadow)
-- `VTextField`, `VSelect`, `VTextarea`, `VAutocomplete`, `VCombobox`: `variant="outlined"`, `density="comfortable"`, `rounded="lg"`, `hideDetails="auto"`
-- `VDialog`: `max-width="700px"`, `rounded="lg"`
-- `VAlert`: `variant="tonal"`, `rounded="lg"`
-- `VChip/VBadge`: `rounded="pill"`
+Don't override these unless necessary. Per the Claro radius rule, all components use `rounded="sm"` (2px) except buttons (pill) and chips/badges (pill):
+- `VBtn`: `variant="flat"`, `rounded="pill"`, no uppercase
+- `VCard`: `elevation="0"`, `rounded="sm"` (global `box-shadow: var(--claro-shadow-sm)` in `main.scss` provides baseline shadow)
+- `VTextField`, `VSelect`, `VTextarea`, `VAutocomplete`, `VCombobox`: `variant="outlined"`, `density="comfortable"`, `rounded="sm"`, `hideDetails="auto"`
+- `VDialog`: `max-width="700px"`, `rounded="sm"`
+- `VAlert`: `variant="tonal"`, `rounded="sm"`
+- `VList`, `VListItem`, `VNavigationDrawer`, `VExpansionPanel`: `rounded="sm"`
+- `VChip`, `VBadge`: `rounded="pill"`
 
 ### Elevation = Hierarchy
 All `v-card` components receive a baseline `box-shadow: var(--claro-shadow-sm)` via `main.scss` (Materio flat style). This overrides Vuetify's elevation system for cards specifically. For non-card components, use the `elevation` prop (0–24). NEVER add raw CSS `box-shadow` to individual components (except hover effects).

@@ -140,10 +140,16 @@
   );
 
   /* ─── Layout Dimensions ───────────────────────────────────────────── */
-  /* --claro-app-bar-height aliases the responsive --app-bar-height defined
-     in src/styles/responsive.scss (64px desktop / 56px mobile via media query)
-     and dynamically updated for PWA safe-area by useResponsiveLayout.ts. */
+  /* --claro-app-bar-height aliases --app-bar-height (defined in
+     src/styles/responsive.scss on the .responsive-layout container, with
+     a .is-mobile modifier for the 56px variant) and is dynamically
+     updated for PWA safe-area by useResponsiveLayout.ts. The class-scoped
+     definition means var(--app-bar-height, 64px) falls through to 64px
+     until the .is-mobile class lands on an ancestor. */
   --claro-app-bar-height:         var(--app-bar-height, 64px);
+  /* --claro-drawer-width is documentary; AdminSidebar / OwnerNavigationDrawer
+     own width selection via useDisplay() (260 on md+, 280 overlay below).
+     Keep this token in sync with the sidebars' computed if either changes. */
   --claro-drawer-width:           260px;
   --claro-drawer-width-collapsed: 72px;
   --claro-content-padding:        24px;
@@ -160,7 +166,6 @@
     --claro-content-padding: var(--claro-content-padding-mobile);
     --claro-card-padding:    var(--claro-space-md);
     --claro-section-gap:     var(--claro-space-lg);
-    --claro-drawer-width:    var(--claro-drawer-width-collapsed);
   }
 }
 
@@ -170,6 +175,5 @@
     --claro-content-padding: var(--claro-space-md);
     --claro-card-padding:    var(--claro-space-md);
     --claro-section-gap:     var(--claro-space-lg);
-    --claro-drawer-width:    280px;
   }
 }
