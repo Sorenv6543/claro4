@@ -20,6 +20,7 @@ export type BookingStatus = 'pending' | 'scheduled' | 'in_progress' | 'completed
  * Booking Interface
  * Core data model for booking/cleaning events
  */
+
 export interface Booking {
   id: string
   property_id: string

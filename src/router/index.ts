@@ -127,6 +127,16 @@ const router = createRouter({
         requiresAuth: true,
       },
     },
+    {
+      path: '/owner/vuepractice',
+      name: 'owner-vue-practice',
+      component: () => import('@/pages/owner/vuepractice/index.vue'),
+      meta: {
+        layout: 'bare',
+        role: 'owner',
+        requiresAuth: false,
+      },
+    },
 
     // Admin routes - only accessible to admin users
     {

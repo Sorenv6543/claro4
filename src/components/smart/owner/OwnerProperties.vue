@@ -43,25 +43,25 @@
       <!-- C3 — Compact Inline Bar -->
       <div class="c3-inline-bar mb-5">
         <div class="c3-cell">
-          <v-icon color="#6366F1" size="20">mdi-home-city</v-icon>
+          <v-icon color="primary" size="20">mdi-home-city</v-icon>
           <span class="c3-value">{{ myProperties.length }}</span>
           <span class="c3-label">Properties</span>
         </div>
         <div class="c3-divider" />
         <div class="c3-cell">
-          <v-icon color="#10B981" size="20">mdi-check-circle</v-icon>
+          <v-icon color="success" size="20">mdi-check-circle</v-icon>
           <span class="c3-value">{{ myActiveProperties.length }}</span>
           <span class="c3-label">Active</span>
         </div>
         <div class="c3-divider" />
         <div class="c3-cell">
-          <v-icon color="#3B82F6" size="20">mdi-calendar-multiple</v-icon>
+          <v-icon color="info" size="20">mdi-calendar-multiple</v-icon>
           <span class="c3-value">{{ myBookings.length }}</span>
           <span class="c3-label">Bookings</span>
         </div>
         <div class="c3-divider" />
         <div class="c3-cell">
-          <v-icon color="#F59E0B" size="20">mdi-swap-horizontal</v-icon>
+          <v-icon color="warning" size="20">mdi-swap-horizontal</v-icon>
           <span class="c3-value">{{ myTodayTurns.length }}</span>
           <span class="c3-label">Turns</span>
         </div>
@@ -82,7 +82,7 @@
             <v-btn
               v-for="seg in segments"
               :key="seg.value"
-              :color="selectedSegment === seg.value ? '#4338CA' : undefined"
+              :color="selectedSegment === seg.value ? 'primary' : undefined"
               density="compact"
               size="small"
               :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
@@ -98,7 +98,7 @@
           <div class="d-flex align-center ga-2">
             <div
               class="property-color-bar"
-              :style="{ backgroundColor: mapLegacyPropertyColor(item.color, '#9E9E9E') }"
+              :style="{ backgroundColor: mapLegacyPropertyColor(item.color, 'var(--claro-secondary)') }"
             />
             <span class="font-weight-medium text-body-2">{{ item.display_name }}</span>
           </div>
@@ -621,9 +621,9 @@
   align-items: stretch;
   flex-wrap: wrap;
   min-height: 64px;
-  border-radius: 2px;
-  background: #FFFFFF;
-  border: 1px solid #E2E8F0;
+  border-radius: var(--claro-radius-sm);
+  background: var(--claro-surface);
+  border: 1px solid var(--claro-divider);
   overflow: hidden;
 }
 
@@ -638,19 +638,19 @@
 .c3-divider {
   width: 1px;
   align-self: stretch;
-  background: #E2E8F0;
+  background: var(--claro-divider);
 }
 
 .c3-value {
   font-size: 20px;
-  font-weight: 700;
-  color: #1E293B;
+  font-weight: var(--claro-font-weight-semibold);
+  color: var(--claro-on-surface);
   line-height: 1;
 }
 
 .c3-label {
   font-size: 12px;
-  color: #94A3B8;
+  color: var(--claro-text-secondary);
 }
 
 /* Property color bar (matches OwnerBookings) */

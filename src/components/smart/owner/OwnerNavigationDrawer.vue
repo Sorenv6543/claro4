@@ -3,6 +3,7 @@
   <v-navigation-drawer
     :model-value="modelValue"
     :permanent="mdAndUp"
+    :scrim="!mdAndUp"
     :temporary="!mdAndUp"
     :width="drawerWidth"
     @update:model-value="emit('update:modelValue', $event)"
@@ -135,6 +136,12 @@
 
   const accountItems = [
     {
+      label: 'Vue Practice',
+      icon: 'mdi-vuejs',
+      filledIcon: 'mdi-vuejs',
+      to: '/owner/vuepractice',
+    },
+    {
       label: 'Settings',
       icon: 'mdi-cog-outline',
       filledIcon: 'mdi-cog',
@@ -173,7 +180,6 @@
     }
   }
 </script>
-
 
 <!-- Non-scoped: temporary drawers are teleported to v-app root, so scoped CSS can't reach them.
      Scoped to .owner-layout to avoid affecting admin drawers. -->
