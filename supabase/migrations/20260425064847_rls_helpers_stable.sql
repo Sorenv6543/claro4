@@ -24,9 +24,45 @@
 --
 -- private.current_user_id() is already STABLE (see complete_schema.sql);
 -- this migration only touches the role-derivation chain.
+--
+-- Wrapped in a transaction with a post-condition assertion: each ALTER
+-- FUNCTION runs in its own implicit transaction by default, so a
+-- mid-migration failure (e.g., one helper renamed in a parallel branch)
+-- would leave the migration row recorded as applied with only some
+-- functions STABLE — silently 60% on, with no operator signal. The
+-- BEGIN/COMMIT plus the DO block ensures all-or-nothing application.
+
+BEGIN;
 
 ALTER FUNCTION private.get_user_role_bypass_rls(UUID) STABLE;
 ALTER FUNCTION private.current_user_role()           STABLE;
 ALTER FUNCTION private.is_owner()                    STABLE;
 ALTER FUNCTION private.is_admin()                    STABLE;
 ALTER FUNCTION private.is_cleaner()                  STABLE;
+
+DO $$
+DECLARE
+  non_stable_count INT;
+BEGIN
+  SELECT COUNT(*)
+    INTO non_stable_count
+    FROM pg_proc p
+    JOIN pg_namespace n ON p.pronamespace = n.oid
+   WHERE n.nspname = 'private'
+     AND p.proname IN (
+       'get_user_role_bypass_rls',
+       'current_user_role',
+       'is_owner',
+       'is_admin',
+       'is_cleaner'
+     )
+     AND p.provolatile <> 's';  -- 's' = STABLE, 'i' = IMMUTABLE, 'v' = VOLATILE
+
+  IF non_stable_count > 0 THEN
+    RAISE EXCEPTION
+      'Migration assertion failed: % RLS helper(s) still non-STABLE after ALTER',
+      non_stable_count;
+  END IF;
+END $$;
+
+COMMIT;
