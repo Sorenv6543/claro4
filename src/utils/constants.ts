@@ -31,6 +31,26 @@ export type PropertyColor =
   | typeof PROPERTY_COLORS[number]
   | typeof LEGACY_PROPERTY_COLORS[number]
 
+/**
+ * 6 colors cycled deterministically (by hash of owner ID) for property
+ * owner / operator avatars. Distinct from PROPERTY_COLORS — these are
+ * not user-selectable and are not persisted to the DB; they're computed
+ * at render time from a stable hash, so changing this array changes
+ * what avatars render but does not require a data migration.
+ *
+ * Values preserved from the pre-Claude-Design-v1 Material palette since
+ * no Materio-equivalent teal exists in PROPERTY_COLORS. Migration is a
+ * separate design decision.
+ */
+export const OWNER_COLORS = [
+  '#5c6bc0', // indigo
+  '#43a047', // green
+  '#8e24aa', // purple
+  '#f57c00', // orange
+  '#00897b', // teal
+  '#e53935', // red
+] as const
+
 const LEGACY_TO_CURRENT: Record<string, string> = {
   '#5c6bc0': '#7367F0',
   '#43a047': '#28C76F',

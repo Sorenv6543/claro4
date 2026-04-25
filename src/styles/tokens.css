@@ -140,34 +140,27 @@
   );
 
   /* ─── Layout Dimensions ───────────────────────────────────────────── */
-  --claro-app-bar-height:         64px;
-  --claro-app-bar-height-mobile:  56px;
+  /* --claro-app-bar-height aliases the responsive --app-bar-height defined
+     in src/styles/responsive.scss (64px desktop / 56px mobile via media query)
+     and dynamically updated for PWA safe-area by useResponsiveLayout.ts. */
+  --claro-app-bar-height:         var(--app-bar-height, 64px);
   --claro-drawer-width:           260px;
   --claro-drawer-width-collapsed: 72px;
   --claro-content-padding:        24px;
   --claro-content-padding-mobile: 12px;
 
   /* ─── Responsive Spacing ──────────────────────────────────────────── */
-  --claro-card-gap:     var(--claro-space-md);
   --claro-card-padding: var(--claro-space-lg);
   --claro-section-gap:  var(--claro-space-xl);
-
-  /* ─── Touch Targets ───────────────────────────────────────────────── */
-  --claro-touch-target-min: 44px;
-
-  /* ─── Density ─────────────────────────────────────────────────────── */
-  --claro-input-density: comfortable;
 }
 
 /* ─── Mobile Overrides (xs breakpoint: < 600px) ────────────────────── */
 @media (max-width: 599px) {
   :root {
     --claro-content-padding: var(--claro-content-padding-mobile);
-    --claro-card-gap:        var(--claro-space-sm);
     --claro-card-padding:    var(--claro-space-md);
     --claro-section-gap:     var(--claro-space-lg);
     --claro-drawer-width:    var(--claro-drawer-width-collapsed);
-    --claro-input-density:   compact;
   }
 }
 
@@ -175,7 +168,6 @@
 @media (min-width: 600px) and (max-width: 959px) {
   :root {
     --claro-content-padding: var(--claro-space-md);
-    --claro-card-gap:        var(--claro-space-md);
     --claro-card-padding:    var(--claro-space-md);
     --claro-section-gap:     var(--claro-space-lg);
     --claro-drawer-width:    280px;

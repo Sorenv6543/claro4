@@ -223,6 +223,13 @@ Decision required at Phase 4 entry. Archive unselected two in `screens/` with a 
 - **Property colors change** (section 6): 5 existing values + 1 new yellow. Touches `src/utils/constants.ts` and every consumer. **DECISION: map-on-read.** A new helper `mapLegacyPropertyColor(hex: string): string` translates `#5c6bc0 → #7367F0`, `#43a047 → #28C76F`, `#8e24aa → #9155FD`, `#f57c00 → #FF9F43`, `#e53935 → #EA5455` at render time. Lives in `src/utils/constants.ts` next to `PROPERTY_COLORS`. Every read of `property.color` for display routes through it. DB is not migrated; existing rows keep their old hex; the picker writes the new hex going forward. Phase 1 adds the helper and updates `PROPERTY_COLORS`; Phase 6 sweeps consumers to use the helper.
 - **Theme colors in `vuetify.ts`:** only the `text-secondary` mapping touches this file. All primary/semantic/domain colors already match. This is the easiest Vuetify theme update we'll ever do.
 
+## Phase 7 cleanup outcomes (2026-04-24)
+
+- **Drawer width handoff README discrepancy:** the handoff README still shows `380px`. Decision: handoff is a frozen artifact and is **not modified**. The DIFF.md §14 entry is the authoritative resolution (260px wins).
+- **Dual app-bar-height tokens reconciled:** `--claro-app-bar-height` now aliases `var(--app-bar-height)` (the dynamic, PWA-safe-area-aware value from `responsive.scss` + `useResponsiveLayout.ts`). `--claro-app-bar-height-mobile` deleted (redundant — the aliased token is already responsive).
+- **Unused tokens deleted from tokens.css:** `--claro-touch-target-min`, `--claro-input-density`, `--claro-card-gap`, plus their `@media` overrides. None had consumers across Phases 3–6.
+- **Owner palette consolidated:** `AdminPropertyOwners.vue` and `AdminOwnerDetail.vue` each had a private 6-hex `COLORS` array (DRY violation, used for hash-cycled owner avatar colors). Extracted to `OWNER_COLORS` in `src/utils/constants.ts`. Legacy hex values **preserved** — these aren't user-selectable or DB-persisted, so palette migration is a separate visual call, not a Phase 7 hygiene item.
+
 ## Phase 2 audit findings (2026-04-24)
 
 - **Drawer width adoption:** `AdminSidebar.vue` and `OwnerNavigationDrawer.vue` now consume the responsive scale via `useDisplay()` (260 on md+, 280 on temporary overlay). `width="264"` removed from both. The 72px mobile collapsed value in `tokens.css` is reserved for future rail mode and is intentionally not used by the current `:temporary` overlay pattern.
