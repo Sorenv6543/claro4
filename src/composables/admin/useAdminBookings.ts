@@ -447,6 +447,15 @@ export function useAdminBookings () {
       return { success: [], failed: bookingIds }
     }
 
+    // Empty input is a no-op, not a failure — bail before touching loading
+    // / error / success refs. Without this guard, the function falls through
+    // to the defensive `else` at the end of the try block and shows a
+    // misleading "Bulk assignment failed: no operation performed" toast.
+    // (PR #28 Copilot review.)
+    if (bookingIds.length === 0) {
+      return { success: [], failed: [] }
+    }
+
     loading.value = true
     error.value = null
     success.value = null
