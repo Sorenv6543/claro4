@@ -6,10 +6,8 @@
     <v-row>
       <v-col cols="12">
         <OwnerWelcomeBanner
-          :active-bookings="activeBookingCount"
           :booking-count="bookingStats.total"
           :property-count="myProperties.length"
-          :total-bookings="bookingStats.total"
           :turn-count="bookingStats.turns"
           :user-name="userName"
         />
