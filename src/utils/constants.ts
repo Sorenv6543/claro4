@@ -17,7 +17,11 @@ export const PROPERTY_COLORS = [
  * Pre-Claude-Design-v1 hex values that may still be stored on existing property
  * rows in the database. Kept as a typed const so legacy fallback literals scattered
  * across the codebase continue to type-check during the migration window.
- * Phase 6 sweeps consumers to route reads through mapLegacyPropertyColor().
+ *
+ * Safe to delete this const, the LegacyPropertyColor type, the LEGACY_TO_CURRENT
+ * derivation, and the mapLegacyPropertyColor helper once: (a) a Supabase migration
+ * normalizes existing property.color rows to PROPERTY_COLORS values, AND
+ * (b) `grep` for these hex values across `src/` returns no hits.
  */
 export const LEGACY_PROPERTY_COLORS = [
   '#5c6bc0', // indigo  → #7367F0
@@ -63,13 +67,14 @@ export const OWNER_COLORS = [
 /** A color from the OWNER_COLORS avatar-cycle palette. */
 export type OwnerColor = typeof OWNER_COLORS[number]
 
-const LEGACY_TO_CURRENT: Record<string, string> = {
-  '#5c6bc0': '#7367F0',
-  '#43a047': '#28C76F',
-  '#8e24aa': '#9155FD',
-  '#f57c00': '#FF9F43',
-  '#e53935': '#EA5455',
-}
+/**
+ * Derived from the parallel LEGACY_PROPERTY_COLORS / PROPERTY_COLORS arrays
+ * at module load. Single source of truth — index parity in the source arrays
+ * is now structurally enforced.
+ */
+const LEGACY_TO_CURRENT: Record<string, CurrentPropertyColor> = Object.fromEntries(
+  LEGACY_PROPERTY_COLORS.map((legacy, i) => [legacy.toLowerCase(), PROPERTY_COLORS[i]]),
+)
 
 /**
  * Translates a stored property color to its Claude Design v1 equivalent at
@@ -82,13 +87,18 @@ const LEGACY_TO_CURRENT: Record<string, string> = {
  *    uppercase form (so `#7367f0` becomes `#7367F0` and matches the picker's
  *    strict equality).
  * 3. Unknown values pass through unchanged.
+ *
+ * The optional `fallback` is returned when `hex` is null/undefined. Default
+ * is PROPERTY_COLORS[0] (brand violet). Pass a different value when the
+ * caller needs a neutral "no color set" indicator (e.g. '#9E9E9E' gray).
  */
 export function mapLegacyPropertyColor (hex: PropertyColor): CurrentPropertyColor
-export function mapLegacyPropertyColor (hex: string | null | undefined): CurrentPropertyColor | string
-export function mapLegacyPropertyColor (hex: string | null | undefined): CurrentPropertyColor | string {
-  if (!hex) return PROPERTY_COLORS[0]
+export function mapLegacyPropertyColor (hex: string | null | undefined, fallback: string): string
+export function mapLegacyPropertyColor (hex: string | null | undefined, fallback?: string): CurrentPropertyColor | string
+export function mapLegacyPropertyColor (hex: string | null | undefined, fallback?: string): CurrentPropertyColor | string {
+  if (!hex) return fallback ?? PROPERTY_COLORS[0]
   const lower = hex.toLowerCase()
-  return (LEGACY_TO_CURRENT[lower] as CurrentPropertyColor)
+  return LEGACY_TO_CURRENT[lower]
     ?? PROPERTY_COLORS.find(c => c.toLowerCase() === lower)
     ?? hex
 }

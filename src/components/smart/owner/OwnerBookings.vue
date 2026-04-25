@@ -337,7 +337,7 @@
 
   function getPropertyColor (propertyId: string): string {
     const property = ownerProperties.value.find(p => p.id === propertyId)
-    return property?.color ? mapLegacyPropertyColor(property.color) : '#9E9E9E'
+    return mapLegacyPropertyColor(property?.color, '#9E9E9E')
   }
 
   function formatStatusDisplay (status: string): string {

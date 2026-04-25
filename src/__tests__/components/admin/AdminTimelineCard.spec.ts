@@ -55,4 +55,15 @@ describe('AdminTimelineCard', () => {
     })
     expect(wrapper.text()).toContain('Turn')
   })
+
+  it('renders property dot using mapLegacyPropertyColor (Phase 6 wiring)', () => {
+    // Fixture stores legacy indigo #5c6bc0; the component must route through
+    // mapLegacyPropertyColor and render the Materio violet #7367F0.
+    const wrapper = mountCard()
+    const dot = wrapper.find('.rounded-circle')
+    expect(dot.exists()).toBe(true)
+    const style = (dot.attributes('style') ?? '').toLowerCase()
+    // Browser may serialize the hex or the rgb() form — accept either.
+    expect(style).toMatch(/#7367f0|rgb\(\s*115\s*,\s*103\s*,\s*240\s*\)/)
+  })
 })

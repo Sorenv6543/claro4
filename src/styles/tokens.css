@@ -59,12 +59,18 @@
   --claro-prop-3: #9155FD;
   --claro-prop-4: #FF9F43;
   --claro-prop-5: #EA5455;
-  /* prop-6 is system-assigned (calendar OUT events only) — NOT in PROPERTY_COLORS cycle. */
+  /* prop-6 is reserved for system-assigned use (calendar OUT events) — NOT in
+     the PROPERTY_COLORS user-selectable cycle. Currently unconsumed; will be
+     wired into bookingToTransitionEvents in src/utils/calendarHelpers.ts when
+     the OUT event yellow-treatment is implemented. */
   --claro-prop-6: #FDD835;
 
   /* ─── Colors: Text (4-step alpha scale) ───────────────────────────── */
   /* fg1..fg4 are the canonical text tokens. Use these in new code.
-     fg1 = primary (100%) | fg2 = secondary (72%) | fg3 = tertiary (50%) | fg4 = disabled (28%). */
+     fg1 = primary (100%) — body text on surface; usually flows via on-surface alias
+     fg2 = secondary (72%) — card subtitles, supporting copy
+     fg3 = tertiary (50%) — captions, metadata, eyebrow text, page subheadings
+     fg4 = disabled (28%) — disabled inputs, dimmed/inactive UI */
   --claro-fg1: #2E263D;
   --claro-fg2: rgba(46, 38, 61, 0.72);
   --claro-fg3: rgba(46, 38, 61, 0.50);

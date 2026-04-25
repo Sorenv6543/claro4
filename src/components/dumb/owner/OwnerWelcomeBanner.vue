@@ -4,7 +4,7 @@
 
   Two deviations from the handoff for Claro Design v1 conformance:
   - Card border-radius: handoff says 12px, Claro rule is 2px.
-  - Icon .box border-radius: handoff says 8px, Claro rule is 2px.
+  - Icon .hero-box border-radius: handoff says 8px, Claro rule is 2px.
 -->
 <template>
   <div class="owner-hero card-aurora">
@@ -39,8 +39,8 @@
           <v-icon color="white" icon="mdi-home-outline" size="18" />
         </div>
         <div>
-          <div class="hero-lbl">Properties</div>
-          <div class="hero-val">{{ propertyCount }}</div>
+          <div class="claro-eyebrow hero-lbl">Properties</div>
+          <div class="claro-numeric hero-val">{{ propertyCount }}</div>
         </div>
       </div>
       <div class="hero-item">
@@ -48,8 +48,8 @@
           <v-icon color="white" icon="mdi-calendar" size="18" />
         </div>
         <div>
-          <div class="hero-lbl">Bookings</div>
-          <div class="hero-val">{{ bookingCount }}</div>
+          <div class="claro-eyebrow hero-lbl">Bookings</div>
+          <div class="claro-numeric hero-val">{{ bookingCount }}</div>
         </div>
       </div>
       <div class="hero-item">
@@ -57,8 +57,8 @@
           <v-icon color="white" icon="mdi-swap-horizontal" size="18" />
         </div>
         <div>
-          <div class="hero-lbl">Turns</div>
-          <div class="hero-val">{{ turnCount }}</div>
+          <div class="claro-eyebrow hero-lbl">Turns</div>
+          <div class="claro-numeric hero-val">{{ turnCount }}</div>
         </div>
       </div>
     </div>
@@ -169,18 +169,21 @@
     0 1px 0 rgba(255, 255, 255, 0.2) inset;
 }
 
+/* Hero-specific overrides on top of .claro-eyebrow:
+   - color (eyebrow uses fg3 dark — hero needs near-white on the gradient)
+   - font-weight (eyebrow uses medium=500 — hero spec is 600) */
 .hero-lbl {
-  font-size: var(--claro-text-xs, 11px);
-  opacity: 0.75;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  color: rgba(255, 255, 255, 0.75);
   font-weight: 600;
 }
 
+/* Hero-specific overrides on top of .claro-numeric:
+   - font-weight (numeric uses semibold=600 — hero spec is 800)
+   - font-size (numeric inherits — hero pins to lg)
+   - margin-top to align baseline with the eyebrow above */
 .hero-val {
   font-size: var(--claro-text-lg, 18px);
   font-weight: 800;
-  font-variant-numeric: tabular-nums;
   margin-top: 1px;
 }
 
