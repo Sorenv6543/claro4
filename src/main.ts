@@ -30,6 +30,12 @@ if (sentryDsn) {
     dsn: sentryDsn,
     environment: import.meta.env.MODE,
     release: import.meta.env.VITE_APP_VERSION,
+    // Capture user IP + full URL + parsed User-Agent on captured events.
+    // For our B2B admin tool, the trade-off favors true: authenticated
+    // users have consented to data processing as part of service use, and
+    // IP/UA make geographic and device-pattern debugging meaningful.
+    // Disable if porting this code to a consumer app with anonymous traffic.
+    sendDefaultPii: true,
     // Conservative default — operators can tune via env var later
     tracesSampleRate: Number(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? 0.1),
     integrations: [
