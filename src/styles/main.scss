@@ -54,7 +54,7 @@ html, body {
 
 .page-subheading {
   margin: var(--claro-heading-sub-gap) 0 0 0;
-  color: var(--claro-text-secondary);
+  color: var(--claro-fg3);
 }
 
 /* Readable tooltip (dark bg + white text) — Vuetify tooltips teleport, so needs to be global */
@@ -108,4 +108,71 @@ html, body {
       transform: translateY(-1px);
     }
   }
+}
+
+/* ─── Claude Design v1: Semantic Type Classes ──────────────────────── */
+/* Use these in templates to express type intent. They reference the
+   --claro-text-* and --claro-lh-* tokens defined in tokens.css. */
+
+.claro-h1 {
+  font-weight: var(--claro-font-weight-semibold);
+  font-size: var(--claro-text-3xl);
+  line-height: var(--claro-lh-tight);
+  letter-spacing: -0.01em;
+  color: var(--claro-fg1);
+}
+
+.claro-h2 {
+  font-weight: var(--claro-font-weight-semibold);
+  font-size: var(--claro-text-xl);
+  line-height: var(--claro-lh-tight);
+  color: var(--claro-fg1);
+}
+
+.claro-h3 {
+  font-weight: var(--claro-font-weight-semibold);
+  font-size: var(--claro-text-lg);
+  line-height: var(--claro-lh-snug);
+  color: var(--claro-fg1);
+}
+
+.claro-subheading {
+  font-weight: var(--claro-font-weight-normal);
+  font-size: var(--claro-text-sm);
+  line-height: var(--claro-lh-normal);
+  color: var(--claro-fg3);
+}
+
+.claro-body {
+  font-size: var(--claro-text-base);
+  line-height: var(--claro-lh-normal);
+  color: var(--claro-fg1);
+}
+
+.claro-caption {
+  font-size: var(--claro-text-xs);
+  line-height: var(--claro-lh-snug);
+  letter-spacing: 0.01em;
+  color: var(--claro-fg3);
+}
+
+.claro-eyebrow {
+  font-weight: var(--claro-font-weight-medium);
+  font-size: 11px;
+  line-height: var(--claro-lh-snug);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--claro-fg3);
+}
+
+.claro-wordmark {
+  font-weight: var(--claro-font-weight-semibold);
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--claro-primary);
+}
+
+.claro-numeric {
+  font-weight: var(--claro-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
 }

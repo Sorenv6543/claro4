@@ -98,6 +98,6 @@
 
 .booking-stats-card__subtitle {
   font-size: 0.75rem;
-  color: var(--claro-text-secondary);
+  color: var(--claro-fg3);
 }
 </style>

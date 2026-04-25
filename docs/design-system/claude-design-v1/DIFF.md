@@ -129,7 +129,7 @@ The handoff's `colors_and_type.css` defines semantic CSS classes that don't exis
 | 🟡 | `.claro-wordmark` | 600 / `22px` / letter-spacing -0.01em / `--claro-primary` | For brand lockup |
 | 🟡 | `.claro-numeric` | 600 / `font-variant-numeric: tabular-nums` | For stat-card numbers |
 
-Decision: only adopt the classes a component actually needs during Phases 2–6. Start by adding the four most-used (`.claro-h1/2/3`, `.claro-eyebrow`, `.claro-numeric`) in Phase 1.
+**DECISION: adopt all 9 in Phase 1.** Per-phase decisions about which classes to add fragment the work; one-time addition of 9 utility classes in Phase 1 is cheaper than spreading them across 5 component phases.
 
 ## 10. Spacing
 
@@ -159,7 +159,7 @@ Decision: only adopt the classes a component actually needs during Phases 2–6.
 | Status | Token | Current | New | Layer | Notes |
 |---|---|---|---|---|---|
 | ✅ | `--claro-gradient-primary` | `linear-gradient(135deg, light 0%, primary 60%, dark 100%)` | same | tokens | |
-| 🔵 | `--claro-gradient-surface` | `linear-gradient(180deg, surface, surface-variant)` | — | tokens | Handoff omits this. Current repo has it but unused per README ("Gradients only on Owner hero"). **Recommend delete** during Phase 7 cleanup. |
+| 🔵 | `--claro-gradient-surface` | `linear-gradient(180deg, surface, surface-variant)` | — | tokens | Handoff omits this. Current repo has it but unused per README ("Gradients only on Owner hero"). **DECISION: delete in Phase 1.** Verified zero consumers via repo grep before removal. |
 
 ## 14. Layout dimensions
 
@@ -167,7 +167,7 @@ Decision: only adopt the classes a component actually needs during Phases 2–6.
 |---|---|---|---|---|---|---|
 | ✅ | `--claro-app-bar-height` | `64px` | `64px` | `64px` | tokens | |
 | ✅ | `--claro-app-bar-height-mobile` | `56px` | `56px` | `56px` | tokens | |
-| 🔴 | `--claro-drawer-width` | `380px` | `260px` | `380px` | tokens | **CONFLICT** — handoff disagrees with itself. Resolution needed. Recommend **260px** (matches `colors_and_type.css`, the more rigorous source) — but verify against the Sidebar Nav preview (`preview/components-sidebar-nav v2.html`) before deciding. |
+| 🟠 | `--claro-drawer-width` | `380px` | `260px` | `380px` | tokens | **DECISION: 260px** (matches `colors_and_type.css`, the more rigorous source). Conflict resolved 2026-04-24. README to be corrected in Phase 7. |
 | ✅ | `--claro-drawer-width-collapsed` | `72px` | `72px` | `72px` | tokens | |
 | ✅ | `--claro-content-padding` | `24px` | `24px` | `24px` | tokens | |
 | ✅ | `--claro-content-padding-mobile` | `12px` | `12px` | `12px` | tokens | |
@@ -220,14 +220,14 @@ Decision required at Phase 4 entry. Archive unselected two in `screens/` with a 
 - **Additive-only in tokens.css** (safe): sections 1 (tint), 4 (tonals), 7 (borders), 8 (type scale), 10 (2xl), 11 (card radius), 15 (motion). All are new tokens that don't break existing code.
 - **Refactor in tokens.css** (medium risk): section 3 text tokens — introduce `fg1..fg4`; keep `on-background`, `on-surface`, `text-secondary` as aliases for one release cycle. Every existing consumer keeps working; Phase 6 sweep migrates consumers to the new names.
 - **Conflict resolution before Phase 1 propagation:** section 14 drawer width. Resolve first.
-- **Property colors change** (section 6): 5 existing values + 1 new yellow. Touches `src/utils/constants.ts` and every consumer. Because property colors are user-selectable and stored per-property in the DB, **existing properties keep their assigned hex**. Migration: either (a) accept drift for already-assigned properties, or (b) map `#5c6bc0 → #7367F0`, `#43a047 → #28C76F`, etc. on read in the `property.color` accessor. Recommend (a) for simplicity; flag in Phase 1 commit message.
+- **Property colors change** (section 6): 5 existing values + 1 new yellow. Touches `src/utils/constants.ts` and every consumer. **DECISION: map-on-read.** A new helper `mapLegacyPropertyColor(hex: string): string` translates `#5c6bc0 → #7367F0`, `#43a047 → #28C76F`, `#8e24aa → #9155FD`, `#f57c00 → #FF9F43`, `#e53935 → #EA5455` at render time. Lives in `src/utils/constants.ts` next to `PROPERTY_COLORS`. Every read of `property.color` for display routes through it. DB is not migrated; existing rows keep their old hex; the picker writes the new hex going forward. Phase 1 adds the helper and updates `PROPERTY_COLORS`; Phase 6 sweeps consumers to use the helper.
 - **Theme colors in `vuetify.ts`:** only the `text-secondary` mapping touches this file. All primary/semantic/domain colors already match. This is the easiest Vuetify theme update we'll ever do.
 
-## Open questions
+## Decisions locked (2026-04-24)
 
-1. **Drawer width** — 260px or 380px? (see §14)
-2. **`PROPERTY_COLORS` migration** — accept drift for existing assignments, or migrate on read?
-3. **Delete `--claro-gradient-surface`?** Unused per README.
-4. **Adopt all type classes in Phase 1, or only the 4 most-used?** (recommend: only the 4)
+1. **Drawer width** → `260px`. (§14)
+2. **`PROPERTY_COLORS` migration** → map-on-read via new helper `mapLegacyPropertyColor()` in `src/utils/constants.ts`. DB untouched. (§6)
+3. **`--claro-gradient-surface`** → delete in Phase 1. (§13)
+4. **Type classes** → adopt all 9 in Phase 1. (§9)
 
-Resolve before Phase 1 starts.
+Phase 1 unblocked.
