@@ -224,7 +224,7 @@ The app is a Progressive Web App configured via `vite-plugin-pwa` (production bu
 - **Service Worker**: Workbox-powered, auto-update with `skipWaiting` + `clientsClaim`
 - **Caching strategies**: StaleWhileRevalidate for role-based chunks (50 entries, 30-day), NetworkFirst for API (100 entries, 24h, 3s timeout), CacheFirst for images (60 entries, 30-day)
 - **Composables**: `usePWA` (install/update lifecycle), `usePushNotifications` (push notification handling)
-- **Components**: `PWANotifications.vue`, `PWANotificationsEnhanced.vue`, `PWAStatusCard.vue` in `src/components/dumb/shared/`
+- **Components**: `PWANotificationsEnhanced.vue` in `src/components/dumb/shared/` (rendered globally from `App.vue`)
 - **Icons**: `public/pwa-icon.svg` source, generated at 192×192 and 512×512 (standard + maskable)
 - **PWA-specific scripts**: `pnpm build:pwa`, `pnpm test:pwa`, `pnpm analyze:pwa`
 
