@@ -40,7 +40,27 @@ if (sentryDsn) {
       // Without this, tracesSampleRate above is meaningless — there are
       // no transactions to sample.
       Sentry.browserTracingIntegration({ router }),
+      // Session Replay — captures DOM mutations + user interactions in a
+      // rolling buffer; on error, the buffer is uploaded so you can replay
+      // what the user did right before the crash.
+      //
+      // Privacy defaults: ALL text is masked (booking notes, owner names,
+      // dates rendered as text) and ALL media is blocked (avatars, photos).
+      // The replay shows DOM structure, click sequence, and form
+      // interactions, but never readable user data. Suitable for B2B SaaS
+      // with compliance requirements (GDPR/CCPA).
+      Sentry.replayIntegration({
+        maskAllText: true,
+        blockAllMedia: true,
+      }),
     ],
+    // Session Replay sample rates — see replayIntegration above.
+    // - replaysSessionSampleRate: record N% of all sessions (UX trend visibility)
+    // - replaysOnErrorSampleRate: record 100% of error sessions (root-cause debugging)
+    // The on-error rate operates on a rolling buffer: the SDK always keeps
+    // the last 30s of activity in memory and only uploads when an error fires.
+    replaysSessionSampleRate: 0.1,
+    replaysOnErrorSampleRate: 1.0,
     // Distributed tracing: which outgoing fetch URLs receive the
     // `sentry-trace` and `baggage` headers that connect frontend
     // transactions to backend spans. Default behavior would attach
