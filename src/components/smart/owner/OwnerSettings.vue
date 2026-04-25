@@ -405,7 +405,6 @@
   // Password form is disabled — Supabase auth.updateUser requires session-based
   // re-authentication before password change. Will be implemented when the
   // re-auth flow (signInWithPassword verification) is added.
-  const passwordFormRef = ref<VForm | null>(null)
   const passwordFormValid = ref(false)
   const showNewPassword = ref(false)
   const showConfirmPassword = ref(false)
