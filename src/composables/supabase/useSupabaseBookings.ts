@@ -18,6 +18,29 @@ const connectionStatus = ref<'connecting' | 'connected' | 'disconnected'>('disco
 // Safety net timeout — primary cleanup is in CRUD finally blocks
 const OPTIMISTIC_SAFETY_TIMEOUT = 30_000
 
+/**
+ * Thrown by `bulkAssignCleaner` when the SQL UPDATE fails after optimistic
+ * store updates have been rolled back.
+ *
+ * Carries `eligibleIds` (the IDs that passed the pre-filter and were actually
+ * attempted against SQL) and `skipped` (the IDs that were pre-filtered and
+ * never reached SQL). This lets admin-layer callers distinguish
+ * "attempted but server rejected" from "pre-filtered as ineligible" — without
+ * this, callers would have to choose between misreporting one or the other
+ * as failed. See architecture-review PR feedback C1.
+ */
+export class BulkAssignSqlError extends Error {
+  constructor (
+    message: string,
+    public readonly eligibleIds: readonly string[],
+    public readonly skipped: readonly { id: string, reason: string }[],
+    public readonly cause: unknown,
+  ) {
+    super(message)
+    this.name = 'BulkAssignSqlError'
+  }
+}
+
 export function useSupabaseBookings () {
   const bookingStore = useBookingStore()
 
@@ -256,10 +279,19 @@ export function useSupabaseBookings () {
    * (The `one_assignment_type` constraint enforces at most one of
    * assigned_cleaner_id / assigned_team_id / assigned_group_ids.)
    *
-   * Returns { updated, skipped } so callers can preserve per-id
-   * outcome reporting that the old per-row implementation provided.
-   * On any SQL failure, all optimistic store updates are rolled back
-   * before throwing.
+   * Returns { updated, skipped } on success (including the all-skipped
+   * no-op case where eligibleIds is empty). Skip reasons:
+   * - `'not found in local store'` — caller passed an ID not in the booking store
+   * - `'has conflicting team/group assignment'` — would violate the
+   *   `one_assignment_type` CHECK constraint
+   * Note: completed/cancelled bookings are NOT pre-filtered — callers
+   * should filter those upstream if they don't want assignment to apply.
+   *
+   * On SQL failure: all optimistic store updates are rolled back, then
+   * a `BulkAssignSqlError` is thrown carrying both `eligibleIds` (what
+   * was attempted) and `skipped` (what was pre-filtered). This lets the
+   * admin layer accurately report which IDs were rejected by the server
+   * vs. which were never sent.
    */
   async function bulkAssignCleaner (
     bookingIds: string[],
@@ -314,7 +346,14 @@ export function useSupabaseBookings () {
       for (const [id, existing] of snapshots) {
         bookingStore.setBooking(id, existing)
       }
-      throw error
+      // Wrap in BulkAssignSqlError so callers can distinguish
+      // "attempted but rejected" (eligibleIds) from "pre-filtered" (skipped).
+      throw new BulkAssignSqlError(
+        error instanceof Error ? error.message : String(error),
+        eligibleIds,
+        skipped,
+        error,
+      )
     } finally {
       for (const id of eligibleIds) {
         clearOptimistic(id)

@@ -3,7 +3,7 @@ import type { Booking, BookingFormData, BookingStatus, BookingType } from '@/typ
 import { computed, ref } from 'vue'
 
 import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
-import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
+import { BulkAssignSqlError, useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
@@ -435,9 +435,11 @@ export function useAdminBookings () {
    *
    * Delegates to the supabase-layer bulkAssignCleaner, which executes one
    * `.update().in('id', [...])` round-trip instead of N parallel updates.
-   * Bookings with conflicting team/group assignments are pre-filtered and
-   * surfaced via the returned `failed` list, preserving the per-id outcome
-   * semantics of the original implementation.
+   * Bookings with conflicting team/group assignments (or missing from the
+   * local store) are pre-filtered and surfaced via the returned `failed`
+   * list. On SQL failure, only IDs that were *actually attempted* against
+   * the server are reported as failed — pre-filtered IDs aren't conflated
+   * with server rejects (see PR review C1).
    */
   async function bulkAssignCleaner (bookingIds: string[], cleanerId: string): Promise<{ success: string[], failed: string[] }> {
     if (!currentAdminId.value) {
@@ -452,14 +454,14 @@ export function useAdminBookings () {
     try {
       const { updated, skipped } = await supaBulkAssignCleaner(bookingIds, cleanerId)
       const successIds = updated.map(b => b.id)
-      const failedIds = skipped.map(s => s.id)
+      const skippedIds = skipped.map(s => s.id)
 
       if (successIds.length > 0) {
-        success.value = failedIds.length > 0
-          ? `Bulk assignment completed: ${successIds.length} successful, ${failedIds.length} skipped`
+        success.value = skippedIds.length > 0
+          ? `Bulk assignment completed: ${successIds.length} successful, ${skippedIds.length} skipped`
           : `Bulk assignment completed: ${successIds.length} successful`
       } else {
-        error.value = `Bulk assignment failed: ${failedIds.length} bookings could not be assigned`
+        error.value = `Bulk assignment failed: ${skippedIds.length} bookings could not be assigned`
       }
 
       // Log per-id skip reasons for debugging
@@ -467,9 +469,20 @@ export function useAdminBookings () {
         console.warn(`[useAdminBookings] bulkAssignCleaner skipped ${id}: ${reason}`)
       }
 
-      return { success: successIds, failed: failedIds }
+      return { success: successIds, failed: skippedIds }
     } catch (error_) {
       console.error('[useAdminBookings] bulkAssignCleaner error:', error_)
+
+      if (error_ instanceof BulkAssignSqlError) {
+        // SQL update failed after rollback. Only IDs that actually reached SQL
+        // (eligibleIds) should be reported as failed — skipped IDs were never
+        // attempted and shouldn't be conflated with server rejects.
+        error.value = `Bulk assignment failed: ${error_.message}`
+        return { success: [], failed: [...error_.eligibleIds] }
+      }
+
+      // Unexpected non-BulkAssign error path (defensive — should not happen
+      // because the supabase layer wraps SQL failures in BulkAssignSqlError).
       error.value = `Bulk assignment failed: ${error_ instanceof Error ? error_.message : 'System error occurred'}`
       return { success: [], failed: bookingIds }
     } finally {
