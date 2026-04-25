@@ -75,3 +75,7 @@ perf-trace-*.json.gz
 # Screenshots and temp artifacts
 screenshots/
 _tmp_*
+
+# Design handoff artifacts — ignore zips and extracted contents (see MANIFEST.md for recovery)
+design/handoff/**/extracted/
+design/handoff/**/*.zip

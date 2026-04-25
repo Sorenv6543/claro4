@@ -284,7 +284,7 @@
   import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
-  import { getBookingStatusColor } from '@/utils/constants'
+  import { getBookingStatusColor, mapLegacyPropertyColor } from '@/utils/constants'
 
   // Composables
   const { mobile } = useDisplay()
@@ -466,7 +466,7 @@
 
   function getPropertyColor (propertyId: string): string {
     const property = allProperties.value.find(p => p.id === propertyId)
-    return property?.color || '#9E9E9E'
+    return mapLegacyPropertyColor(property?.color, '#9E9E9E')
   }
 
   // Use centralized status color from constants

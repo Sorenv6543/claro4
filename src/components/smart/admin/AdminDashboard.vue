@@ -5,6 +5,7 @@
   import type { Property } from '@/types/property'
   import type { CleanerTeam } from '@/types/team'
   import { computed, onMounted, ref } from 'vue'
+  import { mapLegacyPropertyColor } from '@/utils/constants'
   import AdminAllClearCard from '@/components/dumb/admin/AdminAllClearCard.vue'
   import AdminMetricsStrip from '@/components/dumb/admin/AdminMetricsStrip.vue'
   import AdminOverviewCleanerAvailability from '@/components/dumb/admin/AdminOverviewCleanerAvailability.vue'
@@ -55,7 +56,7 @@
       map.set(p.id, {
         id: p.id,
         name: formatPropertyAddress(p, 'short'),
-        color: p.color || '#5c6bc0',
+        color: mapLegacyPropertyColor(p.color),
       })
     }
     return map

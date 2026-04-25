@@ -1,5 +1,6 @@
 // src/__tests__/components/owner/OwnerNavigationDrawer.spec.ts
 import { describe, expect, it } from 'vitest'
+import { PROPERTY_COLORS } from '@/utils/constants'
 
 // Pure helpers extracted from the component — test them in isolation
 // before the component exists to drive the design.
@@ -14,8 +15,8 @@ function isNavItemActive (itemPath: string, currentPath: string): boolean {
   return currentPath.startsWith(itemPath + '/')
 }
 
-// propertyColor: cycles through 4 brand colors by index
-const PROPERTY_COLORS = ['#5c6bc0', '#43a047', '#8e24aa', '#f57c00']
+// propertyColor: cycles through PROPERTY_COLORS by index. Imports from constants
+// so the test stays aligned with palette changes (5 Materio colors today).
 function propertyColor (index: number): string {
   return PROPERTY_COLORS[index % PROPERTY_COLORS.length]
 }
@@ -38,12 +39,13 @@ describe('isNavItemActive', () => {
 
 describe('propertyColor', () => {
   it('returns first color for index 0', () => {
-    expect(propertyColor(0)).toBe('#5c6bc0')
+    expect(propertyColor(0)).toBe(PROPERTY_COLORS[0])
   })
-  it('returns fourth color for index 3', () => {
-    expect(propertyColor(3)).toBe('#f57c00')
+  it('returns last color at PROPERTY_COLORS.length - 1', () => {
+    expect(propertyColor(PROPERTY_COLORS.length - 1))
+      .toBe(PROPERTY_COLORS[PROPERTY_COLORS.length - 1])
   })
-  it('cycles back to first color at index 4', () => {
-    expect(propertyColor(4)).toBe('#5c6bc0')
+  it('cycles back to first color at length boundary', () => {
+    expect(propertyColor(PROPERTY_COLORS.length)).toBe(PROPERTY_COLORS[0])
   })
 })

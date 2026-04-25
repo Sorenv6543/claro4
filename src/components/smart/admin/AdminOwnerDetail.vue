@@ -384,7 +384,7 @@
   import { useSupabaseUserProfiles } from '@/composables/supabase/useSupabaseUserProfiles'
   import { usePropertyStore } from '@/stores/property'
   import { formatPropertyAddress } from '@/types/property'
-  import { PROPERTY_COLORS } from '@/utils/constants'
+  import { OWNER_COLORS, PROPERTY_COLORS } from '@/utils/constants'
 
   const route = useRoute()
   const router = useRouter()
@@ -405,8 +405,7 @@
   const properties = ref<Property[]>([])
 
   // Avatar color
-  const COLORS = ['#5c6bc0', '#43a047', '#8e24aa', '#f57c00', '#00897b', '#e53935']
-  const avatarColor = ref(COLORS[0])
+  const avatarColor = ref<string>(OWNER_COLORS[0])
 
   // Edit owner dialog
   const showEditDialog = ref(false)
@@ -491,7 +490,7 @@
       // Set avatar color deterministically from id
       let hash = 0
       for (const ch of ownerId) hash = ch.codePointAt(0)! + ((hash << 5) - hash)
-      avatarColor.value = COLORS[Math.abs(hash) % COLORS.length]
+      avatarColor.value = OWNER_COLORS[Math.abs(hash) % OWNER_COLORS.length]
 
       // Properties come from propertyStore (loaded by useRealtimeSync)
       properties.value = ownerProperties.value

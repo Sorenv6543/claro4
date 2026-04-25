@@ -44,7 +44,7 @@
       <span class="field-label">Color</span>
       <span
         class="color-dot"
-        :style="{ backgroundColor: property.color }"
+        :style="{ backgroundColor: mapLegacyPropertyColor(property.color) }"
       />
     </div>
 
@@ -146,6 +146,7 @@
   import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
   import PropertySectionCard from '@/components/dumb/owner/PropertySectionCard.vue'
   import { formatPropertyAddress } from '@/types/property'
+  import { mapLegacyPropertyColor } from '@/utils/constants'
 
   const props = defineProps<{
     property: Property
@@ -191,7 +192,7 @@
     form.bathrooms = props.property.bathrooms ?? null
     form.square_feet = props.property.square_feet ?? null
     form.floor_type = props.property.floor_type ?? null
-    form.color = props.property.color
+    form.color = mapLegacyPropertyColor(props.property.color)
   }
 
   const isDirty = computed(() => {
@@ -206,7 +207,7 @@
       || (form.bathrooms ?? undefined) !== props.property.bathrooms
       || (form.square_feet ?? undefined) !== props.property.square_feet
       || (form.floor_type ?? undefined) !== props.property.floor_type
-      || form.color !== props.property.color
+      || form.color !== mapLegacyPropertyColor(props.property.color)
     )
   })
 

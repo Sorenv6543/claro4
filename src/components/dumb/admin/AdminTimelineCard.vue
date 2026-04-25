@@ -2,7 +2,7 @@
   import type { Booking } from '@/types/booking'
 
   import { computed } from 'vue'
-  import { getBookingStatusColor } from '@/utils/constants'
+  import { getBookingStatusColor, mapLegacyPropertyColor } from '@/utils/constants'
 
   const props = defineProps<{
     booking: Booking
@@ -67,7 +67,7 @@
       <div
         v-if="property"
         class="rounded-circle flex-shrink-0"
-        :style="{ width: '10px', height: '10px', backgroundColor: property.color }"
+        :style="{ width: '10px', height: '10px', backgroundColor: mapLegacyPropertyColor(property.color) }"
       />
 
       <div class="flex-grow-1" style="min-width: 0;">

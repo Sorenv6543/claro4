@@ -4,7 +4,7 @@
     :model-value="modelValue"
     :permanent="mdAndUp"
     :temporary="!mdAndUp"
-    width="264"
+    :width="drawerWidth"
     @update:model-value="emit('update:modelValue', $event)"
   >
     <!-- Navigation section -->
@@ -85,6 +85,11 @@
   const route = useRoute()
   const { mdAndUp } = useDisplay()
   const authStore = useAuthStore()
+
+  // 260 on md+ (permanent), 280 below (temporary overlay — wider for
+  // readability when slid in). The CSS token --claro-drawer-width in
+  // tokens.css is documentary only; this computed owns width selection.
+  const drawerWidth = computed(() => mdAndUp.value ? 260 : 280)
 
   // ── Nav items ──────────────────────────────────────────────────
   const navItems = [

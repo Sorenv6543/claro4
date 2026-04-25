@@ -225,7 +225,7 @@
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
-  import { formatStatus, getBookingStatusColor } from '@/utils/constants'
+  import { formatStatus, getBookingStatusColor, mapLegacyPropertyColor } from '@/utils/constants'
 
   defineOptions({
     name: 'OwnerBookingsComponent',
@@ -337,7 +337,7 @@
 
   function getPropertyColor (propertyId: string): string {
     const property = ownerProperties.value.find(p => p.id === propertyId)
-    return property?.color || '#9E9E9E'
+    return mapLegacyPropertyColor(property?.color, '#9E9E9E')
   }
 
   function formatStatusDisplay (status: string): string {

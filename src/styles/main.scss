@@ -54,7 +54,7 @@ html, body {
 
 .page-subheading {
   margin: var(--claro-heading-sub-gap) 0 0 0;
-  color: var(--claro-text-secondary);
+  color: var(--claro-fg3);
 }
 
 /* Readable tooltip (dark bg + white text) — Vuetify tooltips teleport, so needs to be global */
@@ -70,13 +70,14 @@ html, body {
 }
 
 /* ─── Subtle Micro Animations ─────────────────────────────────────── */
+/* Durations + easing flow from Phase 1 motion tokens (--claro-dur-*, --claro-ease). */
 @media (prefers-reduced-motion: no-preference) {
   /* Cards: subtle lift on hover.
      Exclude data table rows and calendar cells — they're too dense. */
   .v-card:not(.v-data-table .v-card):not(.v-calendar .v-card) {
     transition-property: box-shadow, opacity, background, transform;
-    transition-duration: 0.25s;
-    transition-timing-function: ease;
+    transition-duration: var(--claro-dur-slow, 250ms);
+    transition-timing-function: var(--claro-ease, ease);
 
     &:hover {
       box-shadow: var(--claro-shadow-md) !important;
@@ -84,28 +85,104 @@ html, body {
     }
   }
 
-  /* Buttons: press feel on active, opacity dim on text/icon variants hover */
+  /* Buttons: press feel on active. */
   .v-btn {
     transition-property: box-shadow, transform, opacity, background;
-    transition-duration: 0.15s;
-    transition-timing-function: ease;
+    transition-duration: var(--claro-dur-fast, 150ms);
+    transition-timing-function: var(--claro-ease, ease);
 
     &:active {
       transform: scale(0.97);
     }
   }
 
-  /* List items: smooth highlight fade instead of snap */
-  .v-list-item {
-    transition: background-color 0.2s ease, color 0.2s ease;
+  /* Flat buttons (the Phase 3 default variant — covers most CTAs):
+     subtle lift + purple-tinted shadow on hover. Disabled buttons
+     opted out so they don't pretend to be interactive. */
+  .v-btn--variant-flat:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(115, 103, 240, 0.35);
   }
 
-  /* Chips: tiny lift */
+  /* List items: smooth highlight fade instead of snap. */
+  .v-list-item {
+    transition: background-color var(--claro-dur-base, 200ms) var(--claro-ease, ease),
+                color var(--claro-dur-base, 200ms) var(--claro-ease, ease);
+  }
+
+  /* Chips: tiny lift. */
   .v-chip {
-    transition: transform 0.15s ease;
+    transition: transform var(--claro-dur-fast, 150ms) var(--claro-ease, ease);
 
     &:hover {
       transform: translateY(-1px);
     }
   }
+}
+
+/* ─── Claude Design v1: Semantic Type Classes ──────────────────────── */
+/* Use these in templates to express type intent. They reference the
+   --claro-text-* and --claro-lh-* tokens defined in tokens.css. */
+
+.claro-h1 {
+  font-weight: var(--claro-font-weight-semibold);
+  font-size: var(--claro-text-3xl);
+  line-height: var(--claro-lh-tight);
+  letter-spacing: -0.01em;
+  color: var(--claro-fg1);
+}
+
+.claro-h2 {
+  font-weight: var(--claro-font-weight-semibold);
+  font-size: var(--claro-text-xl);
+  line-height: var(--claro-lh-tight);
+  color: var(--claro-fg1);
+}
+
+.claro-h3 {
+  font-weight: var(--claro-font-weight-semibold);
+  font-size: var(--claro-text-lg);
+  line-height: var(--claro-lh-snug);
+  color: var(--claro-fg1);
+}
+
+.claro-subheading {
+  font-weight: var(--claro-font-weight-normal);
+  font-size: var(--claro-text-sm);
+  line-height: var(--claro-lh-normal);
+  color: var(--claro-fg3);
+}
+
+.claro-body {
+  font-size: var(--claro-text-base);
+  line-height: var(--claro-lh-normal);
+  color: var(--claro-fg1);
+}
+
+.claro-caption {
+  font-size: var(--claro-text-xs);
+  line-height: var(--claro-lh-snug);
+  letter-spacing: 0.01em;
+  color: var(--claro-fg3);
+}
+
+.claro-eyebrow {
+  font-weight: var(--claro-font-weight-medium);
+  font-size: 11px;
+  line-height: var(--claro-lh-snug);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--claro-fg3);
+}
+
+.claro-wordmark {
+  font-weight: var(--claro-font-weight-semibold);
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--claro-primary);
+}
+
+.claro-numeric {
+  font-weight: var(--claro-font-weight-semibold);
+  font-variant-numeric: tabular-nums;
 }

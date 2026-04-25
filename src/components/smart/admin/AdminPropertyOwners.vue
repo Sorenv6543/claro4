@@ -221,6 +221,7 @@
   import { useSupabaseUserProfiles } from '@/composables/supabase/useSupabaseUserProfiles'
   import { usePropertyStore } from '@/stores/property'
   import { useUserProfileStore } from '@/stores/userProfile'
+  import { OWNER_COLORS } from '@/utils/constants'
 
   const router = useRouter()
   const { mobile } = useDisplay()
@@ -278,12 +279,10 @@
     propertyOwners.value.filter(o => o.properties.length > 0).length,
   )
 
-  const COLORS = ['#5c6bc0', '#43a047', '#8e24aa', '#f57c00', '#00897b', '#e53935']
-
   function getAvatarColor (id: string): string {
     let hash = 0
     for (const ch of id) hash = ch.codePointAt(0)! + ((hash << 5) - hash)
-    return COLORS[Math.abs(hash) % COLORS.length]
+    return OWNER_COLORS[Math.abs(hash) % OWNER_COLORS.length]
   }
 
   function getInitials (name: string) {
