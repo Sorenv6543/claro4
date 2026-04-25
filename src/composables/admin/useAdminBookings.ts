@@ -28,6 +28,7 @@ export function useAdminBookings () {
     deleteBooking: supaDelete,
     changeBookingStatus: supaChangeStatus,
     assignCleaner: supaAssignCleaner,
+    bulkAssignCleaner: supaBulkAssignCleaner,
   } = useSupabaseBookings()
   const authStore = useAuthStore()
   const bookingStore = useBookingStore()
@@ -430,7 +431,13 @@ export function useAdminBookings () {
   }
 
   /**
-   * Bulk assign cleaner to multiple bookings (admin efficiency operation)
+   * Bulk assign cleaner to multiple bookings (admin efficiency operation).
+   *
+   * Delegates to the supabase-layer bulkAssignCleaner, which executes one
+   * `.update().in('id', [...])` round-trip instead of N parallel updates.
+   * Bookings with conflicting team/group assignments are pre-filtered and
+   * surfaced via the returned `failed` list, preserving the per-id outcome
+   * semantics of the original implementation.
    */
   async function bulkAssignCleaner (bookingIds: string[], cleanerId: string): Promise<{ success: string[], failed: string[] }> {
     if (!currentAdminId.value) {
@@ -442,42 +449,31 @@ export function useAdminBookings () {
     error.value = null
     success.value = null
 
-    const results = { success: [] as string[], failed: [] as string[] }
-
     try {
-      // Call supabase layer directly to avoid racing shared loading/error/success refs
-      const settledResults = await Promise.allSettled(
-        bookingIds.map(async bookingId => {
-          await supaAssignCleaner(bookingId, cleanerId)
-          return bookingId
-        }),
-      )
+      const { updated, skipped } = await supaBulkAssignCleaner(bookingIds, cleanerId)
+      const successIds = updated.map(b => b.id)
+      const failedIds = skipped.map(s => s.id)
 
-      for (const [i, settledResult] of settledResults.entries()) {
-        if (settledResult.status === 'fulfilled') {
-          results.success.push(bookingIds[i])
-        } else {
-          console.error(`[useAdminBookings] bulkAssignCleaner failed for booking ${bookingIds[i]}:`, settledResult.reason)
-          results.failed.push(bookingIds[i])
-        }
-      }
-
-      const successCount = results.success.length
-      const failedCount = results.failed.length
-
-      if (successCount > 0) {
-        success.value = `Bulk assignment completed: ${successCount} successful, ${failedCount} failed`
+      if (successIds.length > 0) {
+        success.value = failedIds.length > 0
+          ? `Bulk assignment completed: ${successIds.length} successful, ${failedIds.length} skipped`
+          : `Bulk assignment completed: ${successIds.length} successful`
       } else {
-        error.value = `Bulk assignment failed: ${failedCount} bookings could not be assigned`
+        error.value = `Bulk assignment failed: ${failedIds.length} bookings could not be assigned`
       }
 
-      loading.value = false
-      return results
+      // Log per-id skip reasons for debugging
+      for (const { id, reason } of skipped) {
+        console.warn(`[useAdminBookings] bulkAssignCleaner skipped ${id}: ${reason}`)
+      }
+
+      return { success: successIds, failed: failedIds }
     } catch (error_) {
       console.error('[useAdminBookings] bulkAssignCleaner error:', error_)
       error.value = `Bulk assignment failed: ${error_ instanceof Error ? error_.message : 'System error occurred'}`
-      loading.value = false
       return { success: [], failed: bookingIds }
+    } finally {
+      loading.value = false
     }
   }
 

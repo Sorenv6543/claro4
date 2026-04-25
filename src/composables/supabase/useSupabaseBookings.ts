@@ -242,6 +242,86 @@ export function useSupabaseBookings () {
     return updateBooking(bookingId, { assigned_cleaner_id: cleanerId })
   }
 
+  /**
+   * Assign one cleaner to many bookings in a single SQL round-trip.
+   *
+   * Replaces N parallel update().eq('id', x) calls with one
+   * update().in('id', [...]) call. At ~50 bookings, this is 1 HTTP
+   * round-trip instead of 50.
+   *
+   * Caveat: PostgreSQL aborts an entire UPDATE if any row violates a
+   * CHECK constraint, so we pre-filter in JS based on the local
+   * booking store. Bookings already assigned to a team or group are
+   * reported as "skipped" rather than batch-aborting the operation.
+   * (The `one_assignment_type` constraint enforces at most one of
+   * assigned_cleaner_id / assigned_team_id / assigned_group_ids.)
+   *
+   * Returns { updated, skipped } so callers can preserve per-id
+   * outcome reporting that the old per-row implementation provided.
+   * On any SQL failure, all optimistic store updates are rolled back
+   * before throwing.
+   */
+  async function bulkAssignCleaner (
+    bookingIds: string[],
+    cleanerId: string,
+  ): Promise<{ updated: Booking[], skipped: { id: string, reason: string }[] }> {
+    const snapshots = new Map<string, Booking>()
+    const eligibleIds: string[] = []
+    const skipped: { id: string, reason: string }[] = []
+
+    for (const id of bookingIds) {
+      const existing = bookingStore.bookings.get(id)
+      if (!existing) {
+        skipped.push({ id, reason: 'not found in local store' })
+        continue
+      }
+      const hasTeam = !!existing.assigned_team_id
+      const hasGroup = !!existing.assigned_group_ids?.length
+      if (hasTeam || hasGroup) {
+        skipped.push({ id, reason: 'has conflicting team/group assignment' })
+        continue
+      }
+      snapshots.set(id, existing)
+      eligibleIds.push(id)
+    }
+
+    if (eligibleIds.length === 0) {
+      return { updated: [], skipped }
+    }
+
+    // Apply optimistic updates locally before the SQL call
+    const updateTime = new Date().toISOString()
+    const updated: Booking[] = []
+    for (const id of eligibleIds) {
+      const existing = snapshots.get(id)!
+      const next: Booking = { ...existing, assigned_cleaner_id: cleanerId, updated_at: updateTime }
+      bookingStore.setBooking(id, next)
+      trackOptimistic(id)
+      updated.push(next)
+    }
+
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ assigned_cleaner_id: cleanerId })
+        .in('id', eligibleIds)
+      if (error) {
+        throw error
+      }
+      return { updated, skipped }
+    } catch (error) {
+      // Roll back all optimistic updates
+      for (const [id, existing] of snapshots) {
+        bookingStore.setBooking(id, existing)
+      }
+      throw error
+    } finally {
+      for (const id of eligibleIds) {
+        clearOptimistic(id)
+      }
+    }
+  }
+
   return {
     fetchAndSubscribe,
     unsubscribe,
@@ -250,6 +330,7 @@ export function useSupabaseBookings () {
     deleteBooking,
     changeBookingStatus,
     assignCleaner,
+    bulkAssignCleaner,
     connectionStatus,
   }
 }
