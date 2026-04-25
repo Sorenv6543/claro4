@@ -55,14 +55,17 @@ function useOwnerBookingsPinia () {
   })
 
   /**
-     * Get current owner's properties only
-     */
+   * Get current owner's properties only.
+   *
+   * Mirrors useOwnerProperties.myProperties — both delegate to
+   * propertyStore.propertiesByOwner so the cachedFilterBy result is
+   * shared across composables. See architecture review #8b/#13.
+   */
   const myProperties = computed((): Property[] => {
     if (!currentUserId.value) {
       return []
     }
-    return Array.from(propertyStore.properties.values())
-      .filter(property => property.owner_id === currentUserId.value)
+    return Array.from(propertyStore.propertiesByOwner(currentUserId.value).values())
   })
 
   /**

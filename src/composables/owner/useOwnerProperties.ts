@@ -40,15 +40,18 @@ export function useOwnerProperties () {
   // COMPUTED PROPERTIES - Owner-scoped data filtering
 
   /**
-   * Get all properties for the current owner only
+   * Get all properties for the current owner only.
+   *
+   * Delegates to propertyStore.propertiesByOwner — a cachedFilterBy-backed
+   * getter with per-key TTL. Same value is read by useOwnerBookings, so
+   * both composables share one cached scan instead of doing two parallel
+   * O(n) filters. See architecture review #8b/#13.
    */
-  const myProperties = computed(() => {
+  const myProperties = computed((): Property[] => {
     if (!currentUserId.value) {
       return []
     }
-
-    return Array.from(propertyStore.properties.values())
-      .filter(property => property.owner_id === currentUserId.value)
+    return Array.from(propertyStore.propertiesByOwner(currentUserId.value).values())
   })
 
   /**
