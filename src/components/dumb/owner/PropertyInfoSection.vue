@@ -192,7 +192,7 @@
     form.bathrooms = props.property.bathrooms ?? null
     form.square_feet = props.property.square_feet ?? null
     form.floor_type = props.property.floor_type ?? null
-    form.color = props.property.color
+    form.color = mapLegacyPropertyColor(props.property.color)
   }
 
   const isDirty = computed(() => {
@@ -207,7 +207,7 @@
       || (form.bathrooms ?? undefined) !== props.property.bathrooms
       || (form.square_feet ?? undefined) !== props.property.square_feet
       || (form.floor_type ?? undefined) !== props.property.floor_type
-      || form.color !== props.property.color
+      || form.color !== mapLegacyPropertyColor(props.property.color)
     )
   })
 

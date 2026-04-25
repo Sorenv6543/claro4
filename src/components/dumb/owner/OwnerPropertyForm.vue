@@ -292,6 +292,7 @@
   import type { PricingTier, Property, PropertyFormData } from '@/types/property'
   import { computed, nextTick, ref, watch } from 'vue'
   import { usePWA } from '@/composables/shared/usePWA'
+  import { mapLegacyPropertyColor, PROPERTY_COLORS } from '@/utils/constants'
 
   // Props
   interface Props {
@@ -340,7 +341,7 @@
     special_instructions: '',
     pricing_tier: 'standard',
     active: true,
-    color: '#5c6bc0',
+    color: PROPERTY_COLORS[0],
   })
 
   // Computed properties
@@ -420,7 +421,7 @@
       special_instructions: '',
       pricing_tier: 'standard',
       active: true,
-      color: '#5c6bc0',
+      color: PROPERTY_COLORS[0],
     }
 
     if (formRef.value) {
@@ -444,7 +445,7 @@
       special_instructions: property.special_instructions || '',
       pricing_tier: property.pricing_tier,
       active: property.active,
-      color: property.color,
+      color: mapLegacyPropertyColor(property.color),
     }
   }
 
