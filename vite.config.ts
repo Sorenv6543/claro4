@@ -1,8 +1,9 @@
 import type { PluginOption } from 'vite'
 
 import { fileURLToPath, URL } from 'node:url'
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 import vue from '@vitejs/plugin-vue'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import devtoolsJson from 'vite-plugin-devtools-json'
 import { VitePWA } from 'vite-plugin-pwa'
 import vueDevTools from 'vite-plugin-vue-devtools'
@@ -24,6 +25,15 @@ const resolveAlias = (relativePath: string) => fileURLToPath(new URL(relativePat
 export default defineConfig(({ mode }) => {
   const isProduction = mode === 'production'
   const isDevelopment = mode === 'development'
+
+  // Load .env / .env.local / .env.<mode> into a plain object. Vite injects
+  // VITE_*-prefixed vars into the client bundle automatically, but here in
+  // the Node-side config we have no such helper — `process.env` only has
+  // OS-exported vars, NOT .env.local. Empty prefix means "load all vars
+  // regardless of prefix" which is what we need to read the unprefixed
+  // SENTRY_AUTH_TOKEN / SENTRY_ORG / SENTRY_PROJECT used by the
+  // source-map upload plugin below.
+  const env = loadEnv(mode, process.cwd(), '')
 
   const plugins: PluginOption[] = [
     vue({
@@ -173,6 +183,30 @@ export default defineConfig(({ mode }) => {
         },
       }),
     )
+
+    // Sentry source-map upload (must be LAST plugin so it sees all built artifacts).
+    // Gated on SENTRY_AUTH_TOKEN being set so contributors without ops credentials
+    // can still run `pnpm build` without errors. Mirrors the graceful-degradation
+    // pattern in main.ts where Sentry.init is gated on VITE_SENTRY_DSN.
+    //
+    // We use `env` from loadEnv() above, NOT process.env, because Vite does not
+    // auto-inject .env.local into Node's process.env — only into the client
+    // bundle's import.meta.env. Without loadEnv, this gate is always false on
+    // contributor laptops and source maps silently never upload.
+    if (env.SENTRY_AUTH_TOKEN) {
+      plugins.push(
+        sentryVitePlugin({
+          org: env.SENTRY_ORG,
+          project: env.SENTRY_PROJECT,
+          authToken: env.SENTRY_AUTH_TOKEN,
+          // Match the runtime release tag in main.ts's Sentry.init({ release })
+          // so uploaded artifacts and captured events resolve to the same release.
+          release: {
+            name: env.VITE_APP_VERSION,
+          },
+        }),
+      )
+    }
   }
 
   return {
