@@ -96,6 +96,7 @@
   import type { Booking } from '@/types'
   import type { Property } from '@/types/property'
   import type { PropertyColor } from '@/utils/constants'
+  import { mapLegacyPropertyColor } from '@/utils/constants'
   import { computed, onMounted, ref } from 'vue'
   import BookingStatsCard from '@/components/dumb/owner/BookingStatsCard.vue'
   import OwnerCleaningStatus from '@/components/dumb/owner/OwnerCleaningStatus.vue'
@@ -211,7 +212,7 @@
 
       return {
         name: formatPropertyAddress(property, 'short'),
-        color: property.color,
+        color: mapLegacyPropertyColor(property.color),
         nextBooking: nextBooking ? nextBooking.checkin_date : null,
         occupancyRate,
       }
@@ -229,7 +230,7 @@
         const property = getProperty(booking.property_id)
         return {
           property: property ? formatPropertyAddress(property, 'short') : 'Unknown property',
-          propertyColor: (property?.color || '#5c6bc0') as PropertyColor,
+          propertyColor: mapLegacyPropertyColor(property?.color) as PropertyColor,
           checkinDate: booking.checkin_date,
           checkoutDate: booking.checkout_date,
           type: booking.booking_type,
@@ -247,7 +248,7 @@
     for (const booking of myBookings.value) {
       if (booking.status === 'cancelled') continue
       const property = getProperty(booking.property_id)
-      const color = property?.color || '#5c6bc0'
+      const color = mapLegacyPropertyColor(property?.color)
       const start = new Date(booking.checkin_date)
       const end = new Date(booking.checkout_date)
       const current = new Date(start)
@@ -313,7 +314,7 @@
       const property = getProperty(booking.property_id)
       return {
         property: property ? formatPropertyAddress(property, 'short') : 'Unknown property',
-        propertyColor: property?.color || '#5c6bc0',
+        propertyColor: mapLegacyPropertyColor(property?.color),
         nextDate: booking.checkout_date,
         cleanerName: booking.assigned_cleaner_id ? 'Assigned' : 'Unassigned',
         status: booking.status,

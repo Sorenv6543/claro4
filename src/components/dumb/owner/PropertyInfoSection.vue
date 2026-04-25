@@ -44,7 +44,7 @@
       <span class="field-label">Color</span>
       <span
         class="color-dot"
-        :style="{ backgroundColor: property.color }"
+        :style="{ backgroundColor: mapLegacyPropertyColor(property.color) }"
       />
     </div>
 
@@ -146,6 +146,7 @@
   import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
   import PropertySectionCard from '@/components/dumb/owner/PropertySectionCard.vue'
   import { formatPropertyAddress } from '@/types/property'
+  import { mapLegacyPropertyColor } from '@/utils/constants'
 
   const props = defineProps<{
     property: Property

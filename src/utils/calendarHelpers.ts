@@ -1,6 +1,7 @@
 import type { Booking } from '@/types'
 import type { Property } from '@/types/property'
 import { formatPropertyAddress } from '@/types/property'
+import { mapLegacyPropertyColor } from '@/utils/constants'
 
 /** Add one day to a YYYY-MM-DD string (for FullCalendar exclusive end dates). */
 function addOneDay (dateString: string): string {
@@ -57,8 +58,8 @@ export function bookingToCalendarEvent (
       `type-${booking.booking_type}`,
       `priority-${booking.priority}`,
     ],
-    backgroundColor: property?.color,
-    borderColor: property?.color,
+    backgroundColor: property?.color ? mapLegacyPropertyColor(property.color) : undefined,
+    borderColor: property?.color ? mapLegacyPropertyColor(property.color) : undefined,
     extendedProps: {
       booking,
       property,
@@ -96,7 +97,7 @@ export function bookingToTransitionEvents (
     notes: booking.notes,
   }
 
-  const propertyColor = property?.color
+  const propertyColor = property?.color ? mapLegacyPropertyColor(property.color) : undefined
 
   // IN event — always present
   events.push({

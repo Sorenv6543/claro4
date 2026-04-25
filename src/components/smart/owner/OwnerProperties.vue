@@ -98,7 +98,7 @@
           <div class="d-flex align-center ga-2">
             <div
               class="property-color-bar"
-              :style="{ backgroundColor: item.color || '#9E9E9E' }"
+              :style="{ backgroundColor: item.color ? mapLegacyPropertyColor(item.color) : '#9E9E9E' }"
             />
             <span class="font-weight-medium text-body-2">{{ item.display_name }}</span>
           </div>
@@ -291,6 +291,7 @@
 <script setup lang="ts">
   import type { Property, PropertyFormData, PropertyRecord } from '@/types'
   import { computed, onMounted, ref } from 'vue'
+  import { mapLegacyPropertyColor } from '@/utils/constants'
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
