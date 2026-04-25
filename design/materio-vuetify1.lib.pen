@@ -14638,7 +14638,6 @@
       "y": 626,
       "name": "OwnerChartGallery",
       "reusable": true,
-      "enabled": false,
       "width": 860,
       "height": "fit_content(1811)",
       "layout": "vertical",
@@ -17391,7 +17390,8 @@
                   "id": "oVsRQ",
                   "type": "ref",
                   "ref": "0ZcGG",
-                  "name": "circularProgressRef"
+                  "name": "circularProgressRef",
+                  "enabled": true
                 },
                 {
                   "type": "text",
@@ -17419,7 +17419,8 @@
               "type": "ref",
               "ref": "XVtDr",
               "name": "statCard1",
-              "width": "fill_container"
+              "width": "fill_container",
+              "enabled": true
             },
             {
               "id": "ZvdSZ",
@@ -17501,14 +17502,16 @@
               "type": "ref",
               "ref": "nzuBn",
               "name": "activityTimelineRef",
-              "width": "fill_container"
+              "width": "fill_container",
+              "enabled": true
             },
             {
               "id": "keHBn",
               "type": "ref",
               "ref": "8jtgg",
               "name": "progressListRef",
-              "width": "fill_container"
+              "width": "fill_container",
+              "enabled": true
             }
           ]
         },
