@@ -70,13 +70,14 @@ html, body {
 }
 
 /* ─── Subtle Micro Animations ─────────────────────────────────────── */
+/* Durations + easing flow from Phase 1 motion tokens (--claro-dur-*, --claro-ease). */
 @media (prefers-reduced-motion: no-preference) {
   /* Cards: subtle lift on hover.
      Exclude data table rows and calendar cells — they're too dense. */
   .v-card:not(.v-data-table .v-card):not(.v-calendar .v-card) {
     transition-property: box-shadow, opacity, background, transform;
-    transition-duration: 0.25s;
-    transition-timing-function: ease;
+    transition-duration: var(--claro-dur-slow, 250ms);
+    transition-timing-function: var(--claro-ease, ease);
 
     &:hover {
       box-shadow: var(--claro-shadow-md) !important;
@@ -84,25 +85,34 @@ html, body {
     }
   }
 
-  /* Buttons: press feel on active, opacity dim on text/icon variants hover */
+  /* Buttons: press feel on active. */
   .v-btn {
     transition-property: box-shadow, transform, opacity, background;
-    transition-duration: 0.15s;
-    transition-timing-function: ease;
+    transition-duration: var(--claro-dur-fast, 150ms);
+    transition-timing-function: var(--claro-ease, ease);
 
     &:active {
       transform: scale(0.97);
     }
   }
 
-  /* List items: smooth highlight fade instead of snap */
-  .v-list-item {
-    transition: background-color 0.2s ease, color 0.2s ease;
+  /* Flat buttons (the Phase 3 default variant — covers most CTAs):
+     subtle lift + purple-tinted shadow on hover. Disabled buttons
+     opted out so they don't pretend to be interactive. */
+  .v-btn--variant-flat:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(115, 103, 240, 0.35);
   }
 
-  /* Chips: tiny lift */
+  /* List items: smooth highlight fade instead of snap. */
+  .v-list-item {
+    transition: background-color var(--claro-dur-base, 200ms) var(--claro-ease, ease),
+                color var(--claro-dur-base, 200ms) var(--claro-ease, ease);
+  }
+
+  /* Chips: tiny lift. */
   .v-chip {
-    transition: transform 0.15s ease;
+    transition: transform var(--claro-dur-fast, 150ms) var(--claro-ease, ease);
 
     &:hover {
       transform: translateY(-1px);
