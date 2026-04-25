@@ -136,12 +136,6 @@
 
   const accountItems = [
     {
-      label: 'Vue Practice',
-      icon: 'mdi-vuejs',
-      filledIcon: 'mdi-vuejs',
-      to: '/owner/vuepractice',
-    },
-    {
       label: 'Settings',
       icon: 'mdi-cog-outline',
       filledIcon: 'mdi-cog',
