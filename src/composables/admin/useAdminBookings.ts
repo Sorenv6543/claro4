@@ -2,6 +2,7 @@ import type { Booking, BookingFormData, BookingStatus, BookingType } from '@/typ
 
 import { computed, ref } from 'vue'
 
+import { useErrorHandler } from '@/composables/shared/useErrorHandler'
 import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
 import { BulkAssignSqlError, useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useAuthStore } from '@/stores/auth'
@@ -34,6 +35,10 @@ export function useAdminBookings () {
   const bookingStore = useBookingStore()
   const propertyStore = usePropertyStore()
   const { measureRolePerformance, trackCachePerformance } = usePerformanceMonitor()
+  // useErrorHandler routes errors through Sentry (when DSN configured) — see
+  // main.ts and useErrorHandler.reportError. Replaces raw console.error in
+  // catch blocks so admin operations are visible in production ops dashboards.
+  const errorHandler = useErrorHandler()
 
   // Admin-specific state
   const loading = ref<boolean>(false)
@@ -501,7 +506,13 @@ export function useAdminBookings () {
 
       return { success: successIds, failed: skippedIds }
     } catch (error_) {
-      console.error('[useAdminBookings] bulkAssignCleaner error:', error_)
+      void errorHandler.handleError(error_ as Error, {
+        component: 'useAdminBookings',
+        operation: 'bulkAssignCleaner',
+      }, {
+        showToUser: false, // We surface our own snackbar via error.value
+        reportToService: true,
+      })
 
       if (error_ instanceof BulkAssignSqlError) {
         // SQL update failed after rollback. Only IDs that actually reached SQL
@@ -565,7 +576,13 @@ export function useAdminBookings () {
       loading.value = false
       return results
     } catch (error_) {
-      console.error('[useAdminBookings] bulkUpdateStatus error:', error_)
+      void errorHandler.handleError(error_ as Error, {
+        component: 'useAdminBookings',
+        operation: 'bulkUpdateStatus',
+      }, {
+        showToUser: false,
+        reportToService: true,
+      })
       error.value = `Bulk status update failed: ${error_ instanceof Error ? error_.message : 'System error occurred'}`
       loading.value = false
       return { success: [], failed: bookingIds }
@@ -764,7 +781,10 @@ export function useAdminBookings () {
         return true
       } catch (error_) {
         error.value = error_ instanceof Error ? error_.message : 'Failed to assign cleaner'
-        console.error('[useAdminBookings] assignCleanerToBooking error:', error_)
+        void errorHandler.handleError(error_ as Error, {
+          component: 'useAdminBookings',
+          operation: 'assignCleanerToBooking',
+        }, { showToUser: false, reportToService: true })
         return false
       } finally {
         loading.value = false
@@ -779,7 +799,10 @@ export function useAdminBookings () {
         return true
       } catch (error_) {
         error.value = error_ instanceof Error ? error_.message : 'Failed to assign team'
-        console.error('[useAdminBookings] assignTeamToBooking error:', error_)
+        void errorHandler.handleError(error_ as Error, {
+          component: 'useAdminBookings',
+          operation: 'assignTeamToBooking',
+        }, { showToUser: false, reportToService: true })
         return false
       } finally {
         loading.value = false
@@ -794,7 +817,10 @@ export function useAdminBookings () {
         return true
       } catch (error_) {
         error.value = error_ instanceof Error ? error_.message : 'Failed to assign group'
-        console.error('[useAdminBookings] assignGroupToBooking error:', error_)
+        void errorHandler.handleError(error_ as Error, {
+          component: 'useAdminBookings',
+          operation: 'assignGroupToBooking',
+        }, { showToUser: false, reportToService: true })
         return false
       } finally {
         loading.value = false
