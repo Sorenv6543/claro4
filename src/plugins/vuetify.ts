@@ -27,7 +27,6 @@ const lightTheme: ThemeDefinition = {
     'primary-light': '#9E95F5',
     'primary-dark': '#5E52EE',
     'secondary': '#A8AAAE',
-    'accent': '#7367F0',
     'background': '#F5F5F9',
     'surface': '#ffffff',
     'surface-variant': '#F5F5F9',
@@ -60,7 +59,7 @@ export default createVuetify({
       light: lightTheme,
     },
     variations: {
-      colors: ['primary', 'secondary', 'accent', 'error', 'info', 'success', 'warning'],
+      colors: ['primary', 'secondary', 'error', 'info', 'success', 'warning'],
       lighten: 5,
       darken: 3,
     },
@@ -79,12 +78,12 @@ export default createVuetify({
   defaults: {
     VBtn: {
       variant: 'flat',
-      rounded: true,
+      rounded: 'pill',
       elevation: 1,
     },
     VCard: {
       elevation: 0,
-      rounded: true,
+      rounded: 'sm',
     },
     VChip: {
       rounded: 'pill',
@@ -92,57 +91,57 @@ export default createVuetify({
     VTextField: {
       variant: 'outlined',
       density: 'comfortable',
-      rounded: true,
+      rounded: 'sm',
       hideDetails: 'auto',
     },
     VSelect: {
       variant: 'outlined',
       density: 'comfortable',
-      rounded: true,
+      rounded: 'sm',
       hideDetails: 'auto',
     },
     VTextarea: {
       variant: 'outlined',
-      rounded: true,
+      rounded: 'sm',
       hideDetails: 'auto',
     },
     VAutocomplete: {
       variant: 'outlined',
       density: 'comfortable',
-      rounded: true,
+      rounded: 'sm',
       hideDetails: 'auto',
     },
     VCombobox: {
       variant: 'outlined',
       density: 'comfortable',
-      rounded: true,
+      rounded: 'sm',
       hideDetails: 'auto',
     },
     VList: {
       bgColor: 'transparent',
-      rounded: true,
+      rounded: 'sm',
     },
     VListItem: {
-      rounded: true,
+      rounded: 'sm',
       minHeight: '40px',
     },
     VNavigationDrawer: {
-      rounded: true,
+      rounded: 'sm',
       elevation: 3,
     },
     VDialog: {
       maxWidth: '700px',
-      rounded: true,
+      rounded: 'sm',
     },
     VAlert: {
-      rounded: true,
+      rounded: 'sm',
       variant: 'tonal',
     },
     VBadge: {
       rounded: 'pill',
     },
     VExpansionPanel: {
-      rounded: true,
+      rounded: 'sm',
       elevation: 0,
     },
   },

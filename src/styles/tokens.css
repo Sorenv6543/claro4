@@ -21,8 +21,9 @@
   --claro-primary-dark:   #5E52EE;
   --claro-primary-tint:   #F0EEFF;
   --claro-secondary:      #A8AAAE;
-  /* TODO(Phase 3): vuetify.ts registers `accent: '#7367F0'` (full saturation).
-     This token is the 12.5% tint per Claude Design v1. Reconcile in Phase 3. */
+  /* 12.5% tint for soft backgrounds / overlays (CSS-side only — the
+     Vuetify theme has no `accent` semantic; consumers read this var
+     directly). */
   --claro-accent:         rgba(115, 103, 240, 0.125);
   --claro-on-primary:     #FFFFFF;
 
