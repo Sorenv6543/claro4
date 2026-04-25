@@ -32,10 +32,32 @@ if (sentryDsn) {
     release: import.meta.env.VITE_APP_VERSION,
     // Conservative default — operators can tune via env var later
     tracesSampleRate: Number(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? 0.1),
+    integrations: [
+      // Browser tracing instruments page-load and navigation transactions.
+      // Passing `router` wires Vue Router's beforeEach/afterEach hooks so
+      // each route change creates a transaction with `routing.instrumentation`
+      // = vue-router and the route name as the transaction title.
+      // Without this, tracesSampleRate above is meaningless — there are
+      // no transactions to sample.
+      Sentry.browserTracingIntegration({ router }),
+    ],
+    // Distributed tracing: which outgoing fetch URLs receive the
+    // `sentry-trace` and `baggage` headers that connect frontend
+    // transactions to backend spans. Default behavior would attach
+    // them to all same-origin requests, which can leak trace headers
+    // to third-party endpoints that don't accept them.
+    //
+    // Allowlisted: localhost (dev API), Supabase REST + Auth endpoints
+    // (since both are first-party for our app's data).
+    tracePropagationTargets: [
+      'localhost',
+      /^https:\/\/[\w-]+\.supabase\.co\/rest\/v1/,
+      /^https:\/\/[\w-]+\.supabase\.co\/auth\/v1/,
+    ],
     // The `app` parameter above wires Sentry's default Vue integration,
     // which hooks into app.config.errorHandler for unhandled template/render
     // errors. Component-level tracking can be enabled later via
-    // `integrations: [Sentry.vueIntegration({ tracingOptions: { trackComponents: true } })]`
+    // `Sentry.vueIntegration({ tracingOptions: { trackComponents: true } })`
     // if/when component-name resolution becomes useful in Sentry traces.
   })
 } else if (import.meta.env.DEV) {
