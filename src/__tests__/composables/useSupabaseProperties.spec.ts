@@ -37,6 +37,16 @@ function makeProperty (overrides: Partial<Property> = {}): Property {
   }
 }
 
+/**
+ * Mock for `.select('*').order(...).limit(...)` chain used by fetchAndSubscribe.
+ * Returns a vi.fn so callers can still assert with `expect(selectMock).toHaveBeenCalledWith('*')`.
+ */
+function chainableSelect (resolveValue: { data: unknown, error: unknown }) {
+  const limitMock = vi.fn().mockResolvedValue(resolveValue)
+  const orderMock = vi.fn().mockReturnValue({ limit: limitMock })
+  return vi.fn().mockReturnValue({ order: orderMock })
+}
+
 describe('useSupabaseProperties', () => {
   let supabaseMock: any
 
@@ -73,7 +83,7 @@ describe('useSupabaseProperties', () => {
       ]
 
       // Configure the supabase chain to return properties
-      const selectMock = vi.fn().mockResolvedValue({ data: properties, error: null })
+      const selectMock = chainableSelect({ data: properties, error: null })
       supabaseMock.from.mockReturnValue({
         select: selectMock,
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
@@ -103,7 +113,7 @@ describe('useSupabaseProperties', () => {
     })
 
     it('sets store error on fetch failure', async () => {
-      const selectMock = vi.fn().mockResolvedValue({
+      const selectMock = chainableSelect({
         data: null,
         error: { message: 'Network error' },
       })
@@ -141,7 +151,7 @@ describe('useSupabaseProperties', () => {
 
       const insertMock = vi.fn().mockReturnValue(insertPromise)
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: insertMock,
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -179,7 +189,7 @@ describe('useSupabaseProperties', () => {
         error: { message: 'Insert failed' },
       })
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: insertMock,
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -209,7 +219,7 @@ describe('useSupabaseProperties', () => {
       const updateMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: updateMock,
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -244,7 +254,7 @@ describe('useSupabaseProperties', () => {
       const updateMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: updateMock,
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -270,7 +280,7 @@ describe('useSupabaseProperties', () => {
 
     it('throws when property not found', async () => {
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -294,7 +304,7 @@ describe('useSupabaseProperties', () => {
       const updateMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: updateMock,
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -329,7 +339,7 @@ describe('useSupabaseProperties', () => {
       const updateMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: updateMock,
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -356,7 +366,7 @@ describe('useSupabaseProperties', () => {
 
     it('throws when property not found', async () => {
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -384,7 +394,7 @@ describe('useSupabaseProperties', () => {
       let realtimeCallback: ((payload: any) => void) | null = null
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockReturnValue(insertPromise),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -437,7 +447,7 @@ describe('useSupabaseProperties', () => {
       let realtimeCallback: ((payload: any) => void) | null = null
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -479,7 +489,7 @@ describe('useSupabaseProperties', () => {
       let realtimeCallback: ((payload: any) => void) | null = null
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -520,7 +530,7 @@ describe('useSupabaseProperties', () => {
       let realtimeCallback: ((payload: any) => void) | null = null
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -564,7 +574,7 @@ describe('useSupabaseProperties', () => {
       let realtimeCallback: ((payload: any) => void) | null = null
 
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
@@ -608,7 +618,7 @@ describe('useSupabaseProperties', () => {
   describe('unsubscribe', () => {
     it('removes the channel and resets connection status', async () => {
       supabaseMock.from.mockReturnValue({
-        select: vi.fn().mockResolvedValue({ data: [], error: null }),
+        select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
         update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
         delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
