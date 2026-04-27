@@ -68,8 +68,8 @@ if (sentryDsn) {
       // interactions, but never readable user data. Suitable for B2B SaaS
       // with compliance requirements (GDPR/CCPA).
       Sentry.replayIntegration({
-        maskAllText: false,
-        blockAllMedia: false,
+        maskAllText: true,
+        blockAllMedia: true,
       }),
       // Forward console.warn/error into the Sentry Logs pipeline so
       // operator console output is searchable alongside errors. Skipping

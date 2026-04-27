@@ -193,6 +193,7 @@ export function useErrorHandler () {
       suggestedActions: getSuggestedActions(category, currentUserRole.value),
       context: fullContext,
       options: fullOptions,
+      originalError: error,
     }
   }
 
@@ -356,9 +357,9 @@ export function useErrorHandler () {
       // preserved as the captured exception; metadata goes into tags / extras
       // so it shows up in the Sentry UI's structured fields rather than the
       // free-form message.
-      const sentryError = errorInfo.code
-        ? new Error(`[${errorInfo.code}] ${errorInfo.message}`)
-        : new Error(errorInfo.message)
+      const sentryError = errorInfo.originalError instanceof Error
+        ? errorInfo.originalError
+        : (errorInfo.originalError ?? new Error(errorInfo.message))
 
       Sentry.captureException(sentryError, {
         tags: {

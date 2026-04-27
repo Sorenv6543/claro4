@@ -104,6 +104,16 @@ const router = createRouter({
       },
     },
     {
+      path: '/owner/properties/:id',
+      name: 'owner-property-view',
+      component: () => import('@/pages/owner/properties/view.vue'),
+      meta: {
+        layout: 'owner',
+        role: 'owner',
+        requiresAuth: true,
+      },
+    },
+    {
       path: '/owner/reports',
       name: 'owner-charts',
       component: () => import('@/pages/owner/reports/index.vue'),

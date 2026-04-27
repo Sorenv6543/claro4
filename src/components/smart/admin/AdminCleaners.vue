@@ -369,7 +369,7 @@
   }
 
   function viewSchedule (cleaner: Cleaner) {
-    router.push(`/admin/schedule?cleaner=${cleaner.id}`)
+    router.push(`/admin/calendar?cleaner=${cleaner.id}`)
   }
 
   function editCleaner (cleaner: Cleaner) {

@@ -229,7 +229,7 @@
   }
 
   function handleNavigateToDate (date: Date) {
-    router.push(`/admin/schedule?date=${date.toISOString().split('T')[0]}`)
+    router.push(`/admin/calendar?date=${date.toISOString().split('T')[0]}`)
   }
 
   function handleFilterByProperty (propertyId: string | null) {
@@ -241,7 +241,7 @@
   }
 
   function handleCreateProperty () {
-    router.push('/admin/properties/create')
+    router.push('/admin/properties')
   }
 
   function handleAssignCleaner (data: { bookingId: string, cleanerId?: string }) {

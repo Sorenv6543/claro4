@@ -111,6 +111,14 @@ import { useDisplay } from 'vuetify';
       soon: false,
     },
     {
+      label: 'Bookings',
+      icon: 'mdi-calendar-check-outline',
+      filledIcon: 'mdi-calendar-check',
+      to: '/owner/bookings',
+      disabled: false,
+      soon: false,
+    },
+    {
       label: 'Properties',
       icon: 'mdi-home-outline',
       filledIcon: 'mdi-home',

@@ -181,6 +181,7 @@ export interface ErrorInfo {
   suggestedActions?: string[]
   context: ErrorContext
   options: ErrorHandlingOptions
+  originalError?: unknown
 }
 
 /**
