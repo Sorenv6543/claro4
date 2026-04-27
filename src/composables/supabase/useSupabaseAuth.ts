@@ -341,111 +341,6 @@ export function useSupabaseAuth () {
     }
   }
 
-  // Admin functions
-  async function getAllUsers (): Promise<User[]> {
-    const { data, error: fetchError } = await supabase
-      .from('user_profiles')
-      .select('*')
-      .order('created_at', { ascending: false })
-
-    if (fetchError) {
-      throw fetchError
-    }
-
-    return data || []
-  }
-
-  async function updateUserRole (userId: string, newRole: UserRole): Promise<boolean> {
-    try {
-      const { error: updateError } = await supabase
-        .from('user_profiles')
-        .update({
-          role: newRole,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', userId)
-
-      if (updateError) {
-        throw updateError
-      }
-
-      return true
-    } catch (error_) {
-      error.value = error_ instanceof Error ? error_.message : 'Failed to update user role'
-      return false
-    }
-  }
-
-  async function deleteUser (userId: string): Promise<boolean> {
-    try {
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .delete()
-        .eq('id', userId)
-
-      if (profileError) {
-        throw profileError
-      }
-
-      const { error: authError } = await supabase.auth.admin.deleteUser(userId)
-
-      if (authError) {
-        error.value = 'Profile deleted but auth record cleanup failed. Contact support.'
-        return false
-      }
-
-      return true
-    } catch (error_) {
-      error.value = error_ instanceof Error ? error_.message : 'Failed to delete user'
-      return false
-    }
-  }
-
-  async function createAdminUser (userData: {
-    email: string
-    password: string
-    name: string
-    access_level?: string
-  }): Promise<boolean> {
-    try {
-      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-        email: userData.email,
-        password: userData.password,
-        email_confirm: true,
-        user_metadata: {
-          name: userData.name,
-          role: 'admin',
-        },
-      })
-
-      if (authError || !authData.user) {
-        throw authError || new Error('Failed to create auth user')
-      }
-
-      const { error: profileError } = await supabase
-        .from('user_profiles')
-        .insert({
-          id: authData.user.id,
-          email: userData.email,
-          name: userData.name,
-          role: 'admin' as UserRole,
-          access_level: userData.access_level || 'full',
-        })
-
-      if (profileError) {
-        await supabase.auth.admin.deleteUser(authData.user.id).catch(error_ => {
-          console.error('Failed to clean up auth user after profile creation failure:', error_)
-        })
-        throw profileError
-      }
-
-      return true
-    } catch (error_) {
-      error.value = error_ instanceof Error ? error_.message : 'Failed to create admin user'
-      return false
-    }
-  }
-
   // Fallback timeout in case getSession() hangs and onAuthStateChange never fires
   initializationTimeout = setTimeout(() => {
     if (initializing.value) {
@@ -491,9 +386,5 @@ export function useSupabaseAuth () {
     checkAuth,
     refreshProfile,
     clearError,
-    getAllUsers,
-    updateUserRole,
-    deleteUser,
-    createAdminUser,
   }
 }

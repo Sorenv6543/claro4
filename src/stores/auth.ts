@@ -32,8 +32,6 @@ export const useAuthStore = defineStore('auth', () => {
     resetPassword,
     checkAuth,
     clearError: supabaseClearError,
-    getAllUsers,
-    updateUserRole,
     refreshProfile,
   } = useSupabaseAuth()
 
@@ -217,47 +215,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Admin functions
-  async function fetchAllUsers () {
-    if (!isAdmin.value) {
-      throw new Error('Unauthorized: Admin access required')
-    }
-
-    try {
-      storeLoading.value = true
-      return await getAllUsers()
-    } catch (error_) {
-      storeError.value = error_ instanceof Error ? error_.message : 'Failed to fetch users'
-      throw error_
-    } finally {
-      storeLoading.value = false
-    }
-  }
-
-  async function changeUserRole (userId: string, newRole: UserRole): Promise<boolean> {
-    if (!isAdmin.value) {
-      storeError.value = 'Unauthorized: Admin access required'
-      return false
-    }
-
-    try {
-      storeLoading.value = true
-      const success = await updateUserRole(userId, newRole)
-
-      if (success) {
-        clearError()
-        return true
-      }
-
-      return false
-    } catch (error_) {
-      storeError.value = error_ instanceof Error ? error_.message : 'Role update failed'
-      return false
-    } finally {
-      storeLoading.value = false
-    }
-  }
-
   // Utility functions
   function getSuccessMessage (action: 'login' | 'logout' | 'register'): string {
     return getRoleSpecificSuccessMessage(action, user.value?.role)
@@ -294,8 +251,6 @@ export const useAuthStore = defineStore('auth', () => {
     switchToAdminView,
     updateUserProfile,
     requestPasswordReset,
-    fetchAllUsers,
-    changeUserRole,
     clearError,
     getSuccessMessage,
     initialize,
