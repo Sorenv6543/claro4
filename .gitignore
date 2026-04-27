@@ -70,6 +70,13 @@ dist-ssr
 .worktrees/
 .claude/worktrees/
 
+# Claude Code — tool-specific dirs and installed skill packages
+# skills-lock.json + .claude/skills/ are committed; .agents/ is the install cache
+.agents/
+.kiro/
+.windsurf/
+scripts/kill-dev.ps1
+
 # Performance traces
 perf-trace-*.json.gz
 
