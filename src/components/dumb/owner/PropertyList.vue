@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { Property } from '@types/property'
+import type { Property } from '@/types/property'
 import { computed, ref } from 'vue'
+import { useDisplay } from 'vuetify'
 
 // ─── Exported types (used by smart parent to shape data) ─────────────────────
 
@@ -106,6 +107,14 @@ function hasTimebar(events: PropertyListEvent[]): boolean {
   return resolveBar(events) !== null
 }
 
+// ─── Responsive ──────────────────────────────────────────────────────────────
+
+const { mobile } = useDisplay()
+
+const rowGrid = computed(() =>
+  mobile.value ? '20px 1fr 28px' : '20px 1fr 160px 80px 28px',
+)
+
 // ─── Display helpers ──────────────────────────────────────────────────────────
 
 function bedbath(p: Property): string {
@@ -138,11 +147,11 @@ function isUnassigned(item: PropertyListItem): boolean {
   <!-- List -->
   <div v-else class="pl-card" :class="{ 'pl-card--has-open': hasOpen }">
     <!-- Header row -->
-    <div class="pl-hdr">
+    <div class="pl-hdr" :style="{ gridTemplateColumns: rowGrid }">
       <div />
       <div>Property</div>
-      <div>Next check-in</div>
-      <div>Status</div>
+      <div v-if="!mobile">Next check-in</div>
+      <div v-if="!mobile">Status</div>
       <div />
     </div>
 
@@ -157,11 +166,15 @@ function isUnassigned(item: PropertyListItem): boolean {
       }"
     >
       <!-- Summary row (clickable) -->
-      <div class="pl-row" @click="toggleRow(item.property.id)">
+      <div
+        class="pl-row"
+        :style="{ gridTemplateColumns: rowGrid }"
+        @click="toggleRow(item.property.id)"
+      >
         <!-- Property color dot -->
         <div class="pl-dot" :style="{ background: item.property.color }" />
 
-        <!-- Address + bed/bath -->
+        <!-- Address + bed/bath (+ mobile-inline status/checkin) -->
         <div class="pl-addr-cell">
           <div class="pl-addr">
             {{ item.property.address_street }}{{ item.property.address_unit ? `, ${item.property.address_unit}` : '' }}
@@ -169,10 +182,23 @@ function isUnassigned(item: PropertyListItem): boolean {
           <div v-if="bedbath(item.property)" class="pl-submeta">
             {{ bedbath(item.property) }}
           </div>
+          <!-- Mobile only: status chip + next check-in shown inline under address -->
+          <div v-if="mobile" class="pl-mobile-meta">
+            <v-chip
+              :color="item.property.active ? 'primary' : undefined"
+              size="x-small"
+              :variant="item.property.active ? 'tonal' : 'outlined'"
+            >
+              {{ item.property.active ? 'Active' : 'Inactive' }}
+            </v-chip>
+            <span v-if="item.nextCheckin" class="pl-mobile-checkin">
+              {{ item.nextCheckin.label }}
+            </span>
+          </div>
         </div>
 
-        <!-- Next check-in -->
-        <div class="pl-checkin-cell">
+        <!-- Desktop only: Next check-in column -->
+        <div v-if="!mobile" class="pl-checkin-cell">
           <template v-if="item.nextCheckin">
             <div class="pl-checkin-when">{{ item.nextCheckin.label }}</div>
             <div v-if="item.nextCheckin.cleanerName" class="pl-checkin-who">
@@ -182,8 +208,8 @@ function isUnassigned(item: PropertyListItem): boolean {
           <span v-else class="pl-checkin-empty">No upcoming</span>
         </div>
 
-        <!-- Active/Inactive status chip -->
-        <div class="pl-status-cell">
+        <!-- Desktop only: Status chip column -->
+        <div v-if="!mobile" class="pl-status-cell">
           <v-chip
             :color="item.property.active ? 'primary' : undefined"
             size="small"
@@ -202,7 +228,7 @@ function isUnassigned(item: PropertyListItem): boolean {
       <!-- Expandable inlay -->
       <v-expand-transition>
         <div v-if="isExpanded(item.property.id)" class="pl-inlay">
-          <div class="pl-inlay-body">
+          <div class="pl-inlay-body" :class="{ 'pl-inlay-body--stacked': mobile }">
             <!-- ── Left panel ── -->
             <div class="pl-inlay-left">
               <!-- B2: Turn today → time bar visualization -->
@@ -322,41 +348,48 @@ function isUnassigned(item: PropertyListItem): boolean {
           </div>
 
           <!-- Action bar (click.stop prevents collapsing the row) -->
-          <div class="pl-actions" @click.stop>
-            <v-btn
-              v-if="isUnassigned(item) && item.isTurnToday"
-              color="primary"
-              prepend-icon="mdi-account-plus-outline"
-              size="small"
-              @click="emit('assign-cleaner', item.property.id)"
-            >
-              Assign cleaner
-            </v-btn>
-            <v-btn
-              color="primary"
-              prepend-icon="mdi-calendar-month-outline"
-              size="small"
-              variant="tonal"
-              @click="emit('view-calendar', item.property.id)"
-            >
-              View calendar
-            </v-btn>
-            <v-spacer />
-            <v-btn
-              prepend-icon="mdi-pencil-outline"
-              size="small"
-              variant="text"
-              @click="emit('edit', item.property.id)"
-            >
-              Edit
-            </v-btn>
-            <v-btn
-              size="small"
-              variant="text"
-              @click="emit('more', item.property.id)"
-            >
-              <v-icon>mdi-dots-horizontal</v-icon>
-            </v-btn>
+          <div class="pl-actions" :class="{ 'pl-actions--mobile': mobile }" @click.stop>
+            <!-- Primary actions -->
+            <div class="pl-actions-group">
+              <v-btn
+                v-if="isUnassigned(item) && item.isTurnToday"
+                color="primary"
+                :prepend-icon="mobile ? undefined : 'mdi-account-plus-outline'"
+                size="small"
+                @click="emit('assign-cleaner', item.property.id)"
+              >
+                <v-icon v-if="mobile" size="16" start>mdi-account-plus-outline</v-icon>
+                Assign cleaner
+              </v-btn>
+              <v-btn
+                color="primary"
+                :prepend-icon="mobile ? undefined : 'mdi-calendar-month-outline'"
+                size="small"
+                variant="tonal"
+                @click="emit('view-calendar', item.property.id)"
+              >
+                <v-icon v-if="mobile" size="16" start>mdi-calendar-month-outline</v-icon>
+                View calendar
+              </v-btn>
+            </div>
+            <!-- Secondary (ghost) actions -->
+            <div class="pl-actions-group">
+              <v-btn
+                prepend-icon="mdi-pencil-outline"
+                size="small"
+                variant="text"
+                @click="emit('edit', item.property.id)"
+              >
+                Edit
+              </v-btn>
+              <v-btn
+                size="small"
+                variant="text"
+                @click="emit('more', item.property.id)"
+              >
+                <v-icon>mdi-dots-horizontal</v-icon>
+              </v-btn>
+            </div>
           </div>
         </div>
       </v-expand-transition>
@@ -764,13 +797,63 @@ function isUnassigned(item: PropertyListItem): boolean {
 .pl-td--critical { color: var(--claro-error) !important; }
 .pl-td--ok       { color: var(--claro-success) !important; }
 
+/* ─── Mobile meta (status chip + checkin shown inside addr cell) ─────────── */
+.pl-mobile-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+
+.pl-mobile-checkin {
+  font-size: 11px;
+  color: var(--claro-fg3);
+}
+
+/* ─── Stacked inlay (mobile) ─────────────────────────────────────────────── */
+.pl-inlay-body--stacked {
+  grid-template-columns: 1fr;
+}
+
+.pl-inlay-body--stacked .pl-inlay-right {
+  border-left: none;
+  border-top: 1px solid var(--claro-surface-variant);
+  padding: 14px 16px;
+}
+
+.pl-inlay-body--stacked .pl-inlay-left {
+  padding: 14px 16px;
+}
+
 /* ─── Action bar ─────────────────────────────────────────────────────────── */
 .pl-actions {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 8px;
   padding: 10px 16px 12px;
   border-top: 1px solid var(--claro-surface-variant);
   background: var(--claro-surface-variant);
+}
+
+.pl-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Mobile: stack primary group on its own line, secondary right-aligned below */
+.pl-actions--mobile {
+  flex-wrap: wrap;
+  row-gap: 6px;
+}
+
+.pl-actions--mobile .pl-actions-group:first-child {
+  flex: 1 1 100%;
+}
+
+.pl-actions--mobile .pl-actions-group:last-child {
+  margin-left: auto;
 }
 </style>
