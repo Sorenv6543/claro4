@@ -2,152 +2,283 @@
   <v-container class="owner-overview" fluid>
     <v-progress-linear v-if="loading" class="mb-4" color="primary" indeterminate />
 
-    <!-- Welcome Banner -->
+    <!-- Uniform page header -->
+    <OwnerPageHeader
+      :badge="myProperties.length || null"
+      subtitle="Your properties, cleaned up."
+      title="Overview"
+    >
+      <template #actions>
+        <v-btn
+          aria-label="Add booking"
+          color="primary"
+          icon="mdi-plus"
+          size="small"
+          @click="uiStore.openModal('eventModal', 'create')"
+        />
+      </template>
+    </OwnerPageHeader>
+
+    <!-- Hero gradient banner -->
     <v-row>
       <v-col cols="12">
         <OwnerWelcomeBanner
-          :booking-count="bookingStats.total"
-          :property-count="myProperties.length"
-          :turn-count="bookingStats.turns"
+          :checkouts-today-count="checkoutsTodayCount"
+          :turns-today-count="turnsTodayCount"
           :user-name="userName"
+          :weekly-occupancy-pct="avgOccupancyPct"
         />
       </v-col>
     </v-row>
 
-    <!-- Booking Stats -->
-    <v-row>
-      <v-col cols="6" md="3">
-        <BookingStatsCard
-          icon="mdi-calendar-check"
-          icon-color="primary"
-          subtitle="All time"
-          title="Total Bookings"
-          :value="bookingStats.total"
-        />
-      </v-col>
-      <v-col cols="6" md="3">
-        <BookingStatsCard
-          icon="mdi-calendar-clock"
-          icon-color="success"
-          subtitle="Non-cancelled"
-          title="Active Bookings"
-          :value="activeBookingCount"
-        />
-      </v-col>
-      <v-col cols="6" md="3">
-        <BookingStatsCard
-          icon="mdi-swap-horizontal"
-          icon-color="warning"
-          subtitle="Same-day stays"
-          title="Turn Bookings"
-          :value="bookingStats.turns"
-        />
-      </v-col>
-      <v-col cols="6" md="3">
-        <BookingStatsCard
-          icon="mdi-home-group"
-          icon-color="info"
-          subtitle="In portfolio"
-          title="Properties"
-          :value="myProperties.length"
-        />
-      </v-col>
-    </v-row>
-
-    <!-- Urgent Turns Banner (conditional) -->
-    <v-row v-if="urgentTurns.length > 0">
-      <v-col cols="12">
-        <OwnerUrgentTurnsBanner :turns="urgentTurns" />
-      </v-col>
-    </v-row>
-
-    <!-- Property Summary | Upcoming Bookings -->
-    <v-row>
-      <v-col cols="12" md="6">
-        <OwnerPropertySummaryCards :properties="propertySummaries" />
-      </v-col>
-      <v-col cols="12" md="6">
-        <OwnerUpcomingBookings :bookings="upcomingBookingsList" />
-      </v-col>
-    </v-row>
-
-    <!-- Mini Calendar | Recent Activity -->
-    <v-row>
-      <v-col cols="12" md="6">
-        <OwnerMiniCalendar :booking-dates="bookingDates" :current-month="currentMonth" />
-      </v-col>
-      <v-col cols="12" md="6">
-        <OwnerRecentActivity :activities="recentActivities" />
-      </v-col>
-    </v-row>
-
-    <!-- Cleaning Status -->
+    <!-- Urgent / OK banner -->
     <v-row>
       <v-col cols="12">
-        <OwnerCleaningStatus :cleanings="cleaningStatusList" />
+        <div v-if="urgentTurns.length > 0" class="triage-banner triage-banner--urgent">
+          <div class="triage-icon triage-icon--urgent">
+            <v-icon aria-hidden="true" color="error" size="18">mdi-alert-circle-outline</v-icon>
+          </div>
+          <div class="triage-body">
+            <div class="triage-title">Urgent turn · {{ urgentTurns[0].property }}</div>
+            <div class="triage-sub">
+              Guests out {{ urgentTurns[0].checkoutTime }} · new guests in {{ urgentTurns[0].checkinTime }} · same-day turn
+            </div>
+          </div>
+          <v-btn color="error" size="small" variant="tonal" @click="uiStore.openModal('eventModal', 'view')">
+            View details
+          </v-btn>
+        </div>
+
+        <div v-else class="triage-banner triage-banner--ok">
+          <div class="triage-icon triage-icon--ok">
+            <v-icon aria-hidden="true" color="success" size="18">mdi-check</v-icon>
+          </div>
+          <div class="triage-body">
+            <div class="triage-title">You're all set</div>
+            <div class="triage-sub">
+              Nothing urgent across your {{ myProperties.length }} properties right now.
+            </div>
+          </div>
+        </div>
+      </v-col>
+    </v-row>
+
+    <!-- Today events strip -->
+    <v-row v-if="todayEvents.length > 0">
+      <v-col cols="12">
+        <div class="section-head">
+          <span class="section-title">Today · {{ todayFullLabel }}</span>
+          <span class="section-count">{{ todayEvents.length }} event{{ todayEvents.length !== 1 ? 's' : '' }}</span>
+        </div>
+        <div class="today-strip">
+          <div v-for="ev in todayEvents" :key="ev.id" class="event-pill">
+            <div class="event-pill-time">{{ ev.time }}</div>
+            <div class="event-pill-body">
+              <div class="event-pill-prop">
+                <div class="prop-dot" :style="{ background: ev.propColor }" />
+                <span>{{ ev.propName }}</span>
+              </div>
+              <v-chip
+                :color="ev.kind === 'checkin' ? 'success' : ev.kind === 'checkout' ? 'error' : 'warning'"
+                density="comfortable"
+                rounded="pill"
+                size="x-small"
+                variant="tonal"
+              >
+                {{ ev.kind === 'checkin' ? 'Check-in' : ev.kind === 'checkout' ? 'Check-out' : 'Turn' }}
+                <template v-if="ev.guestCount"> · {{ ev.guestCount }}g</template>
+              </v-chip>
+            </div>
+          </div>
+        </div>
+      </v-col>
+    </v-row>
+
+    <!-- Property health rows -->
+    <v-row>
+      <v-col cols="12">
+        <div class="section-head">
+          <span class="section-title">Your properties</span>
+          <span class="section-count">{{ myProperties.length }}</span>
+          <router-link class="section-action" to="/owner/properties">Manage →</router-link>
+        </div>
+
+        <v-card class="health-list">
+          <v-skeleton-loader v-if="loading" type="list-item-two-line@3" />
+          <div
+            v-for="row in healthRows"
+            v-else
+            :key="row.id"
+            class="health-row"
+          >
+            <!-- Color swatch -->
+            <div
+              class="health-swatch"
+              :style="{ background: row.color + '22', color: row.color }"
+            >
+              {{ row.initial }}
+            </div>
+            <!-- Address + meta -->
+            <div class="health-info">
+              <div class="health-addr">{{ row.name }}</div>
+              <div class="health-sub">{{ row.meta }}</div>
+            </div>
+            <!-- State chip -->
+            <div class="health-state">
+              <v-chip
+                :color="row.stateColor"
+                density="comfortable"
+                rounded="pill"
+                size="small"
+                variant="tonal"
+              >
+                <template v-if="row.statusDot">
+                  <span class="health-dot" :style="{ background: `rgb(var(--v-theme-${row.stateColor}))` }" />
+                </template>
+                {{ row.stateLabel }}
+              </v-chip>
+            </div>
+            <!-- Next booking -->
+            <div class="health-next d-none d-sm-block">
+              <div class="health-next-label">Next</div>
+              <div class="health-next-val">{{ row.nextBooking }}</div>
+            </div>
+            <!-- Occupancy -->
+            <div class="health-occ d-none d-md-block">
+              <div class="health-occ-label">Week occ.</div>
+              <div class="health-occ-val">{{ row.occupancy }}%</div>
+              <div class="health-occ-bar">
+                <div
+                  class="health-occ-fill"
+                  :style="{
+                    width: `${row.occupancy}%`,
+                    background: row.occupancy >= 70 ? 'var(--claro-success)' : row.occupancy >= 40 ? 'var(--claro-primary)' : 'var(--claro-warning)',
+                  }"
+                />
+              </div>
+            </div>
+          </div>
+        </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- Bottom split: Yesterday + Upcoming -->
+    <v-row>
+      <!-- Upcoming bookings -->
+      <v-col cols="12" md="7">
+        <v-card class="up-card">
+          <div class="up-head">
+            <span class="section-title" style="margin: 0">Upcoming 14 days</span>
+            <router-link class="section-action" to="/owner/calendar">View calendar →</router-link>
+          </div>
+
+          <div v-if="!upcoming14d.length" class="up-empty">
+            <v-chip size="small" variant="tonal">No upcoming bookings</v-chip>
+          </div>
+
+          <div v-else class="up-list">
+            <div v-for="item in upcoming14d" :key="item.id" class="up-row">
+              <div class="up-date">
+                <div class="up-date-m">{{ item.month }}</div>
+                <div class="up-date-d">{{ item.day }}</div>
+              </div>
+              <div class="up-info">
+                <div class="up-prop">
+                  <div class="prop-dot" :style="{ background: item.propColor }" />
+                  {{ item.propName }}
+                </div>
+                <div class="up-range">{{ item.range }}</div>
+              </div>
+              <v-chip
+                :color="item.isTurn ? 'warning' : 'primary'"
+                density="comfortable"
+                rounded="pill"
+                size="x-small"
+                variant="tonal"
+              >
+                {{ item.isTurn ? 'Turn' : 'Standard' }}
+              </v-chip>
+            </div>
+          </div>
+        </v-card>
+      </v-col>
+
+      <!-- Stat cards -->
+      <v-col cols="12" md="5">
+        <v-row>
+          <v-col cols="6">
+            <BookingStatsCard
+              icon="mdi-home-outline"
+              icon-color="var(--claro-primary)"
+              title="Active Properties"
+              :value="myProperties.length"
+            />
+          </v-col>
+          <v-col cols="6">
+            <BookingStatsCard
+              icon="mdi-swap-horizontal"
+              icon-color="var(--claro-warning)"
+              title="Upcoming Turns"
+              :value="turnsTodayCount"
+            />
+          </v-col>
+          <v-col cols="6">
+            <BookingStatsCard
+              icon="mdi-login"
+              icon-color="var(--claro-success)"
+              title="Week Check-ins"
+              :value="weekCheckinCount"
+            />
+          </v-col>
+          <v-col cols="6">
+            <BookingStatsCard
+              icon="mdi-alert-outline"
+              icon-color="var(--claro-error)"
+              title="Unassigned"
+              :value="unassignedCount"
+            />
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup lang="ts">
-  import type { Booking } from '@/types'
   import type { Property } from '@/types/property'
-  import type { PropertyColor } from '@/utils/constants'
   import { computed, onMounted, ref } from 'vue'
   import BookingStatsCard from '@/components/dumb/owner/BookingStatsCard.vue'
-  import OwnerCleaningStatus from '@/components/dumb/owner/OwnerCleaningStatus.vue'
-  import OwnerMiniCalendar from '@/components/dumb/owner/OwnerMiniCalendar.vue'
-  import OwnerPropertySummaryCards from '@/components/dumb/owner/OwnerPropertySummaryCards.vue'
-  import OwnerRecentActivity from '@/components/dumb/owner/OwnerRecentActivity.vue'
-  import OwnerUpcomingBookings from '@/components/dumb/owner/OwnerUpcomingBookings.vue'
-  import OwnerUrgentTurnsBanner from '@/components/dumb/owner/OwnerUrgentTurnsBanner.vue'
   import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
+  import OwnerPageHeader from '@/components/dumb/shared/OwnerPageHeader.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useAuthStore } from '@/stores/auth'
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
-  import { calculateBookingPriority } from '@/utils/businessLogic'
   import { mapLegacyPropertyColor } from '@/utils/constants'
 
   defineOptions({ name: 'OwnerOverview' })
 
-  // ── Data sources ────────────────────────────────────────────────
   const authStore = useAuthStore()
-  const uiStore = useUIStore()
+  const uiStore   = useUIStore()
   const { myProperties, fetchMyProperties } = useOwnerProperties()
-  const {
-    myBookings,
-    myBookingStats: bookingStats,
-    myTodayTurns,
-    myUpcomingCleanings,
-    fetchMyBookings,
-  } = useOwnerBookings()
+  const { myBookings, myTodayTurns, fetchMyBookings } = useOwnerBookings()
 
   const loading = ref(false)
 
-  // Property map for O(1) lookups
   const propertyMap = computed(() => {
-    const map = new Map<string, Property>()
-    for (const p of myProperties.value) map.set(p.id, p)
-    return map
+    const m = new Map<string, Property>()
+    for (const p of myProperties.value) m.set(p.id, p)
+    return m
   })
-
-  function getProperty (propertyId: string): Property | undefined {
-    return propertyMap.value.get(propertyId)
-  }
 
   onMounted(async () => {
     if (authStore.isAuthenticated && authStore.user?.role === 'owner') {
       loading.value = true
       try {
-        await Promise.all([
-          fetchMyProperties(),
-          fetchMyBookings(),
-        ])
-      } catch (error: unknown) {
-        console.error('Failed to load overview data:', error)
+        await Promise.all([fetchMyProperties(), fetchMyBookings()])
+      } catch (err: unknown) {
+        console.error('Failed to load overview data:', err)
         uiStore.addNotification('error', 'Error', 'Failed to load dashboard data. Please refresh.')
       } finally {
         loading.value = false
@@ -155,179 +286,496 @@
     }
   })
 
-  // ── User name ───────────────────────────────────────────────────
-  const userName = computed(() => {
-    return authStore.user?.name
-      || authStore.user?.email?.split('@')[0]
-      || 'Owner'
-  })
+  const userName = computed(() =>
+    authStore.user?.name || authStore.user?.email?.split('@')[0] || 'Owner',
+  )
 
-  // ── Active bookings count (non-completed, non-cancelled) ───────
-  const activeBookingCount = computed(() => {
-    return myBookings.value.filter(
-      b => b.status !== 'completed' && b.status !== 'cancelled',
-    ).length
-  })
+  const todayStr = new Date().toISOString().split('T')[0]
+  const weekAhead = (() => { const d = new Date(); d.setDate(d.getDate() + 7); return d.toISOString().split('T')[0] })()
+  const fortAhead = (() => { const d = new Date(); d.setDate(d.getDate() + 14); return d.toISOString().split('T')[0] })()
 
-  // ── Urgent turns ────────────────────────────────────────────────
-  const urgentTurns = computed(() => {
-    return myTodayTurns.value.map(turn => {
-      const property = getProperty(turn.property_id)
-      return {
-        property: property ? formatPropertyAddress(property, 'short') : 'Unknown property',
-        time: turn.checkout_time || '11:00',
-        priority: calculateBookingPriority(turn),
+  const todayFullLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+
+  // ── Today events strip ────────────────────────────────────────────────────────
+  const todayEvents = computed(() => {
+    const events: Array<{ id: string, propId: string, propName: string, propColor: string, time: string, kind: 'checkout' | 'checkin' | 'turn', guestCount?: number }> = []
+    for (const b of myBookings.value) {
+      if (b.status === 'cancelled') continue
+      const p = propertyMap.value.get(b.property_id)
+      if (!p) continue
+      const name  = formatPropertyAddress(p, 'short')
+      const color = mapLegacyPropertyColor(p.color)
+      if (b.booking_type === 'turn' && b.checkin_date === todayStr) {
+        events.push({ id: b.id + '-t', propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'turn', guestCount: b.guest_count ?? undefined })
+      } else {
+        if (b.checkout_date === todayStr) events.push({ id: b.id + '-o', propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'checkout', guestCount: b.guest_count ?? undefined })
+        if (b.checkin_date  === todayStr) events.push({ id: b.id + '-i', propId: p.id, propName: name, propColor: color, time: b.checkin_time  ?? '15:00', kind: 'checkin',  guestCount: b.guest_count ?? undefined })
       }
-    })
+    }
+    return events.sort((a, b) => a.time.localeCompare(b.time))
   })
 
-  // ── Property summaries ──────────────────────────────────────────
-  const propertySummaries = computed(() => {
-    return myProperties.value.map((property: Property) => {
-      const propertyBookings = myBookings.value.filter(b => b.property_id === property.id)
-      const now = new Date()
-
-      // Next upcoming booking for this property
-      const nextBooking = propertyBookings
-        .filter(b => new Date(b.checkin_date) > now && b.status !== 'cancelled')
-        .toSorted((a, b) => new Date(a.checkin_date).getTime() - new Date(b.checkin_date).getTime())[0]
-
-      // Simple occupancy: booked days in last 30 days / 30
-      const thirtyDaysAgo = new Date()
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
-      const bookedDays = new Set<string>()
-      for (const booking of propertyBookings) {
-        if (booking.status === 'cancelled') continue
-        const start = new Date(booking.checkin_date)
-        const end = new Date(booking.checkout_date)
-        const current = new Date(Math.max(start.getTime(), thirtyDaysAgo.getTime()))
-        while (current <= end && current <= now) {
-          bookedDays.add(current.toISOString().split('T')[0])
-          current.setDate(current.getDate() + 1)
-        }
-      }
-      const occupancyRate = Math.min(Math.round((bookedDays.size / 30) * 100), 100)
-
-      return {
-        name: formatPropertyAddress(property, 'short'),
-        color: mapLegacyPropertyColor(property.color),
-        nextBooking: nextBooking ? nextBooking.checkin_date : null,
-        occupancyRate,
-      }
-    })
-  })
-
-  // ── Upcoming bookings list ──────────────────────────────────────
-  const upcomingBookingsList = computed(() => {
-    const now = new Date()
-    return myBookings.value
-      .filter(b => new Date(b.checkin_date) >= now && b.status !== 'cancelled')
-      .toSorted((a, b) => new Date(a.checkin_date).getTime() - new Date(b.checkin_date).getTime())
-      .slice(0, 8)
-      .map((booking: Booking) => {
-        const property = getProperty(booking.property_id)
+  // ── Urgent turns ──────────────────────────────────────────────────────────────
+  const urgentTurns = computed(() =>
+    myTodayTurns.value
+      .filter(b => b.priority === 'urgent')
+      .map(b => {
+        const p = propertyMap.value.get(b.property_id)
         return {
-          property: property ? formatPropertyAddress(property, 'short') : 'Unknown property',
-          propertyColor: mapLegacyPropertyColor(property?.color) as PropertyColor,
-          checkinDate: booking.checkin_date,
-          checkoutDate: booking.checkout_date,
-          type: booking.booking_type,
-          status: booking.status,
+          property: p ? formatPropertyAddress(p, 'short') : 'Unknown',
+          checkinTime: b.checkin_time ?? '15:00',
+          checkoutTime: b.checkout_time ?? '11:00',
+        }
+      }),
+  )
+
+  // ── Counts ────────────────────────────────────────────────────────────────────
+  const turnsTodayCount   = computed(() => myTodayTurns.value.length)
+  const checkoutsTodayCount = computed(() => myBookings.value.filter(b => b.checkout_date === todayStr && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
+  const weekCheckinCount  = computed(() => myBookings.value.filter(b => b.checkin_date >= todayStr && b.checkin_date <= weekAhead && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
+  const unassignedCount   = computed(() => myBookings.value.filter(b => !b.assigned_cleaner_id && b.status !== 'cancelled' && b.status !== 'completed').length)
+
+  // ── Occupancy ─────────────────────────────────────────────────────────────────
+  const occupancyMap = computed(() => {
+    const now  = new Date(); now.setHours(23, 59, 59, 999)
+    const past = new Date(); past.setDate(past.getDate() - 30)
+    const result = new Map<string, number>()
+    for (const p of myProperties.value) {
+      const days = new Set<string>()
+      for (const b of myBookings.value) {
+        if (b.property_id !== p.id || b.status === 'cancelled') continue
+        const start = new Date(Math.max(new Date(b.checkin_date).getTime(), past.getTime()))
+        const end   = new Date(Math.min(new Date(b.checkout_date).getTime(), now.getTime()))
+        const cur = new Date(start)
+        while (cur <= end) { days.add(cur.toISOString().slice(0, 10)); cur.setDate(cur.getDate() + 1) }
+      }
+      result.set(p.id, Math.min(Math.round((days.size / 30) * 100), 100))
+    }
+    return result
+  })
+
+  const avgOccupancyPct = computed(() => {
+    if (!myProperties.value.length) return 0
+    const total = [...occupancyMap.value.values()].reduce((a, b) => a + b, 0)
+    return Math.round(total / myProperties.value.length)
+  })
+
+  // ── Property health rows ──────────────────────────────────────────────────────
+  type StatusKey = 'urgent_turn' | 'turn_today' | 'checkin_today' | 'checkout_today' | 'occupied' | 'vacant'
+
+  const STATUS_MAP: Record<StatusKey, { label: string, color: string, dot: boolean }> = {
+    urgent_turn:   { label: 'Urgent turn today', color: 'error',   dot: true  },
+    turn_today:    { label: 'Turn today',         color: 'warning', dot: true  },
+    checkin_today: { label: 'Check-in today',     color: 'success', dot: false },
+    checkout_today:{ label: 'Check-out today',    color: 'error',   dot: false },
+    occupied:      { label: 'Occupied',           color: 'primary', dot: false },
+    vacant:        { label: 'Vacant',             color: 'default', dot: false },
+  }
+
+  function propStatus(propId: string): StatusKey {
+    const bs = myBookings.value.filter(b => b.property_id === propId && b.status !== 'cancelled')
+    const turnToday    = bs.find(b => b.checkin_date === todayStr && b.booking_type === 'turn')
+    const checkoutTdy  = bs.find(b => b.checkout_date === todayStr && b.booking_type !== 'turn')
+    const checkinTdy   = bs.find(b => b.checkin_date  === todayStr && b.booking_type !== 'turn')
+    const occupied     = bs.find(b => b.checkin_date <= todayStr && b.checkout_date > todayStr && b.booking_type !== 'turn')
+    if (turnToday) return turnToday.priority === 'urgent' ? 'urgent_turn' : 'turn_today'
+    if (checkoutTdy && checkinTdy) return 'turn_today'
+    if (checkoutTdy) return 'checkout_today'
+    if (checkinTdy)  return 'checkin_today'
+    if (occupied)    return 'occupied'
+    return 'vacant'
+  }
+
+  const healthRows = computed(() =>
+    myProperties.value.map(p => {
+      const status   = propStatus(p.id)
+      const sm       = STATUS_MAP[status]
+      const occ      = occupancyMap.value.get(p.id) ?? 0
+      const nextBook = myBookings.value.find(
+        b => b.property_id === p.id && b.checkin_date >= todayStr && b.status !== 'cancelled',
+      )
+      const nextLabel = nextBook
+        ? `${new Date(nextBook.checkin_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} → ${new Date(nextBook.checkout_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
+        : 'No upcoming'
+      return {
+        id:          p.id,
+        name:        formatPropertyAddress(p, 'short'),
+        color:       mapLegacyPropertyColor(p.color),
+        initial:     (formatPropertyAddress(p, 'short')[0] ?? 'P').toUpperCase(),
+        meta:        [p.address_city, p.bedrooms ? `${p.bedrooms}bd` : null, p.bathrooms ? `${p.bathrooms}ba` : null].filter(Boolean).join(' · '),
+        stateLabel:  sm.label,
+        stateColor:  sm.color,
+        statusDot:   sm.dot,
+        nextBooking: nextLabel,
+        occupancy:   occ,
+      }
+    }),
+  )
+
+  // ── Upcoming 14d ─────────────────────────────────────────────────────────────
+  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+
+  const upcoming14d = computed(() => {
+    const items = myBookings.value
+      .filter(b => b.status !== 'cancelled' && b.checkin_date >= todayStr && b.checkin_date <= fortAhead)
+      .toSorted((a, b) => a.checkin_date.localeCompare(b.checkin_date))
+      .slice(0, 6)
+      .map(b => {
+        const p = propertyMap.value.get(b.property_id)
+        const ci = new Date(b.checkin_date)
+        const co = new Date(b.checkout_date)
+        return {
+          id:        b.id,
+          propName:  p ? formatPropertyAddress(p, 'short') : 'Unknown',
+          propColor: mapLegacyPropertyColor(p?.color),
+          month:     MONTHS[ci.getUTCMonth()].toUpperCase(),
+          day:       ci.getUTCDate(),
+          range:     `${MONTHS[ci.getUTCMonth()]} ${ci.getUTCDate()} – ${MONTHS[co.getUTCMonth()]} ${co.getUTCDate()}`,
+          isTurn:    b.booking_type === 'turn',
         }
       })
-  })
-
-  // ── Current month for mini calendar ─────────────────────────────
-  const currentMonth = new Date()
-
-  // ── Booking dates for mini calendar ─────────────────────────────
-  const bookingDates = computed(() => {
-    const dates: Array<{ date: string, color: string, type: string }> = []
-    for (const booking of myBookings.value) {
-      if (booking.status === 'cancelled') continue
-      const property = getProperty(booking.property_id)
-      const color = mapLegacyPropertyColor(property?.color)
-      const start = new Date(booking.checkin_date)
-      const end = new Date(booking.checkout_date)
-      const current = new Date(start)
-      while (current <= end) {
-        dates.push({
-          date: current.toISOString().split('T')[0],
-          color,
-          type: booking.booking_type,
-        })
-        current.setDate(current.getDate() + 1)
-      }
-    }
-    return dates
-  })
-
-  // ── Recent activity ─────────────────────────────────────────────
-  const recentActivities = computed(() => {
-    const activities: Array<{
-      type: 'created' | 'modified' | 'cancelled'
-      description: string
-      timestamp: string
-      property: string
-    }> = []
-
-    // Build activity list from bookings with timestamps
-    for (const booking of myBookings.value) {
-      const property = getProperty(booking.property_id)
-      const propertyName = property ? formatPropertyAddress(property, 'short') : 'Unknown property'
-
-      if (booking.status === 'cancelled' && booking.updated_at) {
-        activities.push({
-          type: 'cancelled',
-          description: `Booking cancelled at ${propertyName}`,
-          timestamp: booking.updated_at,
-          property: propertyName,
-        })
-      } else if (booking.updated_at && booking.created_at && booking.updated_at !== booking.created_at) {
-        activities.push({
-          type: 'modified',
-          description: `Booking updated at ${propertyName}`,
-          timestamp: booking.updated_at,
-          property: propertyName,
-        })
-      } else if (booking.created_at) {
-        activities.push({
-          type: 'created',
-          description: `New booking at ${propertyName}`,
-          timestamp: booking.created_at,
-          property: propertyName,
-        })
-      }
-    }
-
-    // Sort by timestamp descending, take most recent 10
-    return activities
-      .toSorted((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-      .slice(0, 10)
-  })
-
-  // ── Cleaning status list ────────────────────────────────────────
-  const cleaningStatusList = computed(() => {
-    return myUpcomingCleanings.value.map((booking: Booking) => {
-      const property = getProperty(booking.property_id)
-      return {
-        property: property ? formatPropertyAddress(property, 'short') : 'Unknown property',
-        propertyColor: mapLegacyPropertyColor(property?.color),
-        nextDate: booking.checkout_date,
-        cleanerName: booking.assigned_cleaner_id ? 'Assigned' : 'Unassigned',
-        status: booking.status,
-      }
-    })
+    return items
   })
 </script>
 
 <style scoped>
 .owner-overview {
-  max-width: 1440px;
-  padding: var(--claro-space-xl, 32px) var(--claro-content-padding, 24px);
+  max-width: 1280px;
+  padding-bottom: var(--claro-space-2xl);
 }
 
 .owner-overview :deep(.v-row + .v-row) {
-  margin-top: var(--claro-section-gap, 32px);
+  margin-top: var(--claro-section-gap);
+}
+
+/* ── Urgent / OK banner ── */
+.triage-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 20px;
+  border-radius: var(--claro-radius-sm);
+  border: 1px solid transparent;
+}
+
+.triage-banner--ok {
+  background: var(--claro-success-tonal);
+  border-color: rgba(40, 199, 111, 0.25);
+}
+
+.triage-banner--urgent {
+  background: var(--claro-error-tonal);
+  border-color: rgba(234, 84, 85, 0.25);
+}
+
+.triage-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--claro-radius-sm);
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.triage-icon--ok     { background: rgba(40, 199, 111, 0.18); }
+.triage-icon--urgent { background: rgba(234, 84, 85, 0.18); }
+
+.triage-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.triage-title {
+  font-size: var(--claro-text-sm);
+  font-weight: var(--claro-font-weight-semibold);
+  color: var(--claro-fg1);
+}
+
+.triage-sub {
+  font-size: var(--claro-text-xs);
+  color: var(--claro-fg3);
+  margin-top: 2px;
+}
+
+/* ── Section headers ── */
+.section-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-size: var(--claro-text-sm);
+  font-weight: 700;
+  color: var(--claro-fg2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.section-count {
+  font-size: var(--claro-text-xs);
+  color: var(--claro-fg3);
+  font-variant-numeric: tabular-nums;
+}
+
+.section-action {
+  margin-left: auto;
+  font-size: var(--claro-text-xs);
+  color: var(--claro-primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.section-action:hover {
+  text-decoration: underline;
+}
+
+/* ── Today strip ── */
+.today-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.today-strip::-webkit-scrollbar { display: none; }
+
+.event-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 16px;
+  background: var(--claro-surface);
+  border: 1px solid var(--claro-border);
+  border-radius: var(--claro-radius-sm);
+  flex-shrink: 0;
+  min-width: 160px;
+  box-shadow: var(--claro-shadow-sm);
+}
+
+.event-pill-time {
+  font-size: var(--claro-text-xs);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--claro-fg3);
+  letter-spacing: 0.04em;
+}
+
+.event-pill-prop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--claro-text-sm);
+  font-weight: 500;
+  color: var(--claro-fg1);
+}
+
+/* ── Property health rows ── */
+.health-list {
+  overflow: hidden;
+}
+
+.health-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--claro-border);
+}
+
+.health-row:last-child {
+  border-bottom: none;
+}
+
+.health-swatch {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--claro-radius-sm);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.health-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.health-addr {
+  font-size: var(--claro-text-sm);
+  font-weight: 600;
+  color: var(--claro-fg1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.health-sub {
+  font-size: var(--claro-text-xs);
+  color: var(--claro-fg3);
+  margin-top: 2px;
+}
+
+.health-state {
+  flex-shrink: 0;
+}
+
+.health-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+.health-next {
+  min-width: 140px;
+}
+
+.health-next-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--claro-fg3);
+}
+
+.health-next-val {
+  font-size: var(--claro-text-xs);
+  color: var(--claro-fg1);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.health-occ {
+  min-width: 80px;
+}
+
+.health-occ-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--claro-fg3);
+}
+
+.health-occ-val {
+  font-size: var(--claro-text-sm);
+  font-weight: 700;
+  color: var(--claro-fg1);
+  font-variant-numeric: tabular-nums;
+  margin-top: 2px;
+}
+
+.health-occ-bar {
+  height: 4px;
+  background: var(--claro-border);
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+
+.health-occ-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width var(--claro-dur-slow) var(--claro-ease);
+}
+
+/* ── Upcoming card ── */
+.up-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.up-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--claro-border);
+}
+
+.up-empty {
+  padding: 24px 20px;
+}
+
+.up-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.up-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--claro-border);
+  transition: background var(--claro-dur-fast) var(--claro-ease);
+}
+
+.up-row:last-child {
+  border-bottom: none;
+}
+
+.up-row:hover {
+  background: rgba(115, 103, 240, 0.025);
+}
+
+.up-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 36px;
+  flex-shrink: 0;
+}
+
+.up-date-m {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--claro-fg3);
+}
+
+.up-date-d {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--claro-fg1);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.up-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.up-prop {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--claro-text-sm);
+  font-weight: 500;
+  color: var(--claro-fg1);
+}
+
+.up-range {
+  font-size: var(--claro-text-xs);
+  color: var(--claro-fg3);
+  margin-top: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Shared utils ── */
+.prop-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
 }
 </style>

@@ -6,39 +6,25 @@
 <template>
   <div class="owner-properties-page">
     <v-container class="pt-0" fluid>
-      <!-- Flat page header (no gradient) -->
-      <div class="page-header">
-        <div class="page-header__main">
-          <div class="page-header__title-row">
-            <h1 class="text-h5 font-weight-bold page-heading">My Properties</h1>
-            <v-chip color="primary" size="small" variant="tonal">
-              {{ myProperties.length }}
-            </v-chip>
-          </div>
-          <p class="text-body-2 page-subheading">
-            Manage your rental properties and settings
-          </p>
-        </div>
-        <v-btn
-          v-if="mobile"
-          aria-label="Add Property"
-          class="flex-shrink-0"
-          color="primary"
-          icon="mdi-plus"
-          size="small"
-          @click="handleCreateProperty"
-        />
-        <v-btn
-          v-else
-          class="flex-shrink-0"
-          color="primary"
-          prepend-icon="mdi-plus"
-          size="small"
-          @click="handleCreateProperty"
-        >
-          Add Property
-        </v-btn>
-      </div>
+      <!-- Uniform page header -->
+      <OwnerPageHeader
+        :badge="myProperties.length"
+        subtitle="Manage your rental properties and settings"
+        title="My Properties"
+      >
+        <template #actions>
+          <v-btn
+            aria-label="Add property"
+            color="primary"
+            :icon="mobile ? 'mdi-plus' : undefined"
+            :prepend-icon="mobile ? undefined : 'mdi-plus'"
+            size="small"
+            @click="handleCreateProperty"
+          >
+            <template v-if="!mobile">Add Property</template>
+          </v-btn>
+        </template>
+      </OwnerPageHeader>
 
       <!-- C3 — Compact Inline Bar -->
       <div class="c3-inline-bar mb-5">
@@ -130,6 +116,7 @@
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   import PropertyList from '@/components/dumb/owner/PropertyList.vue'
+  import OwnerPageHeader from '@/components/dumb/shared/OwnerPageHeader.vue'
 
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'

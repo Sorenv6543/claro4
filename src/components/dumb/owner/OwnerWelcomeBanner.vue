@@ -1,14 +1,17 @@
 <!--
-  v3-1 "Aurora" hero card from Claude Design v1 handoff
-  (docs/design-system/claude-design-v1/screens/hero-card-v3.html, card-1).
-
-  Two deviations from the handoff for Claro Design v1 conformance:
-  - Card border-radius: handoff says 12px, Claro rule is 2px.
-  - Icon .hero-box border-radius: handoff says 8px, Claro rule is 2px.
+  Aurora hero card — gradient version restored per design handoff
+  (components-hero-card-v3.html, card-1 Aurora variant).
+  Radii rule: 2px on surfaces — override applied via .owner-hero border-radius.
 -->
 <template>
   <div class="owner-hero card-aurora">
-    <svg class="flow" viewBox="0 0 800 200" preserveAspectRatio="none" aria-hidden="true">
+    <!-- Decorative SVG wave -->
+    <svg
+      class="flow"
+      aria-hidden="true"
+      preserveAspectRatio="none"
+      viewBox="0 0 800 200"
+    >
       <defs>
         <linearGradient id="owner-hero-fade" x1="0" y1="0" x2="1" y2="0">
           <stop offset="0%" stop-color="white" stop-opacity="0" />
@@ -20,45 +23,56 @@
           <rect width="800" height="200" fill="url(#owner-hero-fade)" />
         </mask>
       </defs>
-      <g mask="url(#owner-hero-mask)" transform="scale(-1,1) translate(-800,0)" style="opacity: 0.7">
-        <path fill="rgba(0,0,0,0.05)" d="M -40,150 C 120,150 180,68 310,68 S 500,160 610,110 760,48 900,78 L 900,86 C 760,56 610,118 500,169 S 310,80 180,76 C 50,72 -40,160 -40,160 Z" />
+      <g mask="url(#owner-hero-mask)" transform="scale(-1,1) translate(-800,0)" style="opacity:0.7">
+        <path fill="rgba(0,0,0,0.05)"   d="M -40,150 C 120,150 180,68 310,68 S 500,160 610,110 760,48 900,78 L 900,86 C 760,56 610,118 500,169 S 310,80 180,76 C 50,72 -40,160 -40,160 Z" />
         <path fill="rgba(255,255,255,0.05)" d="M -40,138 C 120,138 180,56 310,56 S 500,146 610,96 760,36 900,66 L 900,86 C 760,56 610,118 500,169 S 310,80 180,76 C 50,72 -40,160 -40,160 Z" />
         <path fill="rgba(255,255,255,0.11)" d="M -40,138 C 120,138 180,56 310,56 S 500,146 610,96 760,36 900,66 L 900,70 C 760,40 610,102 500,152 S 310,70 180,66 C 50,62 -40,142 -40,142 Z" />
         <path fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="0.8" d="M -40,138 C 120,138 180,56 310,56 S 500,146 610,96 760,36 900,66" />
       </g>
     </svg>
 
+    <!-- Left: greeting -->
     <div class="hero-left">
       <h2 class="hero-h">Welcome back, {{ userName }}</h2>
       <p class="hero-sub">Here's what's happening with your properties today.</p>
+
+      <!-- Quick-stat pills on mobile (right-side stats hidden on xs) -->
+      <div class="hero-pills d-flex d-sm-none">
+        <span class="hero-pill">{{ turnsTodayCount }} turns</span>
+        <span class="hero-pill">{{ checkoutsTodayCount }} check-outs</span>
+        <span class="hero-pill">{{ weeklyOccupancyPct }}% occ.</span>
+      </div>
     </div>
 
-    <div class="hero-right">
+    <!-- Right: stat boxes (desktop) -->
+    <div class="hero-right d-none d-sm-flex">
       <div class="hero-item">
         <div class="hero-box">
-          <v-icon color="white" icon="mdi-home-outline" size="18" />
+          <v-icon aria-hidden="true" color="white" icon="mdi-swap-horizontal" size="18" />
         </div>
         <div>
-          <div class="claro-eyebrow hero-lbl">Properties</div>
-          <div class="claro-numeric hero-val">{{ propertyCount }}</div>
+          <div class="claro-eyebrow hero-lbl">Turns Today</div>
+          <div class="claro-numeric hero-val">{{ turnsTodayCount }}</div>
         </div>
       </div>
+
       <div class="hero-item">
         <div class="hero-box">
-          <v-icon color="white" icon="mdi-calendar" size="18" />
+          <v-icon aria-hidden="true" color="white" icon="mdi-logout" size="18" />
         </div>
         <div>
-          <div class="claro-eyebrow hero-lbl">Bookings</div>
-          <div class="claro-numeric hero-val">{{ bookingCount }}</div>
+          <div class="claro-eyebrow hero-lbl">Check-outs</div>
+          <div class="claro-numeric hero-val">{{ checkoutsTodayCount }}</div>
         </div>
       </div>
+
       <div class="hero-item">
         <div class="hero-box">
-          <v-icon color="white" icon="mdi-swap-horizontal" size="18" />
+          <v-icon aria-hidden="true" color="white" icon="mdi-home-outline" size="18" />
         </div>
         <div>
-          <div class="claro-eyebrow hero-lbl">Turns</div>
-          <div class="claro-numeric hero-val">{{ turnCount }}</div>
+          <div class="claro-eyebrow hero-lbl">Occupancy</div>
+          <div class="claro-numeric hero-val">{{ weeklyOccupancyPct }}%</div>
         </div>
       </div>
     </div>
@@ -66,12 +80,12 @@
 </template>
 
 <script setup lang="ts">
-  defineProps<{
-    userName: string
-    propertyCount: number
-    bookingCount: number
-    turnCount: number
-  }>()
+defineProps<{
+  userName: string
+  turnsTodayCount: number
+  checkoutsTodayCount: number
+  weeklyOccupancyPct: number
+}>()
 </script>
 
 <style scoped>
@@ -121,10 +135,13 @@
   border-right: 1px solid rgba(255, 255, 255, 0.10);
   position: relative;
   z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  justify-content: center;
 }
 
 .hero-right {
-  display: flex;
   align-items: center;
   padding: var(--claro-space-lg, 24px) 28px;
   gap: 28px;
@@ -142,10 +159,25 @@
 }
 
 .hero-sub {
-  margin: 5px 0 0;
+  margin: 0;
   font-size: 12.5px;
   opacity: 0.75;
   line-height: var(--claro-lh-snug, 1.4);
+}
+
+.hero-pills {
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.hero-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 10px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
 }
 
 .hero-item {
@@ -169,25 +201,18 @@
     0 1px 0 rgba(255, 255, 255, 0.2) inset;
 }
 
-/* Hero-specific overrides on top of .claro-eyebrow:
-   - color (eyebrow uses fg3 dark — hero needs near-white on the gradient)
-   - font-weight (eyebrow uses medium=500 — hero spec is 600) */
 .hero-lbl {
   color: rgba(255, 255, 255, 0.75);
   font-weight: 600;
 }
 
-/* Hero-specific overrides on top of .claro-numeric:
-   - font-weight (numeric uses semibold=600 — hero spec is 800)
-   - font-size (numeric inherits — hero pins to lg)
-   - margin-top to align baseline with the eyebrow above */
 .hero-val {
   font-size: var(--claro-text-lg, 18px);
   font-weight: 800;
   margin-top: 1px;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   .owner-hero {
     flex-direction: column;
   }

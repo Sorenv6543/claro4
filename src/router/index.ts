@@ -64,6 +64,16 @@ const router = createRouter({
       },
     },
     {
+      path: '/owner/timeline',
+      name: 'owner-timeline',
+      component: () => import('@/pages/owner/timeline.vue'),
+      meta: {
+        layout: 'owner',
+        role: 'owner',
+        requiresAuth: true,
+      },
+    },
+    {
       path: '/owner/calendar',
       name: 'owner-calendar',
       component: () => import('@/pages/owner/calendar/index.vue'),
