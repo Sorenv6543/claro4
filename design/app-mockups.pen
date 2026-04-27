@@ -10688,8 +10688,8 @@
     {
       "type": "frame",
       "id": "35fW0",
-      "x": -1860,
-      "y": 1932,
+      "x": -1917,
+      "y": 1756,
       "name": "calTitle",
       "width": 1440,
       "fill": "#7367F0",
@@ -10726,8 +10726,8 @@
     {
       "type": "frame",
       "id": "JToF0",
-      "x": -1860,
-      "y": 2092,
+      "x": -1823,
+      "y": 2197,
       "name": "calDesktop",
       "width": 1440,
       "height": 820,
@@ -14595,15 +14595,6 @@
       "letterSpacing": -1
     },
     {
-      "type": "rectangle",
-      "id": "IUUed",
-      "x": -6482,
-      "y": 5487,
-      "fill": "#f5f5f9ff",
-      "width": 1634,
-      "height": 1442
-    },
-    {
       "type": "frame",
       "id": "oXdck",
       "x": -1681.7146954719692,
@@ -14643,8 +14634,8 @@
     {
       "type": "frame",
       "id": "gaGuS",
-      "x": -5548,
-      "y": 5826,
+      "x": -6519,
+      "y": 5379,
       "name": "Button Variants",
       "width": 600,
       "height": 120,
@@ -14764,8 +14755,8 @@
     {
       "type": "frame",
       "id": "0CCCZ",
-      "x": -5548,
-      "y": 6006,
+      "x": -6519,
+      "y": 5559,
       "name": "CardVariants",
       "width": 700,
       "height": 200,
@@ -14899,8 +14890,8 @@
     {
       "type": "frame",
       "id": "Db9Lr",
-      "x": -5548,
-      "y": 6266,
+      "x": -6519,
+      "y": 5819,
       "name": "matAvatars",
       "width": 400,
       "height": 180,
@@ -15199,8 +15190,8 @@
     {
       "type": "frame",
       "id": "cubp6",
-      "x": -5548,
-      "y": 6506,
+      "x": -6519,
+      "y": 6059,
       "name": "matChipsSection",
       "width": 600,
       "height": 160,
@@ -15456,18 +15447,112 @@
     {
       "type": "frame",
       "id": "FknqM",
-      "x": -5548,
-      "y": 6726,
+      "x": -6519,
+      "y": 6279,
       "name": "tabsSection",
       "width": 500,
       "height": 80,
-      "layout": "none"
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "PsDlI",
+          "x": 0,
+          "y": 0,
+          "name": "matTabsUnderline",
+          "reusable": true,
+          "width": 400,
+          "height": 48,
+          "stroke": {
+            "align": "inside",
+            "thickness": {
+              "bottom": 1
+            },
+            "fill": "#E8E8E8"
+          },
+          "children": [
+            {
+              "type": "frame",
+              "id": "kntYJ",
+              "name": "activeTab",
+              "width": "fill_container",
+              "height": "fill_container",
+              "stroke": {
+                "align": "inside",
+                "thickness": {
+                  "bottom": 2
+                },
+                "fill": "$--primary"
+              },
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "LbxiB",
+                  "name": "activeLabel",
+                  "fill": "$--primary",
+                  "content": "Tab One",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.5
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zexN5",
+              "name": "inactiveTab1",
+              "width": "fill_container",
+              "height": "fill_container",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jPP9T",
+                  "name": "inactiveLabel1",
+                  "fill": "$--muted-foreground",
+                  "content": "Tab Two",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.5
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "8ONeO",
+              "name": "inactiveTab2",
+              "width": "fill_container",
+              "height": "fill_container",
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "LHpKJ",
+                  "name": "inactiveLabel2",
+                  "fill": "$--muted-foreground",
+                  "content": "Tab Three",
+                  "fontFamily": "Inter",
+                  "fontSize": 13,
+                  "fontWeight": "500",
+                  "letterSpacing": 0.5
+                }
+              ]
+            }
+          ]
+        }
+      ]
     },
     {
       "type": "frame",
       "id": "36ZH7",
-      "x": -4279,
-      "y": 6849,
+      "x": -6519,
+      "y": 6419,
       "name": "progressSection",
       "width": 400,
       "height": 80,
@@ -15558,19 +15643,67 @@
     {
       "type": "frame",
       "id": "6L76x",
-      "x": -3918,
-      "y": 7069,
+      "x": -6519,
+      "y": 6559,
       "name": "switchSection",
       "width": 200,
       "height": 60,
       "gap": 24,
-      "alignItems": "center"
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "frame",
+          "id": "8DN4T",
+          "name": "matSwitchOff",
+          "reusable": true,
+          "width": 36,
+          "height": 20,
+          "fill": "#A8AAAE",
+          "cornerRadius": 10,
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "3NBzr",
+              "x": 2,
+              "y": 2,
+              "name": "offThumb",
+              "fill": "#FFFFFF",
+              "width": 16,
+              "height": 16
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "GMyCC",
+          "name": "matSwitchOn",
+          "reusable": true,
+          "width": 36,
+          "height": 20,
+          "fill": "$--primary",
+          "cornerRadius": 10,
+          "layout": "none",
+          "children": [
+            {
+              "type": "ellipse",
+              "id": "LywjP",
+              "x": 18,
+              "y": 2,
+              "name": "onThumb",
+              "fill": "#FFFFFF",
+              "width": 16,
+              "height": 16
+            }
+          ]
+        }
+      ]
     },
     {
       "type": "frame",
       "id": "XVtDr",
-      "x": -6448,
-      "y": 5977,
+      "x": -6519,
+      "y": 6850,
       "name": "dashStatCard",
       "reusable": true,
       "width": 200,
@@ -15646,11 +15779,90 @@
     },
     {
       "type": "frame",
+      "id": "gUbzF",
+      "x": -6519,
+      "y": 6679,
+      "name": "dashStatCardSection",
+      "gap": 16,
+      "padding": 20,
+      "children": [
+        {
+          "id": "5k9yf",
+          "type": "ref",
+          "ref": "XVtDr",
+          "name": "card1"
+        },
+        {
+          "id": "vfpbG",
+          "type": "ref",
+          "ref": "XVtDr",
+          "name": "card2",
+          "descendants": {
+            "BH9vp": {
+              "fill": "#FF9F4320"
+            },
+            "FMkV9": {
+              "iconFontName": "refresh",
+              "fill": "#FF9F43"
+            },
+            "iI51k": {
+              "content": "5"
+            },
+            "4PuGm": {
+              "content": "Upcoming Turns"
+            }
+          }
+        },
+        {
+          "id": "dJmzZ",
+          "type": "ref",
+          "ref": "XVtDr",
+          "name": "card3",
+          "descendants": {
+            "BH9vp": {
+              "fill": "#28C76F20"
+            },
+            "FMkV9": {
+              "iconFontName": "login",
+              "fill": "#28C76F"
+            },
+            "iI51k": {
+              "content": "8"
+            },
+            "4PuGm": {
+              "content": "Week's Check-ins"
+            }
+          }
+        },
+        {
+          "id": "Cl4M5",
+          "type": "ref",
+          "ref": "XVtDr",
+          "name": "card4",
+          "descendants": {
+            "BH9vp": {
+              "fill": "#EA545520"
+            },
+            "FMkV9": {
+              "iconFontName": "warning",
+              "fill": "#EA5455"
+            },
+            "iI51k": {
+              "content": "3"
+            },
+            "4PuGm": {
+              "content": "Unassigned"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "type": "frame",
       "id": "OHeMM",
-      "x": -6448,
-      "y": 6124,
+      "x": -6519,
+      "y": 6997,
       "name": "dashWelcomeBanner",
-      "reusable": true,
       "width": 760,
       "fill": {
         "type": "gradient",
@@ -15800,8 +16012,8 @@
     {
       "type": "frame",
       "id": "8jtgg",
-      "x": -6448,
-      "y": 6312,
+      "x": -6519,
+      "y": 7185,
       "name": "dashProgressList",
       "reusable": true,
       "width": 380,
@@ -17120,9 +17332,8 @@
           "gap": 24,
           "children": [
             {
+              "type": "frame",
               "id": "Vs3rn",
-              "type": "ref",
-              "ref": "OHeMM",
               "name": "welcomeBannerRef",
               "width": "fill_container",
               "fill": {
@@ -17144,7 +17355,132 @@
                     "position": 1
                   }
                 ]
-              }
+              },
+              "cornerRadius": "$--radius-sm",
+              "effect": {
+                "type": "shadow",
+                "shadowType": "outer",
+                "color": "#0000000D",
+                "offset": {
+                  "x": 0,
+                  "y": 2
+                },
+                "blur": 10
+              },
+              "gap": 24,
+              "padding": 24,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "AKclb",
+                  "name": "leftSection",
+                  "width": "fill_container",
+                  "layout": "vertical",
+                  "gap": 8,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "7udzJ",
+                      "name": "greeting",
+                      "fill": "#2E263D",
+                      "content": "Welcome back, Soren!",
+                      "fontFamily": "Inter",
+                      "fontSize": 20,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "GOaDg",
+                      "name": "subtitle",
+                      "fill": "#2E263D80",
+                      "textGrowth": "fixed-width",
+                      "width": "fill_container",
+                      "content": "Here's what's happening with your properties today",
+                      "fontFamily": "Inter",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "frame",
+                      "id": "wDDuj",
+                      "name": "pillsRow",
+                      "gap": 8,
+                      "children": [
+                        {
+                          "type": "frame",
+                          "id": "X08Ij",
+                          "name": "pill1",
+                          "fill": "#FF9F4320",
+                          "cornerRadius": 20,
+                          "padding": [
+                            4,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "n7mhK",
+                              "name": "pill1Text",
+                              "fill": "#FF9F43",
+                              "content": "3 Turns Today",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "EKMjZ",
+                          "name": "pill2",
+                          "fill": "#EA545520",
+                          "cornerRadius": 20,
+                          "padding": [
+                            4,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "eVph1",
+                              "name": "pill2Text",
+                              "fill": "#EA5455",
+                              "content": "2 Check-outs",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        },
+                        {
+                          "type": "frame",
+                          "id": "pET6S",
+                          "name": "pill3",
+                          "fill": "#28C76F20",
+                          "cornerRadius": 20,
+                          "padding": [
+                            4,
+                            12
+                          ],
+                          "children": [
+                            {
+                              "type": "text",
+                              "id": "y0kdM",
+                              "name": "pill3Text",
+                              "fill": "#28C76F",
+                              "content": "85% Occupancy",
+                              "fontFamily": "Inter",
+                              "fontSize": 12,
+                              "fontWeight": "600"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
             },
             {
               "type": "frame",
@@ -19494,234 +19830,28 @@
       ]
     },
     {
-      "type": "frame",
-      "id": "PsDlI",
-      "x": -4279,
-      "y": 6709,
-      "name": "matTabsUnderline",
-      "reusable": true,
-      "width": 400,
-      "height": 48,
-      "stroke": {
-        "align": "inside",
-        "thickness": {
-          "bottom": 1
-        },
-        "fill": "#E8E8E8"
-      },
-      "children": [
-        {
-          "type": "frame",
-          "id": "kntYJ",
-          "name": "activeTab",
-          "width": "fill_container",
-          "height": "fill_container",
-          "stroke": {
-            "align": "inside",
-            "thickness": {
-              "bottom": 2
-            },
-            "fill": "$--primary"
-          },
-          "justifyContent": "center",
-          "alignItems": "center",
-          "children": [
-            {
-              "type": "text",
-              "id": "LbxiB",
-              "name": "activeLabel",
-              "fill": "$--primary",
-              "content": "Tab One",
-              "fontFamily": "Inter",
-              "fontSize": 13,
-              "fontWeight": "500",
-              "letterSpacing": 0.5
-            }
-          ]
-        },
-        {
-          "type": "frame",
-          "id": "zexN5",
-          "name": "inactiveTab1",
-          "width": "fill_container",
-          "height": "fill_container",
-          "justifyContent": "center",
-          "alignItems": "center",
-          "children": [
-            {
-              "type": "text",
-              "id": "jPP9T",
-              "name": "inactiveLabel1",
-              "fill": "$--muted-foreground",
-              "content": "Tab Two",
-              "fontFamily": "Inter",
-              "fontSize": 13,
-              "fontWeight": "500",
-              "letterSpacing": 0.5
-            }
-          ]
-        },
-        {
-          "type": "frame",
-          "id": "8ONeO",
-          "name": "inactiveTab2",
-          "width": "fill_container",
-          "height": "fill_container",
-          "justifyContent": "center",
-          "alignItems": "center",
-          "children": [
-            {
-              "type": "text",
-              "id": "LHpKJ",
-              "name": "inactiveLabel2",
-              "fill": "$--muted-foreground",
-              "content": "Tab Three",
-              "fontFamily": "Inter",
-              "fontSize": 13,
-              "fontWeight": "500",
-              "letterSpacing": 0.5
-            }
-          ]
-        }
-      ]
+      "type": "prompt",
+      "id": "wsAmr",
+      "x": -81.77454309976838,
+      "y": 1925.7551198159492,
+      "width": 250,
+      "height": 219,
+      "content": "design the app header, and the vnavigation bar from our app"
     },
     {
-      "type": "frame",
-      "id": "8DN4T",
-      "x": -4279,
-      "y": 7009,
-      "name": "matSwitchOff",
-      "reusable": true,
-      "width": 36,
-      "height": 20,
-      "fill": "#A8AAAE",
-      "cornerRadius": 10,
-      "layout": "none",
-      "children": [
-        {
-          "type": "ellipse",
-          "id": "3NBzr",
-          "x": 2,
-          "y": 2,
-          "name": "offThumb",
-          "fill": "#FFFFFF",
-          "width": 16,
-          "height": 16
-        }
-      ]
-    },
-    {
-      "type": "frame",
-      "id": "GMyCC",
-      "x": -4219,
-      "y": 7009,
-      "name": "matSwitchOn",
-      "reusable": true,
-      "width": 36,
-      "height": 20,
-      "fill": "$--primary",
-      "cornerRadius": 10,
-      "layout": "none",
-      "children": [
-        {
-          "type": "ellipse",
-          "id": "LywjP",
-          "x": 18,
-          "y": 2,
-          "name": "onThumb",
-          "fill": "#FFFFFF",
-          "width": 16,
-          "height": 16
-        }
-      ]
-    },
-    {
-      "id": "5k9yf",
+      "id": "hNw40",
       "type": "ref",
-      "ref": "XVtDr",
-      "name": "card1",
-      "x": -6428,
-      "y": 5826
+      "ref": "nzuBn",
+      "x": 392,
+      "y": -662.6114897760467
     },
     {
-      "id": "vfpbG",
+      "id": "12ZgG",
       "type": "ref",
-      "ref": "XVtDr",
-      "name": "card2",
-      "x": -6212,
-      "y": 5826,
-      "descendants": {
-        "BH9vp": {
-          "fill": "#FF9F4320"
-        },
-        "FMkV9": {
-          "iconFontName": "refresh",
-          "fill": "#FF9F43"
-        },
-        "iI51k": {
-          "content": "5"
-        },
-        "4PuGm": {
-          "content": "Upcoming Turns"
-        }
-      }
-    },
-    {
-      "id": "dJmzZ",
-      "type": "ref",
-      "ref": "XVtDr",
-      "name": "card3",
-      "x": -5996,
-      "y": 5826,
-      "descendants": {
-        "BH9vp": {
-          "fill": "#28C76F20"
-        },
-        "FMkV9": {
-          "iconFontName": "login",
-          "fill": "#28C76F"
-        },
-        "iI51k": {
-          "content": "8"
-        },
-        "4PuGm": {
-          "content": "Week's Check-ins"
-        }
-      }
-    },
-    {
-      "id": "Cl4M5",
-      "type": "ref",
-      "ref": "XVtDr",
-      "name": "card4",
-      "x": -5780,
-      "y": 5826,
-      "descendants": {
-        "BH9vp": {
-          "fill": "#EA545520"
-        },
-        "FMkV9": {
-          "iconFontName": "warning",
-          "fill": "#EA5455"
-        },
-        "iI51k": {
-          "content": "3"
-        },
-        "4PuGm": {
-          "content": "Unassigned"
-        }
-      }
-    },
-    {
-      "type": "frame",
-      "id": "gUbzF",
-      "x": -6656,
-      "y": 6766,
-      "name": "dashStatCardSection",
-      "width": "fit_content(888)",
-      "height": "fit_content(127)",
-      "gap": 16,
-      "padding": 20
+      "ref": "DeDpj",
+      "x": 812,
+      "y": -662.6114897760467,
+      "name": "dashDataTable"
     }
   ],
   "themes": {

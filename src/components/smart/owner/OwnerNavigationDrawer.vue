@@ -137,7 +137,6 @@ import { useDisplay } from 'vuetify';
   ]
 
   const accountItems = [
-
     {
       label: 'Settings',
       icon: 'mdi-cog-outline',
