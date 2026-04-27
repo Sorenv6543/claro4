@@ -853,9 +853,6 @@ export function useAdminBookings () {
     getBookingsByStatus,
     getAdminPerformanceMetrics: () => ({}), // Placeholder for performance metrics
 
-    // Store actions (direct access)
-    fetchAllProperties: () => Promise.resolve(),
-
     // Permission functions
     canManageAnyBooking,
     canEditAnyBooking,
