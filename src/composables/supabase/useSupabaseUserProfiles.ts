@@ -105,10 +105,11 @@ export function useSupabaseUserProfiles () {
   }
 
   async function bulkUpdateRole (userIds: string[], newRole: UserRole): Promise<void> {
+    if (userIds.length === 0) return
+
     const now = new Date().toISOString()
     const rollbacks: Array<{ id: string, user: User }> = []
 
-    // Optimistic updates
     for (const id of userIds) {
       const existing = userProfileStore.userProfiles.get(id)
       if (existing) {
@@ -118,28 +119,12 @@ export function useSupabaseUserProfiles () {
     }
 
     try {
-      const results = await Promise.allSettled(
-        userIds.map(userId =>
-          supabase
-            .from('user_profiles')
-            .update({ role: newRole, updated_at: now })
-            .eq('id', userId),
-        ),
-      )
-
-      const failures = results.filter(r => r.status === 'rejected')
-      if (failures.length > 0) {
-        throw new Error(`${failures.length} of ${userIds.length} role updates failed`)
-      }
-
-      // Check for Supabase errors in fulfilled results
-      for (const result of results) {
-        if (result.status === 'fulfilled' && result.value.error) {
-          throw result.value.error
-        }
-      }
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({ role: newRole, updated_at: now })
+        .in('id', userIds)
+      if (error) throw error
     } catch (error) {
-      // Rollback all optimistic updates
       for (const { id, user } of rollbacks) {
         userProfileStore.setUserProfile(id, user)
       }

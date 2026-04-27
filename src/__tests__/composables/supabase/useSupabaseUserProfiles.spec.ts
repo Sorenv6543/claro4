@@ -80,6 +80,8 @@ describe('useSupabaseUserProfiles', () => {
       // select() called on the same chain — not a second .from() call
       expect(supabaseMock.from).toHaveBeenCalledTimes(1)
       expect(selectMock).toHaveBeenCalled()
+      // Verify select was called on the eq chain — not via a separate path
+      expect(eqMock).toHaveReturnedWith(expect.objectContaining({ select: selectMock }))
     })
 
     it('rolls back optimistic update on failure', async () => {
@@ -101,9 +103,9 @@ describe('useSupabaseUserProfiles', () => {
 
   describe('bulkUpdateRole', () => {
     it('optimistically updates all users and succeeds', async () => {
-      const eqMock = vi.fn().mockResolvedValue({ data: null, error: null })
+      const inMock = vi.fn().mockResolvedValue({ data: null, error: null })
       supabaseMock.from.mockReturnValue({
-        update: vi.fn().mockReturnValue({ eq: eqMock }),
+        update: vi.fn().mockReturnValue({ in: inMock }),
       })
 
       const composable = await getComposable()
@@ -115,12 +117,13 @@ describe('useSupabaseUserProfiles', () => {
 
       expect(store.userProfiles.get('u1')?.role).toBe('cleaner')
       expect(store.userProfiles.get('u2')?.role).toBe('cleaner')
+      expect(inMock).toHaveBeenCalledWith('id', ['u1', 'u2'])
     })
 
     it('rolls back all optimistic updates on failure', async () => {
       supabaseMock.from.mockReturnValue({
         update: vi.fn().mockReturnValue({
-          eq: vi.fn().mockRejectedValue(new Error('SQL failed')),
+          in: vi.fn().mockResolvedValue({ data: null, error: { message: 'SQL failed' } }),
         }),
       })
 
