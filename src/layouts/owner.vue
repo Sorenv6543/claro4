@@ -153,6 +153,17 @@
     <OwnerNavigationDrawer v-model="sidebarOpen" />
 
     <v-main>
+      <v-banner
+        v-if="initError"
+        color="error"
+        icon="mdi-alert-circle-outline"
+        lines="one"
+        class="mb-0"
+      >
+        <v-banner-text>
+          Failed to load data. Please refresh the page.
+        </v-banner-text>
+      </v-banner>
       <router-view />
     </v-main>
 
@@ -161,7 +172,7 @@
 
 <script setup lang="ts">
   import { useAuthStore } from '@stores/auth'
-  import { computed, onMounted, ref } from 'vue'
+  import { computed, onMounted, provide, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import ThemePicker from '@/components/dumb/shared/ThemePicker.vue'
@@ -180,14 +191,21 @@
   const notificationCount = ref(0)
   const viewMode = calendarState.viewMode
 
+  const isReady = ref(false)
+  const initError = ref<Error | null>(null)
+  provide('appStatus', { isReady, initError })
+
   onMounted(() => {
-    initRealtimeSync().catch((error: unknown) => {
-      console.error('[OwnerLayout] Failed to initialize realtime sync:', error)
-    })
+    initRealtimeSync()
+      .then(() => { isReady.value = true })
+      .catch((error: unknown) => {
+        initError.value = error instanceof Error ? error : new Error(String(error))
+        console.error('[OwnerLayout] Failed to initialize realtime sync:', error)
+      })
   })
 
-  // Show calendar controls only on the schedule/dashboard page
-  const isCalendarPage = computed(() => route.path === '/owner/dashboard')
+  // Show calendar controls only on the owners/calendar page
+  const isCalendarPage = computed(() => route.path === '/owner/calendar')
 
   // ── Calendar header data ─────────────────────────────────────────
   const formattedMonthYear = computed(() =>

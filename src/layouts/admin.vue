@@ -112,13 +112,24 @@
 
     <!-- Main Content Area -->
     <v-main>
+      <v-banner
+        v-if="initError"
+        color="error"
+        icon="mdi-alert-circle-outline"
+        lines="one"
+        class="mb-0"
+      >
+        <v-banner-text>
+          Failed to load data. Please refresh the page.
+        </v-banner-text>
+      </v-banner>
       <router-view />
     </v-main>
   </v-app>
 </template>
 
 <script setup lang="ts">
-  import { computed, onMounted, ref } from 'vue'
+  import { computed, onMounted, provide, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
 
@@ -147,6 +158,11 @@
   const isSidebarOpen = ref(mdAndUp.value)
   const loading = ref<boolean>(false)
   const notificationCount = ref(0)
+
+  // AppStatus — shared with all child pages via provide/inject
+  const isReady = ref(false)
+  const initError = ref<Error | null>(null)
+  provide('appStatus', { isReady, initError })
 
   const bookings = computed(() => Array.from(bookingStore.bookings.values()))
   const properties = computed(() => Array.from(propertyStore.properties.values()))
@@ -248,7 +264,9 @@
         fetchCleaners(),
         initRealtimeSync(),
       ])
+      isReady.value = true
     } catch (error) {
+      initError.value = error instanceof Error ? error : new Error(String(error))
       console.error('[AdminLayout] Failed to initialize:', error)
     } finally {
       loading.value = false
