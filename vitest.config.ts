@@ -33,7 +33,7 @@ export default defineConfig({
         'src/main.ts',
       ],
     },
-    include: ['src/**/*.{test,spec}.{js,ts,jsx,tsx}'],
+    include: ['src/**/*.{test,spec}.{js,ts,jsx,tsx}', 'scripts/**/*.test.{js,ts}'],
     css: true,
     setupFiles: ['./src/__tests__/setup/setupTests.ts'],
     server: {
