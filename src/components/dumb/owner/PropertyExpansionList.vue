@@ -252,6 +252,5 @@
   border-radius: inherit;
   pointer-events: none;
   z-index: 2;
-  transition: opacity 0.2s ease;
 }
 </style>
