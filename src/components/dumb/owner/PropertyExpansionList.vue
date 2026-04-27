@@ -53,8 +53,8 @@
               >
                 <div class="text-body-2 font-weight-medium">{{ formatDate(b.checkin_date) }}</div>
                 <div class="text-caption text-medium-emphasis">→ {{ formatDate(b.checkout_date) }}</div>
-                <v-chip class="mt-1" :color="statusColor(b.status)" size="x-small" variant="tonal">
-                  {{ String(b.status).replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()) }}
+                <v-chip class="mt-1" :color="getBookingStatusColor(b.status)" size="x-small" variant="tonal">
+                  {{ formatStatus(b.status) }}
                 </v-chip>
               </v-timeline-item>
             </v-timeline>
@@ -129,10 +129,10 @@
 </template>
 
 <script setup lang="ts">
-  import type { Booking, BookingStatus } from '@/types/booking'
+  import type { Booking } from '@/types/booking'
   import type { Property } from '@/types/property'
   import { computed, ref } from 'vue'
-  import { mapLegacyPropertyColor } from '@/utils/constants'
+  import { formatStatus, getBookingStatusColor, mapLegacyPropertyColor } from '@/utils/constants'
   import TurnPriorityBadge from '@/components/dumb/shared/TurnPriorityBadge.vue'
 
   type PropertyItem = Property & {
@@ -197,23 +197,6 @@
 
   function formatDate (iso: string): string {
     return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-  }
-
-  function statusColor (status: BookingStatus): string {
-    switch (status) {
-      case 'pending': { return 'warning'
-      }
-      case 'scheduled': { return 'primary'
-      }
-      case 'in_progress': { return 'info'
-      }
-      case 'completed': { return 'success'
-      }
-      case 'cancelled': { return 'error'
-      }
-      default: { return 'secondary'
-      }
-    }
   }
 
   function getPropertyIcon (propertyType?: string): string {
