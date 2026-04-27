@@ -65,16 +65,6 @@ describe('useRealtimeSync', () => {
     return mod.useRealtimeSync()
   }
 
-  async function getPropertyStore () {
-    const mod = await import('@/stores/property')
-    return mod.usePropertyStore()
-  }
-
-  async function getBookingStore () {
-    const mod = await import('@/stores/booking')
-    return mod.useBookingStore()
-  }
-
   describe('init', () => {
     it('calls fetchAndSubscribe on bookings', async () => {
       const composable = await getComposable()
@@ -116,28 +106,6 @@ describe('useRealtimeSync', () => {
       composable.teardown()
 
       expect(mockTeardownProperties).toHaveBeenCalledOnce()
-    })
-
-    it('clears booking store', async () => {
-      const bookingStore = await getBookingStore()
-      const clearSpy = vi.spyOn(bookingStore, 'clearAll')
-
-      const composable = await getComposable()
-
-      composable.teardown()
-
-      expect(clearSpy).toHaveBeenCalledOnce()
-    })
-
-    it('clears property store', async () => {
-      const propertyStore = await getPropertyStore()
-      const clearSpy = vi.spyOn(propertyStore, 'clearAll')
-
-      const composable = await getComposable()
-
-      composable.teardown()
-
-      expect(clearSpy).toHaveBeenCalledOnce()
     })
 
     it('removes profile channel if subscribed', async () => {

@@ -4,8 +4,6 @@ import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useSupabaseProperties } from '@/composables/supabase/useSupabaseProperties'
 import { supabase } from '@/plugins/supabase'
 import { useAuthStore } from '@/stores/auth'
-import { useBookingStore } from '@/stores/booking'
-import { usePropertyStore } from '@/stores/property'
 
 export function useRealtimeSync () {
   const { fetchAndSubscribe: initBookings, unsubscribe: teardownBookings,
@@ -13,8 +11,6 @@ export function useRealtimeSync () {
   const { fetchAndSubscribe: initProperties, unsubscribe: teardownProperties,
     connectionStatus: propertyStatus } = useSupabaseProperties()
   const authStore = useAuthStore()
-  const bookingStore = useBookingStore()
-  const propertyStore = usePropertyStore()
 
   const isOnline = ref(navigator.onLine)
   let profileChannel: RealtimeChannel | null = null
@@ -77,8 +73,7 @@ export function useRealtimeSync () {
       supabase.removeChannel(profileChannel)
       profileChannel = null
     }
-    bookingStore.clearAll()
-    propertyStore.clearAll()
+    // Store data remains valid after unsubscribe — cleared by auth on sign-out
   }
 
   function onOnline () {
