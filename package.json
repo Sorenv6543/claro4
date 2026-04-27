@@ -31,6 +31,7 @@
     "perf:regression": "vitest run src/__tests__/utils/performance-regression.spec.ts",
     "perf:analysis": "pnpm run perf:bundle && pnpm run perf:regression",
     "perf:report": "pnpm run perf:analysis && echo 'Performance analysis complete. See performance-bundle-report.json for details.'",
+    "check:bundle": "node scripts/check-bundle-size.js",
     "mcp:browser-tools": "node scripts/start-browser-tools-mcp.js",
     "mcp:browser-tools:basic": "npx browser-tools-mcp",
     "mcp:browser-tools:enhanced": "npx @eqiz/browser-tools-mcp-enhanced",

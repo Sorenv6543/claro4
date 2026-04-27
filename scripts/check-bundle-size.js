@@ -24,7 +24,11 @@ export function checkOwnerBundleSize(assetsDir, maxKB = MAX_GZIP_KB) {
 }
 
 // Only execute CLI logic when run directly (not imported by tests)
-if (path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))) {
+const isMain =
+  process.argv[1] != null &&
+  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
+
+if (isMain) {
   const assetsDir = path.resolve('dist/assets')
   try {
     const { totalKB, passed, maxKB } = checkOwnerBundleSize(assetsDir)
