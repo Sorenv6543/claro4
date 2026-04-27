@@ -77,8 +77,10 @@
   --claro-fg4: rgba(46, 38, 61, 0.28);
 
   /* Aliases for "text-on-X" semantic surfaces. */
-  --claro-on-background: var(--claro-fg1);
-  --claro-on-surface:    var(--claro-fg1);
+  --claro-on-background:  var(--claro-fg1);
+  --claro-on-surface:     var(--claro-fg1);
+  /* Alias for muted/secondary text — maps to fg3 (50% opacity). */
+  --claro-text-secondary: var(--claro-fg3);
 
   /* ─── Colors: Borders ─────────────────────────────────────────────── */
   --claro-divider:        #E8E8E8;
@@ -156,13 +158,14 @@
   /* --claro-drawer-width is documentary; AdminSidebar / OwnerNavigationDrawer
      own width selection via useDisplay() (260 on md+, 280 overlay below).
      Keep this token in sync with the sidebars' computed if either changes. */
-  --claro-drawer-width:           260px;
+  --claro-drawer-width:           380px;
   --claro-drawer-width-collapsed: 72px;
   --claro-content-padding:        24px;
   --claro-content-padding-mobile: 12px;
 
   /* ─── Responsive Spacing ──────────────────────────────────────────── */
   --claro-card-padding: var(--claro-space-lg);
+  --claro-card-gap:     var(--claro-space-md);
   --claro-section-gap:  var(--claro-space-xl);
 }
 
