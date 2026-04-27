@@ -1,5 +1,6 @@
 import type { PluginOption } from 'vite'
 
+import { execSync } from 'node:child_process'
 import { fileURLToPath, URL } from 'node:url'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import vue from '@vitejs/plugin-vue'
@@ -34,6 +35,32 @@ export default defineConfig(({ mode }) => {
   // SENTRY_AUTH_TOKEN / SENTRY_ORG / SENTRY_PROJECT used by the
   // source-map upload plugin below.
   const env = loadEnv(mode, process.cwd(), '')
+
+  // Release name used by both the runtime SDK (Sentry.init({ release }) in
+  // main.ts) and the source-map upload plugin (sentryVitePlugin({ release }))
+  // below. Both must agree, or uploaded maps don't apply to captured events.
+  //
+  // Resolution order (highest precedence first):
+  //   1. process.env.VITE_APP_VERSION  — CI shell override (e.g., release tag)
+  //   2. env.VITE_APP_VERSION          — .env / .env.local file override
+  //   3. <pkg.version>+<gitShortSha>   — derived per-build, unique per commit
+  //
+  // Format <semver>+<sha> follows SemVer build-metadata convention so Sentry
+  // sorts releases by version while keeping each build distinct (enables
+  // regression detection, suspect-commits, release health).
+  const release = process.env.VITE_APP_VERSION || env.VITE_APP_VERSION || (() => {
+    let sha = 'unknown'
+    try {
+      sha = execSync('git rev-parse --short HEAD', {
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).toString().trim()
+    } catch {
+      // Not a git checkout (e.g., source tarball, sandboxed CI). Fall through
+      // to "unknown" — Sentry still accepts the release name, just with less
+      // commit-level traceability.
+    }
+    return `${process.env.npm_package_version ?? '0.0.0'}+${sha}`
+  })()
 
   const plugins: PluginOption[] = [
     vue({
@@ -201,8 +228,11 @@ export default defineConfig(({ mode }) => {
           authToken: env.SENTRY_AUTH_TOKEN,
           // Match the runtime release tag in main.ts's Sentry.init({ release })
           // so uploaded artifacts and captured events resolve to the same release.
+          // The shared `release` const (computed above) is the single source of
+          // truth — also injected via `define` below so the runtime SDK reads
+          // the same value at build time.
           release: {
-            name: env.VITE_APP_VERSION,
+            name: release,
           },
         }),
       )
@@ -236,6 +266,11 @@ export default defineConfig(({ mode }) => {
       __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString()),
       __VUE_OPTIONS_API__: JSON.stringify(true),
       __VUE_PROD_DEVTOOLS__: JSON.stringify(!isProduction),
+      // Override `import.meta.env.VITE_APP_VERSION` at build time with the
+      // computed `release` so Sentry.init in main.ts picks up the same name
+      // the source-map plugin uploaded under. Keeps env-file values from
+      // silently shadowing the per-build git-derived release.
+      'import.meta.env.VITE_APP_VERSION': JSON.stringify(release),
     },
     css: {
       devSourcemap: true,
@@ -253,6 +288,12 @@ export default defineConfig(({ mode }) => {
       port: 3000,
       open: false,
       sourcemapIgnoreList: false,
+      headers: {
+        // Required for the JS Profiling API used by Sentry browserProfilingIntegration.
+        // Without this header the browser silently refuses to start the profiler.
+        // Must also be set at the CDN/host level for production builds.
+        'Document-Policy': 'js-profiling',
+      },
       hmr: {
         overlay: false,
       },
@@ -354,6 +395,9 @@ export default defineConfig(({ mode }) => {
       port: 4173,
       open: true,
       cors: true,
+      headers: {
+        'Document-Policy': 'js-profiling',
+      },
     },
   }
 })

@@ -393,14 +393,30 @@ export function useErrorHandler () {
   }
 
   /**
-   * Escalate critical errors
+   * Escalate critical errors — sends a fatal-level event to Sentry so
+   * escalated issues are immediately visible in the issues stream even
+   * when no unhandled exception occurs.
    */
   async function escalateError (errorInfo: ErrorInfo): Promise<void> {
     try {
-      // Simulate escalation
-      console.log('Escalating error:', errorInfo)
+      Sentry.withScope((scope) => {
+        scope.setLevel('fatal')
+        scope.setTag('escalated', 'true')
+        scope.setTag('businessImpact', errorInfo.businessImpact ?? 'unknown')
+        scope.setTag('category', errorInfo.category)
+        scope.setContext('escalation', {
+          requestId: errorInfo.context.requestId,
+          operation: errorInfo.context.operation,
+          component: errorInfo.context.component,
+          affectedResources: errorInfo.affectedResources,
+          sessionId: errorInfo.context.sessionId,
+        })
+        Sentry.captureMessage(
+          `[Escalated] ${errorInfo.code ? `[${errorInfo.code}] ` : ''}${errorInfo.message}`,
+          'fatal',
+        )
+      })
 
-      // In real implementation, notify on-call team, create incident ticket, etc.
       if (currentUserRole.value === 'admin') {
         uiStore.addNotification(
           'warning',

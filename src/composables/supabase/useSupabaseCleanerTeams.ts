@@ -1,10 +1,10 @@
-import type { RealtimeChannel } from '@supabase/supabase-js'
-import type { CleanerTeam, CleanerTeamFormData } from '@/types'
-import { v4 as uuidv4 } from 'uuid'
-import { ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
 import { useBookingStore } from '@/stores/booking'
 import { useCleanerTeamStore } from '@/stores/cleanerTeam'
+import type { CleanerTeam, CleanerTeamFormData } from '@/types'
+import type { RealtimeChannel } from '@supabase/supabase-js'
+import { v4 as uuidv4 } from 'uuid'
+import { ref } from 'vue'
 
 // Module-level singleton state — matches useSupabaseBookings / useSupabaseProperties pattern
 let channel: RealtimeChannel | null = null
@@ -188,6 +188,7 @@ export function useSupabaseCleanerTeams() {
       .eq('assigned_team_id', teamId)
     if (error) {
       console.error('[useSupabaseCleanerTeams] clearTeamFromBookings error:', error)
+      throw error
     }
 
     for (const [bookingId, booking] of bookingStore.bookings.entries()) {

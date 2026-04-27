@@ -1,8 +1,8 @@
-import type { Session } from '@supabase/supabase-js'
 import type { User, UserRole } from '@/types/user.ts'
+import type { Session } from '@supabase/supabase-js'
 // src/composables/supabase/useSupabaseAuth.ts
-import { computed, ref } from 'vue'
 import { supabase } from '@/plugins/supabase.ts'
+import { computed, ref } from 'vue'
 
 export function useSupabaseAuth () {
   const user = ref<User | null>(null)
@@ -361,7 +361,7 @@ export function useSupabaseAuth () {
   }
 
   async function refreshProfile (): Promise<void> {
-    if (!currentUserId.value) throw new Error('[useSupabaseAuth] refreshProfile called without an authenticated user')
+    if (!currentUserId.value) return
     await loadUserProfileSafe(currentUserId.value)
   }
 

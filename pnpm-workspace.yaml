@@ -1,2 +1,12 @@
 ignoredBuiltDependencies:
   - supabase
+
+peerDependencyRules:
+  allowedVersions:
+    # rollup@2.x is pulled in transitively by workbox-build's internal rollup
+    # plugins inside vite-plugin-pwa — not the rollup Vite/Sentry actually use
+    # (which is 4.x). Sentry's peer dep check sees both; suppress the false alarm.
+    "@sentry/rollup-plugin>rollup": "2 || 3 || 4"
+    # vite-plugin-pwa@1.2.0 ships workbox-build@7.3.0 internally but declares
+    # a peer dep on ^7.4.0 — a bug in its own manifest. Allow 7.3 here.
+    "vite-plugin-pwa>workbox-build": "7.3"

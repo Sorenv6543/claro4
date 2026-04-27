@@ -38,7 +38,7 @@
 
   const uiStore = useUIStore()
 
-  const { allCleaners, availableCleaners, cleanerWorkloads, allTeams, fetchCleaners, fetchTeams, error: cleanerError } = useCleanerManagement()
+  const { allCleaners, availableCleaners, cleanerWorkloads, allTeams, fetchTeams, error: cleanerError } = useCleanerManagement()
   const { fetchAllProperties, error: propertyError } = useAdminProperties()
   const { isEveningMode, modeLabel } = useTimeAwareMode()
 
@@ -245,19 +245,17 @@
     dashboardLoading.value = true
     dashboardError.value = null
     try {
-      const [bookingsOk, propertiesOk, cleanersOk, teamsOk] = await Promise.all([
+      const [bookingsOk, propertiesOk, teamsOk] = await Promise.all([
         fetchAllBookings(),
         fetchAllProperties(),
-        fetchCleaners(),
         fetchTeams(),
       ])
 
-      if (!bookingsOk || !propertiesOk || !cleanersOk || !teamsOk) {
+      if (!bookingsOk || !propertiesOk || !teamsOk) {
         const messages: string[] = []
 
         if (!bookingsOk) messages.push(error.value || 'Failed to load bookings')
         if (!propertiesOk) messages.push(propertyError.value || 'Failed to load properties')
-        if (!cleanersOk) messages.push(cleanerError.value || 'Failed to load cleaners')
         if (!teamsOk) messages.push(cleanerError.value || 'Failed to load teams')
 
         dashboardError.value = messages.join(' | ')
