@@ -10,9 +10,10 @@ declare module '*.vue' {
 interface ImportMetaEnv {
   readonly VITE_SUPABASE_URL: string
   readonly VITE_SUPABASE_ANON_KEY: string
-  readonly VITE_SUPABASE_SERVICE_ROLE_KEY: string
-
-  // add more env variables as needed
+  readonly VITE_SENTRY_DSN?: string
+  readonly VITE_SENTRY_TRACES_SAMPLE_RATE?: string
+  readonly VITE_APP_VERSION?: string
+  readonly VITE_DEBUG_AUTH?: string
 }
 
 interface ImportMeta {
