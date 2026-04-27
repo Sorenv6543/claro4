@@ -2,8 +2,9 @@ import type { Booking, BookingFormData, BookingStatus, BookingType } from '@/typ
 
 import { computed, ref } from 'vue'
 
+import { useErrorHandler } from '@/composables/shared/useErrorHandler'
 import { usePerformanceMonitor } from '@/composables/shared/usePerformanceMonitor'
-import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
+import { BulkAssignSqlError, useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useAuthStore } from '@/stores/auth'
 import { useBookingStore } from '@/stores/booking'
 import { usePropertyStore } from '@/stores/property'
@@ -28,11 +29,17 @@ export function useAdminBookings () {
     deleteBooking: supaDelete,
     changeBookingStatus: supaChangeStatus,
     assignCleaner: supaAssignCleaner,
+    bulkAssignCleaner: supaBulkAssignCleaner,
+    bulkChangeStatus: supaBulkChangeStatus,
   } = useSupabaseBookings()
   const authStore = useAuthStore()
   const bookingStore = useBookingStore()
   const propertyStore = usePropertyStore()
   const { measureRolePerformance, trackCachePerformance } = usePerformanceMonitor()
+  // useErrorHandler routes errors through Sentry (when DSN configured) — see
+  // main.ts and useErrorHandler.reportError. Replaces raw console.error in
+  // catch blocks so admin operations are visible in production ops dashboards.
+  const errorHandler = useErrorHandler()
 
   // Admin-specific state
   const loading = ref<boolean>(false)
@@ -430,7 +437,15 @@ export function useAdminBookings () {
   }
 
   /**
-   * Bulk assign cleaner to multiple bookings (admin efficiency operation)
+   * Bulk assign cleaner to multiple bookings (admin efficiency operation).
+   *
+   * Delegates to the supabase-layer bulkAssignCleaner, which executes one
+   * `.update().in('id', [...])` round-trip instead of N parallel updates.
+   * Bookings with conflicting team/group assignments (or missing from the
+   * local store) are pre-filtered and surfaced via the returned `failed`
+   * list. On SQL failure, only IDs that were *actually attempted* against
+   * the server are reported as failed — pre-filtered IDs aren't conflated
+   * with server rejects (see PR review C1).
    */
   async function bulkAssignCleaner (bookingIds: string[], cleanerId: string): Promise<{ success: string[], failed: string[] }> {
     if (!currentAdminId.value) {
@@ -438,98 +453,139 @@ export function useAdminBookings () {
       return { success: [], failed: bookingIds }
     }
 
+    // Empty input is a no-op, not a failure — bail before touching loading
+    // / error / success refs. Without this guard, the function falls through
+    // to the defensive `else` at the end of the try block and shows a
+    // misleading "Bulk assignment failed: no operation performed" toast.
+    // (PR #28 Copilot review.)
+    if (bookingIds.length === 0) {
+      return { success: [], failed: [] }
+    }
+
     loading.value = true
     error.value = null
     success.value = null
 
-    const results = { success: [] as string[], failed: [] as string[] }
-
     try {
-      // Call supabase layer directly to avoid racing shared loading/error/success refs
-      const settledResults = await Promise.allSettled(
-        bookingIds.map(async bookingId => {
-          await supaAssignCleaner(bookingId, cleanerId)
-          return bookingId
-        }),
-      )
+      const { updated, skipped } = await supaBulkAssignCleaner(bookingIds, cleanerId)
+      const successIds = updated.map(b => b.id)
+      const skippedIds = skipped.map(s => s.id)
 
-      for (const [i, settledResult] of settledResults.entries()) {
-        if (settledResult.status === 'fulfilled') {
-          results.success.push(bookingIds[i])
-        } else {
-          console.error(`[useAdminBookings] bulkAssignCleaner failed for booking ${bookingIds[i]}:`, settledResult.reason)
-          results.failed.push(bookingIds[i])
+      // Aggregate skip reasons so the user-visible message is actionable
+      // instead of a vague "N skipped" — e.g. "3 had conflicting team/group
+      // assignment, 2 not found in local store" tells the admin whether to
+      // refresh the page or unassign a team first.
+      let skipSummary = ''
+      if (skipped.length > 0) {
+        const counts = new Map<string, number>()
+        for (const { reason } of skipped) {
+          counts.set(reason, (counts.get(reason) ?? 0) + 1)
         }
+        skipSummary = [...counts].map(([r, n]) => `${n} ${r}`).join(', ')
       }
 
-      const successCount = results.success.length
-      const failedCount = results.failed.length
-
-      if (successCount > 0) {
-        success.value = `Bulk assignment completed: ${successCount} successful, ${failedCount} failed`
+      if (successIds.length > 0) {
+        success.value = skippedIds.length > 0
+          ? `Bulk assignment completed: ${successIds.length} successful, ${skippedIds.length} skipped (${skipSummary})`
+          : `Bulk assignment completed: ${successIds.length} successful`
+      } else if (skippedIds.length > 0) {
+        // All-skipped: this is a no-op (user selected ineligible rows),
+        // not a failure. Showing it as an error misleads the admin into
+        // thinking something went wrong when nothing was attempted.
+        success.value = `No bookings eligible: ${skipSummary}`
       } else {
-        error.value = `Bulk assignment failed: ${failedCount} bookings could not be assigned`
+        // Defensive — nothing succeeded, nothing skipped, no error thrown.
+        // Shouldn't happen given the supabase layer's contract, but if it
+        // does we want a clear signal rather than a misleading toast.
+        error.value = 'Bulk assignment failed: no operation performed'
       }
 
-      loading.value = false
-      return results
+      // Log per-id skip reasons for debugging
+      for (const { id, reason } of skipped) {
+        console.warn(`[useAdminBookings] bulkAssignCleaner skipped ${id}: ${reason}`)
+      }
+
+      return { success: successIds, failed: skippedIds }
     } catch (error_) {
-      console.error('[useAdminBookings] bulkAssignCleaner error:', error_)
+      void errorHandler.handleError(error_ as Error, {
+        component: 'useAdminBookings',
+        operation: 'bulkAssignCleaner',
+      }, {
+        showToUser: false, // We surface our own snackbar via error.value
+        reportToService: true,
+      })
+
+      if (error_ instanceof BulkAssignSqlError) {
+        // SQL update failed after rollback. Only IDs that actually reached SQL
+        // (eligibleIds) should be reported as failed — skipped IDs were never
+        // attempted and shouldn't be conflated with server rejects.
+        error.value = `Bulk assignment failed: ${error_.message}`
+        return { success: [], failed: [...error_.eligibleIds] }
+      }
+
+      // Unexpected non-BulkAssign error path (defensive — should not happen
+      // because the supabase layer wraps SQL failures in BulkAssignSqlError).
       error.value = `Bulk assignment failed: ${error_ instanceof Error ? error_.message : 'System error occurred'}`
-      loading.value = false
       return { success: [], failed: bookingIds }
+    } finally {
+      loading.value = false
     }
   }
 
   /**
-   * Bulk update status for multiple bookings (admin workflow management)
+   * Bulk update status for multiple bookings (admin workflow management).
+   *
+   * Delegates to the supabase-layer bulkChangeStatus, which executes one
+   * `.update().in('id', [...])` round-trip instead of N parallel updates.
+   * Bookings with invalid status transitions (or missing from the local
+   * store) are pre-filtered and surfaced via the returned `failed` list.
    */
-  async function bulkUpdateStatus (bookingIds: string[], status: BookingStatus): Promise<{ success: string[], failed: string[] }> {
+  async function bulkUpdateStatus (
+    bookingIds: string[],
+    status: BookingStatus,
+  ): Promise<{ success: string[], failed: string[] }> {
     if (!currentAdminId.value) {
       error.value = 'Admin authentication required for bulk operations'
       return { success: [], failed: bookingIds }
     }
 
+    if (bookingIds.length === 0) {
+      return { success: [], failed: [] }
+    }
+
     loading.value = true
     error.value = null
     success.value = null
 
-    const results = { success: [] as string[], failed: [] as string[] }
-
     try {
-      // Call supabase layer directly to avoid racing shared loading/error/success refs
-      const settledResults = await Promise.allSettled(
-        bookingIds.map(async bookingId => {
-          await supaChangeStatus(bookingId, status)
-          return bookingId
-        }),
-      )
+      const { updated, skipped } = await supaBulkChangeStatus(bookingIds, status)
+      const successIds = updated.map(b => b.id)
+      const skippedIds = skipped.map(s => s.id)
 
-      for (const [i, settledResult] of settledResults.entries()) {
-        if (settledResult.status === 'fulfilled') {
-          results.success.push(bookingIds[i])
-        } else {
-          console.error(`[useAdminBookings] bulkUpdateStatus failed for booking ${bookingIds[i]}:`, settledResult.reason)
-          results.failed.push(bookingIds[i])
+      if (skipped.length > 0) {
+        const counts = new Map<string, number>()
+        for (const { reason } of skipped) {
+          counts.set(reason, (counts.get(reason) ?? 0) + 1)
         }
-      }
+        const skipSummary = [...counts].map(([r, n]) => `${n} ${r}`).join(', ')
 
-      const successCount = results.success.length
-      const failedCount = results.failed.length
-
-      if (successCount > 0) {
-        success.value = `Bulk status update completed: ${successCount} successful, ${failedCount} failed`
+        success.value = successIds.length > 0
+          ? `Bulk status update completed: ${successIds.length} successful, ${skippedIds.length} skipped (${skipSummary})`
+          : `No bookings eligible: ${skipSummary}`
       } else {
-        error.value = `Bulk status update failed: ${failedCount} bookings could not be updated`
+        success.value = `Bulk status update completed: ${successIds.length} successful`
       }
 
-      loading.value = false
-      return results
+      return { success: successIds, failed: skippedIds }
     } catch (error_) {
-      console.error('[useAdminBookings] bulkUpdateStatus error:', error_)
-      error.value = `Bulk status update failed: ${error_ instanceof Error ? error_.message : 'System error occurred'}`
-      loading.value = false
+      void errorHandler.handleError(error_ as Error, {
+        component: 'useAdminBookings',
+        operation: 'bulkUpdateStatus',
+      }, { showToUser: false, reportToService: true })
+      error.value = `Bulk status update failed: ${error_ instanceof Error ? error_.message : 'System error'}`
       return { success: [], failed: bookingIds }
+    } finally {
+      loading.value = false
     }
   }
 
@@ -725,7 +781,10 @@ export function useAdminBookings () {
         return true
       } catch (error_) {
         error.value = error_ instanceof Error ? error_.message : 'Failed to assign cleaner'
-        console.error('[useAdminBookings] assignCleanerToBooking error:', error_)
+        void errorHandler.handleError(error_ as Error, {
+          component: 'useAdminBookings',
+          operation: 'assignCleanerToBooking',
+        }, { showToUser: false, reportToService: true })
         return false
       } finally {
         loading.value = false
@@ -740,7 +799,10 @@ export function useAdminBookings () {
         return true
       } catch (error_) {
         error.value = error_ instanceof Error ? error_.message : 'Failed to assign team'
-        console.error('[useAdminBookings] assignTeamToBooking error:', error_)
+        void errorHandler.handleError(error_ as Error, {
+          component: 'useAdminBookings',
+          operation: 'assignTeamToBooking',
+        }, { showToUser: false, reportToService: true })
         return false
       } finally {
         loading.value = false
@@ -755,7 +817,10 @@ export function useAdminBookings () {
         return true
       } catch (error_) {
         error.value = error_ instanceof Error ? error_.message : 'Failed to assign group'
-        console.error('[useAdminBookings] assignGroupToBooking error:', error_)
+        void errorHandler.handleError(error_ as Error, {
+          component: 'useAdminBookings',
+          operation: 'assignGroupToBooking',
+        }, { showToUser: false, reportToService: true })
         return false
       } finally {
         loading.value = false
@@ -787,9 +852,6 @@ export function useAdminBookings () {
     businessMetrics,
     getBookingsByStatus,
     getAdminPerformanceMetrics: () => ({}), // Placeholder for performance metrics
-
-    // Store actions (direct access)
-    fetchAllProperties: () => Promise.resolve(),
 
     // Permission functions
     canManageAnyBooking,

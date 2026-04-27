@@ -14,6 +14,7 @@ import type {
   RetryConfig,
   UserRole,
 } from '@/types/ui'
+import * as Sentry from '@sentry/vue'
 import { computed, ref } from 'vue'
 import { useUIStore } from '@/stores/ui'
 import { useUserStore } from '@/stores/user'
@@ -341,17 +342,53 @@ export function useErrorHandler () {
   }
 
   /**
-   * Report error to external service (admin only)
+   * Report error to Sentry (admin only — gated by `currentUserRole === 'admin'`
+   * in the caller).
+   *
+   * If `VITE_SENTRY_DSN` is unset, Sentry was never initialized in main.ts and
+   * `Sentry.captureException` is a no-op. The function still runs the local
+   * console fallback so dev environments without a DSN still surface the
+   * report attempt. See main.ts for the graceful-degradation init pattern.
    */
   async function reportError (errorInfo: ErrorInfo): Promise<void> {
     try {
-      // Simulate error reporting service
-      console.log('Reporting error to service:', errorInfo)
+      // Build a structured error payload for Sentry. The original error is
+      // preserved as the captured exception; metadata goes into tags / extras
+      // so it shows up in the Sentry UI's structured fields rather than the
+      // free-form message.
+      const sentryError = errorInfo.code
+        ? new Error(`[${errorInfo.code}] ${errorInfo.message}`)
+        : new Error(errorInfo.message)
 
-      // In real implementation, send to error tracking service
-      // await errorTrackingService.report(errorInfo);
+      Sentry.captureException(sentryError, {
+        tags: {
+          category: errorInfo.category,
+          code: errorInfo.code ?? 'unknown',
+          businessImpact: errorInfo.businessImpact ?? 'unknown',
+          userRole: errorInfo.context.userRole ?? 'unknown',
+          component: errorInfo.context.component ?? 'unknown',
+          operation: errorInfo.context.operation ?? 'unknown',
+        },
+        contexts: {
+          claroError: {
+            userMessage: errorInfo.userMessage,
+            technicalDetails: errorInfo.technicalDetails,
+            affectedResources: errorInfo.affectedResources,
+            requestId: errorInfo.context.requestId,
+            sessionId: errorInfo.context.sessionId,
+          },
+        },
+        user: errorInfo.context.userId ? { id: errorInfo.context.userId } : undefined,
+      })
+
+      // Local fallback for dev visibility — useful when no DSN is configured
+      if (import.meta.env.DEV) {
+        console.log('[useErrorHandler] reported to Sentry:', errorInfo.code ?? errorInfo.message)
+      }
     } catch (reportingError) {
-      console.error('Failed to report error:', reportingError)
+      // Reporting itself failed — last-resort console.error. We deliberately
+      // do NOT recurse into Sentry here to avoid an infinite report loop.
+      console.error('Failed to report error to Sentry:', reportingError)
     }
   }
 

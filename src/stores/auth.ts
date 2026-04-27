@@ -1,7 +1,8 @@
 import type { User, UserRole } from '@/types'
 // src/stores/auth.ts - Fixed Version with Proper Loading Management
+import * as Sentry from '@sentry/vue'
 import { defineStore } from 'pinia'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { useSupabaseAuth } from '@/composables/supabase/useSupabaseAuth'
 import {
   clearAllRoleSpecificState,
@@ -31,8 +32,7 @@ export const useAuthStore = defineStore('auth', () => {
     resetPassword,
     checkAuth,
     clearError: supabaseClearError,
-    getAllUsers,
-    updateUserRole,
+    refreshProfile,
   } = useSupabaseAuth()
 
   // Local loading state for store operations
@@ -55,6 +55,17 @@ export const useAuthStore = defineStore('auth', () => {
   const isAdmin = computed(() => user.value?.role === 'admin')
   const isOwner = computed(() => user.value?.role === 'owner')
   const isCleaner = computed(() => user.value?.role === 'cleaner')
+
+  // Keep Sentry user identity in sync with auth state.
+  // Fires on login, page-reload session restore, and logout — immediate:true
+  // handles sessions that already exist when the store is first accessed.
+  watch(user, (u) => {
+    if (u) {
+      Sentry.setUser({ id: u.id, email: u.email, username: u.name, role: u.role })
+    } else {
+      Sentry.setUser(null)
+    }
+  }, { immediate: true })
 
   function clearError () {
     storeError.value = null
@@ -204,47 +215,6 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  // Admin functions
-  async function fetchAllUsers () {
-    if (!isAdmin.value) {
-      throw new Error('Unauthorized: Admin access required')
-    }
-
-    try {
-      storeLoading.value = true
-      return await getAllUsers()
-    } catch (error_) {
-      storeError.value = error_ instanceof Error ? error_.message : 'Failed to fetch users'
-      throw error_
-    } finally {
-      storeLoading.value = false
-    }
-  }
-
-  async function changeUserRole (userId: string, newRole: UserRole): Promise<boolean> {
-    if (!isAdmin.value) {
-      storeError.value = 'Unauthorized: Admin access required'
-      return false
-    }
-
-    try {
-      storeLoading.value = true
-      const success = await updateUserRole(userId, newRole)
-
-      if (success) {
-        clearError()
-        return true
-      }
-
-      return false
-    } catch (error_) {
-      storeError.value = error_ instanceof Error ? error_.message : 'Role update failed'
-      return false
-    } finally {
-      storeLoading.value = false
-    }
-  }
-
   // Utility functions
   function getSuccessMessage (action: 'login' | 'logout' | 'register'): string {
     return getRoleSpecificSuccessMessage(action, user.value?.role)
@@ -281,14 +251,13 @@ export const useAuthStore = defineStore('auth', () => {
     switchToAdminView,
     updateUserProfile,
     requestPasswordReset,
-    fetchAllUsers,
-    changeUserRole,
     clearError,
     getSuccessMessage,
     initialize,
 
     // Direct Supabase access for advanced use cases
     checkAuth,
+    refreshProfile,
     updateProfile,
   }
 })

@@ -1,5 +1,6 @@
 import type { Cleaner } from '@/types/user.ts'
 import { computed, ref } from 'vue'
+import { useErrorHandler } from '@/composables/shared/useErrorHandler'
 import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useSupabaseCleanerTeams } from '@/composables/supabase/useSupabaseCleanerTeams'
 import { useSupabaseUserProfiles } from '@/composables/supabase/useSupabaseUserProfiles'
@@ -85,6 +86,10 @@ export function useCleanerManagement () {
   const supaUserProfiles = useSupabaseUserProfiles()
   const supaCleanerTeams = useSupabaseCleanerTeams()
   const supaBookings = useSupabaseBookings()
+  // Error handler routes catch-block errors to Sentry (when DSN configured) —
+  // see main.ts and useErrorHandler.reportError. Replaces raw console.error
+  // so admin operations are visible in production ops dashboards.
+  const errorHandler = useErrorHandler()
 
   // Admin-specific state
   const loading = ref<boolean>(false)
@@ -254,7 +259,10 @@ export function useCleanerManagement () {
       success.value = `Loaded ${allCleaners.value.length} cleaners from system`
       return true
     } catch (error_) {
-      console.error('[useCleanerManagement] fetchCleaners error:', error_)
+      void errorHandler.handleError(error_ as Error, {
+        component: 'useCleanerManagement',
+        operation: 'fetchCleaners',
+      }, { showToUser: false, reportToService: true })
       error.value = error_ instanceof Error ? error_.message : 'Unable to load cleaner data.'
       return false
     } finally {
@@ -274,7 +282,10 @@ export function useCleanerManagement () {
       return true
     } catch (error_) {
       error.value = error_ instanceof Error ? error_.message : 'Failed to fetch teams'
-      console.error('[useCleanerManagement] fetchTeams error:', error_)
+      void errorHandler.handleError(error_ as Error, {
+        component: 'useCleanerManagement',
+        operation: 'fetchTeams',
+      }, { showToUser: false, reportToService: true })
       return false
     } finally {
       loading.value = false
@@ -337,7 +348,10 @@ export function useCleanerManagement () {
       loading.value = false
       return newCleanerId
     } catch (error_) {
-      console.error('[useCleanerManagement] createCleaner error:', error_)
+      void errorHandler.handleError(error_ as Error, {
+        component: 'useCleanerManagement',
+        operation: 'createCleaner',
+      }, { showToUser: false, reportToService: true })
       error.value = error_ instanceof Error ? error_.message : 'Unable to create cleaner. Business impact: Medium - reduced system capacity.'
       loading.value = false
       return null
@@ -403,7 +417,10 @@ export function useCleanerManagement () {
       loading.value = false
       return true
     } catch (error_) {
-      console.error('[useCleanerManagement] updateCleaner error:', error_)
+      void errorHandler.handleError(error_ as Error, {
+        component: 'useCleanerManagement',
+        operation: 'updateCleaner',
+      }, { showToUser: false, reportToService: true })
       error.value = error_ instanceof Error ? error_.message : 'Unable to update cleaner. Business impact: Medium - cleaner operations may be affected.'
       loading.value = false
       return false
@@ -454,7 +471,10 @@ export function useCleanerManagement () {
       loading.value = false
       return true
     } catch (error_) {
-      console.error('[useCleanerManagement] deleteCleaner error:', error_)
+      void errorHandler.handleError(error_ as Error, {
+        component: 'useCleanerManagement',
+        operation: 'deleteCleaner',
+      }, { showToUser: false, reportToService: true })
       error.value = error_ instanceof Error ? error_.message : 'Unable to delete cleaner. Business impact: High - system integrity may be affected.'
       loading.value = false
       return false
@@ -510,7 +530,10 @@ export function useCleanerManagement () {
       loading.value = false
       return true
     } catch (error_) {
-      console.error('[useCleanerManagement] assignCleanerToBooking error:', error_)
+      void errorHandler.handleError(error_ as Error, {
+        component: 'useCleanerManagement',
+        operation: 'assignCleanerToBooking',
+      }, { showToUser: false, reportToService: true })
       error.value = error_ instanceof Error ? error_.message : 'Unable to assign cleaner. Business impact: High - booking may remain unassigned.'
       loading.value = false
       return false
@@ -556,7 +579,10 @@ export function useCleanerManagement () {
       loading.value = false
       return true
     } catch (error_) {
-      console.error('[useCleanerManagement] unassignCleanerFromBooking error:', error_)
+      void errorHandler.handleError(error_ as Error, {
+        component: 'useCleanerManagement',
+        operation: 'unassignCleanerFromBooking',
+      }, { showToUser: false, reportToService: true })
       error.value = error_ instanceof Error ? error_.message : 'Unable to unassign cleaner. Business impact: Medium - assignment status may be inconsistent.'
       loading.value = false
       return false

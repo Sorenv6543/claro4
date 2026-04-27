@@ -18,6 +18,29 @@ const connectionStatus = ref<'connecting' | 'connected' | 'disconnected'>('disco
 // Safety net timeout — primary cleanup is in CRUD finally blocks
 const OPTIMISTIC_SAFETY_TIMEOUT = 30_000
 
+/**
+ * Thrown by `bulkAssignCleaner` when the SQL UPDATE fails after optimistic
+ * store updates have been rolled back.
+ *
+ * Carries `eligibleIds` (the IDs that passed the pre-filter and were actually
+ * attempted against SQL) and `skipped` (the IDs that were pre-filtered and
+ * never reached SQL). This lets admin-layer callers distinguish
+ * "attempted but server rejected" from "pre-filtered as ineligible" — without
+ * this, callers would have to choose between misreporting one or the other
+ * as failed. See architecture-review PR feedback C1.
+ */
+export class BulkAssignSqlError extends Error {
+  constructor (
+    message: string,
+    public readonly eligibleIds: readonly string[],
+    public readonly skipped: readonly { id: string, reason: string }[],
+    public readonly cause: unknown,
+  ) {
+    super(message)
+    this.name = 'BulkAssignSqlError'
+  }
+}
+
 export function useSupabaseBookings () {
   const bookingStore = useBookingStore()
 
@@ -242,6 +265,169 @@ export function useSupabaseBookings () {
     return updateBooking(bookingId, { assigned_cleaner_id: cleanerId })
   }
 
+  /**
+   * Assign one cleaner to many bookings in a single SQL round-trip.
+   *
+   * Replaces N parallel update().eq('id', x) calls with one
+   * update().in('id', [...]) call. At ~50 bookings, this is 1 HTTP
+   * round-trip instead of 50.
+   *
+   * Caveat: PostgreSQL aborts an entire UPDATE if any row violates a
+   * CHECK constraint, so we pre-filter in JS based on the local
+   * booking store. Bookings already assigned to a team or group are
+   * reported as "skipped" rather than batch-aborting the operation.
+   * (The `one_assignment_type` constraint enforces at most one of
+   * assigned_cleaner_id / assigned_team_id / assigned_group_ids.)
+   *
+   * Staleness caveat: the pre-filter relies on the local booking store
+   * being fresh. If a concurrent admin assigns a team/group to one of
+   * the eligibleIds between our snapshot and the SQL `.in()` call, the
+   * CHECK constraint will abort the entire batch (PostgreSQL UPDATE
+   * statements are atomic — the planner has no "skip violating rows"
+   * mode). The local store is refreshed by realtime subscription, but
+   * there is still a TOCTOU window between the JS pre-filter and the
+   * server-side UPDATE. Callers should ensure realtime sync is
+   * connected before calling, and treat batch failures as a signal to
+   * re-fetch + retry. The optimistic-update lifecycle restores all
+   * snapshots correctly on rollback, so retry is safe.
+   *
+   * Returns { updated, skipped } on success (including the all-skipped
+   * no-op case where eligibleIds is empty). Skip reasons:
+   * - `'not found in local store'` — caller passed an ID not in the booking store
+   * - `'has conflicting team/group assignment'` — would violate the
+   *   `one_assignment_type` CHECK constraint
+   * Note: completed/cancelled bookings are NOT pre-filtered — callers
+   * should filter those upstream if they don't want assignment to apply.
+   *
+   * On SQL failure: all optimistic store updates are rolled back, then
+   * a `BulkAssignSqlError` is thrown carrying both `eligibleIds` (what
+   * was attempted) and `skipped` (what was pre-filtered). This lets the
+   * admin layer accurately report which IDs were rejected by the server
+   * vs. which were never sent.
+   */
+  async function bulkAssignCleaner (
+    bookingIds: string[],
+    cleanerId: string,
+  ): Promise<{ updated: Booking[], skipped: { id: string, reason: string }[] }> {
+    const snapshots = new Map<string, Booking>()
+    const eligibleIds: string[] = []
+    const skipped: { id: string, reason: string }[] = []
+
+    for (const id of bookingIds) {
+      const existing = bookingStore.bookings.get(id)
+      if (!existing) {
+        skipped.push({ id, reason: 'not found in local store' })
+        continue
+      }
+      const hasTeam = !!existing.assigned_team_id
+      const hasGroup = !!existing.assigned_group_ids?.length
+      if (hasTeam || hasGroup) {
+        skipped.push({ id, reason: 'has conflicting team/group assignment' })
+        continue
+      }
+      snapshots.set(id, existing)
+      eligibleIds.push(id)
+    }
+
+    if (eligibleIds.length === 0) {
+      return { updated: [], skipped }
+    }
+
+    // Apply optimistic updates locally before the SQL call
+    const updateTime = new Date().toISOString()
+    const updated: Booking[] = []
+    for (const id of eligibleIds) {
+      const existing = snapshots.get(id)!
+      const next: Booking = { ...existing, assigned_cleaner_id: cleanerId, updated_at: updateTime }
+      bookingStore.setBooking(id, next)
+      trackOptimistic(id)
+      updated.push(next)
+    }
+
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ assigned_cleaner_id: cleanerId })
+        .in('id', eligibleIds)
+      if (error) {
+        throw error
+      }
+      return { updated, skipped }
+    } catch (error) {
+      // Roll back all optimistic updates
+      for (const [id, existing] of snapshots) {
+        bookingStore.setBooking(id, existing)
+      }
+      // Wrap in BulkAssignSqlError so callers can distinguish
+      // "attempted but rejected" (eligibleIds) from "pre-filtered" (skipped).
+      throw new BulkAssignSqlError(
+        error instanceof Error ? error.message : String(error),
+        eligibleIds,
+        skipped,
+        error,
+      )
+    } finally {
+      for (const id of eligibleIds) {
+        clearOptimistic(id)
+      }
+    }
+  }
+
+  async function bulkChangeStatus(
+    bookingIds: string[],
+    status: Booking['status'],
+  ): Promise<{ updated: Booking[], skipped: { id: string, reason: string }[] }> {
+    const snapshots = new Map<string, Booking>()
+    const eligibleIds: string[] = []
+    const skipped: { id: string, reason: string }[] = []
+
+    for (const id of bookingIds) {
+      const existing = bookingStore.bookings.get(id)
+      if (!existing) {
+        skipped.push({ id, reason: 'not found in local store' })
+        continue
+      }
+      if (!canTransitionBookingStatus(existing, status)) {
+        skipped.push({ id, reason: `cannot transition from ${existing.status} to ${status}` })
+        continue
+      }
+      snapshots.set(id, existing)
+      eligibleIds.push(id)
+    }
+
+    if (eligibleIds.length === 0) {
+      return { updated: [], skipped }
+    }
+
+    const updateTime = new Date().toISOString()
+    const updated: Booking[] = []
+    for (const id of eligibleIds) {
+      const existing = snapshots.get(id)!
+      const next: Booking = { ...existing, status, updated_at: updateTime }
+      bookingStore.setBooking(id, next)
+      trackOptimistic(id)
+      updated.push(next)
+    }
+
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status, updated_at: updateTime })
+        .in('id', eligibleIds)
+      if (error) throw error
+      return { updated, skipped }
+    } catch (error) {
+      for (const [id, existing] of snapshots) {
+        bookingStore.setBooking(id, existing)
+      }
+      throw error
+    } finally {
+      for (const id of eligibleIds) {
+        clearOptimistic(id)
+      }
+    }
+  }
+
   return {
     fetchAndSubscribe,
     unsubscribe,
@@ -250,6 +436,8 @@ export function useSupabaseBookings () {
     deleteBooking,
     changeBookingStatus,
     assignCleaner,
+    bulkAssignCleaner,
+    bulkChangeStatus,
     connectionStatus,
   }
 }

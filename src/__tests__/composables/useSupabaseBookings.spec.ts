@@ -590,6 +590,260 @@ describe('useSupabaseBookings', () => {
     })
   })
 
+  describe('bulkAssignCleaner', () => {
+    /**
+     * Helper that wires up a supabase chain whose update().in() resolves
+     * with the supplied result. Returns the inner mocks so tests can
+     * assert what was called with which arguments.
+     */
+    function wireBulkUpdateChain (result: { data: unknown, error: unknown }) {
+      const inMock = vi.fn().mockResolvedValue(result)
+      const updateMock = vi.fn().mockReturnValue({ in: inMock })
+      supabaseMock.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
+        insert: vi.fn().mockResolvedValue({ data: null, error: null }),
+        update: updateMock,
+        delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
+      })
+      supabaseMock.channel = vi.fn().mockReturnValue({
+        on: vi.fn().mockReturnThis(),
+        subscribe: vi.fn().mockReturnThis(),
+      })
+      supabaseMock.removeChannel = vi.fn()
+      return { updateMock, inMock }
+    }
+
+    it('skips bookings with assigned_team_id and only sends eligible ids to SQL', async () => {
+      const { updateMock, inMock } = wireBulkUpdateChain({ data: null, error: null })
+
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      store.setBooking('b1', makeBooking({ id: 'b1', assigned_team_id: 'team-1', assigned_cleaner_id: null }))
+      store.setBooking('b2', makeBooking({ id: 'b2', assigned_cleaner_id: null }))
+
+      const result = await composable.bulkAssignCleaner(['b1', 'b2'], 'cleaner-X')
+
+      expect(result.skipped).toEqual([
+        { id: 'b1', reason: 'has conflicting team/group assignment' },
+      ])
+      expect(result.updated).toHaveLength(1)
+      expect(result.updated[0].id).toBe('b2')
+      expect(updateMock).toHaveBeenCalledWith({ assigned_cleaner_id: 'cleaner-X' })
+      expect(inMock).toHaveBeenCalledWith('id', ['b2'])
+    })
+
+    it('skips bookings with non-empty assigned_group_ids', async () => {
+      const { inMock } = wireBulkUpdateChain({ data: null, error: null })
+
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      store.setBooking('g1', makeBooking({ id: 'g1', assigned_group_ids: ['group-1'], assigned_cleaner_id: null }))
+      store.setBooking('g2', makeBooking({ id: 'g2', assigned_group_ids: [], assigned_cleaner_id: null })) // empty array → eligible
+
+      const result = await composable.bulkAssignCleaner(['g1', 'g2'], 'cleaner-X')
+
+      expect(result.skipped).toEqual([
+        { id: 'g1', reason: 'has conflicting team/group assignment' },
+      ])
+      expect(result.updated.map(b => b.id)).toEqual(['g2'])
+      expect(inMock).toHaveBeenCalledWith('id', ['g2'])
+    })
+
+    it('skips bookings not present in the local store', async () => {
+      const { inMock } = wireBulkUpdateChain({ data: null, error: null })
+
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      store.setBooking('present', makeBooking({ id: 'present', assigned_cleaner_id: null }))
+
+      const result = await composable.bulkAssignCleaner(['present', 'missing'], 'cleaner-X')
+
+      expect(result.skipped).toEqual([
+        { id: 'missing', reason: 'not found in local store' },
+      ])
+      expect(result.updated.map(b => b.id)).toEqual(['present'])
+      expect(inMock).toHaveBeenCalledWith('id', ['present'])
+    })
+
+    it('returns early without calling SQL when every booking is skipped', async () => {
+      const { updateMock, inMock } = wireBulkUpdateChain({ data: null, error: null })
+
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      store.setBooking('all-team', makeBooking({ id: 'all-team', assigned_team_id: 'team-1', assigned_cleaner_id: null }))
+
+      const result = await composable.bulkAssignCleaner(['all-team', 'also-missing'], 'cleaner-X')
+
+      expect(result.updated).toHaveLength(0)
+      expect(result.skipped.map(s => s.id).sort()).toEqual(['all-team', 'also-missing'].sort())
+      expect(updateMock).not.toHaveBeenCalled()
+      expect(inMock).not.toHaveBeenCalled()
+    })
+
+    it('handles empty bookingIds array without calling SQL or producing skipped entries', async () => {
+      const { updateMock, inMock } = wireBulkUpdateChain({ data: null, error: null })
+
+      const composable = await getComposable()
+
+      const result = await composable.bulkAssignCleaner([], 'cleaner-X')
+
+      expect(result.updated).toHaveLength(0)
+      expect(result.skipped).toHaveLength(0)
+      expect(updateMock).not.toHaveBeenCalled()
+      expect(inMock).not.toHaveBeenCalled()
+    })
+
+    it('optimistically updates store and resolves with all eligible bookings on success', async () => {
+      wireBulkUpdateChain({ data: null, error: null })
+
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      for (const id of ['s1', 's2', 's3']) {
+        store.setBooking(id, makeBooking({ id, assigned_cleaner_id: null }))
+      }
+
+      const result = await composable.bulkAssignCleaner(['s1', 's2', 's3'], 'cleaner-Y')
+
+      expect(result.updated).toHaveLength(3)
+      expect(result.skipped).toHaveLength(0)
+      for (const id of ['s1', 's2', 's3']) {
+        expect(store.bookings.get(id)?.assigned_cleaner_id).toBe('cleaner-Y')
+      }
+    })
+
+    it('rolls back ALL optimistic updates and throws BulkAssignSqlError on SQL failure', async () => {
+      wireBulkUpdateChain({ data: null, error: { message: 'SQL UPDATE failed' } })
+
+      const mod = await import('@/composables/supabase/useSupabaseBookings')
+      const composable = mod.useSupabaseBookings()
+      const store = await getBookingStore()
+
+      for (const id of ['r1', 'r2', 'r3']) {
+        store.setBooking(id, makeBooking({ id, assigned_cleaner_id: null }))
+      }
+
+      await expect(composable.bulkAssignCleaner(['r1', 'r2', 'r3'], 'cleaner-Z'))
+        .rejects.toBeInstanceOf(mod.BulkAssignSqlError)
+
+      // All three optimistic updates must be rolled back
+      for (const id of ['r1', 'r2', 'r3']) {
+        expect(store.bookings.get(id)?.assigned_cleaner_id).toBeNull()
+      }
+    })
+
+    it('attaches eligibleIds and skipped to BulkAssignSqlError so admin can distinguish them', async () => {
+      wireBulkUpdateChain({ data: null, error: { message: 'SQL UPDATE failed' } })
+
+      const mod = await import('@/composables/supabase/useSupabaseBookings')
+      const composable = mod.useSupabaseBookings()
+      const store = await getBookingStore()
+
+      // Two eligible (e1, e2), one team-conflict (skip)
+      store.setBooking('e1', makeBooking({ id: 'e1', assigned_cleaner_id: null }))
+      store.setBooking('e2', makeBooking({ id: 'e2', assigned_cleaner_id: null }))
+      store.setBooking('skip', makeBooking({ id: 'skip', assigned_team_id: 'team-1', assigned_cleaner_id: null }))
+
+      try {
+        await composable.bulkAssignCleaner(['e1', 'skip', 'e2'], 'cleaner-Q')
+        throw new Error('should have thrown')
+      } catch (err) {
+        expect(err).toBeInstanceOf(mod.BulkAssignSqlError)
+        const bulkErr = err as InstanceType<typeof mod.BulkAssignSqlError>
+        expect([...bulkErr.eligibleIds].sort()).toEqual(['e1', 'e2'])
+        expect(bulkErr.skipped.map(s => s.id)).toEqual(['skip'])
+        expect(bulkErr.cause).toEqual({ message: 'SQL UPDATE failed' })
+      }
+    })
+  })
+
+  describe('bulkChangeStatus', () => {
+    function wireBulkStatusChain(result: { data: unknown, error: unknown }) {
+      const inMock = vi.fn().mockResolvedValue(result)
+      const updateMock = vi.fn().mockReturnValue({ in: inMock })
+      supabaseMock.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
+        insert: vi.fn().mockResolvedValue({ data: null, error: null }),
+        update: updateMock,
+        delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
+      })
+      supabaseMock.channel = vi.fn().mockReturnValue({
+        on: vi.fn().mockReturnThis(),
+        subscribe: vi.fn().mockReturnThis(),
+      })
+      supabaseMock.removeChannel = vi.fn()
+      return { updateMock, inMock }
+    }
+
+    it('sends a single .in() query for all eligible bookings', async () => {
+      const { updateMock, inMock } = wireBulkStatusChain({ data: null, error: null })
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      store.setBooking('b1', makeBooking({ id: 'b1', status: 'pending' }))
+      store.setBooking('b2', makeBooking({ id: 'b2', status: 'pending' }))
+
+      const result = await composable.bulkChangeStatus(['b1', 'b2'], 'scheduled')
+
+      expect(result.updated).toHaveLength(2)
+      expect(result.skipped).toHaveLength(0)
+      expect(updateMock).toHaveBeenCalledWith(expect.objectContaining({ status: 'scheduled' }))
+      expect(inMock).toHaveBeenCalledWith('id', ['b1', 'b2'])
+    })
+
+    it('skips bookings with invalid status transitions', async () => {
+      const { inMock } = wireBulkStatusChain({ data: null, error: null })
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      // completed -> scheduled is not a valid transition
+      store.setBooking('done', makeBooking({ id: 'done', status: 'completed' }))
+      store.setBooking('ok',   makeBooking({ id: 'ok',   status: 'pending' }))
+
+      const result = await composable.bulkChangeStatus(['done', 'ok'], 'scheduled')
+
+      expect(result.skipped).toEqual([
+        { id: 'done', reason: 'cannot transition from completed to scheduled' },
+      ])
+      expect(result.updated).toHaveLength(1)
+      expect(inMock).toHaveBeenCalledWith('id', ['ok'])
+    })
+
+    it('rolls back all optimistic updates on SQL failure', async () => {
+      wireBulkStatusChain({ data: null, error: { message: 'SQL failed' } })
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      store.setBooking('r1', makeBooking({ id: 'r1', status: 'pending' }))
+      store.setBooking('r2', makeBooking({ id: 'r2', status: 'pending' }))
+
+      await expect(composable.bulkChangeStatus(['r1', 'r2'], 'scheduled')).rejects.toThrow()
+
+      expect(store.bookings.get('r1')?.status).toBe('pending')
+      expect(store.bookings.get('r2')?.status).toBe('pending')
+    })
+
+    it('returns early without SQL call when all bookings are pre-filtered', async () => {
+      const { updateMock } = wireBulkStatusChain({ data: null, error: null })
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      // completed is a terminal state — cannot transition to scheduled
+      store.setBooking('done1', makeBooking({ id: 'done1', status: 'completed' }))
+      store.setBooking('done2', makeBooking({ id: 'done2', status: 'completed' }))
+
+      const result = await composable.bulkChangeStatus(['done1', 'done2'], 'scheduled')
+
+      expect(result.updated).toHaveLength(0)
+      expect(result.skipped).toHaveLength(2)
+      expect(updateMock).not.toHaveBeenCalled()
+    })
+  })
+
   describe('unsubscribe', () => {
     it('removes the channel and resets connection status', async () => {
       supabaseMock.from.mockReturnValue({

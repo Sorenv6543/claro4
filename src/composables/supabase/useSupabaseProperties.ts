@@ -5,6 +5,13 @@ import { ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
 import { usePropertyStore } from '@/stores/property'
 
+// Cap on properties returned per fetch.
+// Bookings use a 90-day date window; properties have no natural date axis,
+// so we bound by row count instead. 2000 gives ~10× headroom over the
+// CLAUDE.md target scale (30–40 owners × ~5 properties = ~200 rows today).
+// Past that, we need a paginated fetcher, not a bigger ceiling.
+const PROPERTIES_FETCH_LIMIT = 2000
+
 // Module-level singleton state
 let channel: RealtimeChannel | null = null
 const optimisticIds = new Set<string>()
@@ -23,10 +30,31 @@ export function useSupabaseProperties () {
       const { data, error: fetchError } = await supabase
         .from('properties')
         .select('*')
+        .order('updated_at', { ascending: false })
+        .limit(PROPERTIES_FETCH_LIMIT)
 
       if (fetchError) {
         throw fetchError
       }
+
+      // Cap-hit warning. When the response length equals the cap, the
+      // table almost certainly contains more rows than we loaded — older
+      // properties (lowest updated_at) are silently truncated. False
+      // positives at exactly N rows are acceptable; the cost of a stray
+      // warning is far below the cost of discovering the cap via a
+      // support ticket.
+      // TODO: when an ops-side logger lands (PR #28 review N3), route
+      // this through it so the warning reaches Sentry instead of just
+      // the dev console.
+      if (data && data.length === PROPERTIES_FETCH_LIMIT) {
+        console.warn(
+          `[useSupabaseProperties] hit row cap (${PROPERTIES_FETCH_LIMIT}). `
+          + 'Older properties may be truncated from the local store. '
+          + 'Pagination is required at this scale — see the comment over '
+          + 'PROPERTIES_FETCH_LIMIT for the migration path.',
+        )
+      }
+
       propertyStore.setProperties((data ?? []) as Property[])
       subscribe() // Only subscribe after successful fetch
     } catch (error) {

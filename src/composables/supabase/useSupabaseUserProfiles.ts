@@ -78,25 +78,18 @@ export function useSupabaseUserProfiles () {
     }
 
     try {
-      const { error: updateError } = await supabase
+      const { data, error: updateError } = await supabase
         .from('user_profiles')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', userId)
+        .select()
+        .single()
 
       if (updateError) {
         throw updateError
       }
 
-      // Re-fetch the updated row to get server state
-      const { data, error: fetchError } = await supabase
-        .from('user_profiles')
-        .select('*')
-        .eq('id', userId)
-        .single()
-
-      if (fetchError) {
-        throw fetchError
-      }
+      if (!data) throw new Error('[useSupabaseUserProfiles] updateProfile: no data returned')
 
       const updated = data as User
       userProfileStore.setUserProfile(userId, updated)
