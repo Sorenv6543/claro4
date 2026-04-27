@@ -123,7 +123,12 @@
           Failed to load data. Please refresh the page.
         </v-banner-text>
       </v-banner>
-      <router-view />
+      <v-skeleton-loader
+        v-else-if="!isReady"
+        type="article"
+        class="ma-4"
+      />
+      <router-view v-else />
     </v-main>
   </v-app>
 </template>
