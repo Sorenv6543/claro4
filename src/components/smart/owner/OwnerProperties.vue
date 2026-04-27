@@ -67,30 +67,196 @@
         </div>
       </div>
 
-      <!-- Segment filter -->
-      <div v-if="!mobile" class="d-flex ga-2 flex-wrap mb-4">
-        <v-btn
-          v-for="seg in segments"
-          :key="seg.value"
-          :color="selectedSegment === seg.value ? 'primary' : undefined"
-          density="compact"
-          size="small"
-          :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
-          @click="selectedSegment = seg.value"
-        >
-          {{ seg.title }}
-        </v-btn>
-      </div>
+      <!-- Data Table -->
+      <MaterioDataTable
+        expandable
+        :headers="tableHeaders"
+        :items="propertyItems"
+        :loading="false"
+        :search-keys="['display_name', 'full_address', 'property_type']"
+        :searchable="!mobile"
+      >
+        <!-- Segment tabs -->
+        <template v-if="!mobile" #segments>
+          <div class="d-flex ga-2 flex-wrap">
+            <v-btn
+              v-for="seg in segments"
+              :key="seg.value"
+              :color="selectedSegment === seg.value ? 'primary' : undefined"
+              density="compact"
+              size="small"
+              :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
+              @click="selectedSegment = seg.value"
+            >
+              {{ seg.title }}
+            </v-btn>
+          </div>
+        </template>
 
-      <!-- Property expansion list -->
-      <PropertyExpansionList
-        :bookings="myBookings"
-        :loading="propertiesLoading"
-        :properties="propertyItems"
-        @delete="handleDeleteProperty"
-        @edit="editProperty"
-        @view="viewProperty"
-      />
+        <!-- Property column with color bar -->
+        <template #[`item.display_name`]="{ item }">
+          <div class="d-flex align-center ga-2">
+            <div
+              class="property-color-bar"
+              :style="{ backgroundColor: mapLegacyPropertyColor(item.color, 'var(--claro-secondary)') }"
+            />
+            <span class="font-weight-medium text-body-2">{{ item.display_name }}</span>
+          </div>
+        </template>
+
+        <!-- Bedrooms -->
+        <template #[`item.bedrooms`]="{ item }">
+          <div class="d-flex align-center ga-1">
+            <v-icon color="medium-emphasis" size="16">mdi-bed-outline</v-icon>
+            <span class="text-body-2">{{ item.bedrooms || 0 }}</span>
+          </div>
+        </template>
+
+        <!-- Bathrooms -->
+        <template #[`item.bathrooms`]="{ item }">
+          <div class="d-flex align-center ga-1">
+            <v-icon color="medium-emphasis" size="16">mdi-shower</v-icon>
+            <span class="text-body-2">{{ item.bathrooms || 0 }}</span>
+          </div>
+        </template>
+
+        <!-- Type chip -->
+        <template #[`item.property_type`]="{ item }">
+          <v-chip color="secondary" size="small" variant="tonal">
+            <v-icon size="14" start>{{ getPropertyIcon(item.property_type) }}</v-icon>
+            {{ item.property_type || 'N/A' }}
+          </v-chip>
+        </template>
+
+        <!-- Status chip -->
+        <template #[`item.active`]="{ item }">
+          <v-chip
+            :color="item.active ? 'success' : 'error'"
+            size="small"
+            variant="tonal"
+          >
+            {{ item.active ? 'Active' : 'Inactive' }}
+          </v-chip>
+        </template>
+
+        <!-- Actions -->
+        <template #[`item.actions`]="{ item }">
+          <div class="d-flex align-center ga-1">
+            <v-btn
+              color="primary"
+              icon="mdi-eye-outline"
+              size="small"
+              variant="text"
+              @click.stop="viewProperty(item)"
+            />
+            <v-btn
+              color="primary"
+              icon="mdi-pencil-outline"
+              size="small"
+              variant="text"
+              @click.stop="editProperty(item)"
+            />
+            <v-tooltip
+              content-class="claro-tooltip"
+              location="start"
+              :offset="6"
+              :text="item.booking_count > 0 ? `Cannot delete — ${item.booking_count} booking${item.booking_count === 1 ? '' : 's'} exist` : 'Delete property'"
+            >
+              <template #activator="{ props: tooltipProps }">
+                <div v-bind="tooltipProps">
+                  <v-btn
+                    color="error"
+                    :disabled="item.booking_count > 0"
+                    icon="mdi-delete-outline"
+                    size="small"
+                    variant="text"
+                    @click.stop="handleDeleteProperty(item.id)"
+                  />
+                </div>
+              </template>
+            </v-tooltip>
+          </div>
+        </template>
+
+        <!-- Expanded row content -->
+        <template #expand-content="{ item }">
+          <div class="expanded-content pa-4" color="error">
+            <v-row density="compact">
+              <v-col cols="12" md="3" sm="6">
+                <div class="expanded-field">
+                  <div class="text-caption text-medium-emphasis mb-1">Special Instructions</div>
+                  <div class="text-body-2">{{ item.special_instructions || 'None' }}</div>
+                </div>
+              </v-col>
+              <v-col cols="12" md="3" sm="6">
+                <div class="expanded-field">
+                  <div class="text-caption text-medium-emphasis mb-1">Access Info</div>
+                  <div class="text-body-2">{{ item.access_info || 'Not specified' }}</div>
+                </div>
+              </v-col>
+              <v-col cols="12" md="3" sm="6">
+                <div class="expanded-field">
+                  <div class="text-caption text-medium-emphasis mb-1">Contact</div>
+                  <div class="text-body-2">
+                    <template v-if="item.contact_name || item.contact_phone">
+                      {{ item.contact_name }}<br v-if="item.contact_name && item.contact_phone">{{ item.contact_phone }}
+                    </template>
+                    <template v-else>Not specified</template>
+                  </div>
+                </div>
+              </v-col>
+              <v-col cols="12" md="3" sm="6">
+                <div class="expanded-field">
+                  <div class="text-caption text-medium-emphasis mb-1">Cleaning Duration</div>
+                  <div class="text-body-2">{{ item.cleaning_duration }} min</div>
+                </div>
+              </v-col>
+            </v-row>
+
+            <!-- Mobile-only actions (Actions column hidden on mobile) -->
+            <div class="expanded-actions d-flex d-md-none ga-2 mt-3">
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-eye-outline"
+                size="small"
+                variant="tonal"
+                @click.stop="viewProperty(item)"
+              >
+                View
+              </v-btn>
+              <v-btn
+                color="primary"
+                prepend-icon="mdi-pencil-outline"
+                size="small"
+                variant="tonal"
+                @click.stop="editProperty(item)"
+              >
+                Edit
+              </v-btn>
+              <v-btn
+                color="error"
+                :disabled="item.booking_count > 0"
+                prepend-icon="mdi-delete-outline"
+                size="small"
+                variant="tonal"
+                @click.stop="handleDeleteProperty(item.id)"
+              >
+                Delete
+              </v-btn>
+            </div>
+          </div>
+        </template>
+      </MaterioDataTable>
+
+      <!-- Empty State -->
+      <v-card v-if="myProperties.length === 0" class="text-center pa-8 mt-4" variant="flat">
+        <v-icon class="mb-4" color="grey-lighten-1" size="64">mdi-home-outline</v-icon>
+        <h3 class="text-h6 mb-2">No Properties Yet</h3>
+        <p class="text-body-2 text-medium-emphasis mb-4">Add your first property to start managing bookings and cleanings.</p>
+        <v-btn color="primary" prepend-icon="mdi-plus" @click="handleCreateProperty">
+          Add Your First Property
+        </v-btn>
+      </v-card>
     </v-container>
 
     <!-- Property Modal - Same modal system as HomeOwner -->
@@ -125,11 +291,12 @@
 <script setup lang="ts">
   import type { Property, PropertyFormData, PropertyRecord } from '@/types'
   import { computed, onMounted, ref } from 'vue'
+  import { mapLegacyPropertyColor } from '@/utils/constants'
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
-  import PropertyExpansionList from '@/components/dumb/owner/PropertyExpansionList.vue'
 
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
@@ -155,7 +322,6 @@
     updateMyProperty,
     deleteMyProperty,
     error: propertyError,
-    loading: propertiesLoading,
   } = useOwnerProperties()
 
   const {
@@ -163,6 +329,16 @@
     myTodayTurns,
     fetchMyBookings,
   } = useOwnerBookings()
+
+  // Table headers
+  const tableHeaders = [
+    { title: 'Property', key: 'display_name', sortable: true },
+    { title: 'Beds', key: 'bedrooms', sortable: true, width: '80px', mobileHidden: true },
+    { title: 'Baths', key: 'bathrooms', sortable: true, width: '80px', mobileHidden: true },
+    { title: 'Type', key: 'property_type', sortable: true, mobileHidden: true },
+    { title: 'Status', key: 'active', sortable: true },
+    { title: 'Actions', key: 'actions', sortable: false, width: '130px', align: 'end' as const, mobileHidden: true },
+  ]
 
   // Segment tabs
   const selectedSegment = ref('all')
@@ -241,6 +417,26 @@
   })
 
   // ============================================================================
+  // HELPER FUNCTIONS - STYLING AND ICONS
+  // ============================================================================
+
+  // Property type icon mapping
+  function getPropertyIcon (propertyType?: string): string {
+    switch (propertyType) {
+      case 'house': { return 'mdi-home'
+      }
+      case 'apartment': { return 'mdi-apartment'
+      }
+      case 'condo': { return 'mdi-office-building'
+      }
+      case 'townhouse': { return 'mdi-home-group'
+      }
+      default: { return 'mdi-home-outline'
+      }
+    }
+  }
+
+  // ============================================================================
   // EVENT HANDLERS - SAME ORCHESTRATION PATTERN AS HomeOwner
   // ============================================================================
 
@@ -281,13 +477,12 @@
   }
 
   // Navigation functions
-  function editProperty (id: string): void {
-    const property = myProperties.value.find(p => p.id === id)
-    if (property) uiStore.openModal('propertyModal', 'edit', property as PropertyRecord)
+  function editProperty (property: Property): void {
+    uiStore.openModal('propertyModal', 'edit', property as PropertyRecord)
   }
 
-  function viewProperty (id: string): void {
-    router.push(`/owner/properties/${id}`)
+  function viewProperty (property: Property): void {
+    router.push(`/owner/properties/${property.id}`)
   }
 
   // ============================================================================
@@ -458,4 +653,20 @@
   color: var(--claro-text-secondary);
 }
 
+/* Property color bar (matches OwnerBookings) */
+.property-color-bar {
+  width: 3px;
+  height: 28px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* Expanded content */
+.expanded-content {
+  background: rgba(var(--v-theme-on-surface), 0.03);
+}
+
+.expanded-field {
+  padding: 8px 0;
+}
 </style>
