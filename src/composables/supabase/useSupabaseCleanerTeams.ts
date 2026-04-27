@@ -3,6 +3,7 @@ import type { CleanerTeam, CleanerTeamFormData } from '@/types'
 import { v4 as uuidv4 } from 'uuid'
 import { ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
+import { useBookingStore } from '@/stores/booking'
 import { useCleanerTeamStore } from '@/stores/cleanerTeam'
 
 // Module-level singleton state — matches useSupabaseBookings / useSupabaseProperties pattern
@@ -13,6 +14,7 @@ const OPTIMISTIC_SAFETY_TIMEOUT = 30_000
 
 export function useSupabaseCleanerTeams() {
   const cleanerTeamStore = useCleanerTeamStore()
+  const bookingStore = useBookingStore()
 
   async function fetchAll(): Promise<void> {
     cleanerTeamStore.loading = true
@@ -114,9 +116,12 @@ export function useSupabaseCleanerTeams() {
   }
 
   async function createTeam(formData: CleanerTeamFormData): Promise<CleanerTeam> {
+    const name = formData.name?.trim()
+    if (!name) throw new Error('Team name is required')
+
     const id = uuidv4()
     const now = new Date().toISOString()
-    const team: CleanerTeam = { id, ...formData, created_at: now, updated_at: now }
+    const team: CleanerTeam = { id, ...formData, name, created_at: now, updated_at: now }
 
     cleanerTeamStore.setTeam(id, team)
     trackOptimistic(id)
@@ -166,11 +171,29 @@ export function useSupabaseCleanerTeams() {
         .update({ active: false, updated_at: new Date().toISOString() })
         .eq('id', id)
       if (error) throw error
+
+      await clearTeamFromBookings(id)
     } catch (error) {
       cleanerTeamStore.setTeam(id, existing)
       throw error
     } finally {
       clearOptimistic(id)
+    }
+  }
+
+  async function clearTeamFromBookings(teamId: string): Promise<void> {
+    const { error } = await supabase
+      .from('bookings')
+      .update({ assigned_team_id: null, updated_at: new Date().toISOString() })
+      .eq('assigned_team_id', teamId)
+    if (error) {
+      console.error('[useSupabaseCleanerTeams] clearTeamFromBookings error:', error)
+    }
+
+    for (const [bookingId, booking] of bookingStore.bookings.entries()) {
+      if (booking.assigned_team_id === teamId) {
+        bookingStore.setBooking(bookingId, { ...booking, assigned_team_id: null })
+      }
     }
   }
 

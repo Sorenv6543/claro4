@@ -361,7 +361,7 @@ export function useSupabaseAuth () {
   }
 
   async function refreshProfile (): Promise<void> {
-    if (!currentUserId.value) return
+    if (!currentUserId.value) throw new Error('[useSupabaseAuth] refreshProfile called without an authenticated user')
     await loadUserProfileSafe(currentUserId.value)
   }
 
