@@ -1,15 +1,16 @@
 <template>
-  <div class="admin-dashboard">
-    <HomeAdmin />
+  <div>
+    <AdminOverview />
   </div>
 </template>
 
 <script setup lang="ts">
-  import HomeAdmin from '@/components/smart/admin/HomeAdmin.vue'
+  import AdminOverview from '@/components/smart/admin/AdminOverview.vue';
+import HomeAdmin from '@/components/smart/admin/AdminOverview.vue'
 
   // Meta information for this page
   defineOptions({
-    name: 'AdminDashboard',
+    name: 'AdminOverview',
   })
 
 </script>
