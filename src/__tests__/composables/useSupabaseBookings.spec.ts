@@ -761,6 +761,89 @@ describe('useSupabaseBookings', () => {
     })
   })
 
+  describe('bulkChangeStatus', () => {
+    function wireBulkStatusChain(result: { data: unknown, error: unknown }) {
+      const inMock = vi.fn().mockResolvedValue(result)
+      const updateMock = vi.fn().mockReturnValue({ in: inMock })
+      supabaseMock.from.mockReturnValue({
+        select: vi.fn().mockReturnValue({ gte: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }) }),
+        insert: vi.fn().mockResolvedValue({ data: null, error: null }),
+        update: updateMock,
+        delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
+      })
+      supabaseMock.channel = vi.fn().mockReturnValue({
+        on: vi.fn().mockReturnThis(),
+        subscribe: vi.fn().mockReturnThis(),
+      })
+      supabaseMock.removeChannel = vi.fn()
+      return { updateMock, inMock }
+    }
+
+    it('sends a single .in() query for all eligible bookings', async () => {
+      const { updateMock, inMock } = wireBulkStatusChain({ data: null, error: null })
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      store.setBooking('b1', makeBooking({ id: 'b1', status: 'pending' }))
+      store.setBooking('b2', makeBooking({ id: 'b2', status: 'pending' }))
+
+      const result = await composable.bulkChangeStatus(['b1', 'b2'], 'scheduled')
+
+      expect(result.updated).toHaveLength(2)
+      expect(result.skipped).toHaveLength(0)
+      expect(updateMock).toHaveBeenCalledWith(expect.objectContaining({ status: 'scheduled' }))
+      expect(inMock).toHaveBeenCalledWith('id', ['b1', 'b2'])
+    })
+
+    it('skips bookings with invalid status transitions', async () => {
+      const { inMock } = wireBulkStatusChain({ data: null, error: null })
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      // completed -> scheduled is not a valid transition
+      store.setBooking('done', makeBooking({ id: 'done', status: 'completed' }))
+      store.setBooking('ok',   makeBooking({ id: 'ok',   status: 'pending' }))
+
+      const result = await composable.bulkChangeStatus(['done', 'ok'], 'scheduled')
+
+      expect(result.skipped).toEqual([
+        { id: 'done', reason: 'cannot transition from completed to scheduled' },
+      ])
+      expect(result.updated).toHaveLength(1)
+      expect(inMock).toHaveBeenCalledWith('id', ['ok'])
+    })
+
+    it('rolls back all optimistic updates on SQL failure', async () => {
+      wireBulkStatusChain({ data: null, error: { message: 'SQL failed' } })
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      store.setBooking('r1', makeBooking({ id: 'r1', status: 'pending' }))
+      store.setBooking('r2', makeBooking({ id: 'r2', status: 'pending' }))
+
+      await expect(composable.bulkChangeStatus(['r1', 'r2'], 'scheduled')).rejects.toThrow()
+
+      expect(store.bookings.get('r1')?.status).toBe('pending')
+      expect(store.bookings.get('r2')?.status).toBe('pending')
+    })
+
+    it('returns early without SQL call when all bookings are pre-filtered', async () => {
+      const { updateMock } = wireBulkStatusChain({ data: null, error: null })
+      const composable = await getComposable()
+      const store = await getBookingStore()
+
+      // completed is a terminal state — cannot transition to scheduled
+      store.setBooking('done1', makeBooking({ id: 'done1', status: 'completed' }))
+      store.setBooking('done2', makeBooking({ id: 'done2', status: 'completed' }))
+
+      const result = await composable.bulkChangeStatus(['done1', 'done2'], 'scheduled')
+
+      expect(result.updated).toHaveLength(0)
+      expect(result.skipped).toHaveLength(2)
+      expect(updateMock).not.toHaveBeenCalled()
+    })
+  })
+
   describe('unsubscribe', () => {
     it('removes the channel and resets connection status', async () => {
       supabaseMock.from.mockReturnValue({

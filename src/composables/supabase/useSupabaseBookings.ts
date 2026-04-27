@@ -373,6 +373,61 @@ export function useSupabaseBookings () {
     }
   }
 
+  async function bulkChangeStatus(
+    bookingIds: string[],
+    status: Booking['status'],
+  ): Promise<{ updated: Booking[], skipped: { id: string, reason: string }[] }> {
+    const snapshots = new Map<string, Booking>()
+    const eligibleIds: string[] = []
+    const skipped: { id: string, reason: string }[] = []
+
+    for (const id of bookingIds) {
+      const existing = bookingStore.bookings.get(id)
+      if (!existing) {
+        skipped.push({ id, reason: 'not found in local store' })
+        continue
+      }
+      if (!canTransitionBookingStatus(existing, status)) {
+        skipped.push({ id, reason: `cannot transition from ${existing.status} to ${status}` })
+        continue
+      }
+      snapshots.set(id, existing)
+      eligibleIds.push(id)
+    }
+
+    if (eligibleIds.length === 0) {
+      return { updated: [], skipped }
+    }
+
+    const updateTime = new Date().toISOString()
+    const updated: Booking[] = []
+    for (const id of eligibleIds) {
+      const existing = snapshots.get(id)!
+      const next: Booking = { ...existing, status, updated_at: updateTime }
+      bookingStore.setBooking(id, next)
+      trackOptimistic(id)
+      updated.push(next)
+    }
+
+    try {
+      const { error } = await supabase
+        .from('bookings')
+        .update({ status, updated_at: updateTime })
+        .in('id', eligibleIds)
+      if (error) throw error
+      return { updated, skipped }
+    } catch (error) {
+      for (const [id, existing] of snapshots) {
+        bookingStore.setBooking(id, existing)
+      }
+      throw error
+    } finally {
+      for (const id of eligibleIds) {
+        clearOptimistic(id)
+      }
+    }
+  }
+
   return {
     fetchAndSubscribe,
     unsubscribe,
@@ -382,6 +437,7 @@ export function useSupabaseBookings () {
     changeBookingStatus,
     assignCleaner,
     bulkAssignCleaner,
+    bulkChangeStatus,
     connectionStatus,
   }
 }

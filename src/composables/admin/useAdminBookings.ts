@@ -30,6 +30,7 @@ export function useAdminBookings () {
     changeBookingStatus: supaChangeStatus,
     assignCleaner: supaAssignCleaner,
     bulkAssignCleaner: supaBulkAssignCleaner,
+    bulkChangeStatus: supaBulkChangeStatus,
   } = useSupabaseBookings()
   const authStore = useAuthStore()
   const bookingStore = useBookingStore()
@@ -532,60 +533,59 @@ export function useAdminBookings () {
   }
 
   /**
-   * Bulk update status for multiple bookings (admin workflow management)
+   * Bulk update status for multiple bookings (admin workflow management).
+   *
+   * Delegates to the supabase-layer bulkChangeStatus, which executes one
+   * `.update().in('id', [...])` round-trip instead of N parallel updates.
+   * Bookings with invalid status transitions (or missing from the local
+   * store) are pre-filtered and surfaced via the returned `failed` list.
    */
-  async function bulkUpdateStatus (bookingIds: string[], status: BookingStatus): Promise<{ success: string[], failed: string[] }> {
+  async function bulkUpdateStatus (
+    bookingIds: string[],
+    status: BookingStatus,
+  ): Promise<{ success: string[], failed: string[] }> {
     if (!currentAdminId.value) {
       error.value = 'Admin authentication required for bulk operations'
       return { success: [], failed: bookingIds }
+    }
+
+    if (bookingIds.length === 0) {
+      return { success: [], failed: [] }
     }
 
     loading.value = true
     error.value = null
     success.value = null
 
-    const results = { success: [] as string[], failed: [] as string[] }
-
     try {
-      // Call supabase layer directly to avoid racing shared loading/error/success refs
-      const settledResults = await Promise.allSettled(
-        bookingIds.map(async bookingId => {
-          await supaChangeStatus(bookingId, status)
-          return bookingId
-        }),
-      )
+      const { updated, skipped } = await supaBulkChangeStatus(bookingIds, status)
+      const successIds = updated.map(b => b.id)
+      const skippedIds = skipped.map(s => s.id)
 
-      for (const [i, settledResult] of settledResults.entries()) {
-        if (settledResult.status === 'fulfilled') {
-          results.success.push(bookingIds[i])
-        } else {
-          console.error(`[useAdminBookings] bulkUpdateStatus failed for booking ${bookingIds[i]}:`, settledResult.reason)
-          results.failed.push(bookingIds[i])
+      if (skipped.length > 0) {
+        const counts = new Map<string, number>()
+        for (const { reason } of skipped) {
+          counts.set(reason, (counts.get(reason) ?? 0) + 1)
         }
-      }
+        const skipSummary = [...counts].map(([r, n]) => `${n} ${r}`).join(', ')
 
-      const successCount = results.success.length
-      const failedCount = results.failed.length
-
-      if (successCount > 0) {
-        success.value = `Bulk status update completed: ${successCount} successful, ${failedCount} failed`
+        success.value = successIds.length > 0
+          ? `Bulk status update completed: ${successIds.length} successful, ${skippedIds.length} skipped (${skipSummary})`
+          : `No bookings eligible: ${skipSummary}`
       } else {
-        error.value = `Bulk status update failed: ${failedCount} bookings could not be updated`
+        success.value = `Bulk status update completed: ${successIds.length} successful`
       }
 
-      loading.value = false
-      return results
+      return { success: successIds, failed: skippedIds }
     } catch (error_) {
       void errorHandler.handleError(error_ as Error, {
         component: 'useAdminBookings',
         operation: 'bulkUpdateStatus',
-      }, {
-        showToUser: false,
-        reportToService: true,
-      })
-      error.value = `Bulk status update failed: ${error_ instanceof Error ? error_.message : 'System error occurred'}`
-      loading.value = false
+      }, { showToUser: false, reportToService: true })
+      error.value = `Bulk status update failed: ${error_ instanceof Error ? error_.message : 'System error'}`
       return { success: [], failed: bookingIds }
+    } finally {
+      loading.value = false
     }
   }
 
