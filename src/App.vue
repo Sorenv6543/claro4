@@ -30,6 +30,15 @@
       loader,
       loadingComponent: LoadingSpinner,
       delay: 0,
+      onError (error, _retry, fail) {
+        // Stale Vite chunk after a dev-server restart — the import URL no longer
+        // exists. Reload once so the browser fetches the fresh chunk manifest.
+        if (error?.message?.includes('Failed to fetch dynamically imported module')) {
+          window.location.reload()
+        } else {
+          fail()
+        }
+      },
     })
   }
 

@@ -290,7 +290,7 @@
   const { mobile } = useDisplay()
   const { allBookings, updateBooking, createBooking, deleteBooking, fetchAllBookings } = useAdminBookings()
   const { allProperties, fetchAllProperties } = useAdminProperties()
-  const { availableCleaners, fetchCleaners } = useCleanerManagement()
+  const { availableCleaners } = useCleanerManagement()
   const uiStore = useUIStore()
 
   const tableLoading = ref(true)
@@ -301,7 +301,6 @@
       await Promise.all([
         fetchAllBookings(),
         fetchAllProperties(),
-        fetchCleaners(),
       ])
     } catch (error) {
       console.error('Failed to load bookings data:', error)

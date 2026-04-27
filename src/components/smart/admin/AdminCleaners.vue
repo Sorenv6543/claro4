@@ -271,7 +271,7 @@
 
 <script setup lang="ts">
   import type { Cleaner } from '@/types/user'
-  import { computed, onMounted, ref } from 'vue'
+  import { computed, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
@@ -281,7 +281,7 @@
 
   const router = useRouter()
   const { mobile } = useDisplay()
-  const { allCleaners, loading, error: cleanerError, fetchCleaners, createCleaner, updateCleaner, deleteCleaner } = useCleanerManagement()
+  const { allCleaners, loading, error: cleanerError, createCleaner, updateCleaner, deleteCleaner } = useCleanerManagement()
 
   // Reactive state
   const statusFilter = ref<string | null>(null)
@@ -369,7 +369,7 @@
   }
 
   function viewSchedule (cleaner: Cleaner) {
-    router.push(`/admin/schedule?cleaner=${cleaner.id}`)
+    router.push(`/admin/calendar?cleaner=${cleaner.id}`)
   }
 
   function editCleaner (cleaner: Cleaner) {
@@ -421,9 +421,6 @@
     formData.value = { name: '', email: '', skills: [], max_daily_bookings: 4 }
   }
 
-  onMounted(() => {
-    fetchCleaners()
-  })
 </script>
 
 <style scoped>

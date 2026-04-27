@@ -71,16 +71,6 @@ export function getAvailableRoles (): Array<{ value: UserRole, title: string, de
       title: 'Property Owner',
       description: 'Manage your Airbnb/VRBO properties and cleaning schedules',
     },
-    {
-      value: 'admin',
-      title: 'Business Admin',
-      description: 'Manage cleaning business operations and all client properties',
-    },
-    {
-      value: 'cleaner',
-      title: 'Cleaning Staff',
-      description: 'Access your cleaning assignments and schedule',
-    },
   ]
 }
 

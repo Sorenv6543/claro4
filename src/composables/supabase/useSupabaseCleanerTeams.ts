@@ -1,16 +1,8 @@
-import type { RealtimeChannel } from '@supabase/supabase-js'
-import type { CleanerTeam, CleanerTeamFormData } from '@/types'
-import { v4 as uuidv4 } from 'uuid'
-import { ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
 import { useBookingStore } from '@/stores/booking'
 import { useCleanerTeamStore } from '@/stores/cleanerTeam'
-
-// Module-level singleton state — matches useSupabaseBookings / useSupabaseProperties pattern
-let channel: RealtimeChannel | null = null
-const optimisticIds = new Set<string>()
-const connectionStatus = ref<'connecting' | 'connected' | 'disconnected'>('disconnected')
-const OPTIMISTIC_SAFETY_TIMEOUT = 30_000
+import type { CleanerTeam, CleanerTeamFormData } from '@/types'
+import { v4 as uuidv4 } from 'uuid'
 
 export function useSupabaseCleanerTeams() {
   const cleanerTeamStore = useCleanerTeamStore()
@@ -57,64 +49,6 @@ export function useSupabaseCleanerTeams() {
     }
   }
 
-  function subscribe(): void {
-    if (channel) return
-    connectionStatus.value = 'connecting'
-    channel = supabase
-      .channel('cleaner-teams-realtime')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'cleaner_teams' },
-        payload => handleRealtimeEvent(payload))
-      .subscribe(status => {
-        if (status === 'SUBSCRIBED') connectionStatus.value = 'connected'
-        else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') connectionStatus.value = 'disconnected'
-      })
-  }
-
-  function unsubscribe(): void {
-    if (channel) {
-      supabase.removeChannel(channel)
-      channel = null
-    }
-    connectionStatus.value = 'disconnected'
-    optimisticIds.clear()
-  }
-
-  function handleRealtimeEvent(payload: any): void {
-    try {
-      const { eventType, new: newRecord, old: oldRecord } = payload
-      const id = (newRecord || oldRecord)?.id
-      if (!id) return
-      switch (eventType) {
-        case 'INSERT':
-        case 'UPDATE': {
-          if (optimisticIds.has(id)) return
-          if (newRecord.active === false) {
-            cleanerTeamStore.removeTeam(id)
-          } else {
-            cleanerTeamStore.setTeam(id, newRecord as CleanerTeam)
-          }
-          break
-        }
-        case 'DELETE': {
-          optimisticIds.delete(id)
-          cleanerTeamStore.removeTeam(oldRecord.id)
-          break
-        }
-      }
-    } catch (error) {
-      console.error('[useSupabaseCleanerTeams] realtime event error:', error, payload)
-    }
-  }
-
-  function trackOptimistic(id: string): void {
-    optimisticIds.add(id)
-    setTimeout(() => optimisticIds.delete(id), OPTIMISTIC_SAFETY_TIMEOUT)
-  }
-
-  function clearOptimistic(id: string): void {
-    optimisticIds.delete(id)
-  }
-
   async function createTeam(formData: CleanerTeamFormData): Promise<CleanerTeam> {
     const name = formData.name?.trim()
     if (!name) throw new Error('Team name is required')
@@ -124,7 +58,6 @@ export function useSupabaseCleanerTeams() {
     const team: CleanerTeam = { id, ...formData, name, created_at: now, updated_at: now }
 
     cleanerTeamStore.setTeam(id, team)
-    trackOptimistic(id)
 
     try {
       const { error } = await supabase.from('cleaner_teams').insert(team)
@@ -133,8 +66,6 @@ export function useSupabaseCleanerTeams() {
     } catch (error) {
       cleanerTeamStore.removeTeam(id)
       throw error
-    } finally {
-      clearOptimistic(id)
     }
   }
 
@@ -144,7 +75,6 @@ export function useSupabaseCleanerTeams() {
 
     const updated: CleanerTeam = { ...existing, ...updates, updated_at: new Date().toISOString() }
     cleanerTeamStore.setTeam(id, updated)
-    trackOptimistic(id)
 
     try {
       const { error } = await supabase.from('cleaner_teams').update(updates).eq('id', id)
@@ -153,8 +83,6 @@ export function useSupabaseCleanerTeams() {
     } catch (error) {
       cleanerTeamStore.setTeam(id, existing)
       throw error
-    } finally {
-      clearOptimistic(id)
     }
   }
 
@@ -163,7 +91,6 @@ export function useSupabaseCleanerTeams() {
     if (!existing) throw new Error('Team not found')
 
     cleanerTeamStore.removeTeam(id)
-    trackOptimistic(id)
 
     try {
       const { error } = await supabase
@@ -176,8 +103,6 @@ export function useSupabaseCleanerTeams() {
     } catch (error) {
       cleanerTeamStore.setTeam(id, existing)
       throw error
-    } finally {
-      clearOptimistic(id)
     }
   }
 
@@ -188,6 +113,7 @@ export function useSupabaseCleanerTeams() {
       .eq('assigned_team_id', teamId)
     if (error) {
       console.error('[useSupabaseCleanerTeams] clearTeamFromBookings error:', error)
+      throw error
     }
 
     for (const [bookingId, booking] of bookingStore.bookings.entries()) {
@@ -200,11 +126,8 @@ export function useSupabaseCleanerTeams() {
   return {
     fetchAll,
     fetchActive,
-    subscribe,
-    unsubscribe,
     createTeam,
     updateTeam,
     deleteTeam,
-    connectionStatus,
   }
 }

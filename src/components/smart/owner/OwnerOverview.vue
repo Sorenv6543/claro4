@@ -94,7 +94,6 @@
   import type { Booking } from '@/types'
   import type { Property } from '@/types/property'
   import type { PropertyColor } from '@/utils/constants'
-  import { mapLegacyPropertyColor } from '@/utils/constants'
   import { computed, onMounted, ref } from 'vue'
   import BookingStatsCard from '@/components/dumb/owner/BookingStatsCard.vue'
   import OwnerCleaningStatus from '@/components/dumb/owner/OwnerCleaningStatus.vue'
@@ -110,6 +109,7 @@
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { calculateBookingPriority } from '@/utils/businessLogic'
+  import { mapLegacyPropertyColor } from '@/utils/constants'
 
   defineOptions({ name: 'OwnerOverview' })
 

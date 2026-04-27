@@ -70,10 +70,10 @@
 </template>
 
 <script setup lang="ts">
-  import { useAuthStore } from '@stores/auth'
-  import { computed } from 'vue'
-  import { useRoute } from 'vue-router'
-  import { useDisplay } from 'vuetify'
+  import { useAuthStore } from '@stores/auth';
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
+import { useDisplay } from 'vuetify';
 
   defineProps<{
     modelValue: boolean
@@ -99,38 +99,40 @@
       icon: 'mdi-view-dashboard-outline',
       filledIcon: 'mdi-view-dashboard',
       to: '/owner/overview',
+      disabled: false,
+      soon: false,
     },
     {
       label: 'Calendar',
       icon: 'mdi-calendar-month-outline',
       filledIcon: 'mdi-calendar-month',
-      to: '/owner/dashboard',
-    },
-    {
-      label: 'Check-ins & Turns',
-      icon: 'mdi-clipboard-check-outline',
-      filledIcon: 'mdi-clipboard-check',
-      to: '/owner/checkins',
-      disabled: true,
-      soon: true,
+      to: '/owner/calendar',
+      disabled: false,
+      soon: false,
     },
     {
       label: 'Bookings',
-      icon: 'mdi-format-list-bulleted',
-      filledIcon: 'mdi-format-list-bulleted',
+      icon: 'mdi-calendar-check-outline',
+      filledIcon: 'mdi-calendar-check',
       to: '/owner/bookings',
+      disabled: false,
+      soon: false,
     },
     {
       label: 'Properties',
       icon: 'mdi-home-outline',
       filledIcon: 'mdi-home',
       to: '/owner/properties',
+      disabled: false,
+      soon: false,
     },
     {
       label: 'Reports',
       icon: 'mdi-chart-line',
       filledIcon: 'mdi-chart-line',
-      to: '/owner/charts',
+      to: '/owner/reports',
+      disabled: false,
+      soon: false,
     },
   ]
 

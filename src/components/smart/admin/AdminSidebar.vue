@@ -227,7 +227,7 @@
 
   const navItems = [
     {
-      label: 'Dashboard',
+      label: 'Overview',
       icon: 'mdi-view-dashboard-outline',
       filledIcon: 'mdi-view-dashboard',
       to: '/admin',
@@ -236,7 +236,7 @@
       label: 'Calendar',
       icon: 'mdi-calendar-month-outline',
       filledIcon: 'mdi-calendar-month',
-      to: '/admin/schedule',
+      to: '/admin/calendar',
     },
     {
       label: 'All Bookings',

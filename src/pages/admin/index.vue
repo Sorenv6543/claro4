@@ -5,8 +5,7 @@
 </template>
 
 <script setup lang="ts">
-  import AdminOverview from '@/components/smart/admin/AdminOverview.vue';
-import HomeAdmin from '@/components/smart/admin/AdminOverview.vue'
+  import AdminOverview from '@/components/smart/admin/AdminOverview.vue'
 
   // Meta information for this page
   defineOptions({

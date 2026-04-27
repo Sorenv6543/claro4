@@ -1,9 +1,9 @@
-import * as Sentry from '@sentry/vue'
-import { createPinia } from 'pinia'
-import { createApp } from 'vue'
 import App from '@/App.vue'
 import vuetify from '@/plugins/vuetify'
 import router from '@/router'
+import * as Sentry from '@sentry/vue'
+import { createPinia } from 'pinia'
+import { createApp } from 'vue'
 
 import '@/styles/calendar-tokens.css'
 import './styles/main.scss'
@@ -38,6 +38,12 @@ if (sentryDsn) {
     sendDefaultPii: true,
     // Conservative default — operators can tune via env var later
     tracesSampleRate: Number(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? 0.1),
+    // Profile every session that is already being traced. The decision is made
+    // once per page load; 1.0 means all traced sessions get profiling data.
+    profileSessionSampleRate: Number(import.meta.env.VITE_SENTRY_PROFILE_SESSION_SAMPLE_RATE ?? 1.0),
+    // Structured logging pipeline. enableLogs opens a dedicated log
+    // envelope endpoint; without it, Sentry.logger.* calls are no-ops.
+    enableLogs: true,
     integrations: [
       // Browser tracing instruments page-load and navigation transactions.
       // Passing `router` wires Vue Router's beforeEach/afterEach hooks so
@@ -46,6 +52,12 @@ if (sentryDsn) {
       // Without this, tracesSampleRate above is meaningless — there are
       // no transactions to sample.
       Sentry.browserTracingIntegration({ router }),
+      // Browser profiling — samples CPU call stacks during traced transactions.
+      // profileSessionSampleRate is a once-per-session coin flip: 1.0 means
+      // every session that loads this page will profile all its transactions.
+      // Requires the Document-Policy: js-profiling response header (set in
+      // vite.config.ts for dev; must be set at CDN/host for production).
+      Sentry.browserProfilingIntegration(),
       // Session Replay — captures DOM mutations + user interactions in a
       // rolling buffer; on error, the buffer is uploaded so you can replay
       // what the user did right before the crash.
@@ -59,14 +71,24 @@ if (sentryDsn) {
         maskAllText: true,
         blockAllMedia: true,
       }),
+      // Forward console.warn/error into the Sentry Logs pipeline so
+      // operator console output is searchable alongside errors. Skipping
+      // 'log' and 'info' to avoid high-volume debug noise in production.
+      Sentry.consoleLoggingIntegration({ levels: ['warn', 'error'] }),
     ],
+    // Drop debug-level log events in production — they're development
+    // diagnostics and would inflate log volume without operational value.
+    beforeSendLog: (log) => {
+      if (log.level === 'debug' && import.meta.env.PROD) return null
+      return log
+    },
     // Session Replay sample rates — see replayIntegration above.
     // - replaysSessionSampleRate: record N% of all sessions (UX trend visibility)
     // - replaysOnErrorSampleRate: record 100% of error sessions (root-cause debugging)
     // The on-error rate operates on a rolling buffer: the SDK always keeps
     // the last 30s of activity in memory and only uploads when an error fires.
     replaysSessionSampleRate: 0.1,
-    replaysOnErrorSampleRate: 1.0,
+    replaysOnErrorSampleRate: 1,
     // Distributed tracing: which outgoing fetch URLs receive the
     // `sentry-trace` and `baggage` headers that connect frontend
     // transactions to backend spans. Default behavior would attach

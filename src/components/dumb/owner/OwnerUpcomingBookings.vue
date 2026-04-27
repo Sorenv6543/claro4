@@ -56,7 +56,7 @@
         block
         color="primary"
         size="small"
-        to="/owner/dashboard"
+        to="/owner/overview"
         variant="text"
       >
         <v-icon class="mr-1" size="16">mdi-calendar</v-icon>

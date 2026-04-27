@@ -1,5 +1,6 @@
 import type { RouteLocationNormalized } from 'vue-router'
 import type { UserRole } from '@/types'
+import * as Sentry from '@sentry/vue'
 import { useAuthStore } from '@/stores/auth'
 import { getDefaultRouteForRole } from '@/utils/authHelpers'
 
@@ -55,9 +56,14 @@ export function loadingGuard (
 }
 
 export function afterNavigationGuard (
-  _to: RouteLocationNormalized,
+  to: RouteLocationNormalized,
 ) {
-  // Post-navigation hook — add analytics, page title updates, etc. here
+  Sentry.addBreadcrumb({
+    category: 'navigation',
+    message: `Navigated to ${String(to.name ?? to.path)}`,
+    level: 'info',
+    data: { path: to.path, name: to.name, params: to.params },
+  })
 }
 
 export function developmentGuard (

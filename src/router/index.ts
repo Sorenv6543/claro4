@@ -8,7 +8,7 @@
 // ✅ Applies navigation guards
 
 import { createRouter, createWebHistory } from 'vue-router'
-import { afterNavigationGuard, authGuard, developmentGuard, loadingGuard } from './guards'
+import { afterNavigationGuard, authGuard, loadingGuard } from './guards'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,7 +34,7 @@ const router = createRouter({
     {
       path: '/auth/no-access',
       name: 'no-access',
-      component: () => import('@pages/auth/no-access.vue'),
+      component: () => import('@/pages/auth/no-access.vue'),
       meta: {
         layout: 'auth',
         requiresAuth: true,
@@ -43,16 +43,16 @@ const router = createRouter({
     },
 
     // Owner routes - only accessible to owner users
-    {
-      path: '/owner/dashboard',
-      name: 'HomeOwner',
-      component: () => import('@/pages/owner/dashboard.vue'),
-      meta: {
-        layout: 'owner',
-        role: 'owner',
-        requiresAuth: true,
-      },
-    },
+    // {
+    //   path: '/owner/dashboard',
+    //   name: 'owner-dashboard',
+    //   component: () => import('@/pages/owner/dashboard.vue'),
+    //   meta: {
+    //     layout: 'owner',
+    //     role: 'owner',
+    //     requiresAuth: true,
+    //   },
+    // },
     {
       path: '/owner/overview',
       name: 'owner-overview',
@@ -65,7 +65,13 @@ const router = createRouter({
     },
     {
       path: '/owner/calendar',
-      redirect: '/owner/dashboard',
+      name: 'owner-calendar',
+      component: () => import('@/pages/owner/calendar/index.vue'),
+      meta: {
+        layout: 'owner',
+        role: 'owner',
+        requiresAuth: true,
+      },
     },
     {
       path: '/owner/bookings',
@@ -108,9 +114,9 @@ const router = createRouter({
       },
     },
     {
-      path: '/owner/charts',
+      path: '/owner/reports',
       name: 'owner-charts',
-      component: () => import('@/pages/owner/charts.vue'),
+      component: () => import('@/pages/owner/reports/index.vue'),
       meta: {
         layout: 'owner',
         role: 'owner',
@@ -139,9 +145,9 @@ const router = createRouter({
       },
     },
     {
-      path: '/admin/schedule',
-      name: 'admin-schedule',
-      component: () => import('@/pages/admin/schedule/index.vue'),
+      path: '/admin/calendar',
+      name: 'admin-calendar',
+      component: () => import('@/pages/admin/calendar/index.vue'),
       meta: {
         layout: 'admin',
         role: 'admin',
@@ -151,26 +157,6 @@ const router = createRouter({
     {
       path: '/admin/properties',
       name: 'admin-properties',
-      component: () => import('@/pages/admin/properties/index.vue'),
-      meta: {
-        layout: 'admin',
-        role: 'admin',
-        requiresAuth: true,
-      },
-    },
-    {
-      path: '/admin/properties/:id',
-      name: 'admin-properties-view',
-      component: () => import('@/pages/admin/properties/index.vue'),
-      meta: {
-        layout: 'admin',
-        role: 'admin',
-        requiresAuth: true,
-      },
-    },
-    {
-      path: '/admin/properties/:id/edit',
-      name: 'admin-properties-edit',
       component: () => import('@/pages/admin/properties/index.vue'),
       meta: {
         layout: 'admin',
@@ -201,7 +187,7 @@ const router = createRouter({
     {
       path: '/admin/reports',
       name: 'admin-reports',
-      component: () => import('@/pages/admin/reports/index.vue'),
+      component: () => import('@/components/smart/shared/Reports.vue'),
       meta: {
         layout: 'admin',
         role: 'admin',
@@ -212,16 +198,6 @@ const router = createRouter({
       path: '/admin/cleaners',
       name: 'admin-cleaners',
       component: () => import('@/pages/admin/cleaners/index.vue'),
-      meta: {
-        layout: 'admin',
-        role: 'admin',
-        requiresAuth: true,
-      },
-    },
-    {
-      path: '/admin/calendar',
-      name: 'admin-calendar',
-      component: () => import('@/pages/admin/schedule/index.vue'),
       meta: {
         layout: 'admin',
         role: 'admin',
@@ -253,9 +229,16 @@ const router = createRouter({
 })
 
 // Apply navigation guards
-router.beforeEach(developmentGuard)
+
 router.beforeEach(loadingGuard)
 router.beforeEach(authGuard)
 router.afterEach(afterNavigationGuard)
+
+// Reload on stale Vite chunks (dev server restart invalidates dynamic import URLs)
+router.onError((err) => {
+  if (err?.message?.includes('Failed to fetch dynamically imported module')) {
+    window.location.reload()
+  }
+})
 
 export default router
