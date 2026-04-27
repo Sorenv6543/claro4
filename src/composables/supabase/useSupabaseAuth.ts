@@ -465,6 +465,11 @@ export function useSupabaseAuth () {
     error.value = null
   }
 
+  async function refreshProfile (): Promise<void> {
+    if (!currentUserId.value) return
+    await loadUserProfileSafe(currentUserId.value)
+  }
+
   return {
     // State
     user,
@@ -484,6 +489,7 @@ export function useSupabaseAuth () {
     updateProfile,
     resetPassword,
     checkAuth,
+    refreshProfile,
     clearError,
     getAllUsers,
     updateUserRole,

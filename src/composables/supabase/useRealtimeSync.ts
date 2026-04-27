@@ -44,8 +44,8 @@ export function useRealtimeSync () {
           filter: `id=eq.${authStore.user?.id}`,
         },
         () => {
-          authStore.checkAuth().catch((error: unknown) =>
-            console.error('[useRealtimeSync] profile checkAuth failed:', error),
+          authStore.refreshProfile().catch((error: unknown) =>
+            console.error('[useRealtimeSync] profile refresh failed:', error),
           )
         },
       )
