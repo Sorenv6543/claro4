@@ -13,7 +13,7 @@
       v-for="p in properties"
       :key="p.id"
       :value="p.id"
-      :class="{ 'panel-scrim': expandedPanel !== null && expandedPanel !== p.id }"
+      :class="{ 'panel-scrim': expandedPanel != null && expandedPanel !== p.id }"
     >
       <v-expansion-panel-title>
         <div class="d-flex align-center ga-3 w-100">
@@ -159,7 +159,7 @@
 
   defineOptions({ name: 'PropertyExpansionList' })
 
-  const expandedPanel = ref<string | null>(null)
+  const expandedPanel = ref<string | null | undefined>(null)
 
   const upcomingByProperty = computed(() => {
     const today = new Date()
