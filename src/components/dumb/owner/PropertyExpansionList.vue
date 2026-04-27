@@ -54,7 +54,7 @@
                 <div class="text-body-2 font-weight-medium">{{ formatDate(b.checkin_date) }}</div>
                 <div class="text-caption text-medium-emphasis">→ {{ formatDate(b.checkout_date) }}</div>
                 <v-chip class="mt-1" :color="statusColor(b.status)" size="x-small" variant="tonal">
-                  {{ b.status }}
+                  {{ String(b.status).replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase()) }}
                 </v-chip>
               </v-timeline-item>
             </v-timeline>
