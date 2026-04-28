@@ -164,6 +164,7 @@ function isUnassigned(item: PropertyListItem): boolean {
         'pl-row-shell--open': isExpanded(item.property.id),
         'pl-row-shell--dimmed': hasOpen && !isExpanded(item.property.id),
       }"
+      :style="isExpanded(item.property.id) ? { '--pl-prop-color': item.property.color } : {}"
     >
       <!-- Summary row (clickable) -->
       <div
@@ -296,6 +297,7 @@ function isUnassigned(item: PropertyListItem): boolean {
             <div class="pl-inlay-right">
               <div class="pl-col-label">Property stats</div>
               <table class="pl-stats-table">
+                <tbody>
                 <tr v-if="item.stats.rating">
                   <td>
                     <span class="pl-td-inner">
@@ -343,6 +345,7 @@ function isUnassigned(item: PropertyListItem): boolean {
                     {{ item.stats.assignedCleanerName ?? 'Unassigned' }}
                   </td>
                 </tr>
+                </tbody>
               </table>
             </div>
           </div>
@@ -426,25 +429,28 @@ function isUnassigned(item: PropertyListItem): boolean {
 /* ─── Row shell ──────────────────────────────────────────────────────────── */
 .pl-row-shell {
   border-bottom: 1px solid var(--claro-border);
-  transition: opacity var(--claro-dur-slow) var(--claro-ease);
+  transition:
+    filter var(--claro-dur-slow) var(--claro-ease),
+    opacity var(--claro-dur-slow) var(--claro-ease);
 }
 
 .pl-row-shell:last-child {
   border-bottom: none;
 }
 
-/* Dim inactive rows when another is open */
+/* Nearly monochrome ghost for non-active rows — much stronger than opacity alone */
 .pl-card--has-open .pl-row-shell:not(.pl-row-shell--open) {
-  opacity: 0.35;
+  filter: saturate(0.12) opacity(0.22);
 }
 
-/* Open row: subtle primary ring */
+/* Open row: property-color accent ring — stands out visually */
 .pl-row-shell--open {
   position: relative;
   z-index: 2;
+  filter: none !important;
   box-shadow:
-    0 0 0 1.5px rgba(115, 103, 240, 0.22),
-    0 2px 8px rgba(46, 38, 61, 0.06);
+    0 0 0 2px var(--pl-prop-color, var(--claro-primary)),
+    0 4px 12px rgba(46, 38, 61, 0.10);
 }
 
 /* ─── Summary row ────────────────────────────────────────────────────────── */
