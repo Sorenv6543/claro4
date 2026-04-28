@@ -54,6 +54,7 @@
   import { formatPropertyAddress } from '@/types/property'
   import { mapLegacyPropertyColor } from '@/utils/constants'
   import { propStatus } from '@utils/propertyStatus'
+  import { useToday } from '@composables/shared/useToday'
 
   defineOptions({ name: 'OwnerPropertyTimeline' })
 
@@ -78,8 +79,8 @@
     }
   })
 
-  const todayStr = new Date().toISOString().split('T')[0]
-  const msDay    = 86400000
+  const { todayStr } = useToday()
+  const msDay = 86400000
 
   function daysFromToday(dateStr: string): number {
     const today = new Date(); today.setHours(0,0,0,0)
@@ -114,7 +115,7 @@
       color:   propColor(p),
       initial: propInitial(p),
       meta:    propMeta(p),
-      status:  propStatus(p.id, myBookings.value, todayStr),
+      status:  propStatus(p.id, myBookings.value, todayStr.value),
     })),
   )
 
@@ -141,11 +142,11 @@
       if (!p) continue
       const name  = propName(p)
       const color = propColor(p)
-      if (b.booking_type === 'turn' && b.checkin_date === todayStr) {
+      if (b.booking_type === 'turn' && b.checkin_date === todayStr.value) {
         events.push({ propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'turn' })
       } else {
-        if (b.checkout_date === todayStr) events.push({ propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'checkout' })
-        if (b.checkin_date  === todayStr) events.push({ propId: p.id, propName: name, propColor: color, time: b.checkin_time  ?? '15:00', kind: 'checkin'  })
+        if (b.checkout_date === todayStr.value) events.push({ propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'checkout' })
+        if (b.checkin_date  === todayStr.value) events.push({ propId: p.id, propName: name, propColor: color, time: b.checkin_time  ?? '15:00', kind: 'checkin'  })
       }
     }
     return events.sort((a, b) => a.time.localeCompare(b.time))
@@ -161,11 +162,11 @@
       if (!p) continue
       if (b.updated_at) {
         const dayOf = b.updated_at.slice(0, 10)
-        if (dayOf === todayStr || dayOf === yesterdayStr) {
+        if (dayOf === todayStr.value || dayOf === yesterdayStr) {
           items.push({
             type: 'modified',
             text: `Updated booking at ${propName(p)}`,
-            timeAgo: dayOf === todayStr ? 'Today' : 'Yesterday',
+            timeAgo: dayOf === todayStr.value ? 'Today' : 'Yesterday',
             propName: propName(p),
           })
         }

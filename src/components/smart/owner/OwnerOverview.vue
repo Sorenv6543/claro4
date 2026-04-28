@@ -185,6 +185,7 @@
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { mapLegacyPropertyColor } from '@/utils/constants'
+  import { useToday } from '@composables/shared/useToday'
   defineOptions({ name: 'OwnerOverview' })
 
   const authStore = useAuthStore()
@@ -218,11 +219,7 @@
     authStore.user?.name || authStore.user?.email?.split('@')[0] || 'Owner',
   )
 
-  const todayStr = new Date().toISOString().split('T')[0]
-  const weekAhead = (() => { const d = new Date(); d.setDate(d.getDate() + 7); return d.toISOString().split('T')[0] })()
-  const fortAhead = (() => { const d = new Date(); d.setDate(d.getDate() + 14); return d.toISOString().split('T')[0] })()
-
-  const todayFullLabel = new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })
+  const { todayStr, weekAhead, fortAhead, todayLabel: todayFullLabel } = useToday()
 
   // ── Today events strip ────────────────────────────────────────────────────────
   const todayEvents = computed(() => {
@@ -233,11 +230,11 @@
       if (!p) continue
       const name  = formatPropertyAddress(p, 'short')
       const color = mapLegacyPropertyColor(p.color)
-      if (b.booking_type === 'turn' && b.checkin_date === todayStr) {
+      if (b.booking_type === 'turn' && b.checkin_date === todayStr.value) {
         events.push({ id: b.id + '-t', propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'turn', guestCount: b.guest_count ?? undefined })
       } else {
-        if (b.checkout_date === todayStr) events.push({ id: b.id + '-o', propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'checkout', guestCount: b.guest_count ?? undefined })
-        if (b.checkin_date  === todayStr) events.push({ id: b.id + '-i', propId: p.id, propName: name, propColor: color, time: b.checkin_time  ?? '15:00', kind: 'checkin',  guestCount: b.guest_count ?? undefined })
+        if (b.checkout_date === todayStr.value) events.push({ id: b.id + '-o', propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'checkout', guestCount: b.guest_count ?? undefined })
+        if (b.checkin_date  === todayStr.value) events.push({ id: b.id + '-i', propId: p.id, propName: name, propColor: color, time: b.checkin_time  ?? '15:00', kind: 'checkin',  guestCount: b.guest_count ?? undefined })
       }
     }
     return events.sort((a, b) => a.time.localeCompare(b.time))
@@ -259,8 +256,8 @@
 
   // ── Counts ────────────────────────────────────────────────────────────────────
   const turnsTodayCount   = computed(() => myTodayTurns.value.length)
-  const checkoutsTodayCount = computed(() => myBookings.value.filter(b => b.checkout_date === todayStr && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
-  const weekCheckinCount  = computed(() => myBookings.value.filter(b => b.checkin_date >= todayStr && b.checkin_date <= weekAhead && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
+  const checkoutsTodayCount = computed(() => myBookings.value.filter(b => b.checkout_date === todayStr.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
+  const weekCheckinCount  = computed(() => myBookings.value.filter(b => b.checkin_date >= todayStr.value && b.checkin_date <= weekAhead.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
   const unassignedCount   = computed(() => myBookings.value.filter(b => !b.assigned_cleaner_id && b.status !== 'cancelled' && b.status !== 'completed').length)
 
   // ── Occupancy ─────────────────────────────────────────────────────────────────
@@ -292,26 +289,26 @@
   const overviewListItems = computed((): PropertyListItem[] =>
     myProperties.value.map(p => {
       const bs = myBookings.value.filter(b => b.property_id === p.id && b.status !== 'cancelled')
-      const isTurnToday = bs.some(b => b.checkin_date === todayStr && b.booking_type === 'turn')
+      const isTurnToday = bs.some(b => b.checkin_date === todayStr.value && b.booking_type === 'turn')
 
       const todayEvts: PropertyListEvent[] = []
       for (const b of bs) {
-        if (b.booking_type === 'turn' && b.checkin_date === todayStr) {
+        if (b.booking_type === 'turn' && b.checkin_date === todayStr.value) {
           todayEvts.push({ type: 'checkout', time: b.checkout_time ?? '11:00', time24: b.checkout_time ?? '11:00', isUnassigned: !b.assigned_cleaner_id })
           todayEvts.push({ type: 'checkin',  time: b.checkin_time  ?? '15:00', time24: b.checkin_time  ?? '15:00' })
-        } else if (b.checkout_date === todayStr) {
+        } else if (b.checkout_date === todayStr.value) {
           todayEvts.push({ type: 'checkout', time: b.checkout_time ?? '11:00', time24: b.checkout_time ?? '11:00', isUnassigned: !b.assigned_cleaner_id })
-        } else if (b.checkin_date === todayStr) {
+        } else if (b.checkin_date === todayStr.value) {
           todayEvts.push({ type: 'checkin',  time: b.checkin_time  ?? '15:00', time24: b.checkin_time  ?? '15:00' })
         }
       }
 
       const nextBook = bs
-        .filter(b => b.checkin_date >= todayStr)
+        .filter(b => b.checkin_date >= todayStr.value)
         .toSorted((a, b) => a.checkin_date.localeCompare(b.checkin_date))[0]
 
       const nextCheckin = nextBook ? {
-        label: nextBook.checkin_date === todayStr
+        label: nextBook.checkin_date === todayStr.value
           ? `Today · ${nextBook.checkin_time ?? '15:00'}`
           : new Date(nextBook.checkin_date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
         isTurnDay: nextBook.booking_type === 'turn',
@@ -335,7 +332,7 @@
 
   const upcoming14d = computed(() => {
     const items = myBookings.value
-      .filter(b => b.status !== 'cancelled' && b.checkin_date >= todayStr && b.checkin_date <= fortAhead)
+      .filter(b => b.status !== 'cancelled' && b.checkin_date >= todayStr.value && b.checkin_date <= fortAhead.value)
       .toSorted((a, b) => a.checkin_date.localeCompare(b.checkin_date))
       .slice(0, 6)
       .map(b => {
