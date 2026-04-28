@@ -37,4 +37,8 @@ describe('checkOwnerBundleSize', () => {
     fs.writeFileSync(path.join(tmpDir, 'vendor-abc123.js'), 'other chunk')
     expect(() => checkOwnerBundleSize(tmpDir)).toThrow('No owner-app chunks found')
   })
+
+  it('throws when the assets directory does not exist', () => {
+    expect(() => checkOwnerBundleSize('/tmp/__nonexistent_bundle_test_dir__')).toThrow()
+  })
 })
