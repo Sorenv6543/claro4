@@ -15,7 +15,9 @@
 
     <!-- Mobile: day-grouped card feed -->
     <div v-if="mobile" class="opt-mobile">
+      <v-skeleton-loader v-if="loading" type="card, list-item-three-line@3" />
       <MobileTimelineFeed
+        v-else
         :events="mobileEvents"
         :properties="propChips"
       />
