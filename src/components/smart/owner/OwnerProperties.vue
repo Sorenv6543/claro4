@@ -63,6 +63,7 @@
       <!-- Property list -->
       <PropertyList
         :items="listItems"
+        :loading="loading"
         @assign-cleaner="handleAssignCleaner"
         @edit="handleListEdit"
         @more="handleListMore"
@@ -451,7 +452,8 @@
   async function handlePropertyModalDelete (propertyId: string): Promise<void> {
     const property = myProperties.value.find(p => p.id === propertyId)
     if (!property || property.owner_id !== authStore.user?.id) {
-      console.warn('Cannot delete property not owned by current user')
+      console.warn('[OwnerProperties] Delete attempted on non-owned property:', propertyId)
+      uiStore.addNotification('error', 'Permission Denied', 'You can only delete properties you own.')
       return
     }
 
@@ -503,16 +505,18 @@
   // LIFECYCLE - SAME INITIALIZATION AS HomeOwner
   // ============================================================================
 
+  const loading = ref(false)
+
   onMounted(async () => {
     if (authStore.isAuthenticated && authStore.user?.role === 'owner') {
+      loading.value = true
       try {
-        await Promise.all([
-          fetchMyProperties(),
-          fetchMyBookings(),
-        ])
+        await Promise.all([fetchMyProperties(), fetchMyBookings()])
       } catch (error: unknown) {
         console.error('Failed to load properties data:', error)
         uiStore.addNotification('error', 'Error', 'Failed to load properties. Please refresh.')
+      } finally {
+        loading.value = false
       }
     }
   })
