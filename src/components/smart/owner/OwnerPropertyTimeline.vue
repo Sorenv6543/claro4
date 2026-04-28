@@ -69,13 +69,19 @@
   onMounted(async () => {
     if (!authStore.isAuthenticated) return
     loading.value = true
-    try {
-      await Promise.all([fetchMyProperties(), fetchMyBookings()])
-    } catch (err: unknown) {
-      console.error('Timeline load failed:', err)
-      uiStore.addNotification('error', 'Error', 'Failed to load timeline data.')
-    } finally {
-      loading.value = false
+    const [propResult, bookResult] = await Promise.allSettled([
+      fetchMyProperties(),
+      fetchMyBookings(),
+    ])
+    loading.value = false
+    if (propResult.status === 'rejected' || bookResult.status === 'rejected') {
+      const failed = [
+        propResult.status === 'rejected' ? 'properties' : null,
+        bookResult.status === 'rejected' ? 'bookings' : null,
+      ].filter(Boolean).join(' and ')
+      const reason = propResult.status === 'rejected' ? propResult.reason : (bookResult as PromiseRejectedResult).reason
+      console.error('Timeline load failed:', reason)
+      uiStore.addNotification('error', 'Load Error', `Failed to load ${failed}. Please refresh.`)
     }
   })
 

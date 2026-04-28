@@ -219,13 +219,19 @@
 
   onMounted(async () => {
     loading.value = true
-    try {
-      await Promise.all([fetchMyBookings(), fetchMyProperties()])
-    } catch (error) {
-      console.error('Failed to load bookings:', error)
-      uiStore.addNotification('error', 'Load Failed', 'Could not load bookings. Please refresh.')
-    } finally {
-      loading.value = false
+    const [bookResult, propResult] = await Promise.allSettled([
+      fetchMyBookings(),
+      fetchMyProperties(),
+    ])
+    loading.value = false
+    if (bookResult.status === 'rejected' || propResult.status === 'rejected') {
+      const failed = [
+        bookResult.status === 'rejected' ? 'bookings' : null,
+        propResult.status === 'rejected' ? 'properties' : null,
+      ].filter(Boolean).join(' and ')
+      const reason = bookResult.status === 'rejected' ? bookResult.reason : (propResult as PromiseRejectedResult).reason
+      console.error('Failed to load bookings data:', reason)
+      uiStore.addNotification('error', 'Load Error', `Failed to load ${failed}. Please refresh.`)
     }
   })
 </script>
