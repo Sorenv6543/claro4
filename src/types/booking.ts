@@ -22,7 +22,6 @@ export type BookingStatus = 'pending' | 'scheduled' | 'in_progress' | 'completed
  */
 
 export interface Booking {
-  start_date: string | number | Date
   id: string
   property_id: string
   owner_id: string

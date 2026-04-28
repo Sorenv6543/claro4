@@ -357,7 +357,7 @@
   const propertyCount = computed(() => allProperties.value.length)
   const activePropertyCount = computed(() => allActiveProperties.value.length)
   const bookingCount = computed(() => allBookings.value.length)
-  const upcomingCleanings = computed(() => allBookings.value.filter(b => new Date(b.start_date) > new Date()))
+  const upcomingCleanings = computed(() => allBookings.value.filter(b => new Date(b.checkin_date) > new Date()))
   const upcomingCount = computed(() => upcomingCleanings.value.length)
 
   function handleEditProfile () {

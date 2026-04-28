@@ -202,10 +202,6 @@
     return p ? formatPropertyAddress(p, 'short') : 'this property'
   })
 
-  function _handleCreateBooking (): void {
-    uiStore.openModal('eventModal', 'create')
-  }
-
   function handleEditBooking (id: string): void {
     const booking = myBookings.value.find(b => b.id === id)
     if (booking) uiStore.openModal('eventModal', 'edit', { booking: booking as unknown as ModalData })

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import type { BookingFormData } from '@/types'
+  import type { Booking, BookingFormData } from '@/types'
   import { computed } from 'vue'
   import { useDisplay } from 'vuetify'
   import BookingForm from '@/components/dumb/shared/BookingForm.vue'
@@ -51,9 +51,9 @@
 
 <template>
   <BookingForm
-    :booking="eventModalMode === 'edit' ? eventModalData : undefined"
+    :booking="eventModalMode === 'edit' ? (eventModalData as Booking | undefined) : undefined"
     :fullscreen="mobile"
-    :initial-data="eventModalMode === 'create' ? eventModalData : undefined"
+    :initial-data="eventModalMode === 'create' ? (eventModalData ?? undefined) : undefined"
     :mode="eventModalMode"
     :open="eventModalOpen"
     :properties="myProperties"
