@@ -471,7 +471,6 @@
   border-radius: var(--claro-radius-sm);
   flex-shrink: 0;
   min-width: 160px;
-  box-shadow: var(--claro-shadow-sm);
 }
 
 .event-pill-time {

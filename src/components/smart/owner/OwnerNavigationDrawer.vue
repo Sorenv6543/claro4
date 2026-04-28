@@ -225,7 +225,7 @@
 </style>
 
 <style scoped>
-/* ── Custom nav — matches v4-a11y handoff ── */
+/* ── Variant B — Ghost → Bold + Scale ── */
 .claro-nav {
   display: flex;
   flex-direction: column;
@@ -234,13 +234,14 @@
 }
 
 .claro-nav-section-label {
-  font-size: 11px;
+  font-size: 10.5px;
   color: var(--claro-fg3);
   text-transform: uppercase;
   letter-spacing: 0.09em;
   font-weight: 700;
   padding: 10px 12px 4px;
   margin-top: 4px;
+  opacity: 0.55;
 }
 
 .claro-nav-section-label:first-child {
@@ -254,48 +255,77 @@
   padding: 0 12px;
   min-height: 44px;
   border-radius: 6px;
-  color: var(--claro-fg2);
   font-size: 13.5px;
-  font-weight: 500;
   cursor: pointer;
   text-decoration: none;
-  transition: background var(--claro-dur-base) var(--claro-ease), color var(--claro-dur-base) var(--claro-ease);
   outline: none;
   font-family: var(--claro-font-family);
+  transition: background 180ms ease;
 }
 
 .claro-nav-item:hover {
   background: rgba(46, 38, 61, 0.05);
-  color: var(--claro-fg1);
 }
 
 .claro-nav-item:focus-visible {
-  box-shadow: 0 0 0 2px var(--claro-primary);
+  outline: 2px solid var(--claro-primary);
+  outline-offset: -2px;
 }
 
+/* Purple tint background on active — preserves current color styling */
 .claro-nav-item--active {
   background: var(--claro-primary-tint, rgba(115, 103, 240, 0.12));
-  color: var(--claro-primary-dark);
-  font-weight: 600;
 }
 
+/* ── Icon: Ghost at rest → fills purple on active ── */
 .claro-nav-icon {
   flex-shrink: 0;
   width: 22px;
   text-align: center;
-  color: inherit;
+  /* Ghost state */
+  color: var(--claro-fg2);
+  opacity: 0.22;
+  transform: scale(0.85);
+  /* Spring transition for the scale pop, ease for opacity/color */
+  transition:
+    transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity   260ms ease,
+    color     200ms ease;
 }
 
+.claro-nav-item:hover .claro-nav-icon {
+  opacity: 0.6;
+  transform: scale(0.95);
+}
+
+/* Active: filled purple icon, scale overshoot, full opacity */
 .claro-nav-item--active .claro-nav-icon {
   color: var(--claro-primary);
+  opacity: 1;
+  transform: scale(1.15);
 }
 
+/* ── Label: ghost at rest → bold + full opacity on active ── */
 .claro-nav-label {
   flex: 1;
   min-width: 0;
+  color: var(--claro-fg2);
+  opacity: 0.32;
+  font-weight: 400;
+  transition: opacity 200ms ease;
 }
 
-/* Badge (e.g. property count) */
+.claro-nav-item:hover .claro-nav-label {
+  opacity: 0.7;
+}
+
+.claro-nav-item--active .claro-nav-label {
+  color: var(--claro-primary-dark);
+  opacity: 1;
+  font-weight: 600;
+}
+
+/* ── Badge ── */
 .claro-nav-badge {
   margin-left: auto;
   font-size: 11px;
@@ -306,6 +336,13 @@
   font-variant-numeric: tabular-nums;
   background: rgba(46, 38, 61, 0.08);
   color: var(--claro-fg3);
+  opacity: 0.6;
+  transition: opacity 200ms ease;
+}
+
+.claro-nav-item:hover .claro-nav-badge,
+.claro-nav-item--active .claro-nav-badge {
+  opacity: 1;
 }
 
 .claro-nav-badge--active {
