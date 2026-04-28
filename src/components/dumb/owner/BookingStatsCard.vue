@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <v-card class="bsc">
+  <v-card class="bsc" elevation="3" hover>
     <div
       class="bsc-avatar"
       :style="{ background: `color-mix(in srgb, ${iconColor ?? 'var(--claro-primary)'} 12.5%, transparent)` }"

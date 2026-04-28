@@ -23,28 +23,7 @@
                 {{ user.role }}
               </v-chip>
 
-              <!-- Stats Row -->
-              <div class="d-flex justify-center ga-4 mt-5">
-                <div class="profile-stat">
-                  <v-avatar color="primary" rounded size="38" variant="tonal">
-                    <v-icon size="22">mdi-home-group</v-icon>
-                  </v-avatar>
-                  <div class="mt-1">
-                    <span class="text-h6 font-weight-bold">{{ propertyCount }}</span>
-                    <div class="text-caption text-medium-emphasis">Properties</div>
-                  </div>
-                </div>
 
-                <div class="profile-stat">
-                  <v-avatar color="success" rounded size="38" variant="tonal">
-                    <v-icon size="22">mdi-calendar-check</v-icon>
-                  </v-avatar>
-                  <div class="mt-1">
-                    <span class="text-h6 font-weight-bold">{{ bookingCount }}</span>
-                    <div class="text-caption text-medium-emphasis">Bookings</div>
-                  </div>
-                </div>
-              </div>
             </v-card-text>
 
             <v-divider />
@@ -338,10 +317,11 @@
 
 <script setup lang="ts">
   import { computed, ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
-  import { useAuthStore } from '@/stores/auth'
+import { useRouter } from 'vue-router'
+
+  import { useAdminBookings } from '@/composables/admin/useAdminBookings'
+import { useAdminProperties } from '@/composables/admin/useAdminProperties'
+import { useAuthStore } from '@/stores/auth'
 
   defineOptions({
     name: 'OwnerProfileComponent',
@@ -349,16 +329,17 @@
 
   const router = useRouter()
   const authStore = useAuthStore()
-  const { myProperties, myActiveProperties } = useOwnerProperties()
-  const { myBookings, myUpcomingCleanings } = useOwnerBookings()
+  const { allProperties, allActiveProperties } = useAdminProperties()
+  const { allBookings } = useAdminBookings()
 
   const user = computed(() => authStore.user)
   const activeTab = ref('overview')
 
-  const propertyCount = computed(() => myProperties.value.length)
-  const activePropertyCount = computed(() => myActiveProperties.value.length)
-  const bookingCount = computed(() => myBookings.value.length)
-  const upcomingCount = computed(() => myUpcomingCleanings.value.length)
+  const propertyCount = computed(() => allProperties.value.length)
+  const activePropertyCount = computed(() => allActiveProperties.value.length)
+  const bookingCount = computed(() => allBookings.value.length)
+  const upcomingCleanings = computed(() => allBookings.value.filter(b => new Date(b.start_date) > new Date()))
+  const upcomingCount = computed(() => upcomingCleanings.value.length)
 
   function handleEditProfile () {
     // TODO: Implement profile editing

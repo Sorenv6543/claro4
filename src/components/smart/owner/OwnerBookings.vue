@@ -2,22 +2,17 @@
   <div class="owner-bookings-page">
     <v-container class="pt-0">
 
-      <!-- Uniform page header -->
-      <OwnerPageHeader
-        :badge="filteredItems.length"
+      <!-- Hero banner replaces OwnerPageHeader -->
+      <OwnerWelcomeBanner
+        class="mb-6"
+        page-title="My Bookings"
         subtitle="View and manage your upcoming and past bookings"
-        title="My Bookings"
-      >
-        <template #actions>
-          <v-btn
-            aria-label="Add booking"
-            color="primary"
-            icon="mdi-plus"
-            size="small"
-            @click="handleCreateBooking"
-          />
-        </template>
-      </OwnerPageHeader>
+        :stats="[
+          { icon: 'mdi-calendar-check', label: 'Total',     value: myBookings.length },
+          { icon: 'mdi-calendar-week',  label: 'This Week', value: weekCheckinCount  },
+          { icon: 'mdi-alert-outline',  label: 'Unassigned', value: unassignedCount  },
+        ]"
+      />
 
       <!-- Segment tabs + search row -->
       <div class="bookings-toolbar">
@@ -87,7 +82,7 @@
   import { computed, onMounted, ref } from 'vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import OwnerBookingList from '@/components/dumb/owner/OwnerBookingList.vue'
-  import OwnerPageHeader from '@/components/dumb/shared/OwnerPageHeader.vue'
+  import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
   import type { BookingListItem } from '@/components/dumb/owner/OwnerBookingList.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
@@ -127,7 +122,21 @@
     })),
   )
 
-  const todayStr = new Date().toISOString().split('T')[0]
+  const todayStr  = new Date().toISOString().split('T')[0]
+  const weekAhead = (() => { const d = new Date(); d.setDate(d.getDate() + 7); return d.toISOString().split('T')[0] })()
+
+  const weekCheckinCount = computed(() =>
+    myBookings.value.filter(b =>
+      b.checkin_date >= todayStr && b.checkin_date <= weekAhead
+      && b.status !== 'cancelled' && b.booking_type !== 'turn',
+    ).length,
+  )
+
+  const unassignedCount = computed(() =>
+    myBookings.value.filter(b =>
+      !b.assigned_cleaner_id && b.status !== 'cancelled' && b.status !== 'completed',
+    ).length,
+  )
 
   const filteredItems = computed((): BookingListItem[] => {
     let bookings = myBookings.value.filter(b => b.status !== 'cancelled')

@@ -1,8 +1,9 @@
 <template>
   <v-dialog
     v-model="isOpen"
-    max-height="90vh"
-    max-width="700px"
+    :fullscreen="props.fullscreen"
+    :max-height="props.fullscreen ? undefined : '90vh'"
+    :max-width="props.fullscreen ? undefined : '700px'"
     persistent
     scrollable
     @keydown.esc="handleClose"
@@ -374,6 +375,7 @@
     booking?: Booking
     initialData?: Partial<BookingFormData>
     properties?: Property[]
+    fullscreen?: boolean
   }
 
   interface Emits {

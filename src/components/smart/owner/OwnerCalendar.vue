@@ -2,7 +2,7 @@
   <div class="owner-calendar-container">
     <!-- Owner Calendar: Shows only owner's bookings across their properties -->
     <FullCalendar
-      ref="calendarRef"
+      ref="OwnercalendarRef"
       :bookings="props.bookings"
       class="owner-calendar"
       :loading="props.loading"

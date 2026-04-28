@@ -1,7 +1,8 @@
 <!--
-  Aurora hero card — gradient version restored per design handoff
-  (components-hero-card-v3.html, card-1 Aurora variant).
-  Radii rule: 2px on surfaces — override applied via .owner-hero border-radius.
+  Aurora hero card — doubles as a generic page header for all non-calendar owner pages.
+  Mode A (Overview): pass userName → "Welcome back, {userName}" heading
+  Mode B (Other pages): pass pageTitle → shows as main heading
+  Stats are passed as an array for the right-side icon boxes.
 -->
 <template>
   <div class="owner-hero card-aurora">
@@ -31,13 +32,13 @@
       </g>
     </svg>
 
-    <!-- Left: greeting -->
+    <!-- Left: heading + subtitle + mobile pills -->
     <div class="hero-left">
-      <h2 class="hero-h">Welcome back, {{ userName }}</h2>
-      <p class="hero-sub">Here's what's happening with your properties today.</p>
+      <h2 class="hero-h">{{ heading }}</h2>
+      <p class="hero-sub">{{ resolvedSubtitle }}</p>
 
-      <!-- Quick-stat pills on mobile (right-side stats hidden on xs) -->
-      <div class="hero-pills d-flex d-sm-none">
+      <!-- Mobile stat pills (overview only — when legacy count props are passed) -->
+      <div v-if="hasMobilePills" class="hero-pills d-flex d-sm-none">
         <span class="hero-pill">{{ turnsTodayCount }} turns</span>
         <span class="hero-pill">{{ checkoutsTodayCount }} check-outs</span>
         <span class="hero-pill">{{ weeklyOccupancyPct }}% occ.</span>
@@ -45,34 +46,14 @@
     </div>
 
     <!-- Right: stat boxes (desktop) -->
-    <div class="hero-right d-none d-sm-flex">
-      <div class="hero-item">
+    <div v-if="resolvedStats.length" class="hero-right d-none d-sm-flex">
+      <div v-for="stat in resolvedStats" :key="stat.label" class="hero-item">
         <div class="hero-box">
-          <v-icon aria-hidden="true" color="white" icon="mdi-swap-horizontal" size="18" />
+          <v-icon aria-hidden="true" color="white" :icon="stat.icon" size="18" />
         </div>
         <div>
-          <div class="claro-eyebrow hero-lbl">Turns Today</div>
-          <div class="claro-numeric hero-val">{{ turnsTodayCount }}</div>
-        </div>
-      </div>
-
-      <div class="hero-item">
-        <div class="hero-box">
-          <v-icon aria-hidden="true" color="white" icon="mdi-logout" size="18" />
-        </div>
-        <div>
-          <div class="claro-eyebrow hero-lbl">Check-outs</div>
-          <div class="claro-numeric hero-val">{{ checkoutsTodayCount }}</div>
-        </div>
-      </div>
-
-      <div class="hero-item">
-        <div class="hero-box">
-          <v-icon aria-hidden="true" color="white" icon="mdi-home-outline" size="18" />
-        </div>
-        <div>
-          <div class="claro-eyebrow hero-lbl">Occupancy</div>
-          <div class="claro-numeric hero-val">{{ weeklyOccupancyPct }}%</div>
+          <div class="claro-eyebrow hero-lbl">{{ stat.label }}</div>
+          <div class="claro-numeric hero-val">{{ stat.value }}</div>
         </div>
       </div>
     </div>
@@ -80,12 +61,52 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
-  userName: string
-  turnsTodayCount: number
-  checkoutsTodayCount: number
-  weeklyOccupancyPct: number
+import { computed } from 'vue'
+
+interface StatBox {
+  icon: string
+  label: string
+  value: string | number
+}
+
+const props = defineProps<{
+  // Mode A: greeting (overview)
+  userName?: string
+  // Mode B: page title (other pages)
+  pageTitle?: string
+  subtitle?: string
+  // Right-side stat boxes
+  stats?: StatBox[]
+  // Legacy shorthand for overview mobile pills
+  turnsTodayCount?: number
+  checkoutsTodayCount?: number
+  weeklyOccupancyPct?: number
 }>()
+
+const heading = computed(() =>
+  props.pageTitle ?? (props.userName ? `Welcome back, ${props.userName}` : 'Claro'),
+)
+
+const resolvedSubtitle = computed(() =>
+  props.subtitle ?? (props.userName
+    ? "Here's what's happening with your properties today."
+    : undefined),
+)
+
+const resolvedStats = computed((): StatBox[] => {
+  if (props.stats?.length) return props.stats
+  // Legacy fallback: overview passes the 3 count props
+  if (props.turnsTodayCount !== undefined) {
+    return [
+      { icon: 'mdi-swap-horizontal', label: 'Turns Today', value: props.turnsTodayCount },
+      { icon: 'mdi-logout',          label: 'Check-outs',  value: props.checkoutsTodayCount ?? 0 },
+      { icon: 'mdi-home-outline',    label: 'Occupancy',   value: `${props.weeklyOccupancyPct ?? 0}%` },
+    ]
+  }
+  return []
+})
+
+const hasMobilePills = computed(() => props.turnsTodayCount !== undefined)
 </script>
 
 <style scoped>

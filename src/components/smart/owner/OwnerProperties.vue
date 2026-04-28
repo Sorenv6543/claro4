@@ -6,25 +6,17 @@
 <template>
   <div class="owner-properties-page">
     <v-container class="pt-0" fluid>
-      <!-- Uniform page header -->
-      <OwnerPageHeader
-        :badge="myProperties.length"
-        subtitle="Manage your rental properties and settings"
-        title="My Properties"
-      >
-        <template #actions>
-          <v-btn
-            aria-label="Add property"
-            color="primary"
-            :icon="mobile ? 'mdi-plus' : undefined"
-            :prepend-icon="mobile ? undefined : 'mdi-plus'"
-            size="small"
-            @click="handleCreateProperty"
-          >
-            <template v-if="!mobile">Add Property</template>
-          </v-btn>
-        </template>
-      </OwnerPageHeader>
+      <!-- Hero banner replaces OwnerPageHeader -->
+      <OwnerWelcomeBanner
+        class="mb-6"
+        page-title="My Properties"
+        subtitle="Manage your rental properties and cleaning operations"
+        :stats="[
+          { icon: 'mdi-home-group',     label: 'Active',    value: myProperties.length  },
+          { icon: 'mdi-swap-horizontal', label: 'Turns Today', value: myTodayTurns.length },
+          { icon: 'mdi-calendar-check', label: 'Total Bookings', value: totalBookingsCount },
+        ]"
+      />
 
       <!-- C3 — Compact Inline Bar -->
       <div class="c3-inline-bar mb-5">
@@ -116,7 +108,7 @@
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   import PropertyList from '@/components/dumb/owner/PropertyList.vue'
-  import OwnerPageHeader from '@/components/dumb/shared/OwnerPageHeader.vue'
+  import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
 
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
@@ -181,6 +173,10 @@
     const d = new Date(`${dateStr}T12:00:00`)
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
   }
+
+  const totalBookingsCount = computed(() =>
+    myBookings.value.filter(b => b.status !== 'cancelled').length,
+  )
 
   const listItems = computed<PropertyListItem[]>(() => {
     const todayStr = new Date().toISOString().split('T')[0]

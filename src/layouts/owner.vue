@@ -2,36 +2,36 @@
   OwnerLayout.vue
 
   Main layout for owner-facing pages, including the dashboard/schedule and profile.
-  Contains the app bar with navigation, prev/next calendar controls (desktop only on
-  the schedule page), and a sidebar for page navigation. The Range/Event view toggle
-  lives inside HomeOwner.vue; on mobile the prev/next/month label moves into a
-  floating CalendarNavPill rendered by HomeOwner.vue.
+  Contains the app bar with the ClaroWordmark, a tiles toggle button that opens/closes
+  the sidebar, prev/next calendar controls (desktop only on the schedule page), and a
+  sidebar for page navigation. The Range/Event view toggle lives inside HomeOwner.vue;
+  on mobile the prev/next/month label moves into a floating CalendarNavPill rendered
+  by HomeOwner.vue.
 -->
 
 <!-- src/layouts/owner.vue -->
 <template>
   <v-app class="owner-layout">
     <v-app-bar
-      color="transparent"
+      color="surface"
       flat
       height="64"
       order="-1"
     >
-      <!-- Brand logo — occupies sidebar-width area on desktop -->
-      <div class="brand-area">
-        <span class="brand-logo text-primary">Claro</span>
-      </div>
+      <!-- Wordmark — Variant A "Hook-back arc" (replaces the old text "Claro" brand) -->
+      <ClaroWordmark class="claro-appbar-wm" />
 
-      <!-- Sidebar toggle — sits at the vertical right edge of the sidebar on desktop -->
-      <v-btn
+      <!-- Tiles toggle — 2×2 square grid in primary purple (replaces hamburger) -->
+      <button
         :aria-label="sidebarOpen ? 'Close sidebar' : 'Open sidebar'"
-        class="sidebar-toggle-btn"
-        icon
-        variant="text"
+        class="claro-toggle"
+        type="button"
         @click="sidebarOpen = !sidebarOpen"
       >
-        <v-icon size="26">{{ sidebarOpen ? 'mdi-menu-open' : 'mdi-menu' }}</v-icon>
-      </v-btn>
+        <span class="claro-tiles">
+          <span /><span /><span /><span />
+        </span>
+      </button>
 
       <!-- Calendar controls — only on schedule page, desktop only (mobile uses bottom pill) -->
       <template v-if="isCalendarPage && !mobile">
@@ -64,58 +64,54 @@
 
       <v-spacer />
 
-      <!-- Right-side nav icons (Materio style) -->
-      <div class="appbar-icons">
-        <!-- Calendar view-mode toggle — only on calendar page, separated from layout icons -->
+      <!-- Right-side actions: star · bell · chevron-down · avatar (per design handoff) -->
+      <div class="claro-actions">
+        <!-- Calendar view-mode toggle — only on calendar page -->
         <template v-if="isCalendarPage">
-          <v-btn
+          <button
             :aria-label="viewMode === 'ranges' ? 'Switch to event view' : 'Switch to range view'"
-            icon
-            variant="text"
+            class="claro-btn"
+            type="button"
             @click="viewMode = viewMode === 'ranges' ? 'events' : 'ranges'"
           >
-            <v-icon size="26">
+            <v-icon size="20">
               {{ viewMode === 'ranges' ? 'mdi-calendar-range' : 'mdi-calendar-check-outline' }}
             </v-icon>
             <v-tooltip activator="parent" content-class="claro-tooltip" location="bottom">
               {{ viewMode === 'ranges' ? 'Switch to event view' : 'Switch to range view' }}
             </v-tooltip>
-          </v-btn>
-          <v-divider class="appbar-icons-divider" vertical />
+          </button>
+          <span class="claro-actions-divider" />
         </template>
 
-        <ThemePicker />
+        <button class="claro-btn" type="button" aria-label="Favorites">
+          <v-icon size="20">mdi-star-outline</v-icon>
+        </button>
 
-        <v-btn aria-label="Favorites" icon variant="text">
-          <v-icon size="26">mdi-star-outline</v-icon>
-        </v-btn>
-
-        <v-btn aria-label="Notifications" icon variant="text">
+        <button class="claro-btn" type="button" aria-label="Notifications">
           <v-badge
             color="error"
             :content="notificationCount"
             dot
             :model-value="notificationCount > 0"
           >
-            <v-icon size="26">mdi-bell-outline</v-icon>
+            <v-icon size="20">mdi-bell-outline</v-icon>
           </v-badge>
-        </v-btn>
+        </button>
 
-        <!-- Avatar / user menu -->
+        <!-- Chevron-down "more options" trigger — opens user menu -->
         <v-menu location="bottom end">
           <template #activator="{ props: menuProps }">
-            <div class="avatar-wrapper ml-1 mr-2" v-bind="menuProps">
-              <v-avatar
-                color="primary"
-                size="36"
-                style="cursor: pointer"
-              >
-                <span class="text-caption font-weight-bold">{{ userInitials }}</span>
-              </v-avatar>
-              <span class="avatar-status" />
-            </div>
+            <button
+              class="claro-chevron-btn"
+              type="button"
+              aria-label="More options"
+              v-bind="menuProps"
+            >
+              <v-icon size="22">mdi-chevron-down</v-icon>
+            </button>
           </template>
-          <v-card min-width="200">
+          <v-card min-width="220">
             <div class="d-flex align-center ga-3 pa-4 pb-2">
               <v-avatar color="primary" size="38">
                 <span class="text-caption font-weight-bold">{{ userInitials }}</span>
@@ -147,6 +143,12 @@
             </v-list>
           </v-card>
         </v-menu>
+
+        <!-- Avatar with online status dot -->
+        <div class="claro-avatar" aria-label="User profile">
+          {{ userInitials }}
+          <span class="claro-status-dot" aria-hidden="true" />
+        </div>
       </div>
     </v-app-bar>
 
@@ -172,6 +174,24 @@
       <router-view v-else />
     </v-main>
 
+    <!-- Global booking modal: active on all non-calendar pages.
+         Calendar page (HomeOwner.vue) manages its own modal with richer handlers. -->
+    <GlobalBookingModal v-if="isReady && !isCalendarPage" />
+
+    <!-- Floating Add Booking pill — not shown on the calendar page (has its own controls) -->
+    <Teleport to="body">
+      <v-btn
+        v-if="isReady && !isCalendarPage"
+        class="fab-add-booking"
+        color="primary"
+        prepend-icon="mdi-plus"
+        rounded="pill"
+        @click="openBookingModal"
+      >
+        Add booking
+      </v-btn>
+    </Teleport>
+
   </v-app>
 </template>
 
@@ -180,10 +200,12 @@
   import { computed, onMounted, provide, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
-  import ThemePicker from '@/components/dumb/shared/ThemePicker.vue'
+  import ClaroWordmark from '@/components/dumb/shared/ClaroWordmark.vue'
   import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
+  import GlobalBookingModal from '@/components/smart/owner/GlobalBookingModal.vue'
   import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
   import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
+  import { useUIStore } from '@/stores/ui'
 
   const { mdAndUp, mobile } = useDisplay()
   const router = useRouter()
@@ -196,9 +218,15 @@
   const notificationCount = ref(0)
   const viewMode = calendarState.viewMode
 
+  const uiStore = useUIStore()
+
   const isReady = ref(false)
   const initError = ref<Error | null>(null)
   provide('appStatus', { isReady, initError })
+
+  function openBookingModal() {
+    uiStore.openModal('eventModal', 'create')
+  }
 
   onMounted(() => {
     initRealtimeSync()
@@ -253,104 +281,166 @@
   background: rgb(var(--v-theme-background));
 }
 
-/* Frosted-glass backdrop so scrolled content doesn't show through the transparent app bar */
+/* ── Appbar shell — matches components-appbar.html handoff ─────────────────── */
 .owner-layout :deep(.v-app-bar) {
-  background: rgba(var(--v-theme-background), 0.72) !important;
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  padding-left: 16px;
-  padding-right: 16px;
+  background: rgb(var(--v-theme-surface)) !important;
+  border-bottom: 1px solid rgba(46, 38, 61, 0.08);
+  padding: 0 20px;
 }
 
-/* Strip button chrome from the hamburger nav icon too */
-.owner-layout :deep(.v-app-bar-nav-icon) {
-  box-shadow: none !important;
-  background: transparent !important;
-}
-
-.owner-layout :deep(.v-app-bar-nav-icon .v-icon) {
-  font-size: 26px;
-}
-
-.brand-area {
+.owner-layout :deep(.v-app-bar .v-toolbar__content) {
   display: flex;
-  padding-left: 0;
+  align-items: center;
+  gap: 14px;
+}
+
+/* Wordmark — height 38px, fixed-width brand area on desktop to align with sidebar */
+.claro-appbar-wm {
+  margin: 0;
 }
 
 @media (min-width: 960px) {
-  .brand-area {
-    width: 188px;
-    padding-left: 24px;
+  .claro-appbar-wm {
+    margin-right: 8px;
   }
 }
 
-.brand-logo {
-  font-size: 27px;
-  font-weight: 500;
-  letter-spacing: 0.2px;
-  line-height: 1;
-}
-
-/* Sidebar toggle button — same look as other app-bar icons, no button chrome */
-.sidebar-toggle-btn {
-  box-shadow: none !important;
-  background: transparent !important;
-  min-width: 36px;
-  padding: 0 6px;
-  color: rgba(var(--v-theme-on-surface), 0.68);
-}
-
-.sidebar-toggle-btn:hover {
-  color: rgba(var(--v-theme-on-surface), 0.9);
-  background: rgba(var(--v-theme-on-surface), 0.06) !important;
-}
-
-/* Materio-style app bar icons — plain icons (no button chrome) */
-.appbar-icons {
+/* ── Tiles toggle (2×2 grid in primary purple) ─────────────────────────────── */
+.claro-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
   display: flex;
   align-items: center;
-  gap: 0;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  color: var(--claro-primary, #7367F0);
+  transition: background 140ms ease;
+  padding: 0;
 }
 
-.appbar-icons :deep(.v-btn) {
-  min-width: 36px;
-  padding: 0 6px;
-  color: rgba(var(--v-theme-on-surface), 0.68);
-  box-shadow: none !important;
-  background: transparent !important;
+.claro-toggle:hover {
+  background: rgba(115, 103, 240, 0.10);
 }
 
-.appbar-icons-divider {
+.claro-toggle:focus-visible {
+  outline: 2px solid var(--claro-primary, #7367F0);
+  outline-offset: 2px;
+}
+
+.claro-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, 8px);
+  grid-template-rows: repeat(2, 8px);
+  gap: 3px;
+}
+
+.claro-tiles > span {
+  display: block;
+  border-radius: 1.5px;
+  background: var(--claro-primary, #7367F0);
+}
+
+/* Diagonal tile dim for visual hierarchy (matches handoff) */
+.claro-tiles > span:nth-child(2),
+.claro-tiles > span:nth-child(3) {
+  opacity: 0.45;
+}
+
+/* ── Right-side actions ────────────────────────────────────────────────────── */
+.claro-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.claro-actions-divider {
+  display: inline-block;
+  width: 1px;
   height: 24px;
   margin: 0 6px;
-  opacity: 0.5;
+  background: rgba(46, 38, 61, 0.12);
 }
 
-.appbar-icons :deep(.v-btn:hover) {
-  color: rgba(var(--v-theme-on-surface), 0.9);
-  background: rgba(var(--v-theme-on-surface), 0.06) !important;
-}
-
-.appbar-icons :deep(.v-btn__overlay),
-.appbar-icons :deep(.v-btn__underlay) {
-  display: none;
-}
-
-/* Avatar with online status dot */
-.avatar-wrapper {
-  position: relative;
-  display: inline-flex;
+.claro-btn,
+.claro-chevron-btn {
+  height: 38px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  border: none;
+  background: transparent;
+  color: rgba(var(--v-theme-on-surface), 0.68);
+  transition: background 140ms ease, color 140ms ease;
+  padding: 0;
 }
 
-.avatar-status {
-  position: absolute;
-  bottom: 1px;
-  right: 1px;
-  width: 10px;
-  height: 10px;
-  background-color: rgb(var(--v-theme-success));
-  border: 2px solid rgb(var(--v-theme-surface));
-  border-radius: 50%;
+.claro-btn {
+  width: 38px;
 }
+
+.claro-chevron-btn {
+  padding: 0 6px 0 4px;
+}
+
+.claro-btn:hover,
+.claro-chevron-btn:hover {
+  background: rgba(46, 38, 61, 0.05);
+  color: rgba(var(--v-theme-on-surface), 0.95);
+}
+
+.claro-btn:focus-visible,
+.claro-chevron-btn:focus-visible {
+  outline: 2px solid var(--claro-primary, #7367F0);
+  outline-offset: 2px;
+}
+
+/* ── Avatar with status dot ────────────────────────────────────────────────── */
+.claro-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--claro-primary, #7367F0);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 12px;
+  margin-left: 4px;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.claro-status-dot {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #28C76F;
+  bottom: 0;
+  right: 0;
+  border: 2px solid #fff;
+}
+
+/* Floating Add Booking pill — fixed bottom-right, above mobile nav */
+.fab-add-booking {
+  position: fixed !important;
+  bottom: 24px;
+  right: 24px;
+  z-index: 200;
+  box-shadow: 0 4px 16px rgba(115, 103, 240, 0.45) !important;
+}
+
+@media (max-width: 599px) {
+  .fab-add-booking {
+    bottom: 72px; /* clear mobile bottom nav */
+  }
+}
+
 </style>

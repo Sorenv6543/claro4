@@ -1,8 +1,14 @@
 <!--
   AdminLayout.vue
 
-  Main layout for admin-facing pages, including the dashboard, user management, and settings.
-  Contains the app bar with navigation and user menu, and a sidebar for page navigation and stats.
+  Main layout for admin-facing pages, including the dashboard, bookings, properties, cleaners,
+  and settings. Contains a frosted-glass app bar with a hamburger sidebar toggle, the Claro
+  brand title, ThemePicker, favorites, notifications bell, and an avatar/user menu. The
+  AdminSidebar shows live stats (active cleanings today, urgent turns, total properties and
+  cleaners) and exposes quick-action handlers (assign cleaner, create booking/property,
+  emergency response, generate reports, manage system). Data is initialized on mount via
+  useAdminUserManagement, useCleanerManagement, and useRealtimeSync; isReady/initError are
+  provided to child pages via provide/inject.
 -->
 <template>
   <v-app class="admin-layout">

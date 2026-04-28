@@ -21,10 +21,9 @@ html, body {
   }
 }
 
-/* ─── Materio Card Base ────────────────────────────────────────────── */
+/* ─── Card Base ─────────────────────────────────────────────────────── */
 .v-card {
   background: var(--claro-card-bg, rgb(var(--v-theme-surface)));
-  box-shadow: var(--claro-shadow-sm) !important;
 }
 
 /* Reusable flat page header — no gradient, heading flush to top, subheading gap via token */

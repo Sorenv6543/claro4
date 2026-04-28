@@ -1,5 +1,8 @@
 <template>
+  <div class="property-view">
   <OwnerPropertyView />
+  </div>
+
 </template>
 
 <script setup lang="ts">
@@ -7,3 +10,8 @@
 
   defineOptions({ name: 'OwnerPropertyViewPage' })
 </script>
+<style scoped>
+.property-view {
+  height: 100vh;
+}
+</style>

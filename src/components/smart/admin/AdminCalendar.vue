@@ -104,7 +104,7 @@
           md="12"
         >
           <FullCalendar
-            ref="calendarRef"
+            ref="AdminCalendarRef"
             :bookings="calendarBookings"
             class="admin-calendar"
             :loading="loading"
