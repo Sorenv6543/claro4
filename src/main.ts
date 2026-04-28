@@ -1,9 +1,9 @@
-import App from '@/App.vue'
-import vuetify from '@/plugins/vuetify'
-import router from '@/router'
 import * as Sentry from '@sentry/vue'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
+import App from '@/App.vue'
+import vuetify from '@/plugins/vuetify'
+import router from '@/router'
 
 import '@/styles/calendar-tokens.css'
 import './styles/main.scss'
@@ -40,7 +40,7 @@ if (sentryDsn) {
     tracesSampleRate: Number(import.meta.env.VITE_SENTRY_TRACES_SAMPLE_RATE ?? 0.1),
     // Profile every session that is already being traced. The decision is made
     // once per page load; 1.0 means all traced sessions get profiling data.
-    profileSessionSampleRate: Number(import.meta.env.VITE_SENTRY_PROFILE_SESSION_SAMPLE_RATE ?? 1.0),
+    profileSessionSampleRate: Number(import.meta.env.VITE_SENTRY_PROFILE_SESSION_SAMPLE_RATE ?? 1),
     // Structured logging pipeline. enableLogs opens a dedicated log
     // envelope endpoint; without it, Sentry.logger.* calls are no-ops.
     enableLogs: true,
@@ -78,8 +78,10 @@ if (sentryDsn) {
     ],
     // Drop debug-level log events in production — they're development
     // diagnostics and would inflate log volume without operational value.
-    beforeSendLog: (log) => {
-      if (log.level === 'debug' && import.meta.env.PROD) return null
+    beforeSendLog: log => {
+      if (log.level === 'debug' && import.meta.env.PROD) {
+        return null
+      }
       return log
     },
     // Session Replay sample rates — see replayIntegration above.

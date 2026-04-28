@@ -24,6 +24,7 @@
           <v-icon class="mr-1" icon="mdi-alert-circle" size="18" />
           Unassigned
         </span>
+
         <v-badge color="error" :content="bookings.length" inline />
       </div>
 
@@ -37,10 +38,12 @@
           <div class="text-body-2 font-weight-medium">
             {{ props.propertyMap.get(booking.property_id)?.name || 'Unknown' }}
           </div>
+
           <div class="text-caption text-medium-emphasis">
             {{ formatTime(booking) }} · {{ booking.booking_type === 'turn' ? 'Turn' : 'Standard' }}
           </div>
         </div>
+
         <v-btn
           append-icon="mdi-chevron-down"
           color="primary"

@@ -5,7 +5,6 @@
   import type { Property } from '@/types/property'
   import type { CleanerTeam } from '@/types/team'
   import { computed, onMounted, ref } from 'vue'
-  import { mapLegacyPropertyColor } from '@/utils/constants'
   import AdminAllClearCard from '@/components/dumb/admin/AdminAllClearCard.vue'
   import AdminMetricsStrip from '@/components/dumb/admin/AdminMetricsStrip.vue'
   import AdminOverviewCleanerAvailability from '@/components/dumb/admin/AdminOverviewCleanerAvailability.vue'
@@ -21,6 +20,7 @@
   import { useTimeAwareMode } from '@/composables/admin/useTimeAwareMode'
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
+  import { mapLegacyPropertyColor } from '@/utils/constants'
 
   const {
     allProperties,
@@ -273,6 +273,7 @@
 <template>
   <v-container class="pa-4" fluid>
     <v-progress-linear v-if="dashboardLoading" class="mb-4" color="primary" indeterminate />
+
     <v-alert
       v-if="dashboardError"
       class="mb-4"
@@ -305,6 +306,7 @@
         <template v-if="activeTimelineBookings.length > 0">
           <template v-for="group in timelineGroups" :key="group.label">
             <AdminTimelineDivider :label="group.label" />
+
             <AdminTimelineCard
               v-for="booking in group.bookings"
               :key="booking.id"

@@ -1,18 +1,18 @@
 <template>
   <div class="admin-calendar">
-  <AdminCalendar />
+    <AdminCalendar />
   </div>
 </template>
 
 <script setup lang="ts">
   import AdminCalendar from '@/components/smart/admin/AdminCalendar.vue'
-defineOptions({
-  name: 'AdminCalendar',
-})
+  defineOptions({
+    name: 'AdminCalendar',
+  })
 </script>
 
-<style scoped>  
+<style scoped>
 .admin-calendar {
   height: 100%;
-} 
+}
 </style>

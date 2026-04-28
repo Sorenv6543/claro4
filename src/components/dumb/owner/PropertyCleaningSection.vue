@@ -16,10 +16,12 @@
       <span class="field-label">Duration</span>
       <div>{{ property.cleaning_duration }} min</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Pricing Tier</span>
       <div>{{ capitalize(property.pricing_tier) }}</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Linens Location</span>
       <div v-if="property.linens_location">{{ property.linens_location }}</div>
@@ -42,6 +44,7 @@
               type="number"
             />
           </v-col>
+
           <v-col cols="12" md="6">
             <v-select
               v-model="form.pricing_tier"
@@ -50,6 +53,7 @@
               :rules="[requiredRule]"
             />
           </v-col>
+
           <v-col cols="12">
             <v-textarea
               v-model="form.linens_location"

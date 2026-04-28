@@ -21,12 +21,15 @@
           <div class="triage-icon triage-icon--urgent">
             <v-icon aria-hidden="true" color="error" size="18">mdi-alert-circle-outline</v-icon>
           </div>
+
           <div class="triage-body">
             <div class="triage-title">Urgent turn · {{ urgentTurns[0].property }}</div>
+
             <div class="triage-sub">
               Guests out {{ urgentTurns[0].checkoutTime }} · new guests in {{ urgentTurns[0].checkinTime }} · same-day turn
             </div>
           </div>
+
           <v-btn color="error" size="small" variant="tonal" @click="uiStore.openModal('eventModal', 'view')">
             View details
           </v-btn>
@@ -36,8 +39,10 @@
           <div class="triage-icon triage-icon--ok">
             <v-icon aria-hidden="true" color="success" size="18">mdi-check</v-icon>
           </div>
+
           <div class="triage-body">
             <div class="triage-title">You're all set</div>
+
             <div class="triage-sub">
               Nothing urgent across your {{ myProperties.length }} properties right now.
             </div>
@@ -53,14 +58,17 @@
           <span class="section-title">Today · {{ todayFullLabel }}</span>
           <span class="section-count">{{ todayEvents.length }} event{{ todayEvents.length !== 1 ? 's' : '' }}</span>
         </div>
+
         <div class="today-strip">
           <div v-for="ev in todayEvents" :key="ev.id" class="event-pill">
             <div class="event-pill-time">{{ ev.time }}</div>
+
             <div class="event-pill-body">
               <div class="event-pill-prop">
                 <div class="prop-dot" :style="{ background: ev.propColor }" />
                 <span>{{ ev.propName }}</span>
               </div>
+
               <v-chip
                 :color="ev.kind === 'checkin' ? 'success' : ev.kind === 'checkout' ? 'error' : 'warning'"
                 density="comfortable"
@@ -100,7 +108,7 @@
             <router-link class="section-action" to="/owner/calendar">View calendar →</router-link>
           </div>
 
-          <div v-if="!upcoming14d.length" class="up-empty">
+          <div v-if="upcoming14d.length === 0" class="up-empty">
             <v-chip size="small" variant="tonal">No upcoming bookings</v-chip>
           </div>
 
@@ -110,13 +118,16 @@
                 <div class="up-date-m">{{ item.month }}</div>
                 <div class="up-date-d">{{ item.day }}</div>
               </div>
+
               <div class="up-info">
                 <div class="up-prop">
                   <div class="prop-dot" :style="{ background: item.propColor }" />
                   {{ item.propName }}
                 </div>
+
                 <div class="up-range">{{ item.range }}</div>
               </div>
+
               <v-chip
                 :color="item.isTurn ? 'warning' : 'primary'"
                 density="comfortable"
@@ -142,6 +153,7 @@
               :value="myProperties.length"
             />
           </v-col>
+
           <v-col cols="6">
             <BookingStatsCard
               icon="mdi-swap-horizontal"
@@ -150,6 +162,7 @@
               :value="turnsTodayCount"
             />
           </v-col>
+
           <v-col cols="6">
             <BookingStatsCard
               icon="mdi-login"
@@ -158,6 +171,7 @@
               :value="weekCheckinCount"
             />
           </v-col>
+
           <v-col cols="6">
             <BookingStatsCard
               icon="mdi-alert-outline"
@@ -173,23 +187,23 @@
 </template>
 
 <script setup lang="ts">
-  import type { Property } from '@/types/property'
-  import { computed, onMounted, ref } from 'vue'
   import type { PropertyListEvent, PropertyListItem } from '@/components/dumb/owner/PropertyList.vue'
+  import type { Property } from '@/types/property'
+  import { useToday } from '@composables/shared/useToday'
+  import { computed, onMounted, ref } from 'vue'
   import BookingStatsCard from '@/components/dumb/owner/BookingStatsCard.vue'
-  import PropertyList from '@/components/dumb/owner/PropertyList.vue'
   import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
+  import PropertyList from '@/components/dumb/owner/PropertyList.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useAuthStore } from '@/stores/auth'
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { mapLegacyPropertyColor } from '@/utils/constants'
-  import { useToday } from '@composables/shared/useToday'
   defineOptions({ name: 'OwnerOverview' })
 
   const authStore = useAuthStore()
-  const uiStore   = useUIStore()
+  const uiStore = useUIStore()
   const { myProperties, fetchMyProperties } = useOwnerProperties()
   const { myBookings, myTodayTurns, fetchMyBookings } = useOwnerBookings()
 
@@ -233,16 +247,16 @@
       if (b.status === 'cancelled') continue
       const p = propertyMap.value.get(b.property_id)
       if (!p) continue
-      const name  = formatPropertyAddress(p, 'short')
+      const name = formatPropertyAddress(p, 'short')
       const color = mapLegacyPropertyColor(p.color)
       if (b.booking_type === 'turn' && b.checkin_date === todayStr.value) {
         events.push({ id: b.id + '-t', propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'turn', guestCount: b.guest_count ?? undefined })
       } else {
         if (b.checkout_date === todayStr.value) events.push({ id: b.id + '-o', propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'checkout', guestCount: b.guest_count ?? undefined })
-        if (b.checkin_date  === todayStr.value) events.push({ id: b.id + '-i', propId: p.id, propName: name, propColor: color, time: b.checkin_time  ?? '15:00', kind: 'checkin',  guestCount: b.guest_count ?? undefined })
+        if (b.checkin_date === todayStr.value) events.push({ id: b.id + '-i', propId: p.id, propName: name, propColor: color, time: b.checkin_time ?? '15:00', kind: 'checkin', guestCount: b.guest_count ?? undefined })
       }
     }
-    return events.sort((a, b) => a.time.localeCompare(b.time))
+    return events.toSorted((a, b) => a.time.localeCompare(b.time))
   })
 
   // ── Urgent turns ──────────────────────────────────────────────────────────────
@@ -260,24 +274,29 @@
   )
 
   // ── Counts ────────────────────────────────────────────────────────────────────
-  const turnsTodayCount   = computed(() => myTodayTurns.value.length)
+  const turnsTodayCount = computed(() => myTodayTurns.value.length)
   const checkoutsTodayCount = computed(() => myBookings.value.filter(b => b.checkout_date === todayStr.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
-  const weekCheckinCount  = computed(() => myBookings.value.filter(b => b.checkin_date >= todayStr.value && b.checkin_date <= weekAhead.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
-  const unassignedCount   = computed(() => myBookings.value.filter(b => !b.assigned_cleaner_id && b.status !== 'cancelled' && b.status !== 'completed').length)
+  const weekCheckinCount = computed(() => myBookings.value.filter(b => b.checkin_date >= todayStr.value && b.checkin_date <= weekAhead.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
+  const unassignedCount = computed(() => myBookings.value.filter(b => !b.assigned_cleaner_id && b.status !== 'cancelled' && b.status !== 'completed').length)
 
   // ── Occupancy ─────────────────────────────────────────────────────────────────
   const occupancyMap = computed(() => {
-    const now  = new Date(); now.setHours(23, 59, 59, 999)
-    const past = new Date(); past.setDate(past.getDate() - 30)
+    const now = new Date()
+    now.setHours(23, 59, 59, 999)
+    const past = new Date()
+    past.setDate(past.getDate() - 30)
     const result = new Map<string, number>()
     for (const p of myProperties.value) {
       const days = new Set<string>()
       for (const b of myBookings.value) {
         if (b.property_id !== p.id || b.status === 'cancelled') continue
         const start = new Date(Math.max(new Date(b.checkin_date).getTime(), past.getTime()))
-        const end   = new Date(Math.min(new Date(b.checkout_date).getTime(), now.getTime()))
+        const end = new Date(Math.min(new Date(b.checkout_date).getTime(), now.getTime()))
         const cur = new Date(start)
-        while (cur <= end) { days.add(cur.toISOString().slice(0, 10)); cur.setDate(cur.getDate() + 1) }
+        while (cur <= end) {
+          days.add(cur.toISOString().slice(0, 10))
+          cur.setDate(cur.getDate() + 1)
+        }
       }
       result.set(p.id, Math.min(Math.round((days.size / 30) * 100), 100))
     }
@@ -285,7 +304,7 @@
   })
 
   const avgOccupancyPct = computed(() => {
-    if (!myProperties.value.length) return 0
+    if (myProperties.value.length === 0) return 0
     const total = [...occupancyMap.value.values()].reduce((a, b) => a + b, 0)
     return Math.round(total / myProperties.value.length)
   })
@@ -299,12 +318,11 @@
       const todayEvts: PropertyListEvent[] = []
       for (const b of bs) {
         if (b.booking_type === 'turn' && b.checkin_date === todayStr.value) {
-          todayEvts.push({ type: 'checkout', time: b.checkout_time ?? '11:00', time24: b.checkout_time ?? '11:00', isUnassigned: !b.assigned_cleaner_id })
-          todayEvts.push({ type: 'checkin',  time: b.checkin_time  ?? '15:00', time24: b.checkin_time  ?? '15:00' })
+          todayEvts.push({ type: 'checkout', time: b.checkout_time ?? '11:00', time24: b.checkout_time ?? '11:00', isUnassigned: !b.assigned_cleaner_id }, { type: 'checkin', time: b.checkin_time ?? '15:00', time24: b.checkin_time ?? '15:00' })
         } else if (b.checkout_date === todayStr.value) {
           todayEvts.push({ type: 'checkout', time: b.checkout_time ?? '11:00', time24: b.checkout_time ?? '11:00', isUnassigned: !b.assigned_cleaner_id })
         } else if (b.checkin_date === todayStr.value) {
-          todayEvts.push({ type: 'checkin',  time: b.checkin_time  ?? '15:00', time24: b.checkin_time  ?? '15:00' })
+          todayEvts.push({ type: 'checkin', time: b.checkin_time ?? '15:00', time24: b.checkin_time ?? '15:00' })
         }
       }
 
@@ -312,20 +330,22 @@
         .filter(b => b.checkin_date >= todayStr.value)
         .toSorted((a, b) => a.checkin_date.localeCompare(b.checkin_date))[0]
 
-      const nextCheckin = nextBook ? {
-        label: nextBook.checkin_date === todayStr.value
-          ? `Today · ${nextBook.checkin_time ?? '15:00'}`
-          : new Date(nextBook.checkin_date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
-        isTurnDay: nextBook.booking_type === 'turn',
-      } : undefined
+      const nextCheckin = nextBook
+        ? {
+          label: nextBook.checkin_date === todayStr.value
+            ? `Today · ${nextBook.checkin_time ?? '15:00'}`
+            : new Date(nextBook.checkin_date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+          isTurnDay: nextBook.booking_type === 'turn',
+        }
+        : undefined
 
       return {
         property: p,
         nextCheckin,
         isTurnToday,
-        todayEvents: todayEvts.length ? todayEvts : undefined,
+        todayEvents: todayEvts.length > 0 ? todayEvts : undefined,
         stats: {
-          turnsYtd:       bs.filter(b => b.booking_type === 'turn').length,
+          turnsYtd: bs.filter(b => b.booking_type === 'turn').length,
           assignmentLabel: nextBook ? 'Next check-in' : 'No upcoming',
         },
       }
@@ -333,7 +353,7 @@
   )
 
   // ── Upcoming 14d ─────────────────────────────────────────────────────────────
-  const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
   const upcoming14d = computed(() => {
     const items = myBookings.value
@@ -345,13 +365,13 @@
         const ci = new Date(b.checkin_date)
         const co = new Date(b.checkout_date)
         return {
-          id:        b.id,
-          propName:  p ? formatPropertyAddress(p, 'short') : 'Unknown',
+          id: b.id,
+          propName: p ? formatPropertyAddress(p, 'short') : 'Unknown',
           propColor: mapLegacyPropertyColor(p?.color),
-          month:     MONTHS[ci.getUTCMonth()].toUpperCase(),
-          day:       ci.getUTCDate(),
-          range:     `${MONTHS[ci.getUTCMonth()]} ${ci.getUTCDate()} – ${MONTHS[co.getUTCMonth()]} ${co.getUTCDate()}`,
-          isTurn:    b.booking_type === 'turn',
+          month: MONTHS[ci.getUTCMonth()].toUpperCase(),
+          day: ci.getUTCDate(),
+          range: `${MONTHS[ci.getUTCMonth()]} ${ci.getUTCDate()} – ${MONTHS[co.getUTCMonth()]} ${co.getUTCDate()}`,
+          isTurn: b.booking_type === 'turn',
         }
       })
     return items

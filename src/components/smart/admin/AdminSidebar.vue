@@ -39,6 +39,7 @@
           title="Cleaners"
           @click="navigateTo('/admin/cleaners')"
         />
+
         <v-list-item
           :active="isActive('/admin/property-owners')"
           color="primary"
@@ -46,6 +47,7 @@
           title="Property Owners"
           @click="navigateTo('/admin/property-owners')"
         />
+
         <v-list-item
           :active="isActive('/admin/users')"
           color="primary"
@@ -61,6 +63,7 @@
     <!-- Business Overview metrics -->
     <div class="px-4 pt-2 pb-1">
       <div class="text-overline text-medium-emphasis px-1 mb-2" style="font-size:0.67rem">Business Overview</div>
+
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
         <v-card variant="outlined">
           <v-card-text class="text-center pa-2">
@@ -68,18 +71,21 @@
             <div class="text-caption text-medium-emphasis">Properties</div>
           </v-card-text>
         </v-card>
+
         <v-card variant="outlined">
           <v-card-text class="text-center pa-2">
             <div class="text-h6 font-weight-bold text-success">{{ activeCleaningsToday }}</div>
             <div class="text-caption text-medium-emphasis">Active</div>
           </v-card-text>
         </v-card>
+
         <v-card variant="outlined">
           <v-card-text class="text-center pa-2">
             <div class="text-h6 font-weight-bold text-warning">{{ urgentBookings.length }}</div>
             <div class="text-caption text-medium-emphasis">Urgent</div>
           </v-card-text>
         </v-card>
+
         <v-card variant="outlined">
           <v-card-text class="text-center pa-2">
             <div class="text-h6 font-weight-bold text-info">{{ totalCleanersCount }}</div>
@@ -92,6 +98,7 @@
     <!-- Urgent Alerts -->
     <template v-if="urgentBookings.length > 0">
       <v-divider class="mx-4 my-1" />
+
       <v-list class="pt-1" density="compact" nav>
         <v-list-subheader class="text-overline">
           Urgent Alerts
@@ -137,21 +144,25 @@
     <!-- Bottom: user profile -->
     <template #append>
       <v-divider />
+
       <div class="pa-3 pb-2">
         <div class="d-flex align-center ga-3 px-1 py-2">
           <v-avatar color="primary" size="30">
             <v-icon color="white" size="18">mdi-shield-account</v-icon>
           </v-avatar>
+
           <div class="overflow-hidden flex-1-1">
             <div class="text-body-2 font-weight-semibold text-truncate">{{ authStore.user?.name || 'Admin' }}</div>
             <div class="text-caption text-medium-emphasis text-truncate">{{ authStore.user?.email || '' }}</div>
           </div>
+
           <v-menu location="bottom end">
             <template #activator="{ props: menuProps }">
               <v-btn v-bind="menuProps" icon size="x-small" variant="text">
                 <v-icon size="16">mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
+
             <v-card>
               <v-list density="compact">
                 <v-list-item prepend-icon="mdi-account" title="Profile" @click="navigateTo('/admin/profile')" />

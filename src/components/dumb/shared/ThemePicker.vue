@@ -13,6 +13,7 @@
           variant="text"
         >
           <v-icon size="26">mdi-white-balance-sunny</v-icon>
+
           <v-tooltip
             activator="parent"
             location="bottom"
@@ -26,12 +27,14 @@
         <v-card-title class="text-subtitle-1 font-weight-bold py-2">
           Select Theme
         </v-card-title>
+
         <v-divider />
 
         <v-card-text class="pt-4">
           <div class="text-subtitle-2 mb-2">
             Light Themes
           </div>
+
           <v-row density="comfortable">
             <v-col
               v-for="themeOption in lightThemes"
@@ -68,6 +71,7 @@
           <div class="text-subtitle-2 mb-2 mt-4">
             Dark Themes
           </div>
+
           <v-row density="comfortable">
             <v-col
               v-for="themeOption in darkThemes"

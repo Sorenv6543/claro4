@@ -8,10 +8,12 @@
             <h1 class="text-h4 font-weight-bold">
               Business Reports
             </h1>
+
             <p class="text-subtitle-1 text-medium-emphasis">
               Analytics and performance metrics across all operations
             </p>
           </v-col>
+
           <v-col cols="auto">
             <v-btn
               color="primary"
@@ -33,12 +35,15 @@
           <v-col cols="12" md="3" sm="6">
             <StatCard color="primary" icon="mdi-currency-usd" label="Total Revenue" :value="metrics.totalRevenue" />
           </v-col>
+
           <v-col cols="12" md="3" sm="6">
             <StatCard color="success" icon="mdi-check-circle" label="Completed Bookings" :value="metrics.completedBookings" />
           </v-col>
+
           <v-col cols="12" md="3" sm="6">
             <StatCard color="info" icon="mdi-star" label="Average Rating" :value="metrics.averageRating" />
           </v-col>
+
           <v-col cols="12" md="3" sm="6">
             <StatCard color="warning" icon="mdi-account-group" label="Active Cleaners" :value="metrics.activeCleaners" />
           </v-col>
@@ -50,9 +55,11 @@
             <DashboardCard icon="mdi-chart-line" title="Business Analytics Dashboard">
               <div class="chart-placeholder">
                 <v-icon color="grey-lighten-2" size="64">mdi-chart-line</v-icon>
+
                 <p class="text-body-2 text-medium-emphasis mt-2">
                   Business analytics charts would be displayed here
                 </p>
+
                 <p class="text-caption text-medium-emphasis">
                   Integration with Chart.js or similar charting library needed
                 </p>
@@ -69,6 +76,7 @@
                 <v-icon color="grey-lighten-1" size="48">mdi-home-search</v-icon>
                 <p class="text-body-2 text-medium-emphasis mt-2">No property data available</p>
               </div>
+
               <div v-else>
                 <div
                   v-for="property in topProperties"
@@ -79,6 +87,7 @@
                     <div class="font-weight-medium">{{ property.name }}</div>
                     <div class="text-caption text-medium-emphasis">{{ property.bookings }} bookings</div>
                   </div>
+
                   <div class="text-success font-weight-bold">${{ property.revenue }}</div>
                 </div>
               </div>
@@ -91,6 +100,7 @@
                 <v-icon color="grey-lighten-1" size="48">mdi-account-search</v-icon>
                 <p class="text-body-2 text-medium-emphasis mt-2">No cleaner data available</p>
               </div>
+
               <div v-else>
                 <div
                   v-for="cleaner in topCleaners"
@@ -101,6 +111,7 @@
                     <div class="font-weight-medium">{{ cleaner.name }}</div>
                     <div class="text-caption text-medium-emphasis">{{ cleaner.completed }} completed</div>
                   </div>
+
                   <div class="text-info font-weight-bold">{{ cleaner.rating }}/5</div>
                 </div>
               </div>

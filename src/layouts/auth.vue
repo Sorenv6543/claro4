@@ -64,6 +64,7 @@
         <div class="text-caption text-medium-emphasis">
           © {{ currentYear }} Property Cleaning Scheduler
         </div>
+
         <div class="text-caption text-medium-emphasis mt-1">
           Streamline your cleaning operations
         </div>

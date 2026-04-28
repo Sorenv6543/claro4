@@ -46,7 +46,6 @@
   import type { Property, PropertyFormData } from '@/types'
   import type { Booking } from '@/types/booking'
   import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-
   import { useDisplay } from 'vuetify'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
@@ -56,11 +55,9 @@
   import { useAuthStore } from '@/stores/auth'
   import { usePropertyStore } from '@/stores/property'
   import { useUIStore } from '@/stores/ui'
-
   // ============================================================================
   // REACTIVE STATE
   // ============================================================================
-
   import { formatPropertyAddress } from '@/types/property'
 
   const uiStore = useUIStore()

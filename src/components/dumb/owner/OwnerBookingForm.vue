@@ -159,6 +159,7 @@
                   variant="tonal"
                 >
                   <p>Your guests are checking out and new guests are checking in on the same day.</p>
+
                   <p class="mb-0">
                     This requires priority same-day cleaning service.
                   </p>

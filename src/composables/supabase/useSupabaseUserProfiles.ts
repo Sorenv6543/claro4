@@ -89,7 +89,9 @@ export function useSupabaseUserProfiles () {
         throw updateError
       }
 
-      if (!data) throw new Error('[useSupabaseUserProfiles] updateProfile: no data returned')
+      if (!data) {
+        throw new Error('[useSupabaseUserProfiles] updateProfile: no data returned')
+      }
 
       const updated = data as User
       userProfileStore.setUserProfile(userId, updated)
@@ -105,7 +107,9 @@ export function useSupabaseUserProfiles () {
   }
 
   async function bulkUpdateRole (userIds: string[], newRole: UserRole): Promise<void> {
-    if (userIds.length === 0) return
+    if (userIds.length === 0) {
+      return
+    }
 
     const now = new Date().toISOString()
     const rollbacks: Array<{ id: string, user: User }> = []
@@ -123,7 +127,9 @@ export function useSupabaseUserProfiles () {
         .from('user_profiles')
         .update({ role: newRole, updated_at: now })
         .in('id', userIds)
-      if (error) throw error
+      if (error) {
+        throw error
+      }
     } catch (error) {
       for (const { id, user } of rollbacks) {
         userProfileStore.setUserProfile(id, user)

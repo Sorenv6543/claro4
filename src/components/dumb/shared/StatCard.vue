@@ -4,6 +4,7 @@
       <div class="stat-card__info">
         <span class="stat-card__value">{{ value }}</span>
         <span class="stat-card__label">{{ label }}</span>
+
         <span
           v-if="trend && trendValue"
           class="stat-card__trend"

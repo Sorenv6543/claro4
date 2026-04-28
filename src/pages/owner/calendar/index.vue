@@ -1,6 +1,7 @@
 <template>
   <div class="calendar-page">
-    <ErrorAlert v-if="error" :message="error" class="ma-4" />
+    <ErrorAlert v-if="error" class="ma-4" :message="error" />
+
     <OwnerCalendar
       :bookings="myBookings"
       :loading="loading"
@@ -10,11 +11,11 @@
 </template>
 
 <script setup lang="ts">
+  import { computed, onMounted } from 'vue'
   import ErrorAlert from '@/components/dumb/shared/ErrorAlert.vue'
-import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue'
-import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
-import { computed, onMounted } from 'vue'
+  import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue'
+  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
 
   defineOptions({ name: 'OwnerCalendarPage' })
 

@@ -5,42 +5,45 @@
 -->
 <template>
   <svg
+    aria-label="Claro"
     class="claro-wordmark"
-    viewBox="0 -24 420 180"
     fill="none"
     role="img"
-    aria-label="Claro"
+    viewBox="0 -24 420 180"
   >
     <title>Claro</title>
+
     <defs>
       <linearGradient
         id="claro-wm-arc"
-        x1="140"
-        y1="56"
-        x2="338"
-        y2="88"
         gradientUnits="userSpaceOnUse"
+        x1="140"
+        x2="338"
+        y1="56"
+        y2="88"
       >
         <stop offset="0%" stop-color="#5A4FE3" stop-opacity="0" />
         <stop offset="65%" stop-color="#5A4FE3" stop-opacity="0.7" />
         <stop offset="100%" stop-color="#5A4FE3" stop-opacity="1" />
       </linearGradient>
     </defs>
+
     <text
+      fill="#5A4FE3"
+      font-family="'Inter',system-ui,sans-serif"
+      font-size="128"
+      font-weight="700"
+      letter-spacing="-3.2"
       x="8"
       y="118"
-      font-family="'Inter',system-ui,sans-serif"
-      font-weight="700"
-      font-size="128"
-      letter-spacing="-3.2"
-      fill="#5A4FE3"
     >Claro</text>
+
     <path
       d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56"
-      stroke="url(#claro-wm-arc)"
-      stroke-width="8"
-      stroke-linecap="round"
       fill="none"
+      stroke="url(#claro-wm-arc)"
+      stroke-linecap="round"
+      stroke-width="8"
     />
   </svg>
 </template>

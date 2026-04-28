@@ -255,7 +255,7 @@ router.beforeEach(authGuard)
 router.afterEach(afterNavigationGuard)
 
 // Reload on stale Vite chunks (dev server restart invalidates dynamic import URLs)
-router.onError((err) => {
+router.onError(err => {
   if (err?.message?.includes('Failed to fetch dynamically imported module')) {
     window.location.reload()
   }

@@ -43,7 +43,7 @@ describe('propertyColor', () => {
   })
   it('returns last color at PROPERTY_COLORS.length - 1', () => {
     expect(propertyColor(PROPERTY_COLORS.length - 1))
-      .toBe(PROPERTY_COLORS[PROPERTY_COLORS.length - 1])
+      .toBe(PROPERTY_COLORS.at(-1))
   })
   it('cycles back to first color at length boundary', () => {
     expect(propertyColor(PROPERTY_COLORS.length)).toBe(PROPERTY_COLORS[0])

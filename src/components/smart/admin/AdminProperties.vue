@@ -54,6 +54,7 @@
               variant="outlined"
             />
           </v-col>
+
           <v-col cols="6" md="2" sm="3">
             <v-select
               v-model="tierFilter"
@@ -65,6 +66,7 @@
               variant="outlined"
             />
           </v-col>
+
           <v-col cols="6" md="3" sm="3">
             <v-select
               v-model="ownerFilter"
@@ -76,6 +78,7 @@
               variant="outlined"
             />
           </v-col>
+
           <v-col cols="3" md="2.5" sm="1.5">
             <v-text-field
               v-model="minDuration"
@@ -87,6 +90,7 @@
               variant="outlined"
             />
           </v-col>
+
           <v-col cols="3" md="2.5" sm="1.5">
             <v-text-field
               v-model="maxDuration"
@@ -108,10 +112,12 @@
             class="property-color-dot"
             :style="{ background: (item.color as string) || '#9E9E9E' }"
           />
+
           <div style="min-width:0">
             <div class="text-body-2 font-weight-medium text-truncate">
               {{ item.propertyName }}
             </div>
+
             <div class="text-caption text-medium-emphasis text-truncate">
               {{ item.fullAddress }}
             </div>
@@ -173,6 +179,7 @@
               />
             </template>
           </v-tooltip>
+
           <v-menu>
             <template #activator="{ props: menuProps }">
               <v-btn
@@ -183,18 +190,22 @@
                 @click.stop
               />
             </template>
+
             <v-list>
               <v-list-item @click="viewBookings(item as unknown as Property)">
                 <v-list-item-title>View Bookings</v-list-item-title>
               </v-list-item>
+
               <v-list-item @click="togglePropertyStatus(item as unknown as Property)">
                 <v-list-item-title>
                   {{ (item as unknown as Property).active ? 'Deactivate' : 'Activate' }}
                 </v-list-item-title>
               </v-list-item>
+
               <v-list-item @click="duplicateProperty(item as unknown as Property)">
                 <v-list-item-title>Duplicate</v-list-item-title>
               </v-list-item>
+
               <v-list-item
                 class="text-error"
                 @click="deleteProperty(item as unknown as Property)"
@@ -216,10 +227,12 @@
         <v-card-title>
           {{ editingProperty ? 'Edit Property' : 'Add New Property' }}
         </v-card-title>
+
         <v-card-text>
           <p class="text-body-2 text-medium-emphasis mb-4">
             Admin property form would be implemented here with owner selection and full property details
           </p>
+
           <div class="text-center py-4">
             <v-icon
               color="grey-lighten-1"
@@ -227,16 +240,20 @@
             >
               mdi-form-select
             </v-icon>
+
             <p class="text-caption text-medium-emphasis mt-2">
               Integration with AdminPropertyForm component needed
             </p>
           </div>
         </v-card-text>
+
         <v-card-actions>
           <v-spacer />
+
           <v-btn @click="closePropertyDialog">
             Cancel
           </v-btn>
+
           <v-btn
             color="primary"
             @click="saveProperty"

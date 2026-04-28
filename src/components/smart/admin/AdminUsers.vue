@@ -7,12 +7,15 @@
           <v-col cols="6" md="3">
             <StatCard color="primary" icon="mdi-account-group" label="Total Users" :value="totalUsers" />
           </v-col>
+
           <v-col cols="6" md="3">
             <StatCard color="success" icon="mdi-shield-account" label="Admins" :value="adminCount" />
           </v-col>
+
           <v-col cols="6" md="3">
             <StatCard color="info" icon="mdi-home-account" label="Property Owners" :value="ownerCount" />
           </v-col>
+
           <v-col cols="6" md="3">
             <StatCard color="warning" icon="mdi-broom" label="Cleaners" :value="cleanerCount" />
           </v-col>
@@ -88,6 +91,7 @@
               variant="outlined"
             />
           </v-col>
+
           <v-col cols="6" md="2" sm="3">
             <v-select
               v-model="statusFilter"
@@ -124,6 +128,7 @@
           >
             {{ item.name }}
           </div>
+
           <div
             class="text-medium-emphasis"
             :class="mobile ? 'text-caption' : 'text-body-2'"
@@ -180,6 +185,7 @@
               />
             </template>
           </v-tooltip>
+
           <v-menu>
             <template #activator="{ props: menuProps }">
               <v-btn
@@ -190,11 +196,14 @@
                 @click.stop
               />
             </template>
+
             <v-list>
               <v-list-item @click="resetPassword(item as unknown as User)">
                 <v-list-item-title>Reset Password</v-list-item-title>
               </v-list-item>
+
               <v-divider />
+
               <v-list-item
                 class="text-error"
                 @click="confirmDeleteUser(item as unknown as User)"

@@ -1,10 +1,10 @@
-import { describe, it, expect } from 'vitest'
 import { propStatus } from '@utils/propertyStatus'
+import { describe, expect, it } from 'vitest'
 
 const TODAY = '2026-04-27'
-const PROP  = 'prop-1'
+const PROP = 'prop-1'
 
-function booking(overrides: Record<string, string>) {
+function booking (overrides: Record<string, string>) {
   return {
     property_id: PROP,
     status: 'confirmed',
@@ -59,8 +59,8 @@ describe('propStatus', () => {
 
   it('turn_today takes priority over checkout_today + checkin_today', () => {
     const turn = booking({ checkin_date: TODAY, booking_type: 'turn', priority: 'high' })
-    const out  = booking({ checkout_date: TODAY })
-    const inn  = booking({ checkin_date: TODAY, checkout_date: '2026-04-30' })
+    const out = booking({ checkout_date: TODAY })
+    const inn = booking({ checkin_date: TODAY, checkout_date: '2026-04-30' })
     expect(propStatus(PROP, [turn, out, inn], TODAY)).toBe('turn_today')
   })
 

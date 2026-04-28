@@ -59,7 +59,7 @@ export const useAuthStore = defineStore('auth', () => {
   // Keep Sentry user identity in sync with auth state.
   // Fires on login, page-reload session restore, and logout — immediate:true
   // handles sessions that already exist when the store is first accessed.
-  watch(user, (u) => {
+  watch(user, u => {
     if (u) {
       Sentry.setUser({ id: u.id, email: u.email, username: u.name, role: u.role })
     } else {

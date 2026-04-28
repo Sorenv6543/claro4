@@ -18,6 +18,7 @@
       <div class="d-flex align-center">
         <span class="alert-title">{{ getAlertTitle() }}</span>
         <v-spacer />
+
         <TurnPriorityBadge
           v-if="showPriorityBadge"
           :animated="animated"
@@ -50,9 +51,11 @@
                 icon="mdi-home"
                 size="small"
               />
+
               <strong>Property:</strong> {{ propertyName || 'Unknown Property' }}
             </div>
           </v-col>
+
           <v-col
             cols="12"
             md="6"
@@ -63,6 +66,7 @@
                 icon="mdi-timer-outline"
                 size="small"
               />
+
               <strong>Time Remaining:</strong>
               <span :class="getTimeRemainingClass()">{{ formatTimeRemaining() }}</span>
             </div>
@@ -80,9 +84,11 @@
                 icon="mdi-logout"
                 size="small"
               />
+
               <strong>Checkout:</strong> {{ formatDateTime(checkoutDate) }}
             </div>
           </v-col>
+
           <v-col
             cols="12"
             md="6"
@@ -93,6 +99,7 @@
                 icon="mdi-login"
                 size="small"
               />
+
               <strong>Check-in:</strong> {{ formatDateTime(checkinDate) }}
             </div>
           </v-col>
@@ -107,6 +114,7 @@
             icon="mdi-clock-fast"
             size="small"
           />
+
           <strong>Cleaning Window:</strong>
           {{ cleaningWindow.duration }} minutes
           ({{ formatTime(cleaningWindow.start) }} - {{ formatTime(cleaningWindow.end) }})
@@ -128,6 +136,7 @@
         >
           View Details
         </v-btn>
+
         <v-btn
           v-if="userRole === 'admin'"
           class="mr-2"
@@ -139,6 +148,7 @@
         >
           Assign Cleaner
         </v-btn>
+
         <v-btn
           color="primary"
           prepend-icon="mdi-calendar-edit"
@@ -162,12 +172,14 @@
           :model-value="getProgressValue()"
           striped
         />
+
         <div class="countdown-text">
           <v-icon
             class="mr-1"
             icon="mdi-timer-sand"
             size="x-small"
           />
+
           <span class="text-caption">{{ getCountdownText() }}</span>
         </div>
       </div>

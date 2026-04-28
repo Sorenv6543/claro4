@@ -428,9 +428,11 @@
       <v-tab value="property">
         Property CRUD
       </v-tab>
+
       <v-tab value="booking">
         Booking CRUD
       </v-tab>
+
       <v-tab value="calendar">
         Calendar Integration
       </v-tab>
@@ -448,10 +450,12 @@
 
         <v-card class="mb-4">
           <v-card-title>Test Controls</v-card-title>
+
           <v-card-text>
             <p v-if="testPropertyId">
               Current Test Property ID: {{ testPropertyId }}
             </p>
+
             <v-btn
               class="mr-2"
               color="primary"
@@ -460,6 +464,7 @@
             >
               Run All Property Tests
             </v-btn>
+
             <v-btn
               class="mr-2"
               color="success"
@@ -468,6 +473,7 @@
             >
               Create
             </v-btn>
+
             <v-btn
               class="mr-2"
               color="info"
@@ -477,6 +483,7 @@
             >
               Read
             </v-btn>
+
             <v-btn
               class="mr-2"
               color="warning"
@@ -486,6 +493,7 @@
             >
               Update
             </v-btn>
+
             <v-btn
               color="error"
               :disabled="!testPropertyId"
@@ -499,45 +507,54 @@
 
         <v-card>
           <v-card-title>Test Results</v-card-title>
+
           <v-card-text>
             <v-list>
               <v-list-item>
                 <v-list-item-title>Create Property</v-list-item-title>
+
                 <v-chip
                   :color="getStatusColor(testResults.property.create.status)"
                 >
                   {{ testResults.property.create.status || 'not run' }}
                 </v-chip>
+
                 <v-list-item-subtitle>{{ testResults.property.create.message }}</v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item>
                 <v-list-item-title>Read Property</v-list-item-title>
+
                 <v-chip
                   :color="getStatusColor(testResults.property.read.status)"
                 >
                   {{ testResults.property.read.status || 'not run' }}
                 </v-chip>
+
                 <v-list-item-subtitle>{{ testResults.property.read.message }}</v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item>
                 <v-list-item-title>Update Property</v-list-item-title>
+
                 <v-chip
                   :color="getStatusColor(testResults.property.update.status)"
                 >
                   {{ testResults.property.update.status || 'not run' }}
                 </v-chip>
+
                 <v-list-item-subtitle>{{ testResults.property.update.message }}</v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item>
                 <v-list-item-title>Delete Property</v-list-item-title>
+
                 <v-chip
                   :color="getStatusColor(testResults.property.delete.status)"
                 >
                   {{ testResults.property.delete.status || 'not run' }}
                 </v-chip>
+
                 <v-list-item-subtitle>{{ testResults.property.delete.message }}</v-list-item-subtitle>
               </v-list-item>
             </v-list>
@@ -553,13 +570,16 @@
 
         <v-card class="mb-4">
           <v-card-title>Test Controls</v-card-title>
+
           <v-card-text>
             <p v-if="testPropertyId">
               Current Test Property ID: {{ testPropertyId }}
             </p>
+
             <p v-if="testBookingId">
               Current Test Booking ID: {{ testBookingId }}
             </p>
+
             <v-btn
               class="mr-2"
               color="primary"
@@ -568,6 +588,7 @@
             >
               Run All Booking Tests
             </v-btn>
+
             <v-btn
               class="mr-2"
               color="success"
@@ -577,6 +598,7 @@
             >
               Create
             </v-btn>
+
             <v-btn
               class="mr-2"
               color="info"
@@ -586,6 +608,7 @@
             >
               Read
             </v-btn>
+
             <v-btn
               class="mr-2"
               color="warning"
@@ -595,6 +618,7 @@
             >
               Update
             </v-btn>
+
             <v-btn
               color="error"
               :disabled="!testBookingId"
@@ -608,45 +632,54 @@
 
         <v-card>
           <v-card-title>Test Results</v-card-title>
+
           <v-card-text>
             <v-list>
               <v-list-item>
                 <v-list-item-title>Create Booking</v-list-item-title>
+
                 <v-chip
                   :color="getStatusColor(testResults.booking.create.status)"
                 >
                   {{ testResults.booking.create.status || 'not run' }}
                 </v-chip>
+
                 <v-list-item-subtitle>{{ testResults.booking.create.message }}</v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item>
                 <v-list-item-title>Read Booking</v-list-item-title>
+
                 <v-chip
                   :color="getStatusColor(testResults.booking.read.status)"
                 >
                   {{ testResults.booking.read.status || 'not run' }}
                 </v-chip>
+
                 <v-list-item-subtitle>{{ testResults.booking.read.message }}</v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item>
                 <v-list-item-title>Update Booking</v-list-item-title>
+
                 <v-chip
                   :color="getStatusColor(testResults.booking.update.status)"
                 >
                   {{ testResults.booking.update.status || 'not run' }}
                 </v-chip>
+
                 <v-list-item-subtitle>{{ testResults.booking.update.message }}</v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item>
                 <v-list-item-title>Delete Booking</v-list-item-title>
+
                 <v-chip
                   :color="getStatusColor(testResults.booking.delete.status)"
                 >
                   {{ testResults.booking.delete.status || 'not run' }}
                 </v-chip>
+
                 <v-list-item-subtitle>{{ testResults.booking.delete.message }}</v-list-item-subtitle>
               </v-list-item>
             </v-list>
@@ -662,9 +695,11 @@
 
         <v-card class="mb-4">
           <v-card-title>Test Controls</v-card-title>
+
           <v-card-text>
             <p>Test Events Count: {{ bookingStore.bookingsArray.length }}</p>
             <p>Turn Bookings Count: {{ bookingStore.turnBookings.length }}</p>
+
             <v-btn
               class="mr-2"
               color="primary"
@@ -672,6 +707,7 @@
             >
               Run All Calendar Tests
             </v-btn>
+
             <v-btn
               class="mr-2"
               color="success"
@@ -685,35 +721,42 @@
 
         <v-card class="mb-4">
           <v-card-title>Test Results</v-card-title>
+
           <v-card-text>
             <v-list>
               <v-list-item>
                 <v-list-item-title>Calendar Event Display</v-list-item-title>
+
                 <v-chip
                   :color="getStatusColor(testResults.calendar.display.status)"
                 >
                   {{ testResults.calendar.display.status || 'not run' }}
                 </v-chip>
+
                 <v-list-item-subtitle>{{ testResults.calendar.display.message }}</v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item>
                 <v-list-item-title>Drag and Drop</v-list-item-title>
+
                 <v-chip
                   :color="getStatusColor(testResults.calendar.dragDrop.status)"
                 >
                   {{ testResults.calendar.dragDrop.status || 'not run' }}
                 </v-chip>
+
                 <v-list-item-subtitle>{{ testResults.calendar.dragDrop.message }}</v-list-item-subtitle>
               </v-list-item>
 
               <v-list-item>
                 <v-list-item-title>Turn Booking Highlighting</v-list-item-title>
+
                 <v-chip
                   :color="getStatusColor(testResults.calendar.turnHighlighting.status)"
                 >
                   {{ testResults.calendar.turnHighlighting.status || 'not run' }}
                 </v-chip>
+
                 <v-list-item-subtitle>{{ testResults.calendar.turnHighlighting.message }}</v-list-item-subtitle>
               </v-list-item>
             </v-list>
@@ -723,6 +766,7 @@
         <!-- Calendar Component Display -->
         <v-card>
           <v-card-title>Calendar View</v-card-title>
+
           <v-card-text style="height: 600px;">
             <FullCalendar
               :bookings="bookingStore.bookingsArray"

@@ -49,9 +49,11 @@
           class="error-details mt-3"
         >
           <v-divider class="mb-2" />
+
           <div class="text-caption">
             <strong>Error Details:</strong>
           </div>
+
           <div class="error-code text-caption text-medium-emphasis">
             {{ errorDetails }}
           </div>
@@ -66,6 +68,7 @@
         <div class="text-caption mb-1">
           <strong>Affected Resources:</strong>
         </div>
+
         <div class="resource-chips">
           <v-chip
             v-for="resource in affectedResources.slice(0, 3)"
@@ -76,6 +79,7 @@
           >
             {{ resource }}
           </v-chip>
+
           <v-chip
             v-if="affectedResources.length > 3"
             class="mr-1 mb-1"
@@ -151,6 +155,7 @@
           icon="mdi-information-outline"
           size="small"
         />
+
         <span class="text-caption">{{ helpText }}</span>
       </div>
     </div>

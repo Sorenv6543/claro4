@@ -1,8 +1,8 @@
-// @vitest-environment node
-import { describe, it, expect, beforeEach, afterEach } from 'vitest'
 import fs from 'node:fs'
-import path from 'node:path'
 import os from 'node:os'
+import path from 'node:path'
+// @vitest-environment node
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { checkOwnerBundleSize } from '../check-bundle-size.js'
 
 describe('checkOwnerBundleSize', () => {
@@ -26,7 +26,7 @@ describe('checkOwnerBundleSize', () => {
   it('fails when owner-app chunk exceeds the limit', () => {
     // Incompressible-ish content: random chars resist gzip
     const content = Buffer.from(
-      Array.from({ length: 600 * 1024 }, () => Math.random().toString(36)[2]).join('')
+      Array.from({ length: 600 * 1024 }, () => Math.random().toString(36)[2]).join(''),
     )
     fs.writeFileSync(path.join(tmpDir, 'owner-app-abc123.js'), content)
     const result = checkOwnerBundleSize(tmpDir, 1)

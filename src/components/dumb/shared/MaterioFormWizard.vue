@@ -17,6 +17,7 @@
               <v-icon v-if="index < modelValue" size="18">mdi-check</v-icon>
               <span v-else class="step-number">{{ String(index + 1).padStart(2, '0') }}</span>
             </div>
+
             <div class="step-text">
               <div class="step-title">{{ step.title }}</div>
               <div class="step-subtitle">{{ step.subtitle }}</div>
@@ -37,6 +38,7 @@
           <h3 class="text-h6 font-weight-medium mb-1">{{ steps[modelValue].title }}</h3>
           <p class="text-body-2 text-medium-emphasis">{{ steps[modelValue].subtitle }}</p>
         </div>
+
         <slot :name="`step-${modelValue}`" />
         <slot :index="modelValue" name="step" :step="steps[modelValue]" />
       </div>
@@ -51,6 +53,7 @@
         >
           Previous
         </v-btn>
+
         <v-btn
           v-if="modelValue < steps.length - 1"
           append-icon="mdi-arrow-right"
@@ -59,6 +62,7 @@
         >
           Next
         </v-btn>
+
         <v-btn
           v-else
           append-icon="mdi-check"

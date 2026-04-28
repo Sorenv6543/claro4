@@ -7,7 +7,6 @@
 <script setup lang="ts">
   import HomeOwner from '@/components/smart/owner/HomeOwner.vue'
 
-
   defineOptions({
     name: 'OwnerDashboard',
   })

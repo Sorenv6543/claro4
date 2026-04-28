@@ -14,6 +14,7 @@
           <th class="text-left">Status</th>
         </tr>
       </thead>
+
       <tbody>
         <tr v-for="(cleaning, index) in cleanings" :key="index">
           <td>
@@ -22,17 +23,21 @@
                 class="color-dot flex-shrink-0"
                 :style="{ background: cleaning.propertyColor }"
               />
+
               <span class="text-body-2">{{ cleaning.property }}</span>
             </div>
           </td>
+
           <td>
             <span class="text-body-2">{{ formatDate(cleaning.nextDate) }}</span>
           </td>
+
           <td>
             <span class="text-body-2" :class="{ 'text-medium-emphasis': cleaning.cleanerName === 'Unassigned' }">
               {{ cleaning.cleanerName }}
             </span>
           </td>
+
           <td>
             <v-chip
               :color="statusColor(cleaning.status)"

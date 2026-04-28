@@ -1,5 +1,5 @@
-import type { Session, User as SupabaseUser } from '@supabase/supabase-js'
 import type { User, UserRole } from '@/types/user'
+import type { Session, User as SupabaseUser } from '@supabase/supabase-js'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 // Helper to create a mock Supabase Session

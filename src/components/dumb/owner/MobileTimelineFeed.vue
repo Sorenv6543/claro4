@@ -1,103 +1,103 @@
 <!-- Mobile day-grouped timeline feed (from screens-mobile-timeline.jsx handoff) -->
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+  import { computed, ref } from 'vue'
 
-export interface MobileEvent {
-  id: string
-  propId: string
-  propName: string
-  propColor: string
-  city: string
-  day: number          // 0 = today, 1 = tomorrow, etc.
-  time: string
-  type: 'out' | 'in' | 'turn'
-  guestName?: string
-  guestCount?: number
-  status: string
-  cleanerName?: string
-  urgent?: boolean
-  cleanFrom?: string
-  cleanTo?: string
-  cleanMins?: number
-  notes?: string
-}
-
-export interface PropChip {
-  id: string
-  name: string
-  city: string
-  color: string
-}
-
-const props = defineProps<{
-  events: MobileEvent[]
-  properties: PropChip[]
-  totalCount?: number
-}>()
-
-const selectedPropId = ref('all')
-const range          = ref(7)
-const expandedId     = ref<string | null>(null)
-
-const RANGES = [
-  { label: '3d', value: 3  },
-  { label: '7d', value: 7  },
-  { label: '14d', value: 14 },
-]
-
-const filtered = computed(() =>
-  props.events
-    .filter(e => selectedPropId.value === 'all' || e.propId === selectedPropId.value)
-    .filter(e => e.day < range.value),
-)
-
-const dayGroups = computed(() => {
-  const map = new Map<number, MobileEvent[]>()
-  for (const e of filtered.value) {
-    const arr = map.get(e.day) ?? []
-    arr.push(e)
-    map.set(e.day, arr)
+  export interface MobileEvent {
+    id: string
+    propId: string
+    propName: string
+    propColor: string
+    city: string
+    day: number // 0 = today, 1 = tomorrow, etc.
+    time: string
+    type: 'out' | 'in' | 'turn'
+    guestName?: string
+    guestCount?: number
+    status: string
+    cleanerName?: string
+    urgent?: boolean
+    cleanFrom?: string
+    cleanTo?: string
+    cleanMins?: number
+    notes?: string
   }
-  return [...map.entries()].sort(([a], [b]) => a - b)
-})
 
-function dayLabel(d: number): string {
-  if (d === 0) return 'Today'
-  if (d === 1) return 'Tomorrow'
-  const date = new Date()
-  date.setDate(date.getDate() + d)
-  return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
-}
-
-const EVENT_COLORS = {
-  out:  'var(--claro-error)',
-  in:   'var(--claro-success)',
-  turn: 'var(--claro-warning)',
-} as const
-
-const EVENT_LABELS = {
-  out:  'Check-out',
-  in:   'Check-in',
-  turn: 'Same-day turn',
-} as const
-
-function statusTone(status: string): 'ok' | 'warn' | 'info' {
-  if (status.toLowerCase().includes('confirmed')) return 'ok'
-  if (status.toLowerCase().includes('pending')) return 'warn'
-  return 'info'
-}
-
-function subtitle(): string {
-  const prop = props.properties.find(p => p.id === selectedPropId.value)
-  if (selectedPropId.value === 'all') {
-    return `${filtered.value.length} events · next ${range.value}d`
+  export interface PropChip {
+    id: string
+    name: string
+    city: string
+    color: string
   }
-  return `${prop?.name ?? ''} · ${filtered.value.length} events`
-}
 
-function toggle(id: string): void {
-  expandedId.value = expandedId.value === id ? null : id
-}
+  const props = defineProps<{
+    events: MobileEvent[]
+    properties: PropChip[]
+    totalCount?: number
+  }>()
+
+  const selectedPropId = ref('all')
+  const range = ref(7)
+  const expandedId = ref<string | null>(null)
+
+  const RANGES = [
+    { label: '3d', value: 3 },
+    { label: '7d', value: 7 },
+    { label: '14d', value: 14 },
+  ]
+
+  const filtered = computed(() =>
+    props.events
+      .filter(e => selectedPropId.value === 'all' || e.propId === selectedPropId.value)
+      .filter(e => e.day < range.value),
+  )
+
+  const dayGroups = computed(() => {
+    const map = new Map<number, MobileEvent[]>()
+    for (const e of filtered.value) {
+      const arr = map.get(e.day) ?? []
+      arr.push(e)
+      map.set(e.day, arr)
+    }
+    return [...map.entries()].toSorted(([a], [b]) => a - b)
+  })
+
+  function dayLabel (d: number): string {
+    if (d === 0) return 'Today'
+    if (d === 1) return 'Tomorrow'
+    const date = new Date()
+    date.setDate(date.getDate() + d)
+    return date.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+  }
+
+  const EVENT_COLORS = {
+    out: 'var(--claro-error)',
+    in: 'var(--claro-success)',
+    turn: 'var(--claro-warning)',
+  } as const
+
+  const EVENT_LABELS = {
+    out: 'Check-out',
+    in: 'Check-in',
+    turn: 'Same-day turn',
+  } as const
+
+  function statusTone (status: string): 'ok' | 'warn' | 'info' {
+    if (status.toLowerCase().includes('confirmed')) return 'ok'
+    if (status.toLowerCase().includes('pending')) return 'warn'
+    return 'info'
+  }
+
+  function subtitle (): string {
+    const prop = props.properties.find(p => p.id === selectedPropId.value)
+    if (selectedPropId.value === 'all') {
+      return `${filtered.value.length} events · next ${range.value}d`
+    }
+    return `${prop?.name ?? ''} · ${filtered.value.length} events`
+  }
+
+  function toggle (id: string): void {
+    expandedId.value = expandedId.value === id ? null : id
+  }
 </script>
 
 <template>
@@ -120,6 +120,7 @@ function toggle(id: string): void {
         @click="selectedPropId = 'all'"
       >
         <div class="mtf-chip-dot" style="background: var(--claro-primary)" />
+
         <div class="mtf-chip-info">
           <span class="mtf-chip-name" :class="{ 'mtf-chip-name--active': selectedPropId === 'all' }">All</span>
           <span class="mtf-chip-city">{{ properties.length }} properties</span>
@@ -135,10 +136,12 @@ function toggle(id: string): void {
         @click="selectedPropId = p.id"
       >
         <div class="mtf-chip-dot" :style="{ background: p.color }" />
+
         <div class="mtf-chip-info">
           <span class="mtf-chip-name" :class="{ 'mtf-chip-name--active': selectedPropId === p.id }">
             {{ p.name }}
           </span>
+
           <span class="mtf-chip-city">{{ p.city }}</span>
         </div>
       </button>
@@ -157,6 +160,7 @@ function toggle(id: string): void {
           {{ r.label }}
         </button>
       </div>
+
       <span class="mtf-filter-label">Filter</span>
     </div>
 
@@ -177,6 +181,7 @@ function toggle(id: string): void {
             <span class="mtf-day-label" :class="{ 'mtf-day-label--today': day === 0 }">
               {{ dayLabel(day) }}
             </span>
+
             <div class="mtf-day-rule" />
             <span class="mtf-day-count">{{ evs.length }} event{{ evs.length === 1 ? '' : 's' }}</span>
           </div>
@@ -190,11 +195,15 @@ function toggle(id: string): void {
             @click="toggle(ev.id)"
           >
             <!-- Left color bars: 4px event color + 3px property color -->
-            <div class="mtf-bar mtf-bar--event" :style="{
-              background: ev.type === 'turn'
-                ? `linear-gradient(180deg, ${EVENT_COLORS.out} 50%, ${EVENT_COLORS.in} 50%)`
-                : EVENT_COLORS[ev.type]
-            }" />
+            <div
+              class="mtf-bar mtf-bar--event"
+              :style="{
+                background: ev.type === 'turn'
+                  ? `linear-gradient(180deg, ${EVENT_COLORS.out} 50%, ${EVENT_COLORS.in} 50%)`
+                  : EVENT_COLORS[ev.type]
+              }"
+            />
+
             <div class="mtf-bar mtf-bar--prop" :style="{ background: ev.propColor }" />
 
             <!-- Card body -->
@@ -204,6 +213,7 @@ function toggle(id: string): void {
                 <span class="mtf-event-type-label" :style="{ color: EVENT_COLORS[ev.type] }">
                   {{ EVENT_LABELS[ev.type] }}
                 </span>
+
                 <span class="mtf-card-dot">·</span>
                 <span class="mtf-event-time">{{ ev.time }}</span>
                 <div class="mtf-card-spacer" />
@@ -212,6 +222,7 @@ function toggle(id: string): void {
 
               <!-- Row 2: property name -->
               <div class="mtf-card-prop">{{ ev.propName }}</div>
+
               <div class="mtf-card-sub">
                 {{ ev.city }}<template v-if="ev.guestCount"> · {{ ev.guestCount }} guests</template>
               </div>
@@ -222,10 +233,12 @@ function toggle(id: string): void {
                   class="mtf-chip-status"
                   :class="`mtf-chip-status--${statusTone(ev.status)}`"
                 >{{ ev.status }}</span>
+
                 <span
                   v-if="ev.cleanerName"
                   class="mtf-chip-status mtf-chip-status--ok"
                 >✓ {{ ev.cleanerName }}</span>
+
                 <span v-else class="mtf-chip-status mtf-chip-status--warn">⚠ No cleaner</span>
               </div>
 
@@ -238,6 +251,7 @@ function toggle(id: string): void {
                       <div class="mtf-clean-win-label">Cleaning window</div>
                       <div class="mtf-clean-win-sub">{{ ev.cleanMins }} min estimated</div>
                     </div>
+
                     <div class="mtf-clean-win-time">{{ ev.cleanFrom }} → {{ ev.cleanTo }}</div>
                   </div>
 
@@ -246,6 +260,7 @@ function toggle(id: string): void {
                     <span class="mtf-meta-label">Guest</span>
                     <span class="mtf-meta-val">{{ ev.guestName }}</span>
                   </div>
+
                   <div v-if="ev.notes" class="mtf-meta-row mtf-meta-row--wrap">
                     <span class="mtf-meta-label">Notes</span>
                     <span class="mtf-meta-val">{{ ev.notes }}</span>

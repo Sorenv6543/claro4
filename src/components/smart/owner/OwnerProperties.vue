@@ -10,12 +10,12 @@
       <OwnerWelcomeBanner
         class="mb-6"
         page-title="My Properties"
-        subtitle="Manage your rental properties and cleaning operations"
         :stats="[
-          { icon: 'mdi-home-group',     label: 'Active',    value: myProperties.length  },
+          { icon: 'mdi-home-group', label: 'Active', value: myProperties.length },
           { icon: 'mdi-swap-horizontal', label: 'Turns Today', value: myTodayTurns.length },
           { icon: 'mdi-calendar-check', label: 'Total Bookings', value: totalBookingsCount },
         ]"
+        subtitle="Manage your rental properties and cleaning operations"
       />
 
       <!-- C3 — Compact Inline Bar -->
@@ -25,19 +25,25 @@
           <span class="c3-value">{{ myProperties.length }}</span>
           <span class="c3-label">Properties</span>
         </div>
+
         <div class="c3-divider" />
+
         <div class="c3-cell">
           <v-icon color="success" size="20">mdi-check-circle</v-icon>
           <span class="c3-value">{{ myActiveProperties.length }}</span>
           <span class="c3-label">Active</span>
         </div>
+
         <div class="c3-divider" />
+
         <div class="c3-cell">
           <v-icon color="info" size="20">mdi-calendar-multiple</v-icon>
           <span class="c3-value">{{ myBookings.length }}</span>
           <span class="c3-label">Bookings</span>
         </div>
+
         <div class="c3-divider" />
+
         <div class="c3-cell">
           <v-icon color="warning" size="20">mdi-swap-horizontal</v-icon>
           <span class="c3-value">{{ myTodayTurns.length }}</span>
@@ -101,15 +107,14 @@
 </template>
 
 <script setup lang="ts">
-  import type { Property, PropertyFormData, PropertyRecord } from '@/types'
   import type { PropertyListEvent, PropertyListItem, PropertyStats, PropertyTimelineEvent } from '@/components/dumb/owner/PropertyList.vue'
+  import type { Property, PropertyFormData, PropertyRecord } from '@/types'
   import { computed, onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
+  import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
+  import PropertyList from '@/components/dumb/owner/PropertyList.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
-  import PropertyList from '@/components/dumb/owner/PropertyList.vue'
-  import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
-
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useAuthStore } from '@/stores/auth'
@@ -160,14 +165,14 @@
 
   // ─── PropertyList data mapping ───────────────────────────────────────────
 
-  function formatTime12h(time24: string): string {
+  function formatTime12h (time24: string): string {
     const [h, m] = time24.split(':').map(Number)
     const ampm = h >= 12 ? 'PM' : 'AM'
     const displayH = h > 12 ? h - 12 : (h === 0 ? 12 : h)
     return `${displayH}:${String(m ?? 0).padStart(2, '0')} ${ampm}`
   }
 
-  function formatEventDate(dateStr: string, todayStr: string): string {
+  function formatEventDate (dateStr: string, todayStr: string): string {
     if (dateStr === todayStr) return 'Today'
     const d = new Date(`${dateStr}T12:00:00`)
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
@@ -187,22 +192,22 @@
 
     return properties.map(property => {
       const propBookings = myBookings.value.filter(b =>
-        b.property_id === property.id &&
-        b.status !== 'cancelled' &&
-        b.status !== 'completed',
+        b.property_id === property.id
+        && b.status !== 'cancelled'
+        && b.status !== 'completed',
       )
 
       // Today's turn (checkout_date or checkin_date is today, booking_type is turn)
       const todayTurn = propBookings.find(b =>
-        b.booking_type === 'turn' &&
-        (b.checkout_date === todayStr || b.checkin_date === todayStr || b.turn_date === todayStr),
+        b.booking_type === 'turn'
+        && (b.checkout_date === todayStr || b.checkin_date === todayStr || b.turn_date === todayStr),
       )
       const isTurnToday = !!todayTurn
 
       // Next upcoming booking by checkin_date
       const nextBooking = propBookings
         .filter(b => b.checkin_date >= todayStr)
-        .sort((a, b) => a.checkin_date.localeCompare(b.checkin_date))[0]
+        .toSorted((a, b) => a.checkin_date.localeCompare(b.checkin_date))[0]
 
       // Next check-in label
       let nextCheckin: PropertyListItem['nextCheckin']
@@ -211,8 +216,8 @@
         const datePart = isToday
           ? 'Today'
           : new Date(`${nextBooking.checkin_date}T12:00:00`).toLocaleDateString('en-US', {
-              weekday: 'short', month: 'short', day: 'numeric',
-            })
+            weekday: 'short', month: 'short', day: 'numeric',
+          })
         nextCheckin = {
           label: `${datePart} · ${formatTime12h(nextBooking.checkin_time.slice(0, 5))}`,
           isTurnDay: isTurnToday,
@@ -262,8 +267,8 @@
       // Stats
       const allPropBookings = myBookings.value.filter(b => b.property_id === property.id)
       const turnsYtd = allPropBookings.filter(b =>
-        b.booking_type === 'turn' &&
-        new Date(`${b.checkout_date}T12:00:00`).getFullYear() === currentYear,
+        b.booking_type === 'turn'
+        && new Date(`${b.checkout_date}T12:00:00`).getFullYear() === currentYear,
       ).length
 
       const relevantBooking = todayTurn ?? nextBooking

@@ -24,12 +24,15 @@
       <v-chip color="info" prepend-icon="mdi-clipboard-text-outline" size="small" variant="tonal">
         {{ totalCleanings }} cleanings {{ label || 'today' }}
       </v-chip>
+
       <v-chip :color="unassignedColor" :prepend-icon="unassignedIcon" size="small" variant="tonal">
         {{ unassignedText }}
       </v-chip>
+
       <v-chip color="warning" prepend-icon="mdi-swap-horizontal" size="small" variant="tonal">
         {{ turnCount }} turns
       </v-chip>
+
       <v-chip color="success" prepend-icon="mdi-account-group-outline" size="small" variant="tonal">
         {{ activeCleaners }} cleaners active
       </v-chip>

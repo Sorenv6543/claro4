@@ -1,11 +1,11 @@
 <script setup lang="ts">
-defineProps<{
-  title: string
-  value: string | number
-  icon: string
-  iconColor?: string
-  subtitle?: string
-}>()
+  defineProps<{
+    title: string
+    value: string | number
+    icon: string
+    iconColor?: string
+    subtitle?: string
+  }>()
 </script>
 
 <template>
@@ -20,6 +20,7 @@ defineProps<{
         size="22"
       />
     </div>
+
     <div class="bsc-info">
       <span class="bsc-value">{{ value }}</span>
       <span class="bsc-label">{{ title }}</span>

@@ -1,17 +1,16 @@
 <template>
   <div class="property-timeline">
-  <OwnerPropertyTimeline />
+    <OwnerPropertyTimeline />
   </div>
 </template>
 
 <script setup lang="ts">
 
-import OwnerPropertyTimeline from '@/components/smart/owner/OwnerPropertyTimeline.vue'
+  import OwnerPropertyTimeline from '@/components/smart/owner/OwnerPropertyTimeline.vue'
 
-
-defineOptions({
-  name: 'OwnerPropertyTimeline',
-})
+  defineOptions({
+    name: 'OwnerPropertyTimeline',
+  })
 
 </script>
 

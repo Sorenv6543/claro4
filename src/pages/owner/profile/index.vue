@@ -1,17 +1,15 @@
 <template>
-    <div class="owner-profile">
-        <OwnerDetailCard />
-    </div>
+  <div class="owner-profile">
+    <OwnerDetailCard />
+  </div>
 </template>
 
 <script setup lang="ts">
-import OwnerDetailCard from '@/components/dumb/owner/OwnerDetailCard.vue';
+  import OwnerDetailCard from '@/components/dumb/owner/OwnerDetailCard.vue'
 
-
-
-defineOptions({
+  defineOptions({
     name: 'OwnerProfile',
-})
+  })
 </script>
 
 <style scoped>

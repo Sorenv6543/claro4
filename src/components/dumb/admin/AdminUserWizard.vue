@@ -24,6 +24,7 @@
               />
             </v-col>
           </v-row>
+
           <v-row>
             <v-col cols="12">
               <v-text-field
@@ -36,6 +37,7 @@
               />
             </v-col>
           </v-row>
+
           <v-row>
             <v-col cols="12">
               <v-select
@@ -65,6 +67,7 @@
               />
             </v-col>
           </v-row>
+
           <v-row>
             <v-col cols="12">
               <v-text-field
@@ -76,6 +79,7 @@
               />
             </v-col>
           </v-row>
+
           <v-row>
             <v-col cols="12">
               <v-textarea
@@ -101,6 +105,7 @@
               <template #prepend>
                 <v-icon class="mr-3" size="20">mdi-email-outline</v-icon>
               </template>
+
               <v-list-item-title class="text-body-2 font-weight-medium">Email</v-list-item-title>
               <v-list-item-subtitle>{{ form.email || '(not provided)' }}</v-list-item-subtitle>
             </v-list-item>
@@ -109,6 +114,7 @@
               <template #prepend>
                 <v-icon class="mr-3" size="20">mdi-account-outline</v-icon>
               </template>
+
               <v-list-item-title class="text-body-2 font-weight-medium">Display Name</v-list-item-title>
               <v-list-item-subtitle>{{ form.displayName || '(not provided)' }}</v-list-item-subtitle>
             </v-list-item>
@@ -117,6 +123,7 @@
               <template #prepend>
                 <v-icon class="mr-3" size="20">mdi-shield-account-outline</v-icon>
               </template>
+
               <v-list-item-title class="text-body-2 font-weight-medium">Role</v-list-item-title>
               <v-list-item-subtitle class="text-capitalize">{{ form.role || '(not selected)' }}</v-list-item-subtitle>
             </v-list-item>
@@ -127,6 +134,7 @@
               <template #prepend>
                 <v-icon class="mr-3" size="20">mdi-phone-outline</v-icon>
               </template>
+
               <v-list-item-title class="text-body-2 font-weight-medium">Phone</v-list-item-title>
               <v-list-item-subtitle>{{ form.phone }}</v-list-item-subtitle>
             </v-list-item>
@@ -135,6 +143,7 @@
               <template #prepend>
                 <v-icon class="mr-3" size="20">mdi-domain</v-icon>
               </template>
+
               <v-list-item-title class="text-body-2 font-weight-medium">Company</v-list-item-title>
               <v-list-item-subtitle>{{ form.company }}</v-list-item-subtitle>
             </v-list-item>
@@ -143,6 +152,7 @@
               <template #prepend>
                 <v-icon class="mr-3" size="20">mdi-note-text-outline</v-icon>
               </template>
+
               <v-list-item-title class="text-body-2 font-weight-medium">Notes</v-list-item-title>
               <v-list-item-subtitle class="text-wrap">{{ form.notes }}</v-list-item-subtitle>
             </v-list-item>

@@ -1,6 +1,6 @@
 <!-- src/components/smart/owner/OwnerSettings.vue -->
 <template>
-  <v-container fluid class="pa-4 pa-md-6">
+  <v-container class="pa-4 pa-md-6" fluid>
     <!-- Loading State -->
     <v-fade-transition mode="out-in">
       <div v-if="!user" key="loading" class="d-flex justify-center align-center" style="min-height: 400px">
@@ -8,309 +8,338 @@
       </div>
 
       <div v-else key="content">
-      <!-- Tabs -->
-      <v-tabs v-model="activeTab" class="mb-6" color="primary">
-        <v-tab value="account">
-          <v-icon size="18" start>mdi-account-outline</v-icon>
-          Account
-        </v-tab>
-        <v-tab value="security">
-          <v-icon size="18" start>mdi-lock-outline</v-icon>
-          Security
-        </v-tab>
-        <v-tab value="notifications">
-          <v-icon size="18" start>mdi-bell-outline</v-icon>
-          Notifications
-        </v-tab>
-      </v-tabs>
+        <!-- Tabs -->
+        <v-tabs v-model="activeTab" class="mb-6" color="primary">
+          <v-tab value="account">
+            <v-icon size="18" start>mdi-account-outline</v-icon>
+            Account
+          </v-tab>
 
-      <v-tabs-window v-model="activeTab">
-        <!-- ===== Account Tab ===== -->
-        <v-tabs-window-item value="account">
-          <v-card class="mb-6">
-            <v-card-text>
-              <!-- Avatar Section -->
-              <div class="d-flex align-center ga-4 mb-6">
-                <v-avatar color="primary" size="80">
-                  <v-icon color="white" size="40">mdi-account</v-icon>
-                </v-avatar>
-                <div>
-                  <div class="d-flex ga-3 mb-2">
-                    <v-btn color="primary" size="small" prepend-icon="mdi-cloud-upload-outline">
-                      Upload New Photo
+          <v-tab value="security">
+            <v-icon size="18" start>mdi-lock-outline</v-icon>
+            Security
+          </v-tab>
+
+          <v-tab value="notifications">
+            <v-icon size="18" start>mdi-bell-outline</v-icon>
+            Notifications
+          </v-tab>
+        </v-tabs>
+
+        <v-tabs-window v-model="activeTab">
+          <!-- ===== Account Tab ===== -->
+          <v-tabs-window-item value="account">
+            <v-card class="mb-6">
+              <v-card-text>
+                <!-- Avatar Section -->
+                <div class="d-flex align-center ga-4 mb-6">
+                  <v-avatar color="primary" size="80">
+                    <v-icon color="white" size="40">mdi-account</v-icon>
+                  </v-avatar>
+
+                  <div>
+                    <div class="d-flex ga-3 mb-2">
+                      <v-btn color="primary" prepend-icon="mdi-cloud-upload-outline" size="small">
+                        Upload New Photo
+                      </v-btn>
+
+                      <v-btn color="error" size="small" variant="outlined">
+                        Reset
+                      </v-btn>
+                    </div>
+
+                    <div class="text-caption text-medium-emphasis">
+                      Allowed JPG, GIF or PNG. Max size of 800K
+                    </div>
+                  </div>
+                </div>
+
+                <v-divider class="mb-6" />
+
+                <!-- Account Form -->
+                <v-form ref="accountFormRef" v-model="accountFormValid" @submit.prevent="saveAccountSettings">
+                  <v-row>
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        v-model="form.name"
+                        label="Full Name"
+                        :rules="[rules.required]"
+                      />
+                    </v-col>
+
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        v-model="form.email"
+                        disabled
+                        hint="Email cannot be changed"
+                        label="E-mail"
+                        persistent-hint
+                      />
+                    </v-col>
+
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        v-model="form.company_name"
+                        label="Company / Organization"
+                      />
+                    </v-col>
+
+                    <v-col cols="12" md="6">
+                      <v-select
+                        v-model="form.language"
+                        :items="languageOptions"
+                        label="Language"
+                      />
+                    </v-col>
+
+                    <v-col cols="12" md="6">
+                      <v-select
+                        v-model="form.timezone"
+                        :items="timezoneOptions"
+                        label="Timezone"
+                      />
+                    </v-col>
+
+                    <v-col cols="12" md="6">
+                      <v-select
+                        v-model="form.theme"
+                        :items="themeOptions"
+                        label="Theme"
+                      />
+                    </v-col>
+                  </v-row>
+
+                  <div class="d-flex ga-3 mt-2">
+                    <v-btn
+                      color="primary"
+                      :disabled="!accountFormValid"
+                      :loading="saving"
+                      type="submit"
+                    >
+                      Save Changes
                     </v-btn>
-                    <v-btn color="error" size="small" variant="outlined">
+
+                    <v-btn variant="outlined" @click="resetAccountForm">
                       Reset
                     </v-btn>
                   </div>
-                  <div class="text-caption text-medium-emphasis">
-                    Allowed JPG, GIF or PNG. Max size of 800K
-                  </div>
-                </div>
-              </div>
+                </v-form>
+              </v-card-text>
+            </v-card>
 
-              <v-divider class="mb-6" />
+            <!-- Deactivate Account -->
+            <v-card>
+              <v-card-text>
+                <h6 class="text-h6 text-error mb-4">Deactivate Account</h6>
 
-              <!-- Account Form -->
-              <v-form ref="accountFormRef" v-model="accountFormValid" @submit.prevent="saveAccountSettings">
-                <v-row>
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      v-model="form.name"
-                      label="Full Name"
-                      :rules="[rules.required]"
-                    />
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      v-model="form.email"
-                      label="E-mail"
+                <v-alert class="mb-4" color="warning" icon="mdi-alert-circle-outline">
+                  Once you deactivate your account, there is no going back. Please be certain.
+                </v-alert>
+
+                <v-btn
+                  color="error"
+                  @click="showDeactivateDialog = true"
+                >
+                  Deactivate Account
+                </v-btn>
+
+                <ConfirmationDialog
+                  confirm-color="error"
+                  confirm-text="Deactivate"
+                  dangerous
+                  message="This action is irreversible. All your data, properties, and bookings will be permanently removed. Are you sure?"
+                  :open="showDeactivateDialog"
+                  title="Deactivate Account"
+                  @cancel="showDeactivateDialog = false"
+                  @close="showDeactivateDialog = false"
+                  @confirm="handleDeactivate"
+                />
+              </v-card-text>
+            </v-card>
+          </v-tabs-window-item>
+
+          <!-- ===== Security Tab ===== -->
+          <v-tabs-window-item value="security">
+            <v-card>
+              <v-card-text>
+                <h6 class="text-h6 mb-4">Change Password</h6>
+
+                <v-alert class="mb-4" density="compact" type="warning" variant="tonal">
+                  Password change is not yet available. This will be enabled in a future update.
+                </v-alert>
+
+                <v-form ref="passwordFormRef" v-model="passwordFormValid" @submit.prevent="savePassword">
+                  <v-row>
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        v-model="passwordForm.newPassword"
+                        :append-inner-icon="showNewPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                        label="New Password"
+                        :rules="[rules.required, rules.minLength, rules.uppercase, rules.hasNumber]"
+                        :type="showNewPassword ? 'text' : 'password'"
+                        @click:append-inner="showNewPassword = !showNewPassword"
+                      />
+                    </v-col>
+
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        v-model="passwordForm.confirm"
+                        :append-inner-icon="showConfirmPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                        label="Confirm New Password"
+                        :rules="[rules.required, rules.passwordMatch]"
+                        :type="showConfirmPassword ? 'text' : 'password'"
+                        @click:append-inner="showConfirmPassword = !showConfirmPassword"
+                      />
+                    </v-col>
+                  </v-row>
+
+                  <h6 class="text-body-2 font-weight-medium mt-2 mb-2">Password Requirements:</h6>
+
+                  <ul class="text-caption text-medium-emphasis ps-4 mb-4">
+                    <li>Minimum 8 characters</li>
+                    <li>At least one uppercase letter</li>
+                    <li>At least one number</li>
+                  </ul>
+
+                  <div class="d-flex ga-3">
+                    <v-btn
+                      color="primary"
                       disabled
-                      hint="Email cannot be changed"
-                      persistent-hint
-                    />
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      v-model="form.company_name"
-                      label="Company / Organization"
-                    />
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <v-select
-                      v-model="form.language"
-                      label="Language"
-                      :items="languageOptions"
-                    />
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <v-select
-                      v-model="form.timezone"
-                      label="Timezone"
-                      :items="timezoneOptions"
-                    />
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <v-select
-                      v-model="form.theme"
-                      label="Theme"
-                      :items="themeOptions"
-                    />
-                  </v-col>
-                </v-row>
+                      type="submit"
+                    >
+                      Change Password
+                    </v-btn>
 
-                <div class="d-flex ga-3 mt-2">
-                  <v-btn
-                    color="primary"
-                    type="submit"
-                    :loading="saving"
-                    :disabled="!accountFormValid"
-                  >
-                    Save Changes
-                  </v-btn>
-                  <v-btn variant="outlined" @click="resetAccountForm">
-                    Reset
-                  </v-btn>
+                    <v-btn disabled variant="outlined">
+                      Reset
+                    </v-btn>
+                  </div>
+                </v-form>
+              </v-card-text>
+            </v-card>
+
+            <!-- Recent Sessions -->
+            <v-card class="mt-6">
+              <v-card-text>
+                <h6 class="text-h6 mb-4">Recent Sessions</h6>
+
+                <div class="d-flex align-center ga-3 mb-3">
+                  <v-avatar color="success" rounded size="38" variant="tonal">
+                    <v-icon size="20">mdi-monitor</v-icon>
+                  </v-avatar>
+
+                  <div class="flex-grow-1">
+                    <div class="text-body-2 font-weight-medium">Current Session</div>
+                    <div class="text-caption text-medium-emphasis">Active now</div>
+                  </div>
+
+                  <v-chip color="success" size="x-small" variant="tonal">Active</v-chip>
                 </div>
-              </v-form>
-            </v-card-text>
-          </v-card>
 
-          <!-- Deactivate Account -->
-          <v-card>
-            <v-card-text>
-              <h6 class="text-h6 text-error mb-4">Deactivate Account</h6>
-              <v-alert class="mb-4" color="warning" icon="mdi-alert-circle-outline">
-                Once you deactivate your account, there is no going back. Please be certain.
-              </v-alert>
-              <v-btn
-                color="error"
-                @click="showDeactivateDialog = true"
-              >
-                Deactivate Account
-              </v-btn>
+                <div v-if="user.last_sign_in_at" class="d-flex align-center ga-3">
+                  <v-avatar color="grey" rounded size="38" variant="tonal">
+                    <v-icon size="20">mdi-monitor</v-icon>
+                  </v-avatar>
 
-              <ConfirmationDialog
-                :open="showDeactivateDialog"
-                title="Deactivate Account"
-                message="This action is irreversible. All your data, properties, and bookings will be permanently removed. Are you sure?"
-                confirm-text="Deactivate"
-                confirm-color="error"
-                dangerous
-                @confirm="handleDeactivate"
-                @close="showDeactivateDialog = false"
-                @cancel="showDeactivateDialog = false"
-              />
-            </v-card-text>
-          </v-card>
-        </v-tabs-window-item>
+                  <div class="flex-grow-1">
+                    <div class="text-body-2 font-weight-medium">Previous Session</div>
+                    <div class="text-caption text-medium-emphasis">{{ formatDateTime(user.last_sign_in_at) }}</div>
+                  </div>
+                </div>
+              </v-card-text>
+            </v-card>
+          </v-tabs-window-item>
 
-        <!-- ===== Security Tab ===== -->
-        <v-tabs-window-item value="security">
-          <v-card>
-            <v-card-text>
-              <h6 class="text-h6 mb-4">Change Password</h6>
-              <v-alert class="mb-4" density="compact" type="warning" variant="tonal">
-                Password change is not yet available. This will be enabled in a future update.
-              </v-alert>
-              <v-form ref="passwordFormRef" v-model="passwordFormValid" @submit.prevent="savePassword">
-                <v-row>
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      v-model="passwordForm.newPassword"
-                      label="New Password"
-                      :type="showNewPassword ? 'text' : 'password'"
-                      :append-inner-icon="showNewPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
-                      :rules="[rules.required, rules.minLength, rules.uppercase, rules.hasNumber]"
-                      @click:append-inner="showNewPassword = !showNewPassword"
-                    />
-                  </v-col>
-                  <v-col cols="12" md="6">
-                    <v-text-field
-                      v-model="passwordForm.confirm"
-                      label="Confirm New Password"
-                      :type="showConfirmPassword ? 'text' : 'password'"
-                      :append-inner-icon="showConfirmPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
-                      :rules="[rules.required, rules.passwordMatch]"
-                      @click:append-inner="showConfirmPassword = !showConfirmPassword"
-                    />
-                  </v-col>
-                </v-row>
+          <!-- ===== Notifications Tab ===== -->
+          <v-tabs-window-item value="notifications">
+            <v-card>
+              <v-card-text>
+                <h6 class="text-h6 mb-4">Notification Preferences</h6>
 
-                <h6 class="text-body-2 font-weight-medium mt-2 mb-2">Password Requirements:</h6>
-                <ul class="text-caption text-medium-emphasis ps-4 mb-4">
-                  <li>Minimum 8 characters</li>
-                  <li>At least one uppercase letter</li>
-                  <li>At least one number</li>
-                </ul>
+                <div class="d-flex align-center justify-space-between mb-4 pa-4 rounded-lg bg-surface-variant">
+                  <div>
+                    <div class="text-body-1 font-weight-medium">Push Notifications</div>
 
-                <div class="d-flex ga-3">
-                  <v-btn
+                    <div class="text-body-2 text-medium-emphasis">
+                      Receive push notifications for booking updates and cleaning status changes
+                    </div>
+                  </div>
+
+                  <v-switch
+                    v-model="notificationsForm.notifications_enabled"
+                    aria-label="Push Notifications"
                     color="primary"
-                    type="submit"
+                    hide-details
+                    inset
+                    @update:model-value="saveNotificationSettings"
+                  />
+                </div>
+
+                <v-divider class="my-4" />
+
+                <h6 class="text-overline text-medium-emphasis mb-3">Email Notifications</h6>
+
+                <v-alert class="mb-4" density="compact" type="info" variant="tonal">
+                  Email notification preferences coming soon.
+                </v-alert>
+
+                <div class="d-flex align-center justify-space-between mb-3">
+                  <div>
+                    <div class="text-body-2 font-weight-medium text-medium-emphasis">Booking Confirmations</div>
+                    <div class="text-caption text-medium-emphasis">Get notified when bookings are confirmed</div>
+                  </div>
+
+                  <v-switch
+                    v-model="notificationsForm.emailBookings"
+                    aria-label="Booking Confirmations"
+                    color="primary"
                     disabled
-                  >
-                    Change Password
-                  </v-btn>
-                  <v-btn variant="outlined" disabled>
-                    Reset
-                  </v-btn>
+                    hide-details
+                    inset
+                  />
                 </div>
-              </v-form>
-            </v-card-text>
-          </v-card>
 
-          <!-- Recent Sessions -->
-          <v-card class="mt-6">
-            <v-card-text>
-              <h6 class="text-h6 mb-4">Recent Sessions</h6>
+                <div class="d-flex align-center justify-space-between mb-3">
+                  <div>
+                    <div class="text-body-2 font-weight-medium text-medium-emphasis">Cleaning Updates</div>
 
-              <div class="d-flex align-center ga-3 mb-3">
-                <v-avatar color="success" rounded size="38" variant="tonal">
-                  <v-icon size="20">mdi-monitor</v-icon>
-                </v-avatar>
-                <div class="flex-grow-1">
-                  <div class="text-body-2 font-weight-medium">Current Session</div>
-                  <div class="text-caption text-medium-emphasis">Active now</div>
-                </div>
-                <v-chip color="success" size="x-small" variant="tonal">Active</v-chip>
-              </div>
-
-              <div v-if="user.last_sign_in_at" class="d-flex align-center ga-3">
-                <v-avatar color="grey" rounded size="38" variant="tonal">
-                  <v-icon size="20">mdi-monitor</v-icon>
-                </v-avatar>
-                <div class="flex-grow-1">
-                  <div class="text-body-2 font-weight-medium">Previous Session</div>
-                  <div class="text-caption text-medium-emphasis">{{ formatDateTime(user.last_sign_in_at) }}</div>
-                </div>
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-tabs-window-item>
-
-        <!-- ===== Notifications Tab ===== -->
-        <v-tabs-window-item value="notifications">
-          <v-card>
-            <v-card-text>
-              <h6 class="text-h6 mb-4">Notification Preferences</h6>
-
-              <div class="d-flex align-center justify-space-between mb-4 pa-4 rounded-lg bg-surface-variant">
-                <div>
-                  <div class="text-body-1 font-weight-medium">Push Notifications</div>
-                  <div class="text-body-2 text-medium-emphasis">
-                    Receive push notifications for booking updates and cleaning status changes
+                    <div class="text-caption text-medium-emphasis">
+                      Receive updates when cleaning tasks are completed
+                    </div>
                   </div>
+
+                  <v-switch
+                    v-model="notificationsForm.emailCleaning"
+                    aria-label="Cleaning Updates"
+                    color="primary"
+                    disabled
+                    hide-details
+                    inset
+                  />
                 </div>
-                <v-switch
-                  v-model="notificationsForm.notifications_enabled"
-                  aria-label="Push Notifications"
-                  color="primary"
-                  hide-details
-                  inset
-                  @update:model-value="saveNotificationSettings"
-                />
-              </div>
 
-              <v-divider class="my-4" />
+                <div class="d-flex align-center justify-space-between">
+                  <div>
+                    <div class="text-body-2 font-weight-medium text-medium-emphasis">Weekly Summary</div>
 
-              <h6 class="text-overline text-medium-emphasis mb-3">Email Notifications</h6>
-              <v-alert class="mb-4" density="compact" type="info" variant="tonal">
-                Email notification preferences coming soon.
-              </v-alert>
-
-              <div class="d-flex align-center justify-space-between mb-3">
-                <div>
-                  <div class="text-body-2 font-weight-medium text-medium-emphasis">Booking Confirmations</div>
-                  <div class="text-caption text-medium-emphasis">Get notified when bookings are confirmed</div>
-                </div>
-                <v-switch
-                  v-model="notificationsForm.emailBookings"
-                  aria-label="Booking Confirmations"
-                  color="primary"
-                  disabled
-                  hide-details
-                  inset
-                />
-              </div>
-
-              <div class="d-flex align-center justify-space-between mb-3">
-                <div>
-                  <div class="text-body-2 font-weight-medium text-medium-emphasis">Cleaning Updates</div>
-                  <div class="text-caption text-medium-emphasis">
-                    Receive updates when cleaning tasks are completed
+                    <div class="text-caption text-medium-emphasis">
+                      Get a weekly summary of your properties and bookings
+                    </div>
                   </div>
-                </div>
-                <v-switch
-                  v-model="notificationsForm.emailCleaning"
-                  aria-label="Cleaning Updates"
-                  color="primary"
-                  disabled
-                  hide-details
-                  inset
-                />
-              </div>
 
-              <div class="d-flex align-center justify-space-between">
-                <div>
-                  <div class="text-body-2 font-weight-medium text-medium-emphasis">Weekly Summary</div>
-                  <div class="text-caption text-medium-emphasis">
-                    Get a weekly summary of your properties and bookings
-                  </div>
+                  <v-switch
+                    v-model="notificationsForm.emailWeekly"
+                    aria-label="Weekly Summary"
+                    color="primary"
+                    disabled
+                    hide-details
+                    inset
+                  />
                 </div>
-                <v-switch
-                  v-model="notificationsForm.emailWeekly"
-                  aria-label="Weekly Summary"
-                  color="primary"
-                  disabled
-                  hide-details
-                  inset
-                />
-              </div>
-            </v-card-text>
-          </v-card>
-        </v-tabs-window-item>
-      </v-tabs-window>
+              </v-card-text>
+            </v-card>
+          </v-tabs-window-item>
+        </v-tabs-window>
       </div>
     </v-fade-transition>
 
@@ -318,8 +347,8 @@
     <v-snackbar
       v-model="showSnackbar"
       :color="snackbarColor"
-      :timeout="4000"
       location="bottom end"
+      :timeout="4000"
     >
       {{ snackbarMessage }}
       <template #actions>
@@ -330,10 +359,10 @@
 </template>
 
 <script setup lang="ts">
+  import type { VForm } from 'vuetify/components'
+  import { computed, reactive, ref, watch } from 'vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import { useAuthStore } from '@/stores/auth'
-  import { computed, reactive, ref, watch } from 'vue'
-  import type { VForm } from 'vuetify/components'
 
   defineOptions({ name: 'OwnerSettings' })
 
@@ -414,7 +443,6 @@
     confirm: '',
   })
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   async function savePassword () {
     // TODO: Implement via supabase.auth.signInWithPassword (verify current session)
     // then supabase.auth.updateUser({ password: passwordForm.newPassword })

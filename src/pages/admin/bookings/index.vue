@@ -1,6 +1,6 @@
 <template>
   <div class="admin-bookings">
-  <AdminBookings />
+    <AdminBookings />
   </div>
 </template>
 
@@ -10,8 +10,8 @@
     name: 'AdminBookings',
   })
 </script>
-<style scoped>  
+<style scoped>
 .admin-bookings {
   height: 100%;
-} 
+}
 </style>

@@ -24,6 +24,7 @@
           <div class="chart-label text-caption text-medium-emphasis">
             {{ item.day }}
           </div>
+
           <div class="chart-bar-track">
             <div
               class="chart-bar"
@@ -33,6 +34,7 @@
               }"
             />
           </div>
+
           <div class="chart-value text-body-2 font-weight-bold">
             {{ item.count }}
           </div>

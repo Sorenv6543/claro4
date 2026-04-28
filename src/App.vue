@@ -4,6 +4,7 @@
     <router-view v-slot="{ Component }">
       <transition mode="out-in" name="page-transition">
         <component :is="Component" v-if="Component" />
+
         <LoadingSpinner
           v-else
           message="Loading..."

@@ -5,6 +5,7 @@
       <v-spacer />
       <slot name="header-actions" />
     </v-card-title>
+
     <v-card-text class="owner-chart__body">
       <div :style="{ height: `${height}px` }">
         <component :is="chartComponent" :data="data" :options="mergedOptions" />

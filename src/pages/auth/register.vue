@@ -66,6 +66,7 @@
               <v-label class="text-subtitle-1 font-weight-medium mb-3">
                 Account Type
               </v-label>
+
               <v-radio-group
                 v-model="selectedRole"
                 class="mt-2"
@@ -82,6 +83,7 @@
                       <div class="text-subtitle-2 font-weight-medium">
                         {{ role.title }}
                       </div>
+
                       <div class="text-body-2 text-medium-emphasis">
                         {{ role.description }}
                       </div>
@@ -215,6 +217,7 @@
             <p class="text-body-2 mb-2">
               Already have an account?
             </p>
+
             <v-btn
               color="primary"
               :disabled="authStore.loading"
@@ -235,11 +238,14 @@
     >
       <v-card>
         <v-card-title>Terms of Service</v-card-title>
+
         <v-card-text>
           <p>This is a demo application. In a real application, this would contain the actual terms of service.</p>
         </v-card-text>
+
         <v-card-actions>
           <v-spacer />
+
           <v-btn @click="showTerms = false">
             Close
           </v-btn>
@@ -254,11 +260,14 @@
     >
       <v-card>
         <v-card-title>Privacy Policy</v-card-title>
+
         <v-card-text>
           <p>This is a demo application. In a real application, this would contain the actual privacy policy.</p>
         </v-card-text>
+
         <v-card-actions>
           <v-spacer />
+
           <v-btn @click="showPrivacy = false">
             Close
           </v-btn>

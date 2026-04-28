@@ -9,16 +9,16 @@
     @update:model-value="emit('update:modelValue', $event)"
   >
     <!-- Navigation section -->
-    <nav class="claro-nav" aria-label="Main navigation">
-      <div class="claro-nav-section-label" aria-hidden="true">Main</div>
+    <nav aria-label="Main navigation" class="claro-nav">
+      <div aria-hidden="true" class="claro-nav-section-label">Main</div>
 
       <component
         :is="item.disabled ? 'span' : 'router-link'"
         v-for="item in navItems"
         :key="item.label"
+        :aria-current="isActive(item.to) ? 'page' : undefined"
         class="claro-nav-item"
         :class="{ 'claro-nav-item--active': isActive(item.to) }"
-        :aria-current="isActive(item.to) ? 'page' : undefined"
         :to="item.disabled ? undefined : item.to"
         @click="item.disabled ? undefined : onNavItemClick()"
       >
@@ -28,13 +28,16 @@
           :icon="isActive(item.to) ? item.filledIcon : item.icon"
           size="20"
         />
+
         <span class="claro-nav-label">{{ item.label }}</span>
+
         <span
           v-if="item.badge"
+          :aria-label="`${item.badge} items`"
           class="claro-nav-badge"
           :class="{ 'claro-nav-badge--active': isActive(item.to) }"
-          :aria-label="`${item.badge} items`"
         >{{ item.badge }}</span>
+
         <v-chip
           v-if="item.soon"
           class="text-uppercase font-weight-bold ml-auto"
@@ -46,15 +49,15 @@
         </v-chip>
       </component>
 
-      <div class="claro-nav-section-label" aria-hidden="true">Account</div>
+      <div aria-hidden="true" class="claro-nav-section-label">Account</div>
 
       <component
         :is="'router-link'"
         v-for="item in accountItems"
         :key="item.label"
+        :aria-current="isActive(item.to) ? 'page' : undefined"
         class="claro-nav-item"
         :class="{ 'claro-nav-item--active': isActive(item.to) }"
-        :aria-current="isActive(item.to) ? 'page' : undefined"
         :to="item.to"
         @click="onNavItemClick()"
       >
@@ -64,6 +67,7 @@
           :icon="isActive(item.to) ? item.filledIcon : item.icon"
           size="20"
         />
+
         <span class="claro-nav-label">{{ item.label }}</span>
       </component>
     </nav>
@@ -71,12 +75,14 @@
     <!-- Bottom: user profile -->
     <template #append>
       <v-divider />
+
       <div class="pa-3 pb-1">
         <!-- User row -->
         <div class="d-flex align-center gap-3 px-1 py-2">
           <v-avatar color="primary" size="30">
             <span class="text-caption font-weight-bold">{{ userInitials }}</span>
           </v-avatar>
+
           <div class="overflow-hidden">
             <div class="text-body-2 font-weight-semibold text-truncate">{{ userName }}</div>
             <div class="text-caption text-medium-emphasis text-truncate">{{ userEmail }}</div>
@@ -84,6 +90,7 @@
         </div>
 
       </div>
+
       <div class="pb-2" />
     </template>
   </v-navigation-drawer>

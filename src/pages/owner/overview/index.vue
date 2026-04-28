@@ -1,16 +1,15 @@
 <template>
   <div class="owner-overview">
-  <OwnerOverview />
+    <OwnerOverview />
   </div>
 </template>
 
 <script setup lang="ts">
-import OwnerOverview from '@/components/smart/owner/OwnerOverview.vue'
+  import OwnerOverview from '@/components/smart/owner/OwnerOverview.vue'
 
-
-defineOptions({
-  name: 'OwnerOverview',
-})
+  defineOptions({
+    name: 'OwnerOverview',
+  })
 </script>
 
 <style scoped>

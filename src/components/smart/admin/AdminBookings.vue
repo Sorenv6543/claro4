@@ -55,6 +55,7 @@
               variant="outlined"
             />
           </v-col>
+
           <v-col cols="6" md="2" sm="3">
             <v-select
               v-model="typeFilter"
@@ -66,6 +67,7 @@
               variant="outlined"
             />
           </v-col>
+
           <v-col cols="12" md="3" sm="6">
             <v-select
               v-model="propertyFilter"
@@ -77,6 +79,7 @@
               variant="outlined"
             />
           </v-col>
+
           <v-col cols="6" md="2.5" sm="3">
             <v-text-field
               v-model="dateFrom"
@@ -87,6 +90,7 @@
               variant="outlined"
             />
           </v-col>
+
           <v-col cols="6" md="2.5" sm="3">
             <v-text-field
               v-model="dateTo"
@@ -106,10 +110,12 @@
             class="property-color-dot"
             :style="{ background: getPropertyColor(item.property_id as string) }"
           />
+
           <div style="min-width:0">
             <div class="text-body-2 font-weight-medium text-truncate">
               {{ item.propertyName }}
             </div>
+
             <div class="text-caption text-medium-emphasis text-truncate">
               {{ item.ownerName }}
             </div>
@@ -121,6 +127,7 @@
       <template #[`item.dates`]="{ item }">
         <div class="text-body-2 text-no-wrap">
           <div>{{ formatDate(item.checkin_date as string) }}</div>
+
           <div class="text-caption text-medium-emphasis">
             &rarr; {{ formatDate(item.checkout_date as string) }}
           </div>
@@ -162,6 +169,7 @@
         >
           {{ item.priority }}
         </v-chip>
+
         <span v-else class="text-caption text-medium-emphasis">&mdash;</span>
       </template>
 
@@ -170,6 +178,7 @@
         <span v-if="item.assigned_cleaner_id" class="text-body-2">
           {{ item.cleanerName }}
         </span>
+
         <span v-else class="text-caption text-medium-emphasis font-italic">Unassigned</span>
       </template>
 
@@ -188,6 +197,7 @@
               />
             </template>
           </v-tooltip>
+
           <v-tooltip location="top" text="Edit">
             <template #activator="{ props: tooltipProps }">
               <v-btn
@@ -199,6 +209,7 @@
               />
             </template>
           </v-tooltip>
+
           <v-tooltip location="top" text="Cancel booking">
             <template #activator="{ props: tooltipProps }">
               <v-btn
@@ -236,6 +247,7 @@
     >
       <v-card>
         <v-card-title>Assign Cleaner</v-card-title>
+
         <v-card-text>
           <v-select
             v-model="selectedCleaner"
@@ -246,11 +258,14 @@
             variant="outlined"
           />
         </v-card-text>
+
         <v-card-actions>
           <v-spacer />
+
           <v-btn @click="closeCleanerDialog">
             Cancel
           </v-btn>
+
           <v-btn
             color="primary"
             @click="confirmCleanerAssignment"

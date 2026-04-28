@@ -17,11 +17,13 @@
       <div v-if="property.access_info">{{ property.access_info }}</div>
       <div v-else class="not-set">Not set</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Alarm Info</span>
       <div v-if="property.alarm_info">{{ property.alarm_info }}</div>
       <div v-else class="not-set">Not set</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Parking Instructions</span>
       <div v-if="property.parking_instructions">{{ property.parking_instructions }}</div>
@@ -39,6 +41,7 @@
               :rows="3"
             />
           </v-col>
+
           <v-col cols="12">
             <v-textarea
               v-model="form.alarm_info"
@@ -46,6 +49,7 @@
               :rows="3"
             />
           </v-col>
+
           <v-col cols="12">
             <v-textarea
               v-model="form.parking_instructions"

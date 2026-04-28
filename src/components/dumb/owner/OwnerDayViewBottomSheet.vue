@@ -14,10 +14,12 @@
             <h3 class="date-title">
               {{ formattedDate }}
             </h3>
+
             <p class="booking-count">
               {{ bookings.length }} booking{{ bookings.length !== 1 ? 's' : '' }}
             </p>
           </div>
+
           <v-btn
             class="close-button"
             icon="mdi-close"
@@ -71,10 +73,12 @@
                     TURN
                   </v-chip>
                 </h4>
+
                 <p class="booking-times">
                   {{ formatBookingTime(booking.checkout_date || '') }} → {{ formatBookingTime(booking.checkin_date || '') }}
                 </p>
               </div>
+
               <div class="priority-indicator">
                 <v-chip
                   :color="getPriorityColor(booking.priority || 'normal')"
@@ -98,8 +102,10 @@
                 >
                   mdi-account-multiple
                 </v-icon>
+
                 <span>{{ booking.guest_count }} guest{{ booking.guest_count !== 1 ? 's' : '' }}</span>
               </div>
+
               <div class="detail-row">
                 <v-icon
                   class="detail-icon"
@@ -107,8 +113,10 @@
                 >
                   mdi-circle-medium
                 </v-icon>
+
                 <span class="status-text">{{ (booking.status || 'pending').replace('_', ' ').toUpperCase() }}</span>
               </div>
+
               <div
                 v-if="booking.notes"
                 class="detail-row notes-row"
@@ -119,6 +127,7 @@
                 >
                   mdi-note-text
                 </v-icon>
+
                 <span class="notes-text">{{ booking.notes }}</span>
               </div>
             </div>
@@ -134,6 +143,7 @@
               >
                 View
               </v-btn>
+
               <v-btn
                 class="action-btn"
                 prepend-icon="mdi-pencil"
@@ -143,6 +153,7 @@
               >
                 Edit
               </v-btn>
+
               <v-btn
                 v-if="booking.status !== 'completed'"
                 class="action-btn"
@@ -174,12 +185,15 @@
             >
               mdi-calendar-blank
             </v-icon>
+
             <h4 class="empty-title">
               No bookings for this day
             </h4>
+
             <p class="empty-subtitle">
               Get started by adding your first booking
             </p>
+
             <v-btn
               class="empty-state-btn"
               color="primary"

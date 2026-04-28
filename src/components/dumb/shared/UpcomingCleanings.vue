@@ -16,7 +16,9 @@
         color="primary"
         :content="bookings.length.toString()"
       />
+
       <v-spacer />
+
       <v-btn
         :icon="expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
         variant="text"
@@ -37,6 +39,7 @@
               <v-expansion-panel-title>
                 Today ({{ todayCleanings.length }})
               </v-expansion-panel-title>
+
               <v-expansion-panel-text>
                 <!-- List of today's cleanings -->
                 <v-list class="cleaning-list">
@@ -58,10 +61,12 @@
                     <v-list-item-title class="font-weight-bold">
                       {{ getPropertyName(booking) }}
                     </v-list-item-title>
+
                     <v-list-item-subtitle>
                       <div class="d-flex flex-column">
                         <span>Checkout: {{ formatTime(booking.checkout_date) }}</span>
                         <span>Checkin: {{ formatTime(booking.checkin_date) }}</span>
+
                         <span
                           v-if="booking.cleaning_window"
                           class="text-caption"
@@ -90,6 +95,7 @@
                           />
                           View
                         </v-btn>
+
                         <v-btn
                           color="success"
                           size="small"
@@ -128,6 +134,7 @@
               <v-expansion-panel-title>
                 Tomorrow ({{ tomorrowCleanings.length }})
               </v-expansion-panel-title>
+
               <v-expansion-panel-text>
                 <!-- List of tomorrow's cleanings -->
                 <v-list class="cleaning-list">
@@ -149,10 +156,12 @@
                     <v-list-item-title class="font-weight-bold">
                       {{ getPropertyName(booking) }}
                     </v-list-item-title>
+
                     <v-list-item-subtitle>
                       <div class="d-flex flex-column">
                         <span>Checkout: {{ formatTime(booking.checkout_date) }}</span>
                         <span>Checkin: {{ formatTime(booking.checkin_date) }}</span>
+
                         <span
                           v-if="booking.cleaning_window"
                           class="text-caption"
@@ -181,6 +190,7 @@
                           />
                           View
                         </v-btn>
+
                         <v-btn
                           color="success"
                           size="small"
@@ -219,6 +229,7 @@
               <v-expansion-panel-title>
                 Upcoming ({{ upcomingCleanings.length }})
               </v-expansion-panel-title>
+
               <v-expansion-panel-text>
                 <!-- List of upcoming cleanings grouped by date -->
                 <template
@@ -228,6 +239,7 @@
                   <div class="date-heading mb-2">
                     {{ formatDate(date) }}
                   </div>
+
                   <v-list class="cleaning-list">
                     <v-list-item
                       v-for="booking in group.slice(0, limit)"
@@ -247,10 +259,12 @@
                       <v-list-item-title class="font-weight-bold">
                         {{ getPropertyName(booking) }}
                       </v-list-item-title>
+
                       <v-list-item-subtitle>
                         <div class="d-flex flex-column">
                           <span>Checkout: {{ formatTime(booking.checkout_date) }}</span>
                           <span>Checkin: {{ formatTime(booking.checkin_date) }}</span>
+
                           <span
                             v-if="booking.cleaning_window"
                             class="text-caption"
@@ -279,6 +293,7 @@
                             />
                             View
                           </v-btn>
+
                           <v-btn
                             color="success"
                             size="small"

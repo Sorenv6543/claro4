@@ -45,6 +45,7 @@
           variant="text"
           @click="calendarState.prev()"
         />
+
         <v-btn
           aria-label="Next period"
           density="comfortable"
@@ -57,6 +58,7 @@
         <span class="text-h6 font-weight-regular ml-3 d-none d-sm-inline">
           {{ formattedMonthYear }}
         </span>
+
         <span class="text-body-1 font-weight-medium ml-2 d-sm-none">
           {{ formattedMonthYearShort }}
         </span>
@@ -77,18 +79,20 @@
             <v-icon size="20">
               {{ viewMode === 'ranges' ? 'mdi-calendar-range' : 'mdi-calendar-check-outline' }}
             </v-icon>
+
             <v-tooltip activator="parent" content-class="claro-tooltip" location="bottom">
               {{ viewMode === 'ranges' ? 'Switch to event view' : 'Switch to range view' }}
             </v-tooltip>
           </button>
+
           <span class="claro-actions-divider" />
         </template>
 
-        <button class="claro-btn" type="button" aria-label="Favorites">
+        <button aria-label="Favorites" class="claro-btn" type="button">
           <v-icon size="20">mdi-star-outline</v-icon>
         </button>
 
-        <button class="claro-btn" type="button" aria-label="Notifications">
+        <button aria-label="Notifications" class="claro-btn" type="button">
           <v-badge
             color="error"
             :content="notificationCount"
@@ -103,37 +107,44 @@
         <v-menu location="bottom end">
           <template #activator="{ props: menuProps }">
             <button
+              aria-label="More options"
               class="claro-chevron-btn"
               type="button"
-              aria-label="More options"
               v-bind="menuProps"
             >
               <v-icon size="22">mdi-chevron-down</v-icon>
             </button>
           </template>
+
           <v-card min-width="220">
             <div class="d-flex align-center ga-3 pa-4 pb-2">
               <v-avatar color="primary" size="38">
                 <span class="text-caption font-weight-bold">{{ userInitials }}</span>
               </v-avatar>
+
               <div>
                 <div class="text-body-2 font-weight-medium">{{ authStore.user?.name || 'User' }}</div>
                 <div class="text-caption text-medium-emphasis">{{ authStore.user?.email }}</div>
               </div>
             </div>
+
             <v-divider class="my-1" />
+
             <v-list density="comfortable">
               <v-list-item
                 prepend-icon="mdi-account-outline"
                 title="Profile"
                 :to="'/owner/profile'"
               />
+
               <v-list-item
                 prepend-icon="mdi-cog-outline"
                 title="Settings"
                 :to="'/owner/settings'"
               />
+
               <v-divider class="my-1" />
+
               <v-list-item
                 class="text-error"
                 prepend-icon="mdi-logout"
@@ -145,9 +156,9 @@
         </v-menu>
 
         <!-- Avatar with online status dot -->
-        <div class="claro-avatar" aria-label="User profile">
+        <div aria-label="User profile" class="claro-avatar">
           {{ userInitials }}
-          <span class="claro-status-dot" aria-hidden="true" />
+          <span aria-hidden="true" class="claro-status-dot" />
         </div>
       </div>
     </v-app-bar>
@@ -157,20 +168,22 @@
     <v-main>
       <v-banner
         v-if="initError"
+        class="mb-0"
         color="error"
         icon="mdi-alert-circle-outline"
         lines="one"
-        class="mb-0"
       >
         <v-banner-text>
           Failed to load data. Please refresh the page.
         </v-banner-text>
       </v-banner>
+
       <v-skeleton-loader
         v-else-if="!isReady"
-        type="article"
         class="ma-4"
+        type="article"
       />
+
       <router-view v-else />
     </v-main>
 
@@ -201,8 +214,8 @@
   import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import ClaroWordmark from '@/components/dumb/shared/ClaroWordmark.vue'
-  import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
   import GlobalBookingModal from '@/components/smart/owner/GlobalBookingModal.vue'
+  import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
   import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
   import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
   import { useUIStore } from '@/stores/ui'
@@ -224,13 +237,15 @@
   const initError = ref<Error | null>(null)
   provide('appStatus', { isReady, initError })
 
-  function openBookingModal() {
+  function openBookingModal () {
     uiStore.openModal('eventModal', 'create')
   }
 
   onMounted(() => {
     initRealtimeSync()
-      .then(() => { isReady.value = true })
+      .then(() => {
+        isReady.value = true
+      })
       .catch((error: unknown) => {
         initError.value = error instanceof Error ? error : new Error(String(error))
         console.error('[OwnerLayout] Failed to initialize realtime sync:', error)

@@ -11,6 +11,7 @@
             <h4 class="text-h6 font-weight-bold">
               Welcome back, {{ userName }}
             </h4>
+
             <p class="text-body-2 text-medium-emphasis mt-1">
               Here's your business overview
             </p>
@@ -27,10 +28,12 @@
                   mdi-home-city
                 </v-icon>
               </div>
+
               <div class="ms-3">
                 <div class="text-caption text-medium-emphasis">
                   Properties
                 </div>
+
                 <div class="text-h6 font-weight-bold text-primary">
                   {{ propertyCount }}
                 </div>
@@ -47,10 +50,12 @@
                   mdi-calendar-check
                 </v-icon>
               </div>
+
               <div class="ms-3">
                 <div class="text-caption text-medium-emphasis">
                   Bookings
                 </div>
+
                 <div class="text-h6 font-weight-bold text-success">
                   {{ bookingCount }}
                 </div>
@@ -67,10 +72,12 @@
                   mdi-fire
                 </v-icon>
               </div>
+
               <div class="ms-3">
                 <div class="text-caption text-medium-emphasis">
                   Turns
                 </div>
+
                 <div class="text-h6 font-weight-bold text-warning">
                   {{ turnCount }}
                 </div>
@@ -88,6 +95,7 @@
           <div class="text-caption text-medium-emphasis mb-2">
             Cleaning Workload
           </div>
+
           <div class="donut-wrapper">
             <v-progress-circular
               color="primary"
@@ -99,12 +107,14 @@
                 <div class="text-h5 font-weight-bold">
                   {{ completionPercent }}%
                 </div>
+
                 <div class="text-caption text-medium-emphasis">
                   Complete
                 </div>
               </div>
             </v-progress-circular>
           </div>
+
           <div class="text-caption text-medium-emphasis mt-2">
             {{ cleaningsCompleted }} / {{ cleaningsTotal }} cleanings
           </div>

@@ -7,12 +7,12 @@
 
 <script setup lang="ts">
 
-import Reports from '@/components/smart/shared/Reports.vue';
+  import Reports from '@/components/smart/shared/Reports.vue'
 
-// Meta information for this page
-defineOptions({
-  name: 'Reports',
-})
+  // Meta information for this page
+  defineOptions({
+    name: 'Reports',
+  })
 </script>
 
 <style scoped>

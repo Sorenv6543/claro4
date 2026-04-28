@@ -22,10 +22,12 @@
           <div class="text-body-2 font-weight-medium text-truncate">
             {{ property.name }}
           </div>
+
           <div class="text-caption text-medium-emphasis">
             <span v-if="property.nextBooking">
               Next: {{ formatDate(property.nextBooking) }}
             </span>
+
             <span v-else>No upcoming bookings</span>
           </div>
         </div>
@@ -33,6 +35,7 @@
         <!-- Occupancy bar -->
         <div class="occupancy-section text-right flex-shrink-0" style="width: 80px">
           <div class="text-caption text-medium-emphasis mb-1">{{ property.occupancyRate }}%</div>
+
           <v-progress-linear
             :color="occupancyColor(property.occupancyRate)"
             height="6"

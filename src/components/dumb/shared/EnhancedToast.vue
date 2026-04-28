@@ -27,6 +27,7 @@
         >
           {{ notification.title }}
         </div>
+
         <div class="toast-message">
           {{ notification.message }}
         </div>

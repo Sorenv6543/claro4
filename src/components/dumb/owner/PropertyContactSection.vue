@@ -17,16 +17,19 @@
       <div v-if="property.contact_name">{{ property.contact_name }}</div>
       <div v-else class="not-set">Not set</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Contact Phone</span>
       <div v-if="property.contact_phone">{{ property.contact_phone }}</div>
       <div v-else class="not-set">Not set</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Special Instructions</span>
       <div v-if="property.special_instructions">{{ property.special_instructions }}</div>
       <div v-else class="not-set">Not set</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Trash Day</span>
       <div v-if="property.trash_day">{{ property.trash_day }}</div>
@@ -43,12 +46,14 @@
               label="Contact Name"
             />
           </v-col>
+
           <v-col cols="12" md="6">
             <v-text-field
               v-model="form.contact_phone"
               label="Contact Phone"
             />
           </v-col>
+
           <v-col cols="12">
             <v-textarea
               v-model="form.special_instructions"
@@ -58,6 +63,7 @@
               :rows="3"
             />
           </v-col>
+
           <v-col cols="12" md="6">
             <v-text-field
               v-model="form.trash_day"

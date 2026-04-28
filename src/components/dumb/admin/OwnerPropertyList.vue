@@ -8,6 +8,7 @@
       />
       Properties ({{ properties.length }})
       <v-spacer />
+
       <v-btn
         v-if="editable"
         color="primary"
@@ -32,6 +33,7 @@
         icon="mdi-home-outline"
         size="64"
       />
+
       <p class="text-body-1 text-medium-emphasis">
         No properties yet
       </p>
@@ -62,10 +64,13 @@
                   :icon="propertyTypeIcon(prop.property_type)"
                   size="20"
                 />
+
                 <span class="text-subtitle-1 font-weight-medium text-truncate">
                   {{ formatPropertyAddress(prop, 'short') }}
                 </span>
+
                 <v-spacer />
+
                 <v-chip
                   v-if="!prop.active"
                   color="error"
@@ -74,6 +79,7 @@
                 >
                   Inactive
                 </v-chip>
+
                 <v-chip
                   v-else
                   :color="tierColor(prop.pricing_tier)"
@@ -110,6 +116,7 @@
                   />
                   {{ prop.bedrooms }} bd
                 </div>
+
                 <div
                   v-if="prop.bathrooms != null"
                   class="d-flex align-center text-body-2"
@@ -122,6 +129,7 @@
                   />
                   {{ prop.bathrooms }} ba
                 </div>
+
                 <div
                   v-if="prop.square_feet"
                   class="d-flex align-center text-body-2"
@@ -134,6 +142,7 @@
                   />
                   {{ prop.square_feet.toLocaleString() }} ft²
                 </div>
+
                 <div class="d-flex align-center text-body-2">
                   <v-icon
                     class="me-1"
@@ -158,6 +167,7 @@
                   />
                   Special Instructions
                 </div>
+
                 <div class="text-body-2">
                   {{ prop.special_instructions }}
                 </div>
@@ -166,6 +176,7 @@
 
             <v-card-actions v-if="editable">
               <v-spacer />
+
               <v-btn
                 aria-label="Edit property"
                 icon="mdi-pencil-outline"
@@ -173,6 +184,7 @@
                 variant="text"
                 @click="$emit('edit-property', prop)"
               />
+
               <v-btn
                 aria-label="Delete property"
                 color="error"

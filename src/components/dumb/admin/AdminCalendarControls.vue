@@ -8,6 +8,7 @@
       </v-icon>
       Calendar Controls
       <v-spacer />
+
       <v-btn
         :icon="expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
         size="small"
@@ -33,6 +34,7 @@
               <div class="text-body-2 text-medium-emphasis mb-2">
                 Calendar View
               </div>
+
               <v-btn-toggle
                 v-model="selectedView"
                 divided
@@ -49,6 +51,7 @@
                   </v-icon>
                   Month
                 </v-btn>
+
                 <v-btn
                   size="small"
                   value="timeGridWeek"
@@ -58,6 +61,7 @@
                   </v-icon>
                   Week
                 </v-btn>
+
                 <v-btn
                   size="small"
                   value="timeGridDay"
@@ -67,6 +71,7 @@
                   </v-icon>
                   Day
                 </v-btn>
+
                 <v-btn
                   size="small"
                   value="listWeek"
@@ -86,6 +91,7 @@
               <div class="text-body-2 text-medium-emphasis mb-2">
                 Date Navigation
               </div>
+
               <div class="d-flex gap-2 align-center">
                 <v-btn
                   size="small"
@@ -301,6 +307,7 @@
               <div class="text-body-2 text-medium-emphasis mb-2">
                 Quick Actions
               </div>
+
               <div class="d-flex flex-wrap gap-2">
                 <v-btn
                   color="primary"
@@ -358,6 +365,7 @@
               <div class="text-body-2 text-medium-emphasis mb-2">
                 Bulk Operations
               </div>
+
               <div class="d-flex flex-wrap gap-2">
                 <v-btn
                   color="warning"
@@ -413,6 +421,7 @@
                     hide-details
                     @update:model-value="handleRealTimeToggle"
                   />
+
                   <span class="text-body-2 ml-2">Real-time Updates</span>
                 </div>
 
@@ -435,7 +444,9 @@
                     <v-icon class="mr-2">
                       mdi-filter
                     </v-icon>
+
                     <span class="text-body-2">Active Filters:</span>
+
                     <div class="d-flex flex-wrap gap-1 ml-2">
                       <v-chip
                         v-for="filter in activeFilterSummary"
@@ -448,7 +459,9 @@
                         {{ filter.label }}
                       </v-chip>
                     </div>
+
                     <v-spacer />
+
                     <v-btn
                       size="small"
                       variant="text"

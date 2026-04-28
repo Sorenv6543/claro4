@@ -14,6 +14,7 @@
         </v-icon>
         Go to Date
         <v-spacer />
+
         <v-btn
           icon="mdi-close"
           size="small"

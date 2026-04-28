@@ -12,10 +12,12 @@
         <div class="text-subtitle-1 font-weight-medium mb-1">
           You're Offline
         </div>
+
         <div class="text-body-2">
           {{ offlineMessage }}
         </div>
       </v-banner-text>
+
       <template #actions>
         <v-btn
           size="small"
@@ -39,10 +41,12 @@
         <div class="text-subtitle-1 font-weight-medium mb-1">
           Syncing {{ syncStatus.total }} Operations
         </div>
+
         <div class="text-body-2">
           {{ syncStatusMessage }}
         </div>
       </v-banner-text>
+
       <template #actions>
         <v-btn
           :loading="isProcessingSync"
@@ -67,10 +71,12 @@
         <div class="text-subtitle-1 font-weight-medium mb-1">
           Enable Notifications
         </div>
+
         <div class="text-body-2">
           {{ notificationPromptMessage }}
         </div>
       </v-banner-text>
+
       <template #actions>
         <v-btn
           size="small"
@@ -79,6 +85,7 @@
         >
           Not Now
         </v-btn>
+
         <v-btn
           color="white"
           :loading="requestingPermission"
@@ -103,10 +110,12 @@
         <div class="text-subtitle-1 font-weight-medium mb-1">
           Install {{ appName }} App
         </div>
+
         <div class="text-body-2">
           {{ installPromptMessage }}
         </div>
       </v-banner-text>
+
       <template #actions>
         <v-btn
           size="small"
@@ -115,6 +124,7 @@
         >
           Not Now
         </v-btn>
+
         <v-btn
           color="white"
           :loading="installing"
@@ -139,10 +149,12 @@
         <div class="text-subtitle-1 font-weight-medium mb-1">
           App Update Available
         </div>
+
         <div class="text-body-2">
           A new version is ready with improvements and bug fixes.
         </div>
       </v-banner-text>
+
       <template #actions>
         <v-btn
           size="small"
@@ -151,6 +163,7 @@
         >
           Later
         </v-btn>
+
         <v-btn
           color="white"
           :loading="updating"

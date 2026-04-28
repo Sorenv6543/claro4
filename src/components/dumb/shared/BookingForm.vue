@@ -71,6 +71,7 @@
                 />
               </v-col>
             </v-row>
+
             <v-row>
               <v-col
                 cols="12"
@@ -118,14 +119,17 @@
                     >
                       mdi-swap-horizontal
                     </v-icon>
+
                     <div class="flex-grow-1">
                       <div class="text-subtitle-2 font-weight-medium">
                         Schedule a same-day turn
                       </div>
+
                       <div class="text-caption text-medium-emphasis">
                         Back-to-back guests? Add a turn cleaning between stays.
                       </div>
                     </div>
+
                     <v-switch
                       color="primary"
                       density="compact"
@@ -156,7 +160,9 @@
                           >
                             mdi-alert-circle-outline
                           </v-icon>
+
                           <span class="text-subtitle-2 font-weight-bold ml-2">Turn Booking</span>
+
                           <v-chip
                             class="ml-2"
                             color="warning"
@@ -181,6 +187,7 @@
                               :rules="dateRules"
                             />
                           </v-col>
+
                           <v-col
                             cols="12"
                             md="6"
@@ -226,6 +233,7 @@
                               :rules="dateRules"
                             />
                           </v-col>
+
                           <v-col
                             cols="12"
                             md="6"
@@ -361,8 +369,8 @@
 </template>
 
 <script setup lang="ts">
-  import type { VForm } from 'vuetify/components'
   import type { Booking, BookingFormData, BookingStatus, BookingType, Property } from '@/types'
+  import type { VForm } from 'vuetify/components'
   import DatePickerField from '@components/dumb/shared/DatePickerField.vue'
   import TimePickerField from '@components/dumb/shared/TimePickerField.vue'
   import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'

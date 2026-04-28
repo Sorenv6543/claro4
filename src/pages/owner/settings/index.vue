@@ -1,16 +1,14 @@
-
-
 <template>
-    <div class="owner-settings">
+  <div class="owner-settings">
     <OwnerSettings />
-    </div>
+  </div>
 </template>
 
     <script setup lang="ts">
-    import OwnerSettings from '@/components/smart/owner/OwnerSettings.vue'
-    defineOptions({
-        name: 'OwnerSettings',
-    })
+  import OwnerSettings from '@/components/smart/owner/OwnerSettings.vue'
+  defineOptions({
+    name: 'OwnerSettings',
+  })
 
     </script>
 <style scoped>

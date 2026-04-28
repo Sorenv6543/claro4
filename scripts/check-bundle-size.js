@@ -1,11 +1,11 @@
-import { gzipSync } from 'node:zlib'
 import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { gzipSync } from 'node:zlib'
 
 const MAX_GZIP_KB = 500
 
-export function checkOwnerBundleSize(assetsDir, maxKB = MAX_GZIP_KB) {
+export function checkOwnerBundleSize (assetsDir, maxKB = MAX_GZIP_KB) {
   const files = fs.readdirSync(assetsDir)
     .filter(f => f.includes('owner-app') && f.endsWith('.js'))
 
@@ -24,9 +24,9 @@ export function checkOwnerBundleSize(assetsDir, maxKB = MAX_GZIP_KB) {
 }
 
 // Only execute CLI logic when run directly (not imported by tests)
-const isMain =
-  process.argv[1] != null &&
-  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
+const isMain
+  = process.argv[1] != null
+    && path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url))
 
 if (isMain) {
   const assetsDir = path.resolve('dist/assets')
@@ -37,8 +37,8 @@ if (isMain) {
       process.exit(1)
     }
     console.log(`✅ owner-app bundle: ${totalKB.toFixed(1)} KB / ${maxKB} KB`)
-  } catch (err) {
-    console.error(`❌ ${err.message}`)
+  } catch (error) {
+    console.error(`❌ ${error.message}`)
     process.exit(1)
   }
 }

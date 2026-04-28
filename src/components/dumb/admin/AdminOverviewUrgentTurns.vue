@@ -69,6 +69,7 @@
           <v-icon class="mr-1" icon="mdi-swap-horizontal" size="18" />
           Urgent Turns
         </span>
+
         <v-badge color="warning" :content="turns.length" inline />
       </div>
 
@@ -83,19 +84,23 @@
             <div class="text-body-2 font-weight-medium">
               {{ props.propertyMap.get(turn.property_id)?.name || 'Unknown' }}
             </div>
+
             <div class="text-caption text-medium-emphasis">
               {{ getTimeWindow(turn) }}
             </div>
           </div>
+
           <v-chip :color="turnUrgencyMap.get(turn.id)?.color" size="x-small" variant="tonal">
             {{ turnUrgencyMap.get(turn.id)?.label }}
           </v-chip>
         </div>
+
         <div class="d-flex align-center justify-space-between mt-1">
           <span class="text-caption font-weight-medium" :class="turnUrgencyMap.get(turn.id)?.textClass">
             ⏱ {{ turnUrgencyMap.get(turn.id)?.timeRemaining }}
             <template v-if="isUnassigned(turn)"> · Unassigned</template>
           </span>
+
           <v-btn
             v-if="isUnassigned(turn)"
             color="primary"

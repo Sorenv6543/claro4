@@ -1,17 +1,17 @@
 <template>
   <div class="admin-cleaners">
-  <AdminCleaners />
+    <AdminCleaners />
   </div>
 </template>
 
 <script setup lang="ts">
   import AdminCleaners from '@/components/smart/admin/AdminCleaners.vue'
-defineOptions({
-  name: 'AdminCleaners',
-})    
+  defineOptions({
+    name: 'AdminCleaners',
+  })
 </script>
-<style scoped>  
+<style scoped>
 .admin-cleaners {
   height: 100%;
-} 
+}
 </style>

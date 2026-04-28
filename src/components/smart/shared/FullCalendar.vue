@@ -9,6 +9,7 @@
 </template>
 
 <script setup lang="ts">
+  import type { Booking, Property } from '@/types'
   import type {
     CalendarOptions,
     DateSelectArg,
@@ -18,7 +19,6 @@
     EventDropArg,
   } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
-  import type { Booking, Property } from '@/types'
   import dayGridPlugin from '@fullcalendar/daygrid'
   import interactionPlugin from '@fullcalendar/interaction'
   import listPlugin from '@fullcalendar/list'

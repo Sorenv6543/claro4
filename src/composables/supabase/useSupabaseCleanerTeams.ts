@@ -1,14 +1,14 @@
+import type { CleanerTeam, CleanerTeamFormData } from '@/types'
+import { v4 as uuidv4 } from 'uuid'
 import { supabase } from '@/plugins/supabase'
 import { useBookingStore } from '@/stores/booking'
 import { useCleanerTeamStore } from '@/stores/cleanerTeam'
-import type { CleanerTeam, CleanerTeamFormData } from '@/types'
-import { v4 as uuidv4 } from 'uuid'
 
-export function useSupabaseCleanerTeams() {
+export function useSupabaseCleanerTeams () {
   const cleanerTeamStore = useCleanerTeamStore()
   const bookingStore = useBookingStore()
 
-  async function fetchAll(): Promise<void> {
+  async function fetchAll (): Promise<void> {
     cleanerTeamStore.loading = true
     cleanerTeamStore.error = null
     try {
@@ -16,7 +16,9 @@ export function useSupabaseCleanerTeams() {
         .from('cleaner_teams')
         .select('*')
         .order('name', { ascending: true })
-      if (fetchError) throw fetchError
+      if (fetchError) {
+        throw fetchError
+      }
       cleanerTeamStore.setTeams((data ?? []) as CleanerTeam[])
     } catch (error) {
       cleanerTeamStore.error = error instanceof Error ? error.message : 'Failed to fetch cleaner teams'
@@ -27,7 +29,7 @@ export function useSupabaseCleanerTeams() {
     }
   }
 
-  async function fetchActive(): Promise<void> {
+  async function fetchActive (): Promise<void> {
     cleanerTeamStore.loading = true
     cleanerTeamStore.error = null
     try {
@@ -36,7 +38,9 @@ export function useSupabaseCleanerTeams() {
         .select('*')
         .eq('active', true)
         .order('name', { ascending: true })
-      if (fetchError) throw fetchError
+      if (fetchError) {
+        throw fetchError
+      }
       // Replace store contents with the current active set so teams that
       // are no longer active are not left behind as stale active entries.
       cleanerTeamStore.setTeams((data ?? []) as CleanerTeam[])
@@ -49,9 +53,11 @@ export function useSupabaseCleanerTeams() {
     }
   }
 
-  async function createTeam(formData: CleanerTeamFormData): Promise<CleanerTeam> {
+  async function createTeam (formData: CleanerTeamFormData): Promise<CleanerTeam> {
     const name = formData.name?.trim()
-    if (!name) throw new Error('Team name is required')
+    if (!name) {
+      throw new Error('Team name is required')
+    }
 
     const id = uuidv4()
     const now = new Date().toISOString()
@@ -61,7 +67,9 @@ export function useSupabaseCleanerTeams() {
 
     try {
       const { error } = await supabase.from('cleaner_teams').insert(team)
-      if (error) throw error
+      if (error) {
+        throw error
+      }
       return team
     } catch (error) {
       cleanerTeamStore.removeTeam(id)
@@ -69,16 +77,20 @@ export function useSupabaseCleanerTeams() {
     }
   }
 
-  async function updateTeam(id: string, updates: Partial<CleanerTeam>): Promise<CleanerTeam> {
+  async function updateTeam (id: string, updates: Partial<CleanerTeam>): Promise<CleanerTeam> {
     const existing = cleanerTeamStore.teams.get(id)
-    if (!existing) throw new Error('Team not found')
+    if (!existing) {
+      throw new Error('Team not found')
+    }
 
     const updated: CleanerTeam = { ...existing, ...updates, updated_at: new Date().toISOString() }
     cleanerTeamStore.setTeam(id, updated)
 
     try {
       const { error } = await supabase.from('cleaner_teams').update(updates).eq('id', id)
-      if (error) throw error
+      if (error) {
+        throw error
+      }
       return updated
     } catch (error) {
       cleanerTeamStore.setTeam(id, existing)
@@ -86,9 +98,11 @@ export function useSupabaseCleanerTeams() {
     }
   }
 
-  async function deleteTeam(id: string): Promise<void> {
+  async function deleteTeam (id: string): Promise<void> {
     const existing = cleanerTeamStore.teams.get(id)
-    if (!existing) throw new Error('Team not found')
+    if (!existing) {
+      throw new Error('Team not found')
+    }
 
     cleanerTeamStore.removeTeam(id)
 
@@ -97,7 +111,9 @@ export function useSupabaseCleanerTeams() {
         .from('cleaner_teams')
         .update({ active: false, updated_at: new Date().toISOString() })
         .eq('id', id)
-      if (error) throw error
+      if (error) {
+        throw error
+      }
 
       await clearTeamFromBookings(id)
     } catch (error) {
@@ -106,7 +122,7 @@ export function useSupabaseCleanerTeams() {
     }
   }
 
-  async function clearTeamFromBookings(teamId: string): Promise<void> {
+  async function clearTeamFromBookings (teamId: string): Promise<void> {
     const { error } = await supabase
       .from('bookings')
       .update({ assigned_team_id: null, updated_at: new Date().toISOString() })

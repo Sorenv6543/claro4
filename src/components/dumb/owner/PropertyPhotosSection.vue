@@ -7,6 +7,7 @@
   >
     <div class="text-center py-4">
       <v-icon color="grey" size="48">mdi-camera-plus-outline</v-icon>
+
       <div class="text-body-2 text-medium-emphasis mt-2">
         Photo management coming soon
       </div>

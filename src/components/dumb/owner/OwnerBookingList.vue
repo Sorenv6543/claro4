@@ -1,92 +1,103 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import { useDisplay } from 'vuetify'
+  import { computed, ref } from 'vue'
+  import { useDisplay } from 'vuetify'
 
-export interface BookingListItem {
-  id: string
-  propertyName: string
-  propertyColor: string
-  checkinDate: string
-  checkoutDate: string
-  bookingType: 'standard' | 'turn'
-  status: string
-  guestCount?: number
-  guestName?: string
-  checkinTime?: string
-  checkoutTime?: string
-  notes?: string
-  priority?: string
-  createdAt?: string
-}
-
-const props = withDefaults(defineProps<{
-  items: BookingListItem[]
-  loading?: boolean
-}>(), {
-  loading: false,
-})
-
-const emit = defineEmits<{
-  edit: [id: string]
-  delete: [id: string]
-}>()
-
-const { mobile } = useDisplay()
-
-const expandedId = ref<string | null>(null)
-const hasOpen = computed(() => expandedId.value !== null)
-
-function isExpanded(id: string): boolean {
-  return expandedId.value === id
-}
-
-function toggleRow(id: string): void {
-  expandedId.value = expandedId.value === id ? null : id
-}
-
-function formatDateRange(checkin: string, checkout: string): string {
-  const ci = new Date(checkin)
-  const co = new Date(checkout)
-  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-  const cM = months[ci.getUTCMonth()]
-  const oM = months[co.getUTCMonth()]
-  if (cM === oM) return `${cM} ${ci.getUTCDate()}–${co.getUTCDate()}`
-  return `${cM} ${ci.getUTCDate()} – ${oM} ${co.getUTCDate()}`
-}
-
-function formatDate(dateStr: string): string {
-  const d = new Date(dateStr)
-  return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
-}
-
-function statusColor(status: string): string {
-  switch (status) {
-    case 'confirmed':   return 'primary'
-    case 'pending':     return 'warning'
-    case 'in_progress': return 'info'
-    case 'completed':   return 'success'
-    case 'cancelled':   return 'error'
-    case 'scheduled':   return 'primary'
-    default:            return 'default'
+  export interface BookingListItem {
+    id: string
+    propertyName: string
+    propertyColor: string
+    checkinDate: string
+    checkoutDate: string
+    bookingType: 'standard' | 'turn'
+    status: string
+    guestCount?: number
+    guestName?: string
+    checkinTime?: string
+    checkoutTime?: string
+    notes?: string
+    priority?: string
+    createdAt?: string
   }
-}
 
-function priorityColor(priority: string): string {
-  switch (priority) {
-    case 'urgent': return 'error'
-    case 'high':   return 'warning'
-    case 'normal': return 'info'
-    default:       return 'default'
+  const _props = withDefaults(defineProps<{
+    items: BookingListItem[]
+    loading?: boolean
+  }>(), {
+    loading: false,
+  })
+
+  const emit = defineEmits<{
+    edit: [id: string]
+    delete: [id: string]
+  }>()
+
+  const { mobile } = useDisplay()
+
+  const expandedId = ref<string | null>(null)
+  const hasOpen = computed(() => expandedId.value !== null)
+
+  function isExpanded (id: string): boolean {
+    return expandedId.value === id
   }
-}
 
-function fmtStatus(status: string): string {
-  return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
-}
+  function toggleRow (id: string): void {
+    expandedId.value = expandedId.value === id ? null : id
+  }
 
-const rowGrid = computed(() =>
-  mobile.value ? '10px 1fr 28px' : '10px 1fr 180px 80px 60px 28px',
-)
+  function formatDateRange (checkin: string, checkout: string): string {
+    const ci = new Date(checkin)
+    const co = new Date(checkout)
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    const cM = months[ci.getUTCMonth()]
+    const oM = months[co.getUTCMonth()]
+    if (cM === oM) return `${cM} ${ci.getUTCDate()}–${co.getUTCDate()}`
+    return `${cM} ${ci.getUTCDate()} – ${oM} ${co.getUTCDate()}`
+  }
+
+  function formatDate (dateStr: string): string {
+    const d = new Date(dateStr)
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+  }
+
+  function statusColor (status: string): string {
+    switch (status) {
+      case 'confirmed': { return 'primary'
+      }
+      case 'pending': { return 'warning'
+      }
+      case 'in_progress': { return 'info'
+      }
+      case 'completed': { return 'success'
+      }
+      case 'cancelled': { return 'error'
+      }
+      case 'scheduled': { return 'primary'
+      }
+      default: { return 'default'
+      }
+    }
+  }
+
+  function priorityColor (priority: string): string {
+    switch (priority) {
+      case 'urgent': { return 'error'
+      }
+      case 'high': { return 'warning'
+      }
+      case 'normal': { return 'info'
+      }
+      default: { return 'default'
+      }
+    }
+  }
+
+  function fmtStatus (status: string): string {
+    return status.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())
+  }
+
+  const rowGrid = computed(() =>
+    mobile.value ? '10px 1fr 28px' : '10px 1fr 180px 80px 60px 28px',
+  )
 </script>
 
 <template>
@@ -95,7 +106,7 @@ const rowGrid = computed(() =>
 
   <!-- Empty -->
   <v-empty-state
-    v-else-if="!items.length"
+    v-else-if="items.length === 0"
     icon="mdi-calendar-blank-outline"
     text="Create your first booking to get started."
     title="No Bookings"
@@ -135,6 +146,7 @@ const rowGrid = computed(() =>
         <!-- Property + guest (mobile shows date inline) -->
         <div class="bl-info-cell">
           <div class="bl-prop">{{ item.propertyName }}</div>
+
           <div class="bl-sub">
             <template v-if="item.guestName">{{ item.guestName }} · </template>
             {{ item.guestCount ? `${item.guestCount}g` : '' }}
@@ -149,6 +161,7 @@ const rowGrid = computed(() =>
             >
               {{ item.bookingType === 'turn' ? 'Turn' : 'Standard' }}
             </v-chip>
+
             <v-chip :color="statusColor(item.status)" size="x-small" variant="tonal">
               {{ fmtStatus(item.status) }}
             </v-chip>
@@ -191,27 +204,33 @@ const rowGrid = computed(() =>
             <!-- Left: booking details -->
             <div class="bl-inlay-left">
               <div class="bl-col-label">Booking details</div>
+
               <table class="bl-stats-table">
                 <tr>
                   <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-login</v-icon> Check-in</span></td>
                   <td>{{ formatDate(item.checkinDate) }}<template v-if="item.checkinTime"> · {{ item.checkinTime }}</template></td>
                 </tr>
+
                 <tr>
                   <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-logout</v-icon> Check-out</span></td>
                   <td>{{ formatDate(item.checkoutDate) }}<template v-if="item.checkoutTime"> · {{ item.checkoutTime }}</template></td>
                 </tr>
+
                 <tr v-if="item.guestCount">
                   <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-account-group-outline</v-icon> Guests</span></td>
                   <td>{{ item.guestCount }}</td>
                 </tr>
+
                 <tr v-if="item.priority">
                   <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-flag-outline</v-icon> Priority</span></td>
+
                   <td>
                     <v-chip :color="priorityColor(item.priority)" size="x-small" variant="tonal">
                       {{ item.priority }}
                     </v-chip>
                   </td>
                 </tr>
+
                 <tr v-if="item.createdAt">
                   <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-clock-outline</v-icon> Created</span></td>
                   <td>{{ formatDate(item.createdAt) }}</td>
@@ -240,6 +259,7 @@ const rowGrid = computed(() =>
                 Edit
               </v-btn>
             </div>
+
             <div class="bl-actions-group">
               <v-btn
                 color="error"

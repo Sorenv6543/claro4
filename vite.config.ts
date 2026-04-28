@@ -259,13 +259,13 @@ export default defineConfig(({ mode }) => {
       },
     },
     define: {
-      __ENABLE_OWNER_FEATURES__: JSON.stringify(true),
-      __ENABLE_ADMIN_FEATURES__: JSON.stringify(true),
-      __DEV_DEMOS_ENABLED__: JSON.stringify(isDevelopment),
-      __BUILD_VERSION__: JSON.stringify(process.env.npm_package_version || '0.1.0'),
-      __BUILD_TIMESTAMP__: JSON.stringify(new Date().toISOString()),
-      __VUE_OPTIONS_API__: JSON.stringify(true),
-      __VUE_PROD_DEVTOOLS__: JSON.stringify(!isProduction),
+      '__ENABLE_OWNER_FEATURES__': JSON.stringify(true),
+      '__ENABLE_ADMIN_FEATURES__': JSON.stringify(true),
+      '__DEV_DEMOS_ENABLED__': JSON.stringify(isDevelopment),
+      '__BUILD_VERSION__': JSON.stringify(process.env.npm_package_version || '0.1.0'),
+      '__BUILD_TIMESTAMP__': JSON.stringify(new Date().toISOString()),
+      '__VUE_OPTIONS_API__': JSON.stringify(true),
+      '__VUE_PROD_DEVTOOLS__': JSON.stringify(!isProduction),
       // Override `import.meta.env.VITE_APP_VERSION` at build time with the
       // computed `release` so Sentry.init in main.ts picks up the same name
       // the source-map plugin uploaded under. Keeps env-file values from

@@ -7,12 +7,15 @@
           <v-col cols="6" md="3">
             <StatCard color="primary" icon="mdi-account-group" label="Total Cleaners" :value="cleanerStats.total" />
           </v-col>
+
           <v-col cols="6" md="3">
             <StatCard color="success" icon="mdi-check-circle" label="Available Today" :value="cleanerStats.available" />
           </v-col>
+
           <v-col cols="6" md="3">
             <StatCard color="warning" icon="mdi-clock-outline" label="Currently Busy" :value="cleanerStats.busy" />
           </v-col>
+
           <v-col cols="6" md="3">
             <StatCard color="info" icon="mdi-star" label="Avg Rating" value="4.8" />
           </v-col>
@@ -113,6 +116,7 @@
           >
             {{ item.name }}
           </div>
+
           <div
             class="text-medium-emphasis"
             :class="mobile ? 'text-caption' : 'text-body-2'"
@@ -133,6 +137,7 @@
           >
             {{ skill }}
           </v-chip>
+
           <v-chip
             v-if="(item.skills as string[]).length > 2"
             size="x-small"
@@ -171,6 +176,7 @@
               />
             </template>
           </v-tooltip>
+
           <v-menu>
             <template #activator="{ props: menuProps }">
               <v-btn
@@ -181,14 +187,18 @@
                 @click.stop
               />
             </template>
+
             <v-list>
               <v-list-item @click="viewSchedule(item as unknown as Cleaner)">
                 <template #prepend>
                   <v-icon>mdi-calendar</v-icon>
                 </template>
+
                 <v-list-item-title>View Schedule</v-list-item-title>
               </v-list-item>
+
               <v-divider />
+
               <v-list-item
                 class="text-error"
                 @click="confirmDelete(item as unknown as Cleaner)"
@@ -207,7 +217,9 @@
         <v-card-title class="pa-6 pb-4">
           <span class="text-h6">{{ editingCleaner ? 'Edit' : 'Add' }} Cleaner</span>
         </v-card-title>
+
         <v-divider />
+
         <v-card-text class="pa-6">
           <v-form ref="form" v-model="formValid">
             <v-text-field
@@ -216,6 +228,7 @@
               label="Full Name"
               :rules="[rules.required]"
             />
+
             <v-text-field
               v-model="formData.email"
               class="mb-3"
@@ -223,6 +236,7 @@
               :rules="[rules.required, rules.email]"
               type="email"
             />
+
             <v-select
               v-model="formData.skills"
               chips
@@ -231,6 +245,7 @@
               label="Skills"
               multiple
             />
+
             <v-text-field
               v-model.number="formData.max_daily_bookings"
               label="Max Daily Bookings"
@@ -239,10 +254,13 @@
             />
           </v-form>
         </v-card-text>
+
         <v-divider />
+
         <v-card-actions class="pa-4">
           <v-spacer />
           <v-btn variant="text" @click="closeDialog">Cancel</v-btn>
+
           <v-btn
             color="primary"
             :disabled="!formValid"

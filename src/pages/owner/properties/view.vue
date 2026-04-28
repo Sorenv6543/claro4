@@ -1,6 +1,6 @@
 <template>
   <div class="property-view">
-  <OwnerPropertyView />
+    <OwnerPropertyView />
   </div>
 
 </template>

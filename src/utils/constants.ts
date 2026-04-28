@@ -96,7 +96,9 @@ export function mapLegacyPropertyColor (hex: PropertyColor): CurrentPropertyColo
 export function mapLegacyPropertyColor (hex: string | null | undefined, fallback: string): string
 export function mapLegacyPropertyColor (hex: string | null | undefined, fallback?: string): CurrentPropertyColor | string
 export function mapLegacyPropertyColor (hex: string | null | undefined, fallback?: string): CurrentPropertyColor | string {
-  if (!hex) return fallback ?? PROPERTY_COLORS[0]
+  if (!hex) {
+    return fallback ?? PROPERTY_COLORS[0]
+  }
   const lower = hex.toLowerCase()
   return LEGACY_TO_CURRENT[lower]
     ?? PROPERTY_COLORS.find(c => c.toLowerCase() === lower)

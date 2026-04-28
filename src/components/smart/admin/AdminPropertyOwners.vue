@@ -7,12 +7,15 @@
           <v-col cols="6" md="3">
             <StatCard color="primary" icon="mdi-account-group" label="Total Owners" :value="propertyOwners.length" />
           </v-col>
+
           <v-col cols="6" md="3">
             <StatCard color="success" icon="mdi-check-circle" label="Active" :value="activeOwnerCount" />
           </v-col>
+
           <v-col cols="6" md="3">
             <StatCard color="info" icon="mdi-home-group" label="With Properties" :value="ownersWithProperties" />
           </v-col>
+
           <v-col cols="6" md="3">
             <StatCard color="warning" icon="mdi-home-city" label="Total Properties" :value="totalProperties" />
           </v-col>
@@ -103,6 +106,7 @@
               {{ getInitials(item.name as string) }}
             </span>
           </v-avatar>
+
           <div style="min-width: 0">
             <div class="font-weight-medium text-truncate">{{ item.name }}</div>
             <div class="text-caption text-medium-emphasis text-truncate">{{ item.email }}</div>
@@ -161,6 +165,7 @@
               />
             </template>
           </v-tooltip>
+
           <v-menu>
             <template #activator="{ props: menuProps }">
               <v-btn
@@ -171,11 +176,13 @@
                 @click.stop
               />
             </template>
+
             <v-list>
               <v-list-item @click="viewOwner(item.id as string)">
                 <template #prepend><v-icon>mdi-eye-outline</v-icon></template>
                 <v-list-item-title>View Details</v-list-item-title>
               </v-list-item>
+
               <v-list-item :href="`mailto:${item.email}`" @click.stop>
                 <template #prepend><v-icon>mdi-email-outline</v-icon></template>
                 <v-list-item-title>Send Email</v-list-item-title>
@@ -192,7 +199,9 @@
         <v-card-title class="pa-6 pb-4">
           <span class="text-h6">Invite Property Owner</span>
         </v-card-title>
+
         <v-divider />
+
         <v-card-text class="pa-6">
           <v-text-field
             v-model="inviteEmail"
@@ -201,7 +210,9 @@
             type="email"
           />
         </v-card-text>
+
         <v-divider />
+
         <v-card-actions class="pa-4">
           <v-spacer />
           <v-btn variant="text" @click="inviteDialog = false">Cancel</v-btn>

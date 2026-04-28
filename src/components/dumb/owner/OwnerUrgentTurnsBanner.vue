@@ -2,10 +2,13 @@
   <v-card v-if="turns.length > 0" class="urgent-turns-banner" color="warning" variant="tonal">
     <v-card-text class="d-flex align-center flex-wrap ga-3 py-3">
       <v-icon class="mr-1" color="warning" size="24">mdi-alert-circle</v-icon>
+
       <span class="text-body-1 font-weight-bold text-warning">
         {{ turns.length }} urgent turn{{ turns.length > 1 ? 's' : '' }} today
       </span>
+
       <v-divider class="mx-2 d-none d-sm-block" vertical />
+
       <div class="d-flex flex-wrap ga-2">
         <v-chip
           v-for="(turn, index) in turns"
