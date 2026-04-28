@@ -105,7 +105,6 @@
   import type { PropertyListEvent, PropertyListItem, PropertyStats, PropertyTimelineEvent } from '@/components/dumb/owner/PropertyList.vue'
   import { computed, onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useDisplay } from 'vuetify'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   import PropertyList from '@/components/dumb/owner/PropertyList.vue'
@@ -125,7 +124,6 @@
   const uiStore = useUIStore()
   const authStore = useAuthStore()
   const router = useRouter()
-  const { mobile } = useDisplay()
 
   const {
     myProperties,
@@ -349,13 +347,6 @@
   // ============================================================================
   // EVENT HANDLERS - SAME ORCHESTRATION PATTERN AS HomeOwner
   // ============================================================================
-
-  function handleCreateProperty (): void {
-    const propertyData = {
-      owner_id: authStore.user?.id,
-    }
-    uiStore.openModal('propertyModal', 'create', propertyData)
-  }
 
   async function handleDeleteProperty (propertyId: string): Promise<void> {
     const property = myProperties.value.find(p => p.id === propertyId)
