@@ -60,6 +60,8 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Notify Sentry of release
+        id: notify-sentry
+        continue-on-error: true
         run: |
           PKG_VERSION=$(node -p "require('./package.json').version")
           SHORT_SHA=$(git rev-parse --short HEAD)
@@ -76,3 +78,7 @@ jobs:
             --project "${{ secrets.SENTRY_PROJECT }}"
         env:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Warn if Sentry notification failed
+        if: steps.notify-sentry.outcome == 'failure'
+        run: echo "::warning::Sentry release notification failed — deploy succeeded but release tracking may be incomplete."
