@@ -727,15 +727,9 @@
     }
   }
 
-  // Handle booking deletion
   function handleDelete (): void {
     if (props.mode !== 'edit' || !props.booking) return
-
-    loading.value = true
     emit('delete', props.booking.id)
-
-    loading.value = false
-    isOpen.value = false
   }
 
   // Handle modal close
