@@ -1,12 +1,14 @@
 <!-- Desktop 14-day portfolio band grid (Variant B from owner-overview handoff) -->
 <script setup lang="ts">
+import type { PropertyStatus } from '@utils/propertyStatus'
+
 export interface BandGridProperty {
   id: string
   name: string
   color: string
   initial: string
   meta: string   // e.g. "3bd · House"
-  status: 'urgent_turn' | 'turn_today' | 'checkin_today' | 'checkout_today' | 'occupied' | 'vacant'
+  status: PropertyStatus
   occupantName?: string
 }
 

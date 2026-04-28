@@ -1,8 +1,16 @@
 <template>
   <div class="opt-page">
-    <!-- Page header (uniform) -->
+    <!-- Hero banner replaces OwnerPageHeader -->
     <v-container fluid class="pt-0">
-      <OwnerPageHeader title="Timeline" subtitle="Your portfolio schedule at a glance" />
+      <OwnerWelcomeBanner
+        page-title="Timeline"
+        subtitle="Your portfolio schedule at a glance"
+        :stats="[
+          { icon: 'mdi-home-outline',    label: 'Properties',  value: myProperties.length    },
+          { icon: 'mdi-calendar-today',  label: 'Events Today', value: todayEvents.length    },
+          { icon: 'mdi-calendar-week',   label: 'Window',      value: '14 days'              },
+        ]"
+      />
     </v-container>
 
     <!-- Mobile: day-grouped card feed -->
@@ -36,13 +44,14 @@
   import type { BandGridBooking, BandGridProperty, TodayEvent, ActivityItem } from '@/components/dumb/owner/OwnerBandGrid.vue'
   import MobileTimelineFeed from '@/components/dumb/owner/MobileTimelineFeed.vue'
   import type { MobileEvent, PropChip } from '@/components/dumb/owner/MobileTimelineFeed.vue'
-  import OwnerPageHeader from '@/components/dumb/shared/OwnerPageHeader.vue'
+  import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useAuthStore } from '@/stores/auth'
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { mapLegacyPropertyColor } from '@/utils/constants'
+  import { propStatus } from '@utils/propertyStatus'
 
   defineOptions({ name: 'OwnerPropertyTimeline' })
 
@@ -95,23 +104,6 @@
     return parts.join(' · ')
   }
 
-  type PropStatus = BandGridProperty['status']
-
-  function propStatus(propId: string): PropStatus {
-    const bookings = myBookings.value.filter(b => b.property_id === propId && b.status !== 'cancelled')
-    const turnToday    = bookings.find(b => b.checkin_date === todayStr && b.booking_type === 'turn')
-    const checkoutToday = bookings.find(b => b.checkout_date === todayStr && b.booking_type !== 'turn')
-    const checkinToday  = bookings.find(b => b.checkin_date  === todayStr && b.booking_type !== 'turn')
-    const occupied = bookings.find(b => b.checkin_date <= todayStr && b.checkout_date > todayStr && b.booking_type !== 'turn')
-
-    if (turnToday) return turnToday.priority === 'urgent' ? 'urgent_turn' : 'turn_today'
-    if (checkoutToday && checkinToday) return 'turn_today'
-    if (checkoutToday) return 'checkout_today'
-    if (checkinToday)  return 'checkin_today'
-    if (occupied)      return 'occupied'
-    return 'vacant'
-  }
-
   // ── Desktop band grid data ────────────────────────────────────────────────────
   const bandProperties = computed((): BandGridProperty[] =>
     myProperties.value.map(p => ({
@@ -120,7 +112,7 @@
       color:   propColor(p),
       initial: propInitial(p),
       meta:    propMeta(p),
-      status:  propStatus(p.id),
+      status:  propStatus(p.id, myBookings.value, todayStr),
     })),
   )
 

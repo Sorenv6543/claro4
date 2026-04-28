@@ -2,24 +2,7 @@
   <v-container class="owner-overview" fluid>
     <v-progress-linear v-if="loading" class="mb-4" color="primary" indeterminate />
 
-    <!-- Uniform page header -->
-    <OwnerPageHeader
-      :badge="myProperties.length || null"
-      subtitle="Your properties, cleaned up."
-      title="Overview"
-    >
-      <template #actions>
-        <v-btn
-          aria-label="Add booking"
-          color="primary"
-          icon="mdi-plus"
-          size="small"
-          @click="uiStore.openModal('eventModal', 'create')"
-        />
-      </template>
-    </OwnerPageHeader>
-
-    <!-- Hero gradient banner -->
+    <!-- Hero gradient banner (replaces OwnerPageHeader + old welcome banner) -->
     <v-row>
       <v-col cols="12">
         <OwnerWelcomeBanner
@@ -103,62 +86,7 @@
           <router-link class="section-action" to="/owner/properties">Manage →</router-link>
         </div>
 
-        <v-card class="health-list">
-          <v-skeleton-loader v-if="loading" type="list-item-two-line@3" />
-          <div
-            v-for="row in healthRows"
-            v-else
-            :key="row.id"
-            class="health-row"
-          >
-            <!-- Color swatch -->
-            <div
-              class="health-swatch"
-              :style="{ background: row.color + '22', color: row.color }"
-            >
-              {{ row.initial }}
-            </div>
-            <!-- Address + meta -->
-            <div class="health-info">
-              <div class="health-addr">{{ row.name }}</div>
-              <div class="health-sub">{{ row.meta }}</div>
-            </div>
-            <!-- State chip -->
-            <div class="health-state">
-              <v-chip
-                :color="row.stateColor"
-                density="comfortable"
-                rounded="pill"
-                size="small"
-                variant="tonal"
-              >
-                <template v-if="row.statusDot">
-                  <span class="health-dot" :style="{ background: `rgb(var(--v-theme-${row.stateColor}))` }" />
-                </template>
-                {{ row.stateLabel }}
-              </v-chip>
-            </div>
-            <!-- Next booking -->
-            <div class="health-next d-none d-sm-block">
-              <div class="health-next-label">Next</div>
-              <div class="health-next-val">{{ row.nextBooking }}</div>
-            </div>
-            <!-- Occupancy -->
-            <div class="health-occ d-none d-md-block">
-              <div class="health-occ-label">Week occ.</div>
-              <div class="health-occ-val">{{ row.occupancy }}%</div>
-              <div class="health-occ-bar">
-                <div
-                  class="health-occ-fill"
-                  :style="{
-                    width: `${row.occupancy}%`,
-                    background: row.occupancy >= 70 ? 'var(--claro-success)' : row.occupancy >= 40 ? 'var(--claro-primary)' : 'var(--claro-warning)',
-                  }"
-                />
-              </div>
-            </div>
-          </div>
-        </v-card>
+        <PropertyList :items="overviewListItems" :loading="loading" />
       </v-col>
     </v-row>
 
@@ -247,16 +175,16 @@
 <script setup lang="ts">
   import type { Property } from '@/types/property'
   import { computed, onMounted, ref } from 'vue'
+  import type { PropertyListEvent, PropertyListItem } from '@/components/dumb/owner/PropertyList.vue'
   import BookingStatsCard from '@/components/dumb/owner/BookingStatsCard.vue'
+  import PropertyList from '@/components/dumb/owner/PropertyList.vue'
   import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
-  import OwnerPageHeader from '@/components/dumb/shared/OwnerPageHeader.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useAuthStore } from '@/stores/auth'
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { mapLegacyPropertyColor } from '@/utils/constants'
-
   defineOptions({ name: 'OwnerOverview' })
 
   const authStore = useAuthStore()
@@ -360,54 +288,44 @@
     return Math.round(total / myProperties.value.length)
   })
 
-  // ── Property health rows ──────────────────────────────────────────────────────
-  type StatusKey = 'urgent_turn' | 'turn_today' | 'checkin_today' | 'checkout_today' | 'occupied' | 'vacant'
-
-  const STATUS_MAP: Record<StatusKey, { label: string, color: string, dot: boolean }> = {
-    urgent_turn:   { label: 'Urgent turn today', color: 'error',   dot: true  },
-    turn_today:    { label: 'Turn today',         color: 'warning', dot: true  },
-    checkin_today: { label: 'Check-in today',     color: 'success', dot: false },
-    checkout_today:{ label: 'Check-out today',    color: 'error',   dot: false },
-    occupied:      { label: 'Occupied',           color: 'primary', dot: false },
-    vacant:        { label: 'Vacant',             color: 'default', dot: false },
-  }
-
-  function propStatus(propId: string): StatusKey {
-    const bs = myBookings.value.filter(b => b.property_id === propId && b.status !== 'cancelled')
-    const turnToday    = bs.find(b => b.checkin_date === todayStr && b.booking_type === 'turn')
-    const checkoutTdy  = bs.find(b => b.checkout_date === todayStr && b.booking_type !== 'turn')
-    const checkinTdy   = bs.find(b => b.checkin_date  === todayStr && b.booking_type !== 'turn')
-    const occupied     = bs.find(b => b.checkin_date <= todayStr && b.checkout_date > todayStr && b.booking_type !== 'turn')
-    if (turnToday) return turnToday.priority === 'urgent' ? 'urgent_turn' : 'turn_today'
-    if (checkoutTdy && checkinTdy) return 'turn_today'
-    if (checkoutTdy) return 'checkout_today'
-    if (checkinTdy)  return 'checkin_today'
-    if (occupied)    return 'occupied'
-    return 'vacant'
-  }
-
-  const healthRows = computed(() =>
+  // ── PropertyList items for overview accordion ────────────────────────────────
+  const overviewListItems = computed((): PropertyListItem[] =>
     myProperties.value.map(p => {
-      const status   = propStatus(p.id)
-      const sm       = STATUS_MAP[status]
-      const occ      = occupancyMap.value.get(p.id) ?? 0
-      const nextBook = myBookings.value.find(
-        b => b.property_id === p.id && b.checkin_date >= todayStr && b.status !== 'cancelled',
-      )
-      const nextLabel = nextBook
-        ? `${new Date(nextBook.checkin_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} → ${new Date(nextBook.checkout_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`
-        : 'No upcoming'
+      const bs = myBookings.value.filter(b => b.property_id === p.id && b.status !== 'cancelled')
+      const isTurnToday = bs.some(b => b.checkin_date === todayStr && b.booking_type === 'turn')
+
+      const todayEvts: PropertyListEvent[] = []
+      for (const b of bs) {
+        if (b.booking_type === 'turn' && b.checkin_date === todayStr) {
+          todayEvts.push({ type: 'checkout', time: b.checkout_time ?? '11:00', time24: b.checkout_time ?? '11:00', isUnassigned: !b.assigned_cleaner_id })
+          todayEvts.push({ type: 'checkin',  time: b.checkin_time  ?? '15:00', time24: b.checkin_time  ?? '15:00' })
+        } else if (b.checkout_date === todayStr) {
+          todayEvts.push({ type: 'checkout', time: b.checkout_time ?? '11:00', time24: b.checkout_time ?? '11:00', isUnassigned: !b.assigned_cleaner_id })
+        } else if (b.checkin_date === todayStr) {
+          todayEvts.push({ type: 'checkin',  time: b.checkin_time  ?? '15:00', time24: b.checkin_time  ?? '15:00' })
+        }
+      }
+
+      const nextBook = bs
+        .filter(b => b.checkin_date >= todayStr)
+        .toSorted((a, b) => a.checkin_date.localeCompare(b.checkin_date))[0]
+
+      const nextCheckin = nextBook ? {
+        label: nextBook.checkin_date === todayStr
+          ? `Today · ${nextBook.checkin_time ?? '15:00'}`
+          : new Date(nextBook.checkin_date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
+        isTurnDay: nextBook.booking_type === 'turn',
+      } : undefined
+
       return {
-        id:          p.id,
-        name:        formatPropertyAddress(p, 'short'),
-        color:       mapLegacyPropertyColor(p.color),
-        initial:     (formatPropertyAddress(p, 'short')[0] ?? 'P').toUpperCase(),
-        meta:        [p.address_city, p.bedrooms ? `${p.bedrooms}bd` : null, p.bathrooms ? `${p.bathrooms}ba` : null].filter(Boolean).join(' · '),
-        stateLabel:  sm.label,
-        stateColor:  sm.color,
-        statusDot:   sm.dot,
-        nextBooking: nextLabel,
-        occupancy:   occ,
+        property: p,
+        nextCheckin,
+        isTurnToday,
+        todayEvents: todayEvts.length ? todayEvts : undefined,
+        stats: {
+          turnsYtd:       bs.filter(b => b.booking_type === 'turn').length,
+          assignmentLabel: nextBook ? 'Next check-in' : 'No upcoming',
+        },
       }
     }),
   )
