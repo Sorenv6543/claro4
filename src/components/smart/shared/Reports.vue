@@ -1,15 +1,22 @@
 <template>
-    <v-container fluid>
-        <OwnerChartGallery :charts="charts" />
-    </v-container>
+  <v-container fluid>
+    <v-alert
+      class="mb-6"
+      icon="mdi-chart-line"
+      title="Reports — Coming Soon"
+      text="These charts show sample data. Live reporting will be connected in a future release."
+      type="warning"
+      variant="tonal"
+    />
+    <OwnerChartGallery :charts="charts" />
+  </v-container>
 </template>
 
 <script setup lang="ts">
 import type { ChartItem } from '@/components/dumb/owner/OwnerChartGallery.vue'
 import OwnerChartGallery from '@/components/dumb/owner/OwnerChartGallery.vue'
-
-const CHART_COLORS = { primary: '#1976D2', warning: '#FB8C00', info: '#00ACC1', success: '#43A047', error: '#E53935' }
-const withAlpha = (color: string, alpha: number) => color.replace(')', `, ${alpha})`)
+import '@/plugins/chartjs'
+import { CHART_COLORS, withAlpha } from '@/plugins/chartjs'
 
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
