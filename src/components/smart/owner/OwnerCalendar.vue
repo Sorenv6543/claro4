@@ -2,12 +2,11 @@
   <div class="owner-calendar-container">
     <!-- Owner Calendar: Shows only owner's bookings across their properties -->
     <FullCalendar
-      ref="OwnercalendarRef"
+      ref="calendarRef"
       :bookings="props.bookings"
       class="owner-calendar"
       :loading="props.loading"
       :properties="props.properties"
-      :view-mode="viewMode"
       @create-booking="handleCreateBooking"
       @date-select="handleDateSelect"
       @dates-set="handleDatesSet"
@@ -24,17 +23,13 @@
   import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
+  import { useCalendarState } from '@/composables/shared/useCalendarState'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when a calendar route is visited.
-  import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
-  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
-
-  const FullCalendar = defineAsyncComponent({
-    loader: () => import('@/components/smart/shared/FullCalendar.vue'),
-    loadingComponent: LoadingSpinner,
-    delay: 200,
-  })
+  const FullCalendar = defineAsyncComponent(() =>
+    import('@/components/smart/shared/FullCalendar.vue'),
+  )
 
   interface Props {
     bookings: Booking[]
@@ -42,7 +37,6 @@
     loading?: boolean
     currentView?: 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'
     currentDate?: Date
-    viewMode?: 'ranges' | 'events'
   }
 
   interface Emits {
@@ -52,6 +46,7 @@
     (e: 'event-resize', resizeInfo: EventResizeDoneArg): void
     (e: 'create-booking', data: { start: string, end: string, propertyId?: string }): void
     (e: 'view-change', view: string): void
+    (e: 'date-change', date: Date): void
     (e: 'day-view-open', payload: { date: Date, bookings: Booking[] }): void
     (e: 'dates-set', arg: DatesSetArg): void
   }
@@ -64,7 +59,7 @@
 
   const emit = defineEmits<Emits>()
 
-  const { goToDate: calendarStateGoToDate } = useOwnerCalendarState()
+  const { goToDate: calendarStateGoToDate } = useCalendarState()
 
   // ===== REFS AND REACTIVE DATA =====
   const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
@@ -107,6 +102,7 @@
     if (calendarRef.value) {
       calendarRef.value.goToDate(targetDate)
     }
+    emit('date-change', targetDate)
   }
 
   function prev (): void {
@@ -181,10 +177,6 @@
 </script>
 
 <style scoped>
-/* ================================================================ */
-/* MOBILE-FIRST CALENDAR CONTAINER */
-/* ================================================================ */
-
 .owner-calendar-container {
   height: 100%;
   width: 100%;
@@ -219,6 +211,9 @@
 }
 
 /* Owner calendar specific adjustments */
+:deep(.fc-header-toolbar) {
+  margin-bottom: 0.5em;
+}
 
 :deep(.fc-daygrid-day-number) {
   font-weight: 500;
@@ -259,6 +254,20 @@
   /* TODO: Adjust based on actual header/footer height */
   }
 
+  :deep(.fc-header-toolbar) {
+    flex-direction: column;
+    gap: 0.5em;
+  }
+
+  :deep(.fc-toolbar-chunk) {
+    display: flex;
+    justify-content: center;
+  }
+
+  :deep(.fc-button) {
+    font-size: 0.875rem;
+    padding: 0.5em 0.75em;
+  }
 }
 
 /* ================================================================ */
