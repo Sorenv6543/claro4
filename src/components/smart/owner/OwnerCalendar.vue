@@ -2,7 +2,7 @@
   <div class="owner-calendar-container">
     <!-- Owner Calendar: Shows only owner's bookings across their properties -->
     <FullCalendar
-      ref="calendarRef"
+      ref="OwnercalendarRef"
       :bookings="props.bookings"
       class="owner-calendar"
       :loading="props.loading"
@@ -20,9 +20,9 @@
 </template>
 
 <script setup lang="ts">
+  import type { Booking, Property } from '@/types'
   import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
-  import type { Booking, Property } from '@/types'
   import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*

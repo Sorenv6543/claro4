@@ -9,7 +9,9 @@
       variant="text"
       @click="emit('prev')"
     />
+
     <span class="calendar-nav-pill__label">{{ label }}</span>
+
     <v-btn
       aria-label="Next period"
       class="calendar-nav-pill__btn"

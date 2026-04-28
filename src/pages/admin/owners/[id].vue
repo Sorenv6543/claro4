@@ -7,3 +7,8 @@
 
   defineOptions({ name: 'AdminOwnerDetailPage' })
 </script>
+<style scoped>
+  .admin-owner-detail {
+    height: 100%;
+  }
+</style>

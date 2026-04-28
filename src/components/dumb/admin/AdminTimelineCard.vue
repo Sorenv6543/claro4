@@ -74,6 +74,7 @@
         <div class="text-body-2 font-weight-medium text-truncate">
           {{ property?.name || 'Unknown Property' }}
         </div>
+
         <div class="text-caption text-medium-emphasis">
           Checkout → {{ typeLabel }}
         </div>
@@ -96,6 +97,7 @@
         <v-chip color="error" size="x-small" variant="flat">
           Unassigned
         </v-chip>
+
         <v-btn
           color="primary"
           data-testid="assign-btn"
@@ -106,11 +108,13 @@
           Assign
         </v-btn>
       </template>
+
       <template v-else>
         <div class="d-flex align-center ga-1">
           <v-avatar color="primary" size="22">
             <span class="text-caption">{{ cleanerInitials }}</span>
           </v-avatar>
+
           <span class="text-caption text-truncate" style="max-width: 80px;">
             {{ assigneeDisplay }}
           </span>
@@ -125,6 +129,7 @@
         @click.stop
       >
         <v-icon size="16">mdi-dots-vertical</v-icon>
+
         <v-menu activator="parent">
           <v-list density="compact">
             <v-list-item
@@ -133,11 +138,13 @@
               title="Assign"
               @click="emit('assign', booking)"
             />
+
             <v-list-item
               prepend-icon="mdi-eye"
               title="View Details"
               @click="emit('view', booking)"
             />
+
             <v-list-item
               prepend-icon="mdi-swap-horizontal"
               title="Change Status"

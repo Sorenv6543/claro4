@@ -11,9 +11,11 @@
                 variant="text"
                 @click="goBack"
               />
+
               <h1 class="text-h4 ml-4">
                 {{ property ? formatPropertyAddress(property, 'short') : 'Property Details' }}
               </h1>
+
               <v-chip
                 v-if="property"
                 class="ml-3"
@@ -23,6 +25,7 @@
                 {{ property.active ? 'Active' : 'Inactive' }}
               </v-chip>
             </div>
+
             <div
               v-if="property"
               class="d-flex gap-2"
@@ -49,6 +52,7 @@
                 color="primary"
                 indeterminate
               />
+
               <div class="mt-4">
                 Loading property...
               </div>
@@ -71,6 +75,7 @@
             :property="property"
             @save="(data) => handleSectionSave('info', data)"
           />
+
           <PropertyCleaningSection
             ref="cleaningRef"
             :error="sectionState.cleaning.error"
@@ -78,6 +83,7 @@
             :property="property"
             @save="(data) => handleSectionSave('cleaning', data)"
           />
+
           <PropertyAccessSection
             ref="accessRef"
             :error="sectionState.access.error"
@@ -85,6 +91,7 @@
             :property="property"
             @save="(data) => handleSectionSave('access', data)"
           />
+
           <PropertyContactSection
             ref="contactRef"
             :error="sectionState.contact.error"
@@ -112,23 +119,28 @@
               </v-icon>
               Statistics
             </v-card-title>
+
             <v-card-text>
               <div class="stat-item">
                 <div class="stat-value">
                   {{ totalBookings }}
                 </div>
+
                 <div class="stat-label">
                   Total Bookings
                 </div>
               </div>
+
               <div class="stat-item">
                 <div class="stat-value">
                   {{ upcomingCount }}
                 </div>
+
                 <div class="stat-label">
                   Upcoming Bookings
                 </div>
               </div>
+
               <div class="stat-item">
                 <v-chip
                   :color="property.active ? 'success' : 'grey'"
@@ -136,6 +148,7 @@
                 >
                   {{ property.active ? 'Active' : 'Inactive' }}
                 </v-chip>
+
                 <div class="stat-label mt-1">
                   Status
                 </div>
@@ -153,12 +166,15 @@
               </v-icon>
               Details
             </v-card-title>
+
             <v-card-text class="text-body-2">
               <p><strong>Pricing Tier:</strong> {{ property.pricing_tier }}</p>
               <p><strong>Cleaning Duration:</strong> {{ property.cleaning_duration }} min</p>
+
               <p v-if="property.created_at">
                 <strong>Created:</strong> {{ formatDate(property.created_at) }}
               </p>
+
               <p v-if="property.updated_at">
                 <strong>Last Updated:</strong> {{ formatDate(property.updated_at) }}
               </p>
@@ -175,6 +191,7 @@
               </v-icon>
               Upcoming Arrivals
             </v-card-title>
+
             <v-card-text>
               <div
                 v-if="upcomingSchedule.length === 0"
@@ -186,10 +203,12 @@
                 >
                   mdi-calendar-blank-outline
                 </v-icon>
+
                 <div class="text-body-1 text-medium-emphasis mt-2">
                   No upcoming bookings
                 </div>
               </div>
+
               <v-list
                 v-else
                 density="compact"
@@ -200,6 +219,7 @@
                 >
                   <v-list-item-title>{{ formatDateRange(booking.checkin_date, booking.checkout_date) }}</v-list-item-title>
                   <v-list-item-subtitle>Cleaning window: {{ property.cleaning_duration }} min</v-list-item-subtitle>
+
                   <template #append>
                     <v-chip
                       :color="booking.booking_type === 'turn' ? 'warning' : 'primary'"
@@ -223,6 +243,7 @@
               </v-icon>
               Recent Bookings
             </v-card-title>
+
             <v-card-text>
               <div
                 v-if="propertyBookings.length === 0"
@@ -234,10 +255,12 @@
                 >
                   mdi-calendar-outline
                 </v-icon>
+
                 <div class="text-body-1 text-medium-emphasis mt-2">
                   No bookings yet
                 </div>
               </div>
+
               <v-list
                 v-else
                 density="compact"
@@ -248,6 +271,7 @@
                 >
                   <v-list-item-title>{{ formatBookingTitle(booking) }}</v-list-item-title>
                   <v-list-item-subtitle>{{ formatDateRange(booking.checkin_date, booking.checkout_date) }}</v-list-item-subtitle>
+
                   <template #append>
                     <v-chip
                       :color="getBookingStatusColor(booking.status)"
@@ -275,12 +299,15 @@
               >
                 mdi-home-alert-outline
               </v-icon>
+
               <div class="text-h6 mb-2">
                 Property not found
               </div>
+
               <div class="text-body-2 text-medium-emphasis mb-4">
                 {{ loadError || 'This property could not be loaded.' }}
               </div>
+
               <v-btn
                 color="primary"
                 @click="goBack"

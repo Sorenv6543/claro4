@@ -39,6 +39,7 @@
 
       <template v-if="isEveningMode && unassignedBookings?.length">
         <v-divider class="my-2" />
+
         <div
           v-for="booking in unassignedBookings"
           :key="booking.id"
@@ -49,10 +50,12 @@
             <div class="text-body-2 font-weight-medium">
               {{ props.propertyMap?.get(booking.property_id)?.name || 'Unknown' }}
             </div>
+
             <div class="text-caption text-medium-emphasis">
               {{ formatTime(booking) }} · {{ booking.booking_type === 'turn' ? 'Turn' : 'Standard' }}
             </div>
           </div>
+
           <v-btn
             append-icon="mdi-chevron-down"
             color="primary"

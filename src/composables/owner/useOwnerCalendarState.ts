@@ -1,5 +1,5 @@
-import type { DateSelectArg, EventClickArg, EventInput } from '@fullcalendar/core'
 import type { Booking } from '@/types'
+import type { DateSelectArg, EventClickArg, EventInput } from '@fullcalendar/core'
 import { computed, ref } from 'vue'
 import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
 import { useCalendarState } from '@/composables/shared/useCalendarState'

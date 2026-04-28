@@ -11,6 +11,7 @@
       <v-banner-text>
         You're offline. Some features may be limited.
       </v-banner-text>
+
       <template #actions>
         <v-btn
           size="small"
@@ -34,10 +35,12 @@
         <div class="text-subtitle-1 font-weight-medium mb-1">
           Install CleanSync App
         </div>
+
         <div class="text-body-2">
           Get faster access and work offline with the installed app.
         </div>
       </v-banner-text>
+
       <template #actions>
         <v-btn
           size="small"
@@ -46,6 +49,7 @@
         >
           Not Now
         </v-btn>
+
         <v-btn
           color="white"
           :loading="installing"
@@ -70,10 +74,12 @@
         <div class="text-subtitle-1 font-weight-medium mb-1">
           App Update Available
         </div>
+
         <div class="text-body-2">
           A new version is ready. Restart to get the latest features.
         </div>
       </v-banner-text>
+
       <template #actions>
         <v-btn
           size="small"
@@ -82,6 +88,7 @@
         >
           Later
         </v-btn>
+
         <v-btn
           color="white"
           :loading="updating"

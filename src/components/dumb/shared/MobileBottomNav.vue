@@ -85,6 +85,7 @@
         icon="mdi-gesture-swipe-up"
         size="small"
       />
+
       <span class="hint-text">Swipe up for quick actions</span>
     </div>
   </v-bottom-navigation>

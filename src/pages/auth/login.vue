@@ -23,6 +23,7 @@
         color="primary"
         indeterminate
       />
+
       <p class="mt-4">
         Signing you in...
       </p>
@@ -89,10 +90,12 @@
 
       <!-- Register / Demos Links -->
       <v-divider class="my-4" />
+
       <div class="text-center">
         <p class="text-body-2 mb-2">
           Don't have an account?
         </p>
+
         <v-btn
           color="primary"
           :disabled="submitting"
@@ -101,7 +104,9 @@
         >
           Create Account
         </v-btn>
+
         <v-divider class="my-4" />
+
         <v-btn
           color="primary"
           :disabled="submitting"

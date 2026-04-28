@@ -6,39 +6,17 @@
 <template>
   <div class="owner-properties-page">
     <v-container class="pt-0" fluid>
-      <!-- Flat page header (no gradient) -->
-      <div class="page-header">
-        <div class="page-header__main">
-          <div class="page-header__title-row">
-            <h1 class="text-h5 font-weight-bold page-heading">My Properties</h1>
-            <v-chip color="primary" size="small" variant="tonal">
-              {{ myProperties.length }}
-            </v-chip>
-          </div>
-          <p class="text-body-2 page-subheading">
-            Manage your rental properties and settings
-          </p>
-        </div>
-        <v-btn
-          v-if="mobile"
-          aria-label="Add Property"
-          class="flex-shrink-0"
-          color="primary"
-          icon="mdi-plus"
-          size="small"
-          @click="handleCreateProperty"
-        />
-        <v-btn
-          v-else
-          class="flex-shrink-0"
-          color="primary"
-          prepend-icon="mdi-plus"
-          size="small"
-          @click="handleCreateProperty"
-        >
-          Add Property
-        </v-btn>
-      </div>
+      <!-- Hero banner replaces OwnerPageHeader -->
+      <OwnerWelcomeBanner
+        class="mb-6"
+        page-title="My Properties"
+        :stats="[
+          { icon: 'mdi-home-group', label: 'Active', value: myProperties.length },
+          { icon: 'mdi-swap-horizontal', label: 'Turns Today', value: myTodayTurns.length },
+          { icon: 'mdi-calendar-check', label: 'Total Bookings', value: totalBookingsCount },
+        ]"
+        subtitle="Manage your rental properties and cleaning operations"
+      />
 
       <!-- C3 — Compact Inline Bar -->
       <div class="c3-inline-bar mb-5">
@@ -47,19 +25,25 @@
           <span class="c3-value">{{ myProperties.length }}</span>
           <span class="c3-label">Properties</span>
         </div>
+
         <div class="c3-divider" />
+
         <div class="c3-cell">
           <v-icon color="success" size="20">mdi-check-circle</v-icon>
           <span class="c3-value">{{ myActiveProperties.length }}</span>
           <span class="c3-label">Active</span>
         </div>
+
         <div class="c3-divider" />
+
         <div class="c3-cell">
           <v-icon color="info" size="20">mdi-calendar-multiple</v-icon>
           <span class="c3-value">{{ myBookings.length }}</span>
           <span class="c3-label">Bookings</span>
         </div>
+
         <div class="c3-divider" />
+
         <div class="c3-cell">
           <v-icon color="warning" size="20">mdi-swap-horizontal</v-icon>
           <span class="c3-value">{{ myTodayTurns.length }}</span>
@@ -67,196 +51,30 @@
         </div>
       </div>
 
-      <!-- Data Table -->
-      <MaterioDataTable
-        expandable
-        :headers="tableHeaders"
-        :items="propertyItems"
-        :loading="false"
-        :search-keys="['display_name', 'full_address', 'property_type']"
-        :searchable="!mobile"
-      >
-        <!-- Segment tabs -->
-        <template v-if="!mobile" #segments>
-          <div class="d-flex ga-2 flex-wrap">
-            <v-btn
-              v-for="seg in segments"
-              :key="seg.value"
-              :color="selectedSegment === seg.value ? 'primary' : undefined"
-              density="compact"
-              size="small"
-              :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
-              @click="selectedSegment = seg.value"
-            >
-              {{ seg.title }}
-            </v-btn>
-          </div>
-        </template>
-
-        <!-- Property column with color bar -->
-        <template #[`item.display_name`]="{ item }">
-          <div class="d-flex align-center ga-2">
-            <div
-              class="property-color-bar"
-              :style="{ backgroundColor: mapLegacyPropertyColor(item.color, 'var(--claro-secondary)') }"
-            />
-            <span class="font-weight-medium text-body-2">{{ item.display_name }}</span>
-          </div>
-        </template>
-
-        <!-- Bedrooms -->
-        <template #[`item.bedrooms`]="{ item }">
-          <div class="d-flex align-center ga-1">
-            <v-icon color="medium-emphasis" size="16">mdi-bed-outline</v-icon>
-            <span class="text-body-2">{{ item.bedrooms || 0 }}</span>
-          </div>
-        </template>
-
-        <!-- Bathrooms -->
-        <template #[`item.bathrooms`]="{ item }">
-          <div class="d-flex align-center ga-1">
-            <v-icon color="medium-emphasis" size="16">mdi-shower</v-icon>
-            <span class="text-body-2">{{ item.bathrooms || 0 }}</span>
-          </div>
-        </template>
-
-        <!-- Type chip -->
-        <template #[`item.property_type`]="{ item }">
-          <v-chip color="secondary" size="small" variant="tonal">
-            <v-icon size="14" start>{{ getPropertyIcon(item.property_type) }}</v-icon>
-            {{ item.property_type || 'N/A' }}
-          </v-chip>
-        </template>
-
-        <!-- Status chip -->
-        <template #[`item.active`]="{ item }">
-          <v-chip
-            :color="item.active ? 'success' : 'error'"
-            size="small"
-            variant="tonal"
-          >
-            {{ item.active ? 'Active' : 'Inactive' }}
-          </v-chip>
-        </template>
-
-        <!-- Actions -->
-        <template #[`item.actions`]="{ item }">
-          <div class="d-flex align-center ga-1">
-            <v-btn
-              color="primary"
-              icon="mdi-eye-outline"
-              size="small"
-              variant="text"
-              @click.stop="viewProperty(item)"
-            />
-            <v-btn
-              color="primary"
-              icon="mdi-pencil-outline"
-              size="small"
-              variant="text"
-              @click.stop="editProperty(item)"
-            />
-            <v-tooltip
-              content-class="claro-tooltip"
-              location="start"
-              :offset="6"
-              :text="item.booking_count > 0 ? `Cannot delete — ${item.booking_count} booking${item.booking_count === 1 ? '' : 's'} exist` : 'Delete property'"
-            >
-              <template #activator="{ props: tooltipProps }">
-                <div v-bind="tooltipProps">
-                  <v-btn
-                    color="error"
-                    :disabled="item.booking_count > 0"
-                    icon="mdi-delete-outline"
-                    size="small"
-                    variant="text"
-                    @click.stop="handleDeleteProperty(item.id)"
-                  />
-                </div>
-              </template>
-            </v-tooltip>
-          </div>
-        </template>
-
-        <!-- Expanded row content -->
-        <template #expand-content="{ item }">
-          <div class="expanded-content pa-4" color="error">
-            <v-row density="compact">
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Special Instructions</div>
-                  <div class="text-body-2">{{ item.special_instructions || 'None' }}</div>
-                </div>
-              </v-col>
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Access Info</div>
-                  <div class="text-body-2">{{ item.access_info || 'Not specified' }}</div>
-                </div>
-              </v-col>
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Contact</div>
-                  <div class="text-body-2">
-                    <template v-if="item.contact_name || item.contact_phone">
-                      {{ item.contact_name }}<br v-if="item.contact_name && item.contact_phone">{{ item.contact_phone }}
-                    </template>
-                    <template v-else>Not specified</template>
-                  </div>
-                </div>
-              </v-col>
-              <v-col cols="12" md="3" sm="6">
-                <div class="expanded-field">
-                  <div class="text-caption text-medium-emphasis mb-1">Cleaning Duration</div>
-                  <div class="text-body-2">{{ item.cleaning_duration }} min</div>
-                </div>
-              </v-col>
-            </v-row>
-
-            <!-- Mobile-only actions (Actions column hidden on mobile) -->
-            <div class="expanded-actions d-flex d-md-none ga-2 mt-3">
-              <v-btn
-                color="primary"
-                prepend-icon="mdi-eye-outline"
-                size="small"
-                variant="tonal"
-                @click.stop="viewProperty(item)"
-              >
-                View
-              </v-btn>
-              <v-btn
-                color="primary"
-                prepend-icon="mdi-pencil-outline"
-                size="small"
-                variant="tonal"
-                @click.stop="editProperty(item)"
-              >
-                Edit
-              </v-btn>
-              <v-btn
-                color="error"
-                :disabled="item.booking_count > 0"
-                prepend-icon="mdi-delete-outline"
-                size="small"
-                variant="tonal"
-                @click.stop="handleDeleteProperty(item.id)"
-              >
-                Delete
-              </v-btn>
-            </div>
-          </div>
-        </template>
-      </MaterioDataTable>
-
-      <!-- Empty State -->
-      <v-card v-if="myProperties.length === 0" class="text-center pa-8 mt-4" variant="flat">
-        <v-icon class="mb-4" color="grey-lighten-1" size="64">mdi-home-outline</v-icon>
-        <h3 class="text-h6 mb-2">No Properties Yet</h3>
-        <p class="text-body-2 text-medium-emphasis mb-4">Add your first property to start managing bookings and cleanings.</p>
-        <v-btn color="primary" prepend-icon="mdi-plus" @click="handleCreateProperty">
-          Add Your First Property
+      <!-- Segment filter -->
+      <div class="d-flex ga-2 flex-wrap mb-4">
+        <v-btn
+          v-for="seg in segments"
+          :key="seg.value"
+          :color="selectedSegment === seg.value ? 'primary' : undefined"
+          density="compact"
+          size="small"
+          :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
+          @click="selectedSegment = seg.value"
+        >
+          {{ seg.title }}
         </v-btn>
-      </v-card>
+      </div>
+
+      <!-- Property list -->
+      <PropertyList
+        :items="listItems"
+        :loading="loading"
+        @assign-cleaner="handleAssignCleaner"
+        @edit="handleListEdit"
+        @more="handleListMore"
+        @view-calendar="handleViewCalendar"
+      />
     </v-container>
 
     <!-- Property Modal - Same modal system as HomeOwner -->
@@ -289,15 +107,14 @@
 </template>
 
 <script setup lang="ts">
+  import type { PropertyListEvent, PropertyListItem, PropertyStats, PropertyTimelineEvent } from '@/components/dumb/owner/PropertyList.vue'
   import type { Property, PropertyFormData, PropertyRecord } from '@/types'
   import { computed, onMounted, ref } from 'vue'
-  import { mapLegacyPropertyColor } from '@/utils/constants'
   import { useRouter } from 'vue-router'
-  import { useDisplay } from 'vuetify'
+  import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
+  import PropertyList from '@/components/dumb/owner/PropertyList.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
-
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useAuthStore } from '@/stores/auth'
@@ -312,7 +129,6 @@
   const uiStore = useUIStore()
   const authStore = useAuthStore()
   const router = useRouter()
-  const { mobile } = useDisplay()
 
   const {
     myProperties,
@@ -330,26 +146,15 @@
     fetchMyBookings,
   } = useOwnerBookings()
 
-  // Table headers
-  const tableHeaders = [
-    { title: 'Property', key: 'display_name', sortable: true },
-    { title: 'Beds', key: 'bedrooms', sortable: true, width: '80px', mobileHidden: true },
-    { title: 'Baths', key: 'bathrooms', sortable: true, width: '80px', mobileHidden: true },
-    { title: 'Type', key: 'property_type', sortable: true, mobileHidden: true },
-    { title: 'Status', key: 'active', sortable: true },
-    { title: 'Actions', key: 'actions', sortable: false, width: '130px', align: 'end' as const, mobileHidden: true },
-  ]
-
-  // Segment tabs
+  // Segment filter
   const selectedSegment = ref('all')
-
   const segments = [
     { title: 'All', value: 'all' },
     { title: 'Active', value: 'active' },
     { title: 'Inactive', value: 'inactive' },
   ]
 
-  // Count bookings per property so we can block deletion when bookings exist
+  // Count bookings per property (for delete guard)
   const bookingCountByProperty = computed(() => {
     const counts = new Map<string, number>()
     for (const booking of myBookings.value) {
@@ -358,20 +163,126 @@
     return counts
   })
 
-  // Computed property items for the table
-  const propertyItems = computed(() => {
-    let items = myProperties.value
-    if (selectedSegment.value === 'active') {
-      items = items.filter(p => p.active)
-    } else if (selectedSegment.value === 'inactive') {
-      items = items.filter(p => !p.active)
-    }
-    return items.map(property => ({
-      ...property,
-      display_name: formatPropertyAddress(property, 'short'),
-      full_address: formatPropertyAddress(property),
-      booking_count: bookingCountByProperty.value.get(property.id) ?? 0,
-    }))
+  // ─── PropertyList data mapping ───────────────────────────────────────────
+
+  function formatTime12h (time24: string): string {
+    const [h, m] = time24.split(':').map(Number)
+    const ampm = h >= 12 ? 'PM' : 'AM'
+    const displayH = h > 12 ? h - 12 : (h === 0 ? 12 : h)
+    return `${displayH}:${String(m ?? 0).padStart(2, '0')} ${ampm}`
+  }
+
+  function formatEventDate (dateStr: string, todayStr: string): string {
+    if (dateStr === todayStr) return 'Today'
+    const d = new Date(`${dateStr}T12:00:00`)
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+  }
+
+  const totalBookingsCount = computed(() =>
+    myBookings.value.filter(b => b.status !== 'cancelled').length,
+  )
+
+  const listItems = computed<PropertyListItem[]>(() => {
+    const todayStr = new Date().toISOString().split('T')[0]
+    const currentYear = new Date().getFullYear()
+
+    let properties = myProperties.value
+    if (selectedSegment.value === 'active') properties = properties.filter(p => p.active)
+    else if (selectedSegment.value === 'inactive') properties = properties.filter(p => !p.active)
+
+    return properties.map(property => {
+      const propBookings = myBookings.value.filter(b =>
+        b.property_id === property.id
+        && b.status !== 'cancelled'
+        && b.status !== 'completed',
+      )
+
+      // Today's turn (checkout_date or checkin_date is today, booking_type is turn)
+      const todayTurn = propBookings.find(b =>
+        b.booking_type === 'turn'
+        && (b.checkout_date === todayStr || b.checkin_date === todayStr || b.turn_date === todayStr),
+      )
+      const isTurnToday = !!todayTurn
+
+      // Next upcoming booking by checkin_date
+      const nextBooking = propBookings
+        .filter(b => b.checkin_date >= todayStr)
+        .toSorted((a, b) => a.checkin_date.localeCompare(b.checkin_date))[0]
+
+      // Next check-in label
+      let nextCheckin: PropertyListItem['nextCheckin']
+      if (nextBooking) {
+        const isToday = nextBooking.checkin_date === todayStr
+        const datePart = isToday
+          ? 'Today'
+          : new Date(`${nextBooking.checkin_date}T12:00:00`).toLocaleDateString('en-US', {
+            weekday: 'short', month: 'short', day: 'numeric',
+          })
+        nextCheckin = {
+          label: `${datePart} · ${formatTime12h(nextBooking.checkin_time.slice(0, 5))}`,
+          isTurnDay: isTurnToday,
+        }
+      }
+
+      // B2: timebar events (turn day only)
+      let todayEvents: PropertyListEvent[] | undefined
+      if (isTurnToday && todayTurn) {
+        const outTime = (todayTurn.turn_start_time ?? todayTurn.checkout_time).slice(0, 5)
+        const inTime = (todayTurn.turn_checkin_time ?? todayTurn.checkin_time).slice(0, 5)
+        const isUnassigned = !todayTurn.assigned_cleaner_id && !todayTurn.assigned_team_id
+        todayEvents = [
+          { type: 'checkout', time: formatTime12h(outTime), time24: outTime },
+          { type: 'cleaning', time: `${formatTime12h(outTime)} → ${formatTime12h(inTime)}`, time24: outTime, isUnassigned },
+          { type: 'checkin', time: formatTime12h(inTime), time24: inTime },
+        ]
+      }
+
+      // B1: upcoming event spine (non-turn days)
+      let upcomingEvents: PropertyTimelineEvent[] | undefined
+      if (!isTurnToday) {
+        type SortedEvent = PropertyTimelineEvent & { sortKey: string }
+        const events: SortedEvent[] = []
+        for (const b of propBookings.filter(ev => ev.checkout_date >= todayStr).slice(0, 3)) {
+          if (b.checkout_date >= todayStr) {
+            events.push({
+              sortKey: `${b.checkout_date} ${b.checkout_time}`,
+              dateLabel: `${formatEventDate(b.checkout_date, todayStr)} · ${formatTime12h(b.checkout_time.slice(0, 5))}`,
+              title: 'Guest check-out',
+            })
+          }
+          if (b.checkin_date >= todayStr) {
+            events.push({
+              sortKey: `${b.checkin_date} ${b.checkin_time}`,
+              dateLabel: `${formatEventDate(b.checkin_date, todayStr)} · ${formatTime12h(b.checkin_time.slice(0, 5))}`,
+              title: 'Guest check-in',
+            })
+          }
+        }
+        events.sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+        if (events.length > 0) {
+          upcomingEvents = events.slice(0, 4).map(({ sortKey: _sk, ...ev }) => ev)
+        }
+      }
+
+      // Stats
+      const allPropBookings = myBookings.value.filter(b => b.property_id === property.id)
+      const turnsYtd = allPropBookings.filter(b =>
+        b.booking_type === 'turn'
+        && new Date(`${b.checkout_date}T12:00:00`).getFullYear() === currentYear,
+      ).length
+
+      const relevantBooking = todayTurn ?? nextBooking
+      const isAssigned = !!(relevantBooking?.assigned_cleaner_id || relevantBooking?.assigned_team_id)
+
+      const stats: PropertyStats = {
+        turnsYtd,
+        avgCleanMin: property.cleaning_duration,
+        assignmentLabel: isTurnToday ? 'Today' : 'Next check-in',
+        assignedCleanerName: isAssigned ? 'Assigned' : undefined,
+      }
+
+      return { property, nextCheckin, isTurnToday, todayEvents, upcomingEvents, stats }
+    })
   })
 
   // ============================================================================
@@ -417,35 +328,30 @@
   })
 
   // ============================================================================
-  // HELPER FUNCTIONS - STYLING AND ICONS
+  // PROPERTY LIST EMIT HANDLERS
   // ============================================================================
 
-  // Property type icon mapping
-  function getPropertyIcon (propertyType?: string): string {
-    switch (propertyType) {
-      case 'house': { return 'mdi-home'
-      }
-      case 'apartment': { return 'mdi-apartment'
-      }
-      case 'condo': { return 'mdi-office-building'
-      }
-      case 'townhouse': { return 'mdi-home-group'
-      }
-      default: { return 'mdi-home-outline'
-      }
-    }
+  function handleAssignCleaner (_propertyId: string): void {
+    uiStore.addNotification('info', 'Cleaner Assignment', 'Contact your admin to assign a cleaner for this turn.')
+  }
+
+  function handleViewCalendar (propertyId: string): void {
+    router.push({ path: '/owner/overview', query: { property: propertyId } })
+  }
+
+  function handleListEdit (propertyId: string): void {
+    const property = myProperties.value.find(p => p.id === propertyId)
+    if (property) editProperty(property)
+  }
+
+  function handleListMore (propertyId: string): void {
+    const property = myProperties.value.find(p => p.id === propertyId)
+    if (property) viewProperty(property)
   }
 
   // ============================================================================
   // EVENT HANDLERS - SAME ORCHESTRATION PATTERN AS HomeOwner
   // ============================================================================
-
-  function handleCreateProperty (): void {
-    const propertyData = {
-      owner_id: authStore.user?.id,
-    }
-    uiStore.openModal('propertyModal', 'create', propertyData)
-  }
 
   async function handleDeleteProperty (propertyId: string): Promise<void> {
     const property = myProperties.value.find(p => p.id === propertyId)
@@ -542,7 +448,8 @@
   async function handlePropertyModalDelete (propertyId: string): Promise<void> {
     const property = myProperties.value.find(p => p.id === propertyId)
     if (!property || property.owner_id !== authStore.user?.id) {
-      console.warn('Cannot delete property not owned by current user')
+      console.warn('[OwnerProperties] Delete attempted on non-owned property:', propertyId)
+      uiStore.addNotification('error', 'Permission Denied', 'You can only delete properties you own.')
       return
     }
 
@@ -594,16 +501,18 @@
   // LIFECYCLE - SAME INITIALIZATION AS HomeOwner
   // ============================================================================
 
+  const loading = ref(false)
+
   onMounted(async () => {
     if (authStore.isAuthenticated && authStore.user?.role === 'owner') {
+      loading.value = true
       try {
-        await Promise.all([
-          fetchMyProperties(),
-          fetchMyBookings(),
-        ])
+        await Promise.all([fetchMyProperties(), fetchMyBookings()])
       } catch (error: unknown) {
         console.error('Failed to load properties data:', error)
         uiStore.addNotification('error', 'Error', 'Failed to load properties. Please refresh.')
+      } finally {
+        loading.value = false
       }
     }
   })
@@ -653,20 +562,4 @@
   color: var(--claro-text-secondary);
 }
 
-/* Property color bar (matches OwnerBookings) */
-.property-color-bar {
-  width: 3px;
-  height: 28px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-/* Expanded content */
-.expanded-content {
-  background: rgba(var(--v-theme-on-surface), 0.03);
-}
-
-.expanded-field {
-  padding: 8px 0;
-}
 </style>

@@ -1,0 +1,84 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Production Deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "pnpm"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type check
+        run: pnpm exec vue-tsc --noEmit
+
+      - name: Tests
+        run: pnpm test:run
+
+      - name: Build owner bundle
+        run: pnpm build:owner-only
+        env:
+          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          VITE_SENTRY_DSN: ${{ secrets.VITE_SENTRY_DSN }}
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+          SENTRY_ORG: ${{ secrets.SENTRY_ORG }}
+          SENTRY_PROJECT: ${{ secrets.SENTRY_PROJECT }}
+
+      - name: Deploy to Cloudflare Pages (production)
+        run: |
+          pnpm exec wrangler pages deploy dist/ \
+            --project-name claro-owner \
+            --branch main
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Notify Sentry of release
+        id: notify-sentry
+        continue-on-error: true
+        run: |
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          SHORT_SHA=$(git rev-parse --short HEAD)
+          VERSION="${PKG_VERSION}+${SHORT_SHA}"
+          npx sentry-cli releases new "$VERSION" \
+            --org "${{ secrets.SENTRY_ORG }}" \
+            --project "${{ secrets.SENTRY_PROJECT }}"
+          npx sentry-cli releases finalize "$VERSION" \
+            --org "${{ secrets.SENTRY_ORG }}" \
+            --project "${{ secrets.SENTRY_PROJECT }}"
+          npx sentry-cli releases deploys "$VERSION" new \
+            --env production \
+            --org "${{ secrets.SENTRY_ORG }}" \
+            --project "${{ secrets.SENTRY_PROJECT }}"
+        env:
+          SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+
+      - name: Warn if Sentry notification failed
+        if: steps.notify-sentry.outcome == 'failure'
+        run: echo "::warning::Sentry release notification failed — deploy succeeded but release tracking may be incomplete."

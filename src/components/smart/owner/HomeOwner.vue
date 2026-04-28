@@ -104,10 +104,10 @@ src/components/smart/owner/HomeOwner.vue -
 <script setup lang="ts">
 // import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync';
 
-  import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
-  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   // Types
   import type { Booking, BookingFormData, Property, PropertyFormData } from '@/types'
+  import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   // Real-time sync will auto-initialize when user is authenticated
   import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
   import { useDisplay } from 'vuetify'
@@ -120,15 +120,12 @@ src/components/smart/owner/HomeOwner.vue -
   // Owner-specific components
   import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-
   import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   // Business logic composables
-
   // Import event logger for component communication
   import eventLogger from '@/composables/shared/useComponentEventLogger'
   import { useAuthStore } from '@/stores/auth'
-
   import { useUIStore } from '@/stores/ui'
   import { subtractOneDay } from '@/utils/calendarHelpers'
 

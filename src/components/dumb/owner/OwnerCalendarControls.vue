@@ -56,6 +56,7 @@
             <div class="text-h6 font-weight-medium">
               {{ currentDateDisplay }}
             </div>
+
             <div class="text-caption text-medium-emphasis">
               {{ currentDateSubtitle }}
             </div>

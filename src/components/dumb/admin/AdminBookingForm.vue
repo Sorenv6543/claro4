@@ -21,6 +21,7 @@
           </v-icon>
           URGENT TURN
         </v-chip>
+
         <v-chip
           v-if="form.priority === 'high'"
           class="ml-2"
@@ -29,7 +30,9 @@
         >
           HIGH PRIORITY
         </v-chip>
+
         <v-spacer />
+
         <v-chip
           :color="getStatusColor((form.status as string) || 'pending')"
           size="small"
@@ -79,6 +82,7 @@
                           <v-icon>mdi-home</v-icon>
                         </v-avatar>
                       </template>
+
                       <template #subtitle>
                         {{ getPropertyOwnerName(item.owner_id) }} • {{ item.fullAddress }}
                       </template>
@@ -194,7 +198,9 @@
                     </v-icon>
                     Cleaner Assignment
                   </v-card-title>
+
                   <v-divider />
+
                   <v-card-text>
                     <v-row>
                       <v-col
@@ -223,9 +229,11 @@
                                   <v-icon>mdi-account</v-icon>
                                 </v-avatar>
                               </template>
+
                               <template #subtitle>
                                 {{ getCleanerSubtitle(item as unknown as Cleaner) }}
                               </template>
+
                               <template #append>
                                 <v-chip
                                   :color="getCleanerAvailabilityColor(item as unknown as Cleaner)"
@@ -269,14 +277,18 @@
                           <template #title>
                             Cleaner: {{ selectedCleaner.name }}
                           </template>
+
                           <p class="mb-1">
                             <strong>Skills:</strong> {{ (selectedCleaner.skills ?? []).join(', ') }}
                           </p>
+
                           <p class="mb-1">
                             <strong>Today's Bookings:</strong> {{ getCleanerTodayBookings(selectedCleaner.id) }}/{{ selectedCleaner.max_daily_bookings }}
                           </p>
+
                           <p class="mb-0">
                             <strong>Performance Rating:</strong>
+
                             <v-rating
                               class="d-inline-flex ml-2"
                               density="compact"

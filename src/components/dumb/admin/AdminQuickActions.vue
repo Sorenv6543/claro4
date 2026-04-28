@@ -10,6 +10,7 @@
       </v-icon>
       Admin Actions
       <v-spacer />
+
       <v-chip
         v-if="urgentCount > 0"
         color="error"
@@ -53,6 +54,7 @@
               <v-icon class="mr-2">
                 mdi-clock-alert
               </v-icon>
+
               <span class="d-none d-sm-inline">Urgent</span>
               Turns
               <v-badge
@@ -84,6 +86,7 @@
               <v-icon class="mr-2">
                 mdi-account-hard-hat
               </v-icon>
+
               <span class="d-none d-sm-inline">Assign</span>
               Cleaners
             </v-btn>
@@ -109,6 +112,7 @@
               <v-icon class="mr-2">
                 mdi-calendar-multiple
               </v-icon>
+
               <span class="d-none d-sm-inline">Master</span>
               Calendar
             </v-btn>
@@ -131,6 +135,7 @@
               <v-icon class="mr-2">
                 mdi-calendar-plus
               </v-icon>
+
               <span class="d-none d-sm-inline">New</span>
               Booking
             </v-btn>
@@ -174,6 +179,7 @@
                   <v-icon class="mr-2">
                     mdi-account-multiple
                   </v-icon>
+
                   <span class="d-none d-sm-inline">Bulk</span>
                   Assign
                 </v-btn>
@@ -196,6 +202,7 @@
                   <v-icon class="mr-2">
                     mdi-calendar-sync
                   </v-icon>
+
                   <span class="d-none d-sm-inline">Bulk</span>
                   Reschedule
                 </v-btn>
@@ -241,6 +248,7 @@
                   <v-icon class="mr-2">
                     mdi-account-group
                   </v-icon>
+
                   <span class="d-none d-sm-inline">Manage</span>
                   Cleaners
                 </v-btn>
@@ -263,6 +271,7 @@
                   <v-icon class="mr-2">
                     mdi-chart-line
                   </v-icon>
+
                   <span class="d-none d-sm-inline">Business</span>
                   Reports
                 </v-btn>
@@ -287,6 +296,7 @@
                   <v-icon class="mr-2">
                     mdi-home-group
                   </v-icon>
+
                   <span class="d-none d-sm-inline">All</span>
                   Properties
                 </v-btn>
@@ -309,6 +319,7 @@
                   <v-icon class="mr-2">
                     mdi-cog-box
                   </v-icon>
+
                   <span class="d-none d-sm-inline">System</span>
                   Settings
                 </v-btn>
@@ -373,6 +384,7 @@
                   <div class="text-h6 text-primary">
                     {{ todayBookings }}
                   </div>
+
                   <div class="text-caption text-medium-emphasis">
                     Today
                   </div>
@@ -384,6 +396,7 @@
                   <div class="text-h6 text-warning">
                     {{ unassignedCount }}
                   </div>
+
                   <div class="text-caption text-medium-emphasis">
                     Unassigned
                   </div>
@@ -395,6 +408,7 @@
                   <div class="text-h6 text-success">
                     {{ completedToday }}
                   </div>
+
                   <div class="text-caption text-medium-emphasis">
                     Completed
                   </div>

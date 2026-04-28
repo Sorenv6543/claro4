@@ -12,10 +12,13 @@
           class="me-3"
           :icon="isEditing ? 'mdi-account-edit' : 'mdi-account-plus'"
         />
+
         <span class="text-h5 font-weight-bold">
           {{ isEditing ? 'Edit User' : 'Create New User' }}
         </span>
+
         <v-spacer />
+
         <v-btn
           icon="mdi-close"
           size="small"
@@ -142,6 +145,7 @@
                           :icon="item.icon"
                         />
                       </template>
+
                       <v-list-item-title>{{ item.title }}</v-list-item-title>
                       <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
                     </v-list-item>
@@ -314,6 +318,7 @@
 
       <v-card-actions class="pa-6 pt-4">
         <v-spacer />
+
         <v-btn
           :disabled="loading"
           size="large"

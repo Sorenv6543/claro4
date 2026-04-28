@@ -12,6 +12,7 @@
       </v-icon>
       System Turn Priority Queue
       <v-spacer />
+
       <v-chip
         :color="getTotalUrgencyColor()"
         size="small"
@@ -19,6 +20,7 @@
       >
         {{ urgentTurns.length }} Urgent
       </v-chip>
+
       <v-btn
         :icon="expanded ? 'mdi-chevron-up' : 'mdi-chevron-down'"
         size="small"
@@ -49,12 +51,14 @@
                   <div class="text-h4 font-weight-bold">
                     {{ criticalTurns.length }}
                   </div>
+
                   <div class="text-body-2">
                     Critical (&lt; 2 hrs)
                   </div>
                 </v-card-text>
               </v-card>
             </v-col>
+
             <v-col
               cols="12"
               md="3"
@@ -67,12 +71,14 @@
                   <div class="text-h4 font-weight-bold">
                     {{ urgentTurns.length }}
                   </div>
+
                   <div class="text-body-2">
                     Urgent (&lt; 6 hrs)
                   </div>
                 </v-card-text>
               </v-card>
             </v-col>
+
             <v-col
               cols="12"
               md="3"
@@ -85,12 +91,14 @@
                   <div class="text-h4 font-weight-bold">
                     {{ unassignedTurns.length }}
                   </div>
+
                   <div class="text-body-2">
                     Unassigned
                   </div>
                 </v-card-text>
               </v-card>
             </v-col>
+
             <v-col
               cols="12"
               md="3"
@@ -103,6 +111,7 @@
                   <div class="text-h4 font-weight-bold">
                     ${{ estimatedRevenue.toLocaleString() }}
                   </div>
+
                   <div class="text-body-2">
                     Revenue at Risk
                   </div>
@@ -131,6 +140,7 @@
                 @update:model-value="handleFilterChange"
               />
             </v-col>
+
             <v-col
               cols="12"
               md="6"
@@ -197,6 +207,7 @@
                   hide-details
                   @update:model-value="handleAutoRefreshToggle"
                 />
+
                 <span class="text-body-2 ml-2">Auto-refresh</span>
               </div>
             </v-col>
@@ -228,6 +239,7 @@
                     :model-value="selectedTurns.includes(turn.id)"
                     @click.stop="toggleTurnSelection(turn.id)"
                   />
+
                   <v-avatar
                     class="ml-2"
                     :color="getUrgencyColor(turn)"
@@ -265,6 +277,7 @@
                     </v-icon>
                     {{ getPropertyAddress(turn.property_id) }}
                   </div>
+
                   <div class="d-flex align-center">
                     <v-icon
                       class="mr-1"
@@ -298,6 +311,7 @@
                         </v-icon>
                         {{ getCleanerName(turn.assigned_cleaner_id) }}
                       </v-chip>
+
                       <v-chip
                         v-else
                         color="error"
@@ -358,9 +372,11 @@
                 >
                   mdi-check-circle
                 </v-icon>
+
                 <div class="text-h6">
                   No Urgent Turns
                 </div>
+
                 <div class="text-body-2">
                   All turn bookings are under control
                 </div>

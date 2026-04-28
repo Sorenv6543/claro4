@@ -23,28 +23,6 @@
                 {{ user.role }}
               </v-chip>
 
-              <!-- Stats Row -->
-              <div class="d-flex justify-center ga-4 mt-5">
-                <div class="profile-stat">
-                  <v-avatar color="primary" rounded size="38" variant="tonal">
-                    <v-icon size="22">mdi-home-group</v-icon>
-                  </v-avatar>
-                  <div class="mt-1">
-                    <span class="text-h6 font-weight-bold">{{ propertyCount }}</span>
-                    <div class="text-caption text-medium-emphasis">Properties</div>
-                  </div>
-                </div>
-
-                <div class="profile-stat">
-                  <v-avatar color="success" rounded size="38" variant="tonal">
-                    <v-icon size="22">mdi-calendar-check</v-icon>
-                  </v-avatar>
-                  <div class="mt-1">
-                    <span class="text-h6 font-weight-bold">{{ bookingCount }}</span>
-                    <div class="text-caption text-medium-emphasis">Bookings</div>
-                  </div>
-                </div>
-              </div>
             </v-card-text>
 
             <v-divider />
@@ -58,6 +36,7 @@
                   <v-icon class="me-2" size="18">mdi-account-outline</v-icon>
                   Username:
                 </span>
+
                 <span class="detail-value">{{ user.name || 'Not set' }}</span>
               </div>
 
@@ -66,6 +45,7 @@
                   <v-icon class="me-2" size="18">mdi-email-outline</v-icon>
                   Email:
                 </span>
+
                 <span class="detail-value">{{ user.email }}</span>
               </div>
 
@@ -74,6 +54,7 @@
                   <v-icon class="me-2" size="18">mdi-check-circle-outline</v-icon>
                   Status:
                 </span>
+
                 <v-chip color="success" size="x-small" variant="tonal">Active</v-chip>
               </div>
 
@@ -82,6 +63,7 @@
                   <v-icon class="me-2" size="18">mdi-shield-outline</v-icon>
                   Role:
                 </span>
+
                 <span class="detail-value text-capitalize">{{ user.role }}</span>
               </div>
 
@@ -90,6 +72,7 @@
                   <v-icon class="me-2" size="18">mdi-office-building-outline</v-icon>
                   Company:
                 </span>
+
                 <span class="detail-value">{{ user.company_name }}</span>
               </div>
 
@@ -98,6 +81,7 @@
                   <v-icon class="me-2" size="18">mdi-translate</v-icon>
                   Language:
                 </span>
+
                 <span class="detail-value">{{ user.language || 'English' }}</span>
               </div>
 
@@ -106,6 +90,7 @@
                   <v-icon class="me-2" size="18">mdi-earth</v-icon>
                   Timezone:
                 </span>
+
                 <span class="detail-value">{{ user.timezone || 'Not set' }}</span>
               </div>
 
@@ -114,6 +99,7 @@
                   <v-icon class="me-2" size="18">mdi-calendar-blank-outline</v-icon>
                   Member Since:
                 </span>
+
                 <span class="detail-value">{{ formatDate(user.created_at) }}</span>
               </div>
             </v-card-text>
@@ -127,6 +113,7 @@
               >
                 Edit
               </v-btn>
+
               <v-btn
                 color="info"
                 prepend-icon="mdi-cog-outline"
@@ -147,10 +134,12 @@
                 <v-icon size="18" start>mdi-account-outline</v-icon>
                 Overview
               </v-tab>
+
               <v-tab value="security">
                 <v-icon size="18" start>mdi-lock-outline</v-icon>
                 Security
               </v-tab>
+
               <v-tab value="notifications">
                 <v-icon size="18" start>mdi-bell-outline</v-icon>
                 Notifications
@@ -205,6 +194,7 @@
 
                 <!-- Property Summary -->
                 <v-divider />
+
                 <v-card-text>
                   <h6 class="text-overline text-medium-emphasis mb-4">Property Overview</h6>
 
@@ -215,18 +205,21 @@
                         <div class="text-caption text-medium-emphasis">Total</div>
                       </div>
                     </v-col>
+
                     <v-col cols="6" sm="3">
                       <div class="text-center">
                         <div class="text-h5 font-weight-bold text-success">{{ activePropertyCount }}</div>
                         <div class="text-caption text-medium-emphasis">Active</div>
                       </div>
                     </v-col>
+
                     <v-col cols="6" sm="3">
                       <div class="text-center">
                         <div class="text-h5 font-weight-bold text-info">{{ bookingCount }}</div>
                         <div class="text-caption text-medium-emphasis">Bookings</div>
                       </div>
                     </v-col>
+
                     <v-col cols="6" sm="3">
                       <div class="text-center">
                         <div class="text-h5 font-weight-bold text-warning">{{ upcomingCount }}</div>
@@ -266,10 +259,12 @@
                     <v-avatar color="success" rounded size="38" variant="tonal">
                       <v-icon size="20">mdi-monitor</v-icon>
                     </v-avatar>
+
                     <div class="flex-grow-1">
                       <div class="text-body-2 font-weight-medium">Current Session</div>
                       <div class="text-caption text-medium-emphasis">Active now</div>
                     </div>
+
                     <v-chip color="success" size="x-small" variant="tonal">Active</v-chip>
                   </div>
 
@@ -277,6 +272,7 @@
                     <v-avatar color="grey" rounded size="38" variant="tonal">
                       <v-icon size="20">mdi-monitor</v-icon>
                     </v-avatar>
+
                     <div class="flex-grow-1">
                       <div class="text-body-2 font-weight-medium">Previous Session</div>
                       <div class="text-caption text-medium-emphasis">{{ formatDateTime(user.last_sign_in_at) }}</div>
@@ -295,6 +291,7 @@
                       <div class="text-body-2 font-weight-medium">Push Notifications</div>
                       <div class="text-caption text-medium-emphasis">Receive push notifications for booking updates</div>
                     </div>
+
                     <v-chip
                       :color="user.notifications_enabled ? 'success' : 'grey'"
                       size="small"
@@ -311,6 +308,7 @@
                       <div class="text-body-2 font-weight-medium">Theme</div>
                       <div class="text-caption text-medium-emphasis">Current display theme preference</div>
                     </div>
+
                     <v-chip color="secondary" size="small" variant="tonal">
                       {{ user.theme || 'System' }}
                     </v-chip>
@@ -339,8 +337,9 @@
 <script setup lang="ts">
   import { computed, ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+
+  import { useAdminBookings } from '@/composables/admin/useAdminBookings'
+  import { useAdminProperties } from '@/composables/admin/useAdminProperties'
   import { useAuthStore } from '@/stores/auth'
 
   defineOptions({
@@ -349,16 +348,17 @@
 
   const router = useRouter()
   const authStore = useAuthStore()
-  const { myProperties, myActiveProperties } = useOwnerProperties()
-  const { myBookings, myUpcomingCleanings } = useOwnerBookings()
+  const { allProperties, allActiveProperties } = useAdminProperties()
+  const { allBookings } = useAdminBookings()
 
   const user = computed(() => authStore.user)
   const activeTab = ref('overview')
 
-  const propertyCount = computed(() => myProperties.value.length)
-  const activePropertyCount = computed(() => myActiveProperties.value.length)
-  const bookingCount = computed(() => myBookings.value.length)
-  const upcomingCount = computed(() => myUpcomingCleanings.value.length)
+  const propertyCount = computed(() => allProperties.value.length)
+  const activePropertyCount = computed(() => allActiveProperties.value.length)
+  const bookingCount = computed(() => allBookings.value.length)
+  const upcomingCleanings = computed(() => allBookings.value.filter(b => new Date(b.checkin_date) > new Date()))
+  const upcomingCount = computed(() => upcomingCleanings.value.length)
 
   function handleEditProfile () {
     // TODO: Implement profile editing

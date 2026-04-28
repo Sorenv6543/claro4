@@ -73,7 +73,9 @@
                 <span class="text-caption">{{ initials(c.name) }}</span>
               </v-avatar>
             </template>
+
             <v-list-item-title class="text-body-2">{{ c.name }}</v-list-item-title>
+
             <template #append>
               <div class="d-flex align-center ga-2">
                 <v-progress-linear
@@ -83,6 +85,7 @@
                   rounded
                   style="width: 50px;"
                 />
+
                 <span class="text-caption text-medium-emphasis">{{ c.assigned }}/{{ c.total }}</span>
               </div>
             </template>
@@ -102,14 +105,18 @@
                 <v-icon size="16">mdi-account-multiple</v-icon>
               </v-avatar>
             </template>
+
             <v-list-item-title class="text-body-2">{{ t.name }}</v-list-item-title>
+
             <v-list-item-subtitle class="text-caption">
               {{ t.member_ids.length }} members
             </v-list-item-subtitle>
+
             <template #append>
               <span class="text-caption text-medium-emphasis">{{ t.assigned }}/{{ t.total }}</span>
             </template>
           </v-list-item>
+
           <v-list-item v-if="teams.length === 0" disabled>
             <v-list-item-title class="text-caption text-medium-emphasis text-center">
               No saved teams
@@ -135,13 +142,17 @@
                 @click.stop="c.assigned < c.total && toggleGroupMember(c.id)"
               />
             </template>
+
             <v-list-item-title class="text-body-2">{{ c.name }}</v-list-item-title>
+
             <template #append>
               <span class="text-caption text-medium-emphasis">{{ c.assigned }}/{{ c.total }}</span>
             </template>
           </v-list-item>
         </v-list>
+
         <v-divider />
+
         <div class="pa-2 text-center">
           <v-btn
             color="primary"

@@ -92,6 +92,7 @@
           />
           Edit Owner Profile
           <v-spacer />
+
           <v-btn
             icon="mdi-close"
             size="small"
@@ -114,6 +115,7 @@
               prepend-inner-icon="mdi-account-outline"
               :rules="[v => !!v || 'Name is required']"
             />
+
             <v-text-field
               v-model="editForm.email"
               class="mb-2"
@@ -123,12 +125,14 @@
               persistent-hint
               prepend-inner-icon="mdi-email-outline"
             />
+
             <v-text-field
               v-model="editForm.company_name"
               class="mb-2"
               label="Company Name"
               prepend-inner-icon="mdi-office-building-outline"
             />
+
             <v-row>
               <v-col
                 cols="12"
@@ -141,6 +145,7 @@
                   prepend-inner-icon="mdi-clock-outline"
                 />
               </v-col>
+
               <v-col
                 cols="12"
                 sm="6"
@@ -153,6 +158,7 @@
                 />
               </v-col>
             </v-row>
+
             <v-switch
               v-model="editForm.notifications_enabled"
               color="primary"
@@ -167,12 +173,14 @@
 
         <v-card-actions class="pa-4">
           <v-spacer />
+
           <v-btn
             variant="outlined"
             @click="showEditDialog = false"
           >
             Cancel
           </v-btn>
+
           <v-btn
             color="primary"
             :disabled="!editFormValid"
@@ -200,6 +208,7 @@
           />
           {{ editingProperty ? 'Edit Property' : 'Add Property' }}
           <v-spacer />
+
           <v-btn
             icon="mdi-close"
             size="small"
@@ -222,12 +231,14 @@
               prepend-inner-icon="mdi-map-marker-outline"
               :rules="[v => !!v || 'Street address is required']"
             />
+
             <v-text-field
               v-model="propForm.address_unit"
               class="mb-2"
               label="Unit / Apt"
               prepend-inner-icon="mdi-door"
             />
+
             <v-row>
               <v-col cols="12" sm="5">
                 <v-text-field
@@ -236,6 +247,7 @@
                   :rules="[v => !!v || 'City is required']"
                 />
               </v-col>
+
               <v-col cols="6" sm="3">
                 <v-text-field
                   v-model="propForm.address_state"
@@ -243,6 +255,7 @@
                   :rules="[v => !!v || 'State is required']"
                 />
               </v-col>
+
               <v-col cols="6" sm="4">
                 <v-text-field
                   v-model="propForm.address_zip"
@@ -251,6 +264,7 @@
                 />
               </v-col>
             </v-row>
+
             <v-row>
               <v-col
                 cols="6"
@@ -263,6 +277,7 @@
                   type="number"
                 />
               </v-col>
+
               <v-col
                 cols="6"
                 sm="3"
@@ -274,6 +289,7 @@
                   type="number"
                 />
               </v-col>
+
               <v-col
                 cols="6"
                 sm="3"
@@ -285,6 +301,7 @@
                   type="number"
                 />
               </v-col>
+
               <v-col
                 cols="6"
                 sm="3"
@@ -297,6 +314,7 @@
                 />
               </v-col>
             </v-row>
+
             <v-row>
               <v-col
                 cols="12"
@@ -308,6 +326,7 @@
                   label="Property Type"
                 />
               </v-col>
+
               <v-col
                 cols="12"
                 sm="6"
@@ -319,12 +338,14 @@
                 />
               </v-col>
             </v-row>
+
             <v-textarea
               v-model="propForm.special_instructions"
               auto-grow
               label="Special Instructions"
               rows="2"
             />
+
             <v-switch
               v-model="propForm.active"
               color="primary"
@@ -339,12 +360,14 @@
 
         <v-card-actions class="pa-4">
           <v-spacer />
+
           <v-btn
             variant="outlined"
             @click="showPropertyDialog = false"
           >
             Cancel
           </v-btn>
+
           <v-btn
             color="primary"
             :disabled="!propFormValid"
@@ -372,9 +395,9 @@
 </template>
 
 <script setup lang="ts">
-  import type { VForm } from 'vuetify/components'
   import type { Property, PropertyFormData } from '@/types/property'
   import type { User } from '@/types/user'
+  import type { VForm } from 'vuetify/components'
   import { computed, onMounted, ref, watch } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import OwnerDetailCard from '@/components/dumb/admin/OwnerDetailCard.vue'

@@ -5,6 +5,7 @@
         <h3 class="text-h6 font-weight-bold">
           Urgent Turns
         </h3>
+
         <v-chip
           v-if="turns.length > 0"
           color="error"
@@ -25,6 +26,7 @@
         >
           mdi-check-circle-outline
         </v-icon>
+
         <p class="text-body-2 text-medium-emphasis mt-2">
           No urgent turns right now
         </p>

@@ -1,8 +1,14 @@
 <!--
   AdminLayout.vue
 
-  Main layout for admin-facing pages, including the dashboard, user management, and settings.
-  Contains the app bar with navigation and user menu, and a sidebar for page navigation and stats.
+  Main layout for admin-facing pages, including the dashboard, bookings, properties, cleaners,
+  and settings. Contains a frosted-glass app bar with a hamburger sidebar toggle, the Claro
+  brand title, ThemePicker, favorites, notifications bell, and an avatar/user menu. The
+  AdminSidebar shows live stats (active cleanings today, urgent turns, total properties and
+  cleaners) and exposes quick-action handlers (assign cleaner, create booking/property,
+  emergency response, generate reports, manage system). Data is initialized on mount via
+  useAdminUserManagement, useCleanerManagement, and useRealtimeSync; isReady/initError are
+  provided to child pages via provide/inject.
 -->
 <template>
   <v-app class="admin-layout">
@@ -54,27 +60,34 @@
               >
                 <span class="text-caption font-weight-bold">{{ userInitials }}</span>
               </v-avatar>
+
               <span class="avatar-status" />
             </div>
           </template>
+
           <v-card min-width="200">
             <div class="d-flex align-center ga-3 pa-4 pb-2">
               <v-avatar color="primary" size="38">
                 <span class="text-caption font-weight-bold">{{ userInitials }}</span>
               </v-avatar>
+
               <div>
                 <div class="text-body-2 font-weight-medium">{{ authStore.user?.name || 'Admin' }}</div>
                 <div class="text-caption text-medium-emphasis">{{ authStore.user?.email }}</div>
               </div>
             </div>
+
             <v-divider class="my-1" />
+
             <v-list density="comfortable">
               <v-list-item
                 prepend-icon="mdi-account-outline"
                 title="Profile"
                 to="/admin/profile"
               />
+
               <v-divider class="my-1" />
+
               <v-list-item
                 class="text-error"
                 prepend-icon="mdi-logout"
@@ -114,20 +127,22 @@
     <v-main>
       <v-banner
         v-if="initError"
+        class="mb-0"
         color="error"
         icon="mdi-alert-circle-outline"
         lines="one"
-        class="mb-0"
       >
         <v-banner-text>
           Failed to load data. Please refresh the page.
         </v-banner-text>
       </v-banner>
+
       <v-skeleton-loader
         v-else-if="!isReady"
-        type="article"
         class="ma-4"
+        type="article"
       />
+
       <router-view v-else />
     </v-main>
   </v-app>

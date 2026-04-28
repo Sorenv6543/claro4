@@ -15,6 +15,7 @@
         >
           mdi-calendar-blank
         </v-icon>
+
         <p class="text-body-2 mt-2">
           No upcoming checkouts
         </p>

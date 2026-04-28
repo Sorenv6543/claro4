@@ -18,6 +18,7 @@
         >
           ACTIVE
         </v-chip>
+
         <v-chip
           v-else
           class="ml-2"
@@ -59,6 +60,7 @@
                     />
                   </v-col>
                 </v-row>
+
                 <v-row>
                   <v-col cols="12" sm="4">
                     <v-text-field
@@ -71,6 +73,7 @@
                       variant="outlined"
                     />
                   </v-col>
+
                   <v-col cols="12" sm="8">
                     <v-text-field
                       v-model="form.address_city"
@@ -84,6 +87,7 @@
                     />
                   </v-col>
                 </v-row>
+
                 <v-row>
                   <v-col cols="6">
                     <v-text-field
@@ -98,6 +102,7 @@
                       variant="outlined"
                     />
                   </v-col>
+
                   <v-col cols="6">
                     <v-text-field
                       v-model="form.address_zip"
@@ -112,6 +117,7 @@
                     />
                   </v-col>
                 </v-row>
+
                 <v-row>
                   <v-col cols="12">
                     <v-select
@@ -124,9 +130,11 @@
                     />
                   </v-col>
                 </v-row>
+
                 <v-row>
                   <v-col cols="12">
                     <div class="text-body-2 mb-2">Property Color</div>
+
                     <PropertyColorPicker
                       :model-value="form.color ?? PROPERTY_COLORS[0]"
                       @update:model-value="form.color = $event"
@@ -153,6 +161,7 @@
                       variant="outlined"
                     />
                   </v-col>
+
                   <v-col cols="6">
                     <v-text-field
                       v-model.number="form.bathrooms"
@@ -165,6 +174,7 @@
                     />
                   </v-col>
                 </v-row>
+
                 <v-row>
                   <v-col cols="6">
                     <v-text-field
@@ -178,6 +188,7 @@
                     />
                   </v-col>
                 </v-row>
+
                 <v-row>
                   <v-col cols="12">
                     <v-select
@@ -213,6 +224,7 @@
                     />
                   </v-col>
                 </v-row>
+
                 <v-row>
                   <v-col cols="12">
                     <v-textarea
@@ -227,6 +239,7 @@
                     />
                   </v-col>
                 </v-row>
+
                 <v-row>
                   <v-col cols="12" md="6">
                     <v-text-field
@@ -244,6 +257,7 @@
                       variant="outlined"
                     />
                   </v-col>
+
                   <v-col cols="12" md="6">
                     <v-select
                       v-model="form.pricing_tier"
@@ -260,6 +274,7 @@
                     />
                   </v-col>
                 </v-row>
+
                 <v-row>
                   <v-col cols="12" md="6">
                     <v-text-field
@@ -270,6 +285,7 @@
                       variant="outlined"
                     />
                   </v-col>
+
                   <v-col cols="12" md="6">
                     <v-text-field
                       v-model="form.contact_phone"
@@ -311,6 +327,7 @@
                   />
                 </v-col>
               </v-row>
+
               <v-row>
                 <v-col cols="12" sm="4">
                   <v-text-field
@@ -323,6 +340,7 @@
                     variant="outlined"
                   />
                 </v-col>
+
                 <v-col cols="12" sm="8">
                   <v-text-field
                     v-model="form.address_city"
@@ -336,6 +354,7 @@
                   />
                 </v-col>
               </v-row>
+
               <v-row>
                 <v-col cols="6" sm="6">
                   <v-text-field
@@ -350,6 +369,7 @@
                     variant="outlined"
                   />
                 </v-col>
+
                 <v-col cols="6" sm="6">
                   <v-text-field
                     v-model="form.address_zip"
@@ -445,6 +465,7 @@
                   <div class="text-body-2 mb-2">
                     Property Color
                   </div>
+
                   <PropertyColorPicker :model-value="form.color ?? PROPERTY_COLORS[0]" @update:model-value="form.color = $event" />
                 </v-col>
               </v-row>
@@ -493,8 +514,8 @@
 </template>
 
 <script setup lang="ts">
-  import type { VForm } from 'vuetify/components'
   import type { PricingTier, Property, PropertyFormData } from '@/types'
+  import type { VForm } from 'vuetify/components'
   import { computed, onMounted, reactive, ref, watch } from 'vue'
   import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
   import MaterioFormWizard from '@/components/dumb/shared/MaterioFormWizard.vue'

@@ -11,10 +11,13 @@
           class="me-3"
           icon="mdi-account-edit"
         />
+
         <span class="text-h5 font-weight-bold">
           Bulk Role Change
         </span>
+
         <v-spacer />
+
         <v-btn
           :disabled="loading"
           icon="mdi-close"
@@ -71,6 +74,7 @@
                   <p class="font-weight-medium mb-1">
                     {{ user.name }}
                   </p>
+
                   <p class="text-caption text-medium-emphasis">
                     {{ user.email }}
                   </p>
@@ -114,6 +118,7 @@
                     :icon="item.icon"
                   />
                 </template>
+
                 <v-list-item-title>{{ item.title }}</v-list-item-title>
                 <v-list-item-subtitle>{{ item.description }}</v-list-item-subtitle>
               </v-list-item>
@@ -202,6 +207,7 @@
 
       <v-card-actions class="pa-6 pt-4">
         <v-spacer />
+
         <v-btn
           :disabled="loading"
           size="large"

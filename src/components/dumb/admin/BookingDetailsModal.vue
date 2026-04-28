@@ -8,6 +8,7 @@
       <v-card-title class="text-h5">
         Booking Details
         <v-spacer />
+
         <v-btn
           icon
           @click="$emit('close')"
@@ -25,10 +26,12 @@
             <div class="text-subtitle-2 text-medium-emphasis">
               Property
             </div>
+
             <div class="text-body-1">
               {{ property ? formatPropertyAddress(property, 'short') : 'N/A' }}
             </div>
           </v-col>
+
           <v-col
             cols="12"
             sm="6"
@@ -36,10 +39,12 @@
             <div class="text-subtitle-2 text-medium-emphasis">
               Cleaner
             </div>
+
             <div class="text-body-1">
               {{ cleaner?.name || 'Unassigned' }}
             </div>
           </v-col>
+
           <v-col
             cols="12"
             sm="6"
@@ -47,10 +52,12 @@
             <div class="text-subtitle-2 text-medium-emphasis">
               Date
             </div>
+
             <div class="text-body-1">
               {{ formatDate(booking.checkin_date) }}
             </div>
           </v-col>
+
           <v-col
             cols="12"
             sm="6"
@@ -58,10 +65,12 @@
             <div class="text-subtitle-2 text-medium-emphasis">
               Time
             </div>
+
             <div class="text-body-1">
               {{ booking.checkin_time || 'N/A' }}
             </div>
           </v-col>
+
           <v-col
             cols="12"
             sm="6"
@@ -69,6 +78,7 @@
             <div class="text-subtitle-2 text-medium-emphasis">
               Status
             </div>
+
             <div class="text-body-1">
               <v-chip
                 :color="getStatusColor(booking.status)"
@@ -78,6 +88,7 @@
               </v-chip>
             </div>
           </v-col>
+
           <v-col
             cols="12"
             sm="6"
@@ -85,6 +96,7 @@
             <div class="text-subtitle-2 text-medium-emphasis">
               Priority
             </div>
+
             <div class="text-body-1">
               <v-chip
                 :color="getPriorityColor(booking.priority || 'low')"
@@ -94,6 +106,7 @@
               </v-chip>
             </div>
           </v-col>
+
           <v-col
             v-if="booking.notes"
             cols="12"
@@ -101,6 +114,7 @@
             <div class="text-subtitle-2 text-medium-emphasis">
               Notes
             </div>
+
             <div class="text-body-1">
               {{ booking.notes }}
             </div>
@@ -116,6 +130,7 @@
           >
             mdi-calendar-remove
           </v-icon>
+
           <div class="text-h6 mt-2">
             No booking selected
           </div>
@@ -124,6 +139,7 @@
 
       <v-card-actions>
         <v-spacer />
+
         <v-btn
           color="primary"
           @click="$emit('close')"

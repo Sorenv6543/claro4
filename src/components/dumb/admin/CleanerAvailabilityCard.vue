@@ -15,6 +15,7 @@
         >
           mdi-account-hard-hat
         </v-icon>
+
         <p class="text-body-2 mt-2">
           No cleaner data available
         </p>
@@ -39,9 +40,11 @@
               {{ cleaner.assigned }}
             </span>
           </v-progress-circular>
+
           <div class="text-caption font-weight-medium mt-2 text-center text-truncate cleaner-name">
             {{ cleaner.name }}
           </div>
+
           <div class="text-caption text-medium-emphasis">
             {{ cleaner.assigned }}/{{ cleaner.total }}
           </div>

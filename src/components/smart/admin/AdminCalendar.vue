@@ -68,6 +68,7 @@
             >
               Range
             </v-btn>
+
             <v-btn
               class="text-none"
               size="small"
@@ -104,7 +105,7 @@
           md="12"
         >
           <FullCalendar
-            ref="calendarRef"
+            ref="AdminCalendarRef"
             :bookings="calendarBookings"
             class="admin-calendar"
             :loading="loading"
@@ -168,16 +169,15 @@
 </template>
 
 <script setup lang="ts">
-  import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
-  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import type { Booking, BookingFormData } from '@/types/booking.ts'
   import type { Cleaner } from '@/types/user.ts'
+  import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
 
   import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
   import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
   import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
   import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
-
   import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement.ts'
   import { useUIStore } from '@/stores/ui'

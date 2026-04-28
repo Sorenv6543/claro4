@@ -13,10 +13,12 @@
       <div class="skeleton-card">
         <div class="skeleton-header">
           <div class="skeleton-avatar" />
+
           <div class="skeleton-title-section">
             <div class="skeleton-title" />
             <div class="skeleton-subtitle" />
           </div>
+
           <div class="skeleton-badge" />
         </div>
 
@@ -45,14 +47,17 @@
     <template v-else-if="type === 'list-item'">
       <div class="skeleton-list-item">
         <div class="skeleton-list-avatar" />
+
         <div class="skeleton-list-content">
           <div class="skeleton-list-title" />
           <div class="skeleton-list-subtitle" />
+
           <div class="skeleton-list-meta">
             <div class="skeleton-chip" />
             <div class="skeleton-chip" />
           </div>
         </div>
+
         <div class="skeleton-list-actions">
           <div class="skeleton-icon-btn" />
           <div class="skeleton-icon-btn" />
@@ -96,23 +101,28 @@
           <div class="skeleton-widget-title" />
           <div class="skeleton-widget-value" />
         </div>
+
         <div class="skeleton-widget-chart">
           <div
             class="skeleton-chart-bar"
             style="height: 60%"
           />
+
           <div
             class="skeleton-chart-bar"
             style="height: 80%"
           />
+
           <div
             class="skeleton-chart-bar"
             style="height: 40%"
           />
+
           <div
             class="skeleton-chart-bar"
             style="height: 90%"
           />
+
           <div
             class="skeleton-chart-bar"
             style="height: 70%"

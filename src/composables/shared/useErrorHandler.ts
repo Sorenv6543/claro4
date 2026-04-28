@@ -400,7 +400,7 @@ export function useErrorHandler () {
    */
   async function escalateError (errorInfo: ErrorInfo): Promise<void> {
     try {
-      Sentry.withScope((scope) => {
+      Sentry.withScope(scope => {
         scope.setLevel('fatal')
         scope.setTag('escalated', 'true')
         scope.setTag('businessImpact', errorInfo.businessImpact ?? 'unknown')

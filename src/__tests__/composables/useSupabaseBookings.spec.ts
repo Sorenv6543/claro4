@@ -679,7 +679,7 @@ describe('useSupabaseBookings', () => {
       const result = await composable.bulkAssignCleaner(['all-team', 'also-missing'], 'cleaner-X')
 
       expect(result.updated).toHaveLength(0)
-      expect(result.skipped.map(s => s.id).sort()).toEqual(['all-team', 'also-missing'].sort())
+      expect(result.skipped.map(s => s.id).toSorted()).toEqual(['all-team', 'also-missing'].toSorted())
       expect(updateMock).not.toHaveBeenCalled()
       expect(inMock).not.toHaveBeenCalled()
     })
@@ -728,7 +728,8 @@ describe('useSupabaseBookings', () => {
       }
 
       await expect(composable.bulkAssignCleaner(['r1', 'r2', 'r3'], 'cleaner-Z'))
-        .rejects.toBeInstanceOf(mod.BulkAssignSqlError)
+        .rejects
+        .toBeInstanceOf(mod.BulkAssignSqlError)
 
       // All three optimistic updates must be rolled back
       for (const id of ['r1', 'r2', 'r3']) {
@@ -751,10 +752,10 @@ describe('useSupabaseBookings', () => {
       try {
         await composable.bulkAssignCleaner(['e1', 'skip', 'e2'], 'cleaner-Q')
         throw new Error('should have thrown')
-      } catch (err) {
-        expect(err).toBeInstanceOf(mod.BulkAssignSqlError)
-        const bulkErr = err as InstanceType<typeof mod.BulkAssignSqlError>
-        expect([...bulkErr.eligibleIds].sort()).toEqual(['e1', 'e2'])
+      } catch (error) {
+        expect(error).toBeInstanceOf(mod.BulkAssignSqlError)
+        const bulkErr = error as InstanceType<typeof mod.BulkAssignSqlError>
+        expect([...bulkErr.eligibleIds].toSorted()).toEqual(['e1', 'e2'])
         expect(bulkErr.skipped.map(s => s.id)).toEqual(['skip'])
         expect(bulkErr.cause).toEqual({ message: 'SQL UPDATE failed' })
       }
@@ -762,7 +763,7 @@ describe('useSupabaseBookings', () => {
   })
 
   describe('bulkChangeStatus', () => {
-    function wireBulkStatusChain(result: { data: unknown, error: unknown }) {
+    function wireBulkStatusChain (result: { data: unknown, error: unknown }) {
       const inMock = vi.fn().mockResolvedValue(result)
       const updateMock = vi.fn().mockReturnValue({ in: inMock })
       supabaseMock.from.mockReturnValue({
@@ -802,7 +803,7 @@ describe('useSupabaseBookings', () => {
 
       // completed -> scheduled is not a valid transition
       store.setBooking('done', makeBooking({ id: 'done', status: 'completed' }))
-      store.setBooking('ok',   makeBooking({ id: 'ok',   status: 'pending' }))
+      store.setBooking('ok', makeBooking({ id: 'ok', status: 'pending' }))
 
       const result = await composable.bulkChangeStatus(['done', 'ok'], 'scheduled')
 

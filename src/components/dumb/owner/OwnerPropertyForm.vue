@@ -16,6 +16,7 @@
         >
           ACTIVE
         </v-chip>
+
         <v-chip
           v-else
           class="ml-2"
@@ -62,6 +63,7 @@
                 />
               </v-col>
             </v-row>
+
             <v-row>
               <v-col cols="12" sm="4">
                 <v-text-field
@@ -74,6 +76,7 @@
                   variant="outlined"
                 />
               </v-col>
+
               <v-col cols="12" sm="8">
                 <v-text-field
                   v-model="form.address_city"
@@ -87,6 +90,7 @@
                 />
               </v-col>
             </v-row>
+
             <v-row>
               <v-col cols="6">
                 <v-text-field
@@ -101,6 +105,7 @@
                   variant="outlined"
                 />
               </v-col>
+
               <v-col cols="6">
                 <v-text-field
                   v-model="form.address_zip"

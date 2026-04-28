@@ -13,6 +13,7 @@
         </v-icon>
         Assign Cleaner
         <v-spacer />
+
         <v-chip
           v-if="booking?.booking_type === 'turn'"
           color="error"
@@ -43,7 +44,9 @@
                   </v-icon>
                   Booking Details
                 </v-card-title>
+
                 <v-divider />
+
                 <v-card-text>
                   <v-row>
                     <v-col
@@ -53,13 +56,16 @@
                       <div class="text-body-2 text-medium-emphasis mb-1">
                         Property
                       </div>
+
                       <div class="text-body-1 font-weight-medium">
                         {{ selectedProperty ? formatPropertyAddress(selectedProperty, 'short') : '' }}
                       </div>
+
                       <div class="text-body-2 text-medium-emphasis">
                         {{ selectedProperty ? formatPropertyAddress(selectedProperty) : '' }}
                       </div>
                     </v-col>
+
                     <v-col
                       cols="12"
                       md="6"
@@ -67,6 +73,7 @@
                       <div class="text-body-2 text-medium-emphasis mb-1">
                         Schedule
                       </div>
+
                       <div class="text-body-1">
                         <v-icon
                           class="mr-1"
@@ -76,6 +83,7 @@
                         </v-icon>
                         {{ booking.checkout_date ? formatDateTime(booking.checkout_date as string) : 'Not set' }}
                       </div>
+
                       <div class="text-body-1">
                         <v-icon
                           class="mr-1"
@@ -87,6 +95,7 @@
                       </div>
                     </v-col>
                   </v-row>
+
                   <v-row>
                     <v-col
                       cols="12"
@@ -95,10 +104,12 @@
                       <div class="text-body-2 text-medium-emphasis mb-1">
                         Cleaning Window
                       </div>
+
                       <div class="text-body-1">
                         {{ getCleaningWindow() }}
                       </div>
                     </v-col>
+
                     <v-col
                       cols="12"
                       md="6"
@@ -106,6 +117,7 @@
                       <div class="text-body-2 text-medium-emphasis mb-1">
                         Estimated Duration
                       </div>
+
                       <div class="text-body-1">
                         {{ selectedProperty?.cleaning_duration || 120 }} minutes
                       </div>
@@ -132,6 +144,7 @@
                 variant="outlined"
               />
             </v-col>
+
             <v-col
               cols="12"
               md="3"
@@ -144,6 +157,7 @@
                 variant="outlined"
               />
             </v-col>
+
             <v-col
               cols="12"
               md="3"
@@ -168,6 +182,7 @@
                   </v-icon>
                   Available Cleaners
                   <v-spacer />
+
                   <v-chip
                     size="small"
                     variant="tonal"
@@ -175,6 +190,7 @@
                     {{ filteredCleaners.length }} available
                   </v-chip>
                 </v-card-title>
+
                 <v-divider />
 
                 <v-list
@@ -221,6 +237,7 @@
                           >
                             {{ skill }}
                           </v-chip>
+
                           <v-chip
                             v-if="cleaner.skills.length > 3"
                             size="x-small"
@@ -229,6 +246,7 @@
                             +{{ cleaner.skills.length - 3 }} more
                           </v-chip>
                         </div>
+
                         <div class="text-caption">
                           Today: {{ getCleanerTodayBookings(cleaner.id) }}/{{ cleaner.max_daily_bookings }} bookings
                           • Rating: {{ getCleanerRating(cleaner.id).toFixed(1) }}/5.0
@@ -245,6 +263,7 @@
                           >
                             {{ getAvailabilityText(cleaner) }}
                           </v-chip>
+
                           <div class="text-caption text-medium-emphasis">
                             {{ getDistanceText(cleaner) }}
                           </div>
@@ -261,7 +280,9 @@
                       <v-icon class="mb-2">
                         mdi-account-off
                       </v-icon>
+
                       <div>No cleaners match your criteria</div>
+
                       <div class="text-caption">
                         Try adjusting your filters
                       </div>
@@ -285,7 +306,9 @@
                   </v-icon>
                   Selected Cleaner Details
                 </v-card-title>
+
                 <v-divider />
+
                 <v-card-text>
                   <v-row>
                     <v-col
@@ -302,9 +325,11 @@
                             mdi-account
                           </v-icon>
                         </v-avatar>
+
                         <div class="text-h6 font-weight-medium">
                           {{ selectedCleanerDetails.name }}
                         </div>
+
                         <v-rating
                           class="justify-center mt-1"
                           density="compact"
@@ -322,6 +347,7 @@
                       <div class="text-body-2 text-medium-emphasis mb-1">
                         Skills & Specializations
                       </div>
+
                       <div class="d-flex flex-wrap gap-1 mb-3">
                         <v-chip
                           v-for="skill in selectedCleanerDetails.skills"
@@ -337,6 +363,7 @@
                       <div class="text-body-2 text-medium-emphasis mb-1">
                         Availability Status
                       </div>
+
                       <v-chip
                         :color="getAvailabilityColor(selectedCleanerDetails)"
                         variant="elevated"
@@ -355,6 +382,7 @@
                       <div class="text-body-2 text-medium-emphasis mb-1">
                         Today's Schedule
                       </div>
+
                       <div class="text-body-1 mb-2">
                         {{ getCleanerTodayBookings(selectedCleanerDetails.id) }}/{{ selectedCleanerDetails.max_daily_bookings }} bookings
                       </div>
@@ -362,6 +390,7 @@
                       <div class="text-body-2 text-medium-emphasis mb-1">
                         Distance from Property
                       </div>
+
                       <div class="text-body-1 mb-2">
                         {{ getDistanceText(selectedCleanerDetails) }}
                       </div>
@@ -369,6 +398,7 @@
                       <div class="text-body-2 text-medium-emphasis mb-1">
                         Estimated Travel Time
                       </div>
+
                       <div class="text-body-1">
                         {{ getTravelTime(selectedCleanerDetails) }}
                       </div>

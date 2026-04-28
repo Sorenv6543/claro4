@@ -56,7 +56,17 @@ const router = createRouter({
     {
       path: '/owner/overview',
       name: 'owner-overview',
-      component: () => import('@/pages/owner/overview.vue'),
+      component: () => import('@/pages/owner/overview/index.vue'),
+      meta: {
+        layout: 'owner',
+        role: 'owner',
+        requiresAuth: true,
+      },
+    },
+    {
+      path: '/owner/timeline',
+      name: 'owner-timeline',
+      component: () => import('@/pages/owner/timeline/index.vue'),
       meta: {
         layout: 'owner',
         role: 'owner',
@@ -84,16 +94,6 @@ const router = createRouter({
       },
     },
     {
-      path: '/owner/profile',
-      name: 'owner-profile',
-      component: () => import('@/pages/owner/profile.vue'),
-      meta: {
-        layout: 'owner',
-        role: 'owner',
-        requiresAuth: true,
-      },
-    },
-    {
       path: '/owner/properties',
       name: 'owner-properties',
       component: () => import('@/pages/owner/properties/index.vue'),
@@ -114,6 +114,16 @@ const router = createRouter({
       },
     },
     {
+      path: '/owner/profile',
+      name: 'owner-profile',
+      component: () => import('@/pages/owner/profile/index.vue'),
+      meta: {
+        layout: 'owner',
+        role: 'owner',
+        requiresAuth: true,
+      },
+    },
+    {
       path: '/owner/reports',
       name: 'owner-charts',
       component: () => import('@/pages/owner/reports/index.vue'),
@@ -126,7 +136,7 @@ const router = createRouter({
     {
       path: '/owner/settings',
       name: 'owner-settings',
-      component: () => import('@/pages/owner/settings.vue'),
+      component: () => import('@/pages/owner/settings/index.vue'),
       meta: {
         layout: 'owner',
         role: 'owner',
@@ -225,6 +235,16 @@ const router = createRouter({
         requiresAuth: true,
       },
     },
+    {
+      path: '/admin/profile',
+      name: 'admin-profile',
+      component: () => import('@/pages/admin/profile/index.vue'),
+      meta: {
+        layout: 'admin',
+        role: 'admin',
+        requiresAuth: true,
+      },
+    },
   ],
 })
 
@@ -235,7 +255,7 @@ router.beforeEach(authGuard)
 router.afterEach(afterNavigationGuard)
 
 // Reload on stale Vite chunks (dev server restart invalidates dynamic import URLs)
-router.onError((err) => {
+router.onError(err => {
   if (err?.message?.includes('Failed to fetch dynamically imported module')) {
     window.location.reload()
   }

@@ -53,7 +53,9 @@
           <v-avatar :color="item.isTeam ? 'blue-grey' : 'primary'" size="22" variant="tonal">
             <span class="text-caption">{{ item.isTeam ? 'T' : initials(item.name) }}</span>
           </v-avatar>
+
           <span class="text-body-2 flex-grow-1 text-truncate">{{ item.name }}</span>
+
           <v-progress-linear
             :color="utilizationColor(item)"
             height="6"
@@ -61,6 +63,7 @@
             rounded
             style="max-width: 80px;"
           />
+
           <span class="text-caption text-medium-emphasis" style="min-width: 28px; text-align: right;">
             {{ item.assigned }}/{{ item.total }}
           </span>

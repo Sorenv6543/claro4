@@ -4,6 +4,7 @@
       <v-icon class="mr-2" :color="iconColor">{{ icon }}</v-icon>
       {{ title }}
       <v-spacer />
+
       <v-btn
         v-if="!readonly && !editing"
         data-testid="section-edit-btn"
@@ -13,6 +14,7 @@
         @click="$emit('edit')"
       />
     </v-card-title>
+
     <v-card-text>
       <slot v-if="!editing" />
       <slot v-else name="edit" />
@@ -27,8 +29,10 @@
         {{ error }}
       </v-alert>
     </v-card-text>
+
     <v-card-actions v-if="editing">
       <v-spacer />
+
       <v-btn
         data-testid="section-cancel-btn"
         variant="text"
@@ -36,6 +40,7 @@
       >
         Cancel
       </v-btn>
+
       <v-btn
         color="primary"
         data-testid="section-save-btn"

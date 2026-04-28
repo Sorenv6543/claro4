@@ -11,13 +11,17 @@
         :color="hasUrgentTurns ? 'error' : 'warning'"
         :icon="hasUrgentTurns ? 'mdi-alert-circle' : 'mdi-clock-alert'"
       />
+
       <span class="text-h6">Turn Alerts</span>
+
       <v-badge
         class="ml-2"
         :color="hasUrgentTurns ? 'error' : 'warning'"
         :content="bookings.length.toString()"
       />
+
       <v-spacer />
+
       <v-btn
         :color="hasUrgentTurns ? 'error' : 'warning'"
         density="comfortable"
@@ -30,6 +34,7 @@
     <v-expand-transition>
       <div v-if="expanded">
         <v-divider />
+
         <v-card-text class="pa-3">
           <v-list
             v-if="bookings.length > 0"
@@ -69,16 +74,20 @@
                       icon="mdi-logout"
                       size="x-small"
                     />
+
                     <span class="text-caption">{{ formatTime(booking.checkout_date) }}</span>
                   </div>
+
                   <div class="d-flex align-center">
                     <v-icon
                       class="mr-1"
                       icon="mdi-login"
                       size="x-small"
                     />
+
                     <span class="text-caption">{{ formatTime(booking.checkin_date) }}</span>
                   </div>
+
                   <div
                     v-if="booking.cleaning_window"
                     class="d-flex align-center text-caption mt-1"
@@ -88,6 +97,7 @@
                       icon="mdi-timer-outline"
                       size="x-small"
                     />
+
                     <v-chip
                       class="text-caption"
                       :color="getPriorityColor(booking.priority)"
@@ -118,6 +128,7 @@
                     </v-icon>
                     View
                   </v-btn>
+
                   <v-btn
                     color="success"
                     rounded
@@ -153,6 +164,7 @@
               </v-btn>
             </div>
           </v-list>
+
           <div
             v-else
             class="text-center py-3"
@@ -163,6 +175,7 @@
               icon="mdi-check-circle"
               size="large"
             />
+
             <div>No urgent turn bookings at this time.</div>
           </div>
         </v-card-text>

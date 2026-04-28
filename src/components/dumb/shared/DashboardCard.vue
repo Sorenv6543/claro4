@@ -16,8 +16,10 @@
           class="mr-2"
           :icon="icon"
         />
+
         <span>{{ title }}</span>
       </slot>
+
       <v-spacer />
       <slot name="header-actions" />
     </v-card-title>
@@ -32,6 +34,7 @@
     <!-- Footer actions -->
     <template v-if="$slots.actions">
       <v-divider />
+
       <v-card-actions class="dashboard-card__actions">
         <slot name="actions" />
       </v-card-actions>

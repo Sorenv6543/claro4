@@ -15,33 +15,40 @@
       <span class="field-label">Address</span>
       <div>{{ formatPropertyAddress(property) }}</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Type</span>
       <div v-if="property.property_type">{{ property.property_type }}</div>
       <div v-else class="not-set">Not set</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Beds</span>
       <div v-if="property.bedrooms != null">{{ property.bedrooms }}</div>
       <div v-else class="not-set">Not set</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Baths</span>
       <div v-if="property.bathrooms != null">{{ property.bathrooms }}</div>
       <div v-else class="not-set">Not set</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">SqFt</span>
       <div v-if="property.square_feet != null">{{ property.square_feet }}</div>
       <div v-else class="not-set">Not set</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Floor Type</span>
       <div v-if="property.floor_type">{{ property.floor_type }}</div>
       <div v-else class="not-set">Not set</div>
     </div>
+
     <div class="section-field">
       <span class="field-label">Color</span>
+
       <span
         class="color-dot"
         :style="{ backgroundColor: mapLegacyPropertyColor(property.color) }"
@@ -60,12 +67,14 @@
               :rules="[requiredRule]"
             />
           </v-col>
+
           <v-col cols="12" md="4">
             <v-text-field
               v-model="form.address_unit"
               label="Unit / Apt"
             />
           </v-col>
+
           <v-col cols="12" md="5">
             <v-text-field
               v-model="form.address_city"
@@ -73,6 +82,7 @@
               :rules="[requiredRule]"
             />
           </v-col>
+
           <v-col cols="12" md="3">
             <v-text-field
               v-model="form.address_state"
@@ -80,6 +90,7 @@
               :rules="[requiredRule]"
             />
           </v-col>
+
           <v-col cols="12" md="4">
             <v-text-field
               v-model="form.address_zip"
@@ -87,6 +98,7 @@
               :rules="[requiredRule, zipRule]"
             />
           </v-col>
+
           <v-col cols="12" md="6">
             <v-select
               v-model="form.property_type"
@@ -95,6 +107,7 @@
               label="Property Type"
             />
           </v-col>
+
           <v-col cols="6" md="3">
             <v-text-field
               v-model.number="form.bedrooms"
@@ -104,6 +117,7 @@
               type="number"
             />
           </v-col>
+
           <v-col cols="6" md="3">
             <v-text-field
               v-model.number="form.bathrooms"
@@ -114,6 +128,7 @@
               type="number"
             />
           </v-col>
+
           <v-col cols="12" md="6">
             <v-text-field
               v-model.number="form.square_feet"
@@ -122,6 +137,7 @@
               type="number"
             />
           </v-col>
+
           <v-col cols="12" md="6">
             <v-select
               v-model="form.floor_type"
@@ -130,6 +146,7 @@
               label="Floor Type"
             />
           </v-col>
+
           <v-col cols="12">
             <div class="field-label mb-2">Color</div>
             <PropertyColorPicker v-model="form.color" />

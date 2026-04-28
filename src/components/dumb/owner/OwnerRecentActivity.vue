@@ -15,6 +15,7 @@
       >
         <div class="d-flex flex-column">
           <div class="text-body-2">{{ activity.description }}</div>
+
           <div class="text-caption text-medium-emphasis">
             {{ relativeTime(activity.timestamp) }}
           </div>

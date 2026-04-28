@@ -31,6 +31,7 @@
     "perf:regression": "vitest run src/__tests__/utils/performance-regression.spec.ts",
     "perf:analysis": "pnpm run perf:bundle && pnpm run perf:regression",
     "perf:report": "pnpm run perf:analysis && echo 'Performance analysis complete. See performance-bundle-report.json for details.'",
+    "check:bundle": "node scripts/check-bundle-size.js",
     "mcp:browser-tools": "node scripts/start-browser-tools-mcp.js",
     "mcp:browser-tools:basic": "npx browser-tools-mcp",
     "mcp:browser-tools:enhanced": "npx @eqiz/browser-tools-mcp-enhanced",
@@ -63,6 +64,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@intellectronica/ruler": "^0.3.37",
+    "@lhci/cli": "^0.15.1",
     "@playwright/test": "^1.59.0",
     "@sentry/vite-plugin": "^5.2.0",
     "@testing-library/vue": "^8.1.0",
@@ -97,7 +99,8 @@
     "vitest": "^4.0.18",
     "vue-eslint-parser": "^10.4.0",
     "vue-tsc": "^3.2.5",
-    "workbox-window": "^7.4.0"
+    "workbox-window": "^7.4.0",
+    "wrangler": "^4.85.0"
   },
   "packageManager": "pnpm@10.32.1"
 }

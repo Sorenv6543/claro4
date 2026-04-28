@@ -7,12 +7,12 @@
       :md="chart.colsMd ?? 6"
     >
       <OwnerChart
-        :type="chart.type"
-        :title="chart.title"
         :data="chart.data"
-        :options="chart.options"
         :height="chart.height"
         :horizontal="chart.horizontal"
+        :options="chart.options"
+        :title="chart.title"
+        :type="chart.type"
       >
         <template v-if="$slots[`chart-${index}-actions`]" #header-actions>
           <slot :name="`chart-${index}-actions`" />
@@ -23,8 +23,8 @@
 </template>
 
 <script setup lang="ts">
-  import type { ChartData, ChartOptions } from 'chart.js'
   import type { ChartType } from './OwnerChart.vue'
+  import type { ChartData, ChartOptions } from 'chart.js'
   import OwnerChart from './OwnerChart.vue'
 
   export interface ChartItem {

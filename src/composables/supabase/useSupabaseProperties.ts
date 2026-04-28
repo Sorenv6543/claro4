@@ -1,5 +1,5 @@
-import type { RealtimeChannel } from '@supabase/supabase-js'
 import type { Property, PropertyFormData } from '@/types'
+import type { RealtimeChannel } from '@supabase/supabase-js'
 import { v4 as uuidv4 } from 'uuid'
 import { ref } from 'vue'
 import { supabase } from '@/plugins/supabase'

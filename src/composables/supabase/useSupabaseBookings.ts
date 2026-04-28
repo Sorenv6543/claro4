@@ -1,5 +1,5 @@
-import type { RealtimeChannel } from '@supabase/supabase-js'
 import type { Booking, BookingFormData } from '@/types'
+import type { RealtimeChannel } from '@supabase/supabase-js'
 import { v4 as uuidv4 } from 'uuid'
 import { ref } from 'vue'
 import { supabase } from '@/plugins/supabase'
@@ -373,7 +373,7 @@ export function useSupabaseBookings () {
     }
   }
 
-  async function bulkChangeStatus(
+  async function bulkChangeStatus (
     bookingIds: string[],
     status: Booking['status'],
   ): Promise<{ updated: Booking[], skipped: { id: string, reason: string }[] }> {
@@ -414,7 +414,9 @@ export function useSupabaseBookings () {
         .from('bookings')
         .update({ status, updated_at: updateTime })
         .in('id', eligibleIds)
-      if (error) throw error
+      if (error) {
+        throw error
+      }
       return { updated, skipped }
     } catch (error) {
       for (const [id, existing] of snapshots) {

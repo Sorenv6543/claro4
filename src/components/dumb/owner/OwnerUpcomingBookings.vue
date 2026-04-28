@@ -8,6 +8,7 @@
     <v-list v-else class="py-0" density="comfortable">
       <template v-for="(booking, index) in bookings" :key="index">
         <v-divider v-if="index > 0" />
+
         <v-list-item class="px-4 py-2">
           <template #prepend>
             <div
@@ -17,6 +18,7 @@
               <div class="text-caption font-weight-bold" :style="{ color: booking.propertyColor }">
                 {{ formatMonth(booking.checkinDate) }}
               </div>
+
               <div class="text-h6 font-weight-bold" :style="{ color: booking.propertyColor }">
                 {{ formatDay(booking.checkinDate) }}
               </div>
@@ -26,6 +28,7 @@
           <v-list-item-title class="text-body-2 font-weight-medium">
             {{ booking.property }}
           </v-list-item-title>
+
           <v-list-item-subtitle class="text-caption">
             {{ formatDateRange(booking.checkinDate, booking.checkoutDate) }}
           </v-list-item-subtitle>
@@ -39,6 +42,7 @@
               >
                 {{ booking.type }}
               </v-chip>
+
               <v-chip
                 :color="statusColor(booking.status)"
                 size="x-small"
@@ -51,6 +55,7 @@
         </v-list-item>
       </template>
     </v-list>
+
     <template #actions>
       <v-btn
         block

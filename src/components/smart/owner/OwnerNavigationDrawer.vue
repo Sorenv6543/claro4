@@ -9,54 +9,80 @@
     @update:model-value="emit('update:modelValue', $event)"
   >
     <!-- Navigation section -->
-    <v-list class="pt-2" density="comfortable" nav>
-      <v-list-subheader class="text-overline">Navigation</v-list-subheader>
+    <nav aria-label="Main navigation" class="claro-nav">
+      <div aria-hidden="true" class="claro-nav-section-label">Main</div>
 
-      <template v-for="item in navItems" :key="item.label">
-        <v-list-item
-          :active="isActive(item.to)"
-          color="primary"
-          :disabled="item.disabled"
-          :prepend-icon="isActive(item.to) ? item.filledIcon : item.icon"
-          :title="item.label"
-          :to="item.disabled ? undefined : item.to"
-          @click="item.disabled ? undefined : onNavItemClick()"
+      <component
+        :is="item.disabled ? 'span' : 'router-link'"
+        v-for="item in navItems"
+        :key="item.label"
+        :aria-current="isActive(item.to) ? 'page' : undefined"
+        class="claro-nav-item"
+        :class="{ 'claro-nav-item--active': isActive(item.to) }"
+        :to="item.disabled ? undefined : item.to"
+        @click="item.disabled ? undefined : onNavItemClick()"
+      >
+        <v-icon
+          aria-hidden="true"
+          class="claro-nav-icon"
+          :icon="isActive(item.to) ? item.filledIcon : item.icon"
+          size="20"
+        />
+
+        <span class="claro-nav-label">{{ item.label }}</span>
+
+        <span
+          v-if="item.badge"
+          :aria-label="`${item.badge} items`"
+          class="claro-nav-badge"
+          :class="{ 'claro-nav-badge--active': isActive(item.to) }"
+        >{{ item.badge }}</span>
+
+        <v-chip
+          v-if="item.soon"
+          class="text-uppercase font-weight-bold ml-auto"
+          color="success"
+          size="x-small"
+          variant="tonal"
         >
-          <template v-if="item.soon" #append>
-            <v-chip class="text-uppercase font-weight-bold" color="success" size="small" variant="tonal">
-              Soon
-            </v-chip>
-          </template>
-        </v-list-item>
-      </template>
-    </v-list>
+          Soon
+        </v-chip>
+      </component>
 
-    <v-divider class="mx-4 my-1" />
+      <div aria-hidden="true" class="claro-nav-section-label">Account</div>
 
-    <!-- Account section -->
-    <v-list density="compact" nav>
-      <v-list-subheader class="text-overline">Account</v-list-subheader>
-      <v-list-item
+      <component
+        :is="'router-link'"
         v-for="item in accountItems"
         :key="item.label"
-        :active="isActive(item.to)"
-        color="primary"
-        :prepend-icon="isActive(item.to) ? item.filledIcon : item.icon"
-        :title="item.label"
+        :aria-current="isActive(item.to) ? 'page' : undefined"
+        class="claro-nav-item"
+        :class="{ 'claro-nav-item--active': isActive(item.to) }"
         :to="item.to"
         @click="onNavItemClick()"
-      />
-    </v-list>
+      >
+        <v-icon
+          aria-hidden="true"
+          class="claro-nav-icon"
+          :icon="isActive(item.to) ? item.filledIcon : item.icon"
+          size="20"
+        />
+
+        <span class="claro-nav-label">{{ item.label }}</span>
+      </component>
+    </nav>
 
     <!-- Bottom: user profile -->
     <template #append>
       <v-divider />
+
       <div class="pa-3 pb-1">
         <!-- User row -->
         <div class="d-flex align-center gap-3 px-1 py-2">
           <v-avatar color="primary" size="30">
             <span class="text-caption font-weight-bold">{{ userInitials }}</span>
           </v-avatar>
+
           <div class="overflow-hidden">
             <div class="text-body-2 font-weight-semibold text-truncate">{{ userName }}</div>
             <div class="text-caption text-medium-emphasis text-truncate">{{ userEmail }}</div>
@@ -64,16 +90,18 @@
         </div>
 
       </div>
+
       <div class="pb-2" />
     </template>
   </v-navigation-drawer>
 </template>
 
 <script setup lang="ts">
-  import { useAuthStore } from '@stores/auth';
-import { computed } from 'vue';
-import { useRoute } from 'vue-router';
-import { useDisplay } from 'vuetify';
+  import { useAuthStore } from '@stores/auth'
+  import { computed } from 'vue'
+  import { useRoute } from 'vue-router'
+  import { useDisplay } from 'vuetify'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
 
   defineProps<{
     modelValue: boolean
@@ -86,6 +114,9 @@ import { useDisplay } from 'vuetify';
   const route = useRoute()
   const { mdAndUp } = useDisplay()
   const authStore = useAuthStore()
+  const { myProperties } = useOwnerProperties()
+
+  const propertyCount = computed(() => myProperties.value.length || null)
 
   // 260 on md+ (permanent), 280 below (temporary overlay — wider for
   // readability when slid in). The CSS token --claro-drawer-width in
@@ -93,7 +124,7 @@ import { useDisplay } from 'vuetify';
   const drawerWidth = computed(() => mdAndUp.value ? 260 : 280)
 
   // ── Nav items ──────────────────────────────────────────────────
-  const navItems = [
+  const navItems = computed(() => [
     {
       label: 'Overview',
       icon: 'mdi-view-dashboard-outline',
@@ -101,6 +132,16 @@ import { useDisplay } from 'vuetify';
       to: '/owner/overview',
       disabled: false,
       soon: false,
+      badge: null,
+    },
+    {
+      label: 'Timeline',
+      icon: 'mdi-view-timeline-outline',
+      filledIcon: 'mdi-view-timeline',
+      to: '/owner/timeline',
+      disabled: false,
+      soon: false,
+      badge: null,
     },
     {
       label: 'Calendar',
@@ -109,6 +150,7 @@ import { useDisplay } from 'vuetify';
       to: '/owner/calendar',
       disabled: false,
       soon: false,
+      badge: null,
     },
     {
       label: 'Bookings',
@@ -117,6 +159,7 @@ import { useDisplay } from 'vuetify';
       to: '/owner/bookings',
       disabled: false,
       soon: false,
+      badge: null,
     },
     {
       label: 'Properties',
@@ -125,6 +168,7 @@ import { useDisplay } from 'vuetify';
       to: '/owner/properties',
       disabled: false,
       soon: false,
+      badge: propertyCount.value,
     },
     {
       label: 'Reports',
@@ -133,8 +177,9 @@ import { useDisplay } from 'vuetify';
       to: '/owner/reports',
       disabled: false,
       soon: false,
+      badge: null,
     },
-  ]
+  ])
 
   const accountItems = [
     {
@@ -183,5 +228,132 @@ import { useDisplay } from 'vuetify';
 .owner-layout .v-navigation-drawer--temporary {
   top: var(--app-bar-height, 64px) !important;
   height: calc(100% - var(--app-bar-height, 64px)) !important;
+}
+</style>
+
+<style scoped>
+/* ── Variant B — Ghost → Bold + Scale ── */
+.claro-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: 10px 8px;
+}
+
+.claro-nav-section-label {
+  font-size: 10.5px;
+  color: var(--claro-fg3);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-weight: 700;
+  padding: 10px 12px 4px;
+  margin-top: 4px;
+  opacity: 0.55;
+}
+
+.claro-nav-section-label:first-child {
+  margin-top: 0;
+}
+
+.claro-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 12px;
+  min-height: 44px;
+  border-radius: 6px;
+  font-size: 13.5px;
+  cursor: pointer;
+  text-decoration: none;
+  outline: none;
+  font-family: var(--claro-font-family);
+  transition: background 180ms ease;
+}
+
+.claro-nav-item:hover {
+  background: rgba(46, 38, 61, 0.05);
+}
+
+.claro-nav-item:focus-visible {
+  outline: 2px solid var(--claro-primary);
+  outline-offset: -2px;
+}
+
+/* Purple tint background on active — preserves current color styling */
+.claro-nav-item--active {
+  background: var(--claro-primary-tint, rgba(115, 103, 240, 0.12));
+}
+
+/* ── Icon: Ghost at rest → fills purple on active ── */
+.claro-nav-icon {
+  flex-shrink: 0;
+  width: 22px;
+  text-align: center;
+  /* Ghost state */
+  color: var(--claro-fg2);
+  opacity: 0.22;
+  transform: scale(0.85);
+  /* Spring transition for the scale pop, ease for opacity/color */
+  transition:
+    transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity   260ms ease,
+    color     200ms ease;
+}
+
+.claro-nav-item:hover .claro-nav-icon {
+  opacity: 0.6;
+  transform: scale(0.95);
+}
+
+/* Active: filled purple icon, scale overshoot, full opacity */
+.claro-nav-item--active .claro-nav-icon {
+  color: var(--claro-primary);
+  opacity: 1;
+  transform: scale(1.15);
+}
+
+/* ── Label: ghost at rest → bold + full opacity on active ── */
+.claro-nav-label {
+  flex: 1;
+  min-width: 0;
+  color: var(--claro-fg2);
+  opacity: 0.32;
+  font-weight: 400;
+  transition: opacity 200ms ease;
+}
+
+.claro-nav-item:hover .claro-nav-label {
+  opacity: 0.7;
+}
+
+.claro-nav-item--active .claro-nav-label {
+  color: var(--claro-primary-dark);
+  opacity: 1;
+  font-weight: 600;
+}
+
+/* ── Badge ── */
+.claro-nav-badge {
+  margin-left: auto;
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 9999px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
+  background: rgba(46, 38, 61, 0.08);
+  color: var(--claro-fg3);
+  opacity: 0.6;
+  transition: opacity 200ms ease;
+}
+
+.claro-nav-item:hover .claro-nav-badge,
+.claro-nav-item--active .claro-nav-badge {
+  opacity: 1;
+}
+
+.claro-nav-badge--active {
+  background: rgba(115, 103, 240, 0.18);
+  color: var(--claro-primary-dark);
 }
 </style>

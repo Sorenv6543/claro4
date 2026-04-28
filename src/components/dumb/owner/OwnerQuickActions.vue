@@ -38,6 +38,7 @@
               <v-icon class="mr-2">
                 mdi-calendar-plus
               </v-icon>
+
               <span class="d-none d-sm-inline">Schedule</span>
               <span class="d-sm-none">Book</span>
               Cleaning
@@ -62,6 +63,7 @@
               <v-icon class="mr-2">
                 mdi-home-plus
               </v-icon>
+
               <span class="d-none d-sm-inline">Add</span>
               Property
             </v-btn>
@@ -87,6 +89,7 @@
               <v-icon class="mr-2">
                 mdi-calendar
               </v-icon>
+
               <span class="d-none d-sm-inline">View</span>
               Calendar
             </v-btn>
@@ -109,6 +112,7 @@
               <v-icon class="mr-2">
                 mdi-home-group
               </v-icon>
+
               <span class="d-none d-sm-inline">My</span>
               Properties
             </v-btn>
@@ -138,6 +142,7 @@
                   <v-icon class="mr-2">
                     mdi-clipboard-list
                   </v-icon>
+
                   <span class="d-none d-sm-inline">My</span>
                   Bookings
                 </v-btn>
@@ -160,6 +165,7 @@
                   <v-icon class="mr-2">
                     mdi-help-circle
                   </v-icon>
+
                   <span class="d-none d-sm-inline">Get</span>
                   Help
                 </v-btn>

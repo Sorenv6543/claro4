@@ -3,9 +3,11 @@
     <v-card class="text-center pa-8" elevation="2" max-width="480">
       <v-icon class="mb-4" color="info" size="64">mdi-account-clock</v-icon>
       <v-card-title class="text-h5 mb-2">Access Coming Soon</v-card-title>
+
       <v-card-text class="text-body-1 text-medium-emphasis">
         The cleaner dashboard is not yet available. Please contact your admin for scheduling information.
       </v-card-text>
+
       <v-card-actions class="justify-center mt-4">
         <v-btn color="primary" variant="tonal" @click="handleLogout">
           Sign Out

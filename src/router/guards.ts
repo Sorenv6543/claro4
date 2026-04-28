@@ -1,5 +1,5 @@
-import type { RouteLocationNormalized } from 'vue-router'
 import type { UserRole } from '@/types'
+import type { RouteLocationNormalized } from 'vue-router'
 import * as Sentry from '@sentry/vue'
 import { useAuthStore } from '@/stores/auth'
 import { getDefaultRouteForRole } from '@/utils/authHelpers'

@@ -79,10 +79,10 @@ export default createVuetify({
     VBtn: {
       variant: 'flat',
       rounded: 'pill',
-      elevation: 1,
+      elevation: 2,
     },
     VCard: {
-      elevation: 0,
+      elevation: 2,
       rounded: 'sm',
     },
     VChip: {

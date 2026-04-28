@@ -10,6 +10,7 @@
       </v-icon>
       Quick Navigation
       <v-spacer />
+
       <v-btn
         icon="mdi-close"
         size="small"
@@ -22,6 +23,7 @@
       <!-- Primary Navigation Options -->
       <div class="navigation-section mb-4">
         <span class="text-subtitle-2 mb-3 d-block">Primary:</span>
+
         <div class="d-flex flex-wrap ga-2">
           <v-btn
             v-for="option in primaryOptions"
@@ -48,6 +50,7 @@
       <!-- Time-Based Navigation -->
       <div class="navigation-section mb-4">
         <span class="text-subtitle-2 mb-3 d-block">Time-Based:</span>
+
         <div class="d-flex flex-wrap ga-2">
           <v-btn
             v-for="option in timeBasedOptions"
@@ -68,6 +71,7 @@
         class="navigation-section mb-4"
       >
         <span class="text-subtitle-2 mb-3 d-block">Top Property Owners:</span>
+
         <div class="d-flex flex-wrap ga-2">
           <v-btn
             v-for="owner in topOwners"
@@ -95,6 +99,7 @@
         class="navigation-section"
       >
         <span class="text-subtitle-2 mb-3 d-block">By Status:</span>
+
         <div class="d-flex flex-wrap ga-2">
           <v-btn
             v-for="status in statusOptions"

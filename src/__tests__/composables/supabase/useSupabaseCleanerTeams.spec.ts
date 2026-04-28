@@ -2,7 +2,7 @@ import type { CleanerTeam, CleanerTeamFormData } from '@/types'
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-function makeTeam(overrides: Partial<CleanerTeam> = {}): CleanerTeam {
+function makeTeam (overrides: Partial<CleanerTeam> = {}): CleanerTeam {
   return {
     id: 'team-1',
     name: 'Team Alpha',
@@ -14,7 +14,7 @@ function makeTeam(overrides: Partial<CleanerTeam> = {}): CleanerTeam {
   }
 }
 
-function makeFormData(overrides: Partial<CleanerTeamFormData> = {}): CleanerTeamFormData {
+function makeFormData (overrides: Partial<CleanerTeamFormData> = {}): CleanerTeamFormData {
   return {
     name: 'Team Beta',
     member_ids: ['cleaner-3'],
@@ -37,12 +37,12 @@ describe('useSupabaseCleanerTeams', () => {
     vi.restoreAllMocks()
   })
 
-  async function getComposable() {
+  async function getComposable () {
     const mod = await import('@/composables/supabase/useSupabaseCleanerTeams')
     return mod.useSupabaseCleanerTeams()
   }
 
-  async function getStore() {
+  async function getStore () {
     const mod = await import('@/stores/cleanerTeam')
     return mod.useCleanerTeamStore()
   }
@@ -50,7 +50,9 @@ describe('useSupabaseCleanerTeams', () => {
   describe('createTeam', () => {
     it('optimistically adds team to store and resolves', async () => {
       let resolveInsert!: (v: any) => void
-      const insertPromise = new Promise(res => { resolveInsert = res })
+      const insertPromise = new Promise(res => {
+        resolveInsert = res
+      })
 
       supabaseMock.from.mockReturnValue({
         select: vi.fn().mockReturnValue({ order: vi.fn().mockResolvedValue({ data: [], error: null }) }),

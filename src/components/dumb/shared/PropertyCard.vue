@@ -17,6 +17,7 @@
           <div class="property-name text-truncate">
             {{ formatPropertyAddress(property, 'short') }}
           </div>
+
           <div class="property-address text-caption text-medium-emphasis">
             <v-icon
               class="mr-1"
@@ -56,10 +57,12 @@
             icon="mdi-clock-outline"
             size="small"
           />
+
           <div class="metric-content">
             <div class="metric-label">
               Duration
             </div>
+
             <div class="metric-value">
               {{ formattedCleaningDuration }}
             </div>
@@ -73,10 +76,12 @@
             icon="mdi-star-outline"
             size="small"
           />
+
           <div class="metric-content">
             <div class="metric-label">
               Tier
             </div>
+
             <div class="metric-value text-capitalize">
               {{ property.pricing_tier }}
             </div>
@@ -123,9 +128,11 @@
                 icon="mdi-calendar-check"
                 size="x-small"
               />
+
               <span class="text-caption">Recent bookings: {{ recentBookingsCount }}</span>
             </div>
           </v-col>
+
           <v-col cols="6">
             <div class="stat-item">
               <v-icon
@@ -134,6 +141,7 @@
                 icon="mdi-trending-up"
                 size="x-small"
               />
+
               <span class="text-caption">Last cleaned: {{ lastCleanedText }}</span>
             </div>
           </v-col>
@@ -187,6 +195,7 @@
           icon="mdi-cursor-pointer"
           size="small"
         />
+
         <span class="text-caption">Click to view</span>
       </div>
     </v-overlay>

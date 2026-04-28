@@ -6,6 +6,7 @@
         <h3 class="text-h6 font-weight-medium">{{ title }}</h3>
         <p v-if="subtitle" class="text-body-2 text-medium-emphasis mt-1">{{ subtitle }}</p>
       </div>
+
       <div class="d-flex align-center ga-2">
         <slot name="header-actions" />
       </div>
@@ -26,6 +27,7 @@
           single-line
           variant="outlined"
         />
+
         <v-badge
           v-if="$slots.filters && filtersCollapsible"
           color="primary"
@@ -90,6 +92,7 @@
         <div class="d-flex align-center justify-end pa-4 pt-2">
           <div class="d-flex align-center ga-4">
             <span class="text-body-2 text-medium-emphasis">Rows per page:</span>
+
             <v-select
               v-model="itemsPerPageLocal"
               density="compact"
