@@ -227,12 +227,14 @@
     properties: Property[]
     loading?: boolean
     errors?: Map<string, string[]>
+    initialDates?: { checkinDate: string, checkoutDate: string }
   }
 
   const props = withDefaults(defineProps<Props>(), {
     booking: null,
     loading: false,
     errors: () => new Map(),
+    initialDates: undefined,
   })
 
   // Emits
@@ -343,8 +345,8 @@
     form.value = {
       property_id: '',
       owner_id: '',
-      checkout_date: '',
-      checkin_date: '',
+      checkin_date: props.initialDates?.checkinDate ?? '',
+      checkout_date: props.initialDates?.checkoutDate ?? '',
       checkin_time: '15:00',
       checkout_time: '11:00',
       booking_type: 'standard',
@@ -357,6 +359,8 @@
     if (formRef.value) {
       formRef.value.resetValidation()
     }
+
+    updateBookingType()
   }
 
   function populateForm (booking: Booking) {

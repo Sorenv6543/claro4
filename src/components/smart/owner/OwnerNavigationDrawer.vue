@@ -135,15 +135,6 @@
       badge: null,
     },
     {
-      label: 'Timeline',
-      icon: 'mdi-view-timeline-outline',
-      filledIcon: 'mdi-view-timeline',
-      to: '/owner/timeline',
-      disabled: false,
-      soon: false,
-      badge: null,
-    },
-    {
       label: 'Calendar',
       icon: 'mdi-calendar-month-outline',
       filledIcon: 'mdi-calendar-month',

@@ -1,10 +1,10 @@
+import { sentryVitePlugin } from '@sentry/vite-plugin'
 import * as Sentry from '@sentry/vue'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import App from '@/App.vue'
 import vuetify from '@/plugins/vuetify'
 import router from '@/router'
-
 import '@/styles/calendar-tokens.css'
 import './styles/main.scss'
 
@@ -52,6 +52,8 @@ if (sentryDsn) {
       // Without this, tracesSampleRate above is meaningless — there are
       // no transactions to sample.
       Sentry.browserTracingIntegration({ router }),
+      Sentry.vueIntegration({ tracingOptions: { trackComponents: true } }),
+
       // Browser profiling — samples CPU call stacks during traced transactions.
       // profileSessionSampleRate is a once-per-session coin flip: 1.0 means
       // every session that loads this page will profile all its transactions.
@@ -78,12 +80,12 @@ if (sentryDsn) {
     ],
     // Drop debug-level log events in production — they're development
     // diagnostics and would inflate log volume without operational value.
-    beforeSendLog: log => {
-      if (log.level === 'debug' && import.meta.env.PROD) {
-        return null
-      }
-      return log
-    },
+    // beforeSendLog: log => {
+    //   if (log.level === 'debug' && import.meta.env.PROD) {
+    //     return null
+    //   }
+    //   return log
+    // },
     // Session Replay sample rates — see replayIntegration above.
     // - replaysSessionSampleRate: record N% of all sessions (UX trend visibility)
     // - replaysOnErrorSampleRate: record 100% of error sessions (root-cause debugging)
@@ -100,6 +102,7 @@ if (sentryDsn) {
     // Allowlisted: localhost (dev API), Supabase REST + Auth endpoints
     // (since both are first-party for our app's data).
     tracePropagationTargets: [
+
       'localhost',
       /^https:\/\/[\w-]+\.supabase\.co\/rest\/v1/,
       /^https:\/\/[\w-]+\.supabase\.co\/auth\/v1/,
