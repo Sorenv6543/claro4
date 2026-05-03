@@ -79,17 +79,17 @@
 
 <script setup lang="ts">
   import type { BookingListItem } from '@/components/dumb/owner/OwnerBookingList.vue'
-  import type { Booking, ModalData } from '@/types'
+import type { Booking, ModalData } from '@/types'
 
-  import { computed, onMounted, ref } from 'vue'
   import OwnerBookingList from '@/components/dumb/owner/OwnerBookingList.vue'
-  import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
-  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
-  import { useUIStore } from '@/stores/ui'
-  import { formatPropertyAddress } from '@/types/property'
-  import { mapLegacyPropertyColor } from '@/utils/constants'
+import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
+import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
+import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+import { useUIStore } from '@/stores/ui'
+import { formatPropertyAddress } from '@/types/property'
+import { mapLegacyPropertyColor } from '@/utils/constants'
+import { computed, onMounted, ref } from 'vue'
 
   defineOptions({ name: 'OwnerBookingsComponent' })
 

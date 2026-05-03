@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pencil status *)",
+      "Bash(pencil --help)",
+      "Bash(pencil interactive *)",
+      "Bash(grep -oE '\"\\\\$[a-z-]+\"' materio-vuetify1.lib.pen)"
+    ]
+  }
+}

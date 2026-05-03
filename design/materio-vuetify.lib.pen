@@ -15956,8 +15956,8 @@
     {
       "type": "frame",
       "id": "rGsva",
-      "x": 3454,
-      "y": 2088,
+      "x": -1860,
+      "y": 4643,
       "name": "ownerDashboard",
       "width": 1100,
       "fill": "#F5F5F9",
@@ -16952,8 +16952,8 @@
     {
       "type": "frame",
       "id": "m6KA0",
-      "x": 4023,
-      "y": 3089,
+      "x": 45,
+      "y": 3577,
       "name": "propertyTimeline",
       "clip": true,
       "width": 1440,
