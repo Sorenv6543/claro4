@@ -60,7 +60,7 @@
       errors: new Map(),
       initialDates: {
         checkinDate: data.start.split('T')[0],
-        checkoutDate: data.end.split('T')[0],
+        checkoutDate: subtractOneDay(data.end).split('T')[0],
       },
     }
   }
