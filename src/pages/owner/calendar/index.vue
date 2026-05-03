@@ -7,6 +7,8 @@
       :loading="loading"
       :properties="myProperties"
       @create-booking="handleCreateBooking"
+      @event-drop="handleEventDrop"
+      @event-resize="handleEventResize"
     />
 
     <OwnerBookingForm
@@ -23,7 +25,9 @@
 </template>
 
 <script setup lang="ts">
-  import type { BookingFormData } from '@/types'
+  import type { Booking, BookingFormData } from '@/types'
+  import type { EventDropArg } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import { computed, onMounted, ref } from 'vue'
   import OwnerBookingForm from '@/components/dumb/owner/OwnerBookingForm.vue'
   import ErrorAlert from '@/components/dumb/shared/ErrorAlert.vue'
@@ -31,10 +35,11 @@
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useUIStore } from '@/stores/ui'
+  import { subtractOneDay } from '@/utils/calendarHelpers'
 
   defineOptions({ name: 'OwnerCalendarPage' })
 
-  const { myBookings, loading: bookingsLoading, error: bookingsError, fetchMyBookings, createMyBooking } = useOwnerBookings()
+  const { myBookings, loading: bookingsLoading, error: bookingsError, fetchMyBookings, createMyBooking, updateMyBooking } = useOwnerBookings()
   const { myProperties, loading: propertiesLoading, error: propertiesError, fetchMyProperties } = useOwnerProperties()
   const uiStore = useUIStore()
 
@@ -70,6 +75,32 @@
       uiStore.addNotification('error', 'Failed', error_ instanceof Error ? error_.message : 'Could not create booking')
     } finally {
       bookingFormModal.value.loading = false
+    }
+  }
+
+  async function handleEventDrop (dropInfo: EventDropArg) {
+    const booking = dropInfo.event.extendedProps?.booking as Booking | undefined
+    if (!booking) { dropInfo.revert(); return }
+    const ok = await updateMyBooking(booking.id, {
+      checkin_date: dropInfo.event.startStr.split('T')[0],
+      checkout_date: subtractOneDay(dropInfo.event.endStr).split('T')[0],
+    })
+    if (!ok) {
+      dropInfo.revert()
+      uiStore.addNotification('error', 'Failed', 'Could not update booking dates')
+    }
+  }
+
+  async function handleEventResize (resizeInfo: EventResizeDoneArg) {
+    const booking = resizeInfo.event.extendedProps?.booking as Booking | undefined
+    if (!booking) { resizeInfo.revert(); return }
+    const ok = await updateMyBooking(booking.id, {
+      checkin_date: resizeInfo.event.startStr.split('T')[0],
+      checkout_date: subtractOneDay(resizeInfo.event.endStr).split('T')[0],
+    })
+    if (!ok) {
+      resizeInfo.revert()
+      uiStore.addNotification('error', 'Failed', 'Could not update booking dates')
     }
   }
 
