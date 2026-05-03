@@ -1,10 +1,10 @@
 <template>
-  <v-card class="award-card" rounded="sm" :elevation="0">
+  <v-card class="award-card" :elevation="0" rounded="sm">
     <h3 class="award-card__title">Congratulations John! 🎉</h3>
     <span class="award-card__sub">Best seller of the month</span>
     <span class="award-card__amount">$42.8k</span>
     <span class="award-card__target">78% of target 🚀</span>
-    <v-btn color="primary" rounded="pill" size="small" class="mt-1">View Sales</v-btn>
+    <v-btn class="mt-1" color="primary" rounded="pill" size="small">View Sales</v-btn>
   </v-card>
 </template>
 

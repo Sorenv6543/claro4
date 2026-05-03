@@ -1,5 +1,5 @@
 <template>
-  <v-card class="dw-card" rounded="sm" :elevation="0">
+  <v-card class="dw-card" :elevation="0" rounded="sm">
     <div class="dw-card__col">
       <div class="dw-card__header">
         <h3 class="dw-card__title">Deposit</h3>
@@ -15,10 +15,12 @@
           <div class="dw-item__avatar">
             <span :style="{ color: item.iconColor }">{{ item.initial }}</span>
           </div>
+
           <div class="dw-item__info">
             <span class="dw-item__name">{{ item.name }}</span>
             <span class="dw-item__sub">{{ item.sub }}</span>
           </div>
+
           <span class="dw-item__amount dw-item__amount--deposit">{{ item.amount }}</span>
         </div>
       </div>
@@ -47,10 +49,12 @@
               <template v-if="!item.isIcon">{{ item.initial }}</template>
             </component>
           </div>
+
           <div class="dw-item__info">
             <span class="dw-item__name">{{ item.name }}</span>
             <span class="dw-item__sub">{{ item.sub }}</span>
           </div>
+
           <span class="dw-item__amount dw-item__amount--withdraw">{{ item.amount }}</span>
         </div>
       </div>

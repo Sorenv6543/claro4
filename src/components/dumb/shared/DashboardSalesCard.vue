@@ -1,5 +1,5 @@
 <template>
-  <v-card class="sales-card" rounded="sm" :elevation="0">
+  <v-card class="sales-card" :elevation="0" rounded="sm">
     <h3 class="sales-card__title">Sales by Countries</h3>
 
     <div class="sales-card__list">
@@ -18,16 +18,19 @@
         <div class="sales-item__info">
           <div class="sales-item__row">
             <span class="sales-item__amount">{{ item.amount }}</span>
+
             <v-icon
               :color="item.trendColor"
               :icon="item.trendIcon"
               size="16"
             />
+
             <span
               class="sales-item__pct"
               :style="{ color: item.trendColor }"
             >{{ item.pct }}</span>
           </div>
+
           <span class="sales-item__country">{{ item.country }}</span>
         </div>
 

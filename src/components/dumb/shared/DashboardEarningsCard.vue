@@ -1,5 +1,5 @@
 <template>
-  <v-card class="earn-card" rounded="sm" :elevation="0">
+  <v-card class="earn-card" :elevation="0" rounded="sm">
     <h3 class="earn-card__title">Total Earning</h3>
 
     <div class="earn-card__amount-row">
@@ -22,10 +22,12 @@
         >
           <span :style="{ color: item.avatarColor }">{{ item.initial }}</span>
         </div>
+
         <div class="earn-item__info">
           <span class="earn-item__name">{{ item.name }}</span>
           <span class="earn-item__sub">{{ item.sub }}</span>
         </div>
+
         <span class="earn-item__amt">{{ item.amount }}</span>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <v-card class="tx-card" rounded="sm" :elevation="0">
+  <v-card class="tx-card" :elevation="0" rounded="sm">
     <div class="tx-card__header">
       <h3 class="tx-card__title">Transactions</h3>
       <span class="tx-card__sub">Total 48.5% Growth 😎 this month</span>
@@ -21,6 +21,7 @@
             size="20"
           />
         </div>
+
         <div class="tx-stat__info">
           <span class="tx-stat__label">{{ stat.label }}</span>
           <span class="tx-stat__value">{{ stat.value }}</span>

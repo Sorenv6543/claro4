@@ -1,8 +1,9 @@
 <template>
-  <v-card class="mini-card" rounded="sm" :elevation="0">
+  <v-card class="mini-card" :elevation="0" rounded="sm">
     <!-- Bar-chart variant (Profit / Sessions) -->
     <template v-if="variant === 'bars'">
       <span class="mini-card__value">{{ value }}</span>
+
       <div class="mini-card__bars">
         <div
           v-for="(bar, i) in bars"
@@ -11,6 +12,7 @@
           :style="{ height: bar.height + 'px', backgroundColor: bar.color }"
         />
       </div>
+
       <span class="mini-card__label">{{ title }}</span>
     </template>
 
@@ -27,17 +29,22 @@
             size="20"
           />
         </div>
+
         <span class="mini-card__more">···</span>
       </div>
+
       <span class="mini-card__title">{{ title }}</span>
+
       <div class="mini-card__stats-row">
         <span class="mini-card__stat-value">{{ value }}</span>
+
         <span
           v-if="change"
           class="mini-card__change"
           :style="{ color: changeType === 'up' ? 'var(--claro-success)' : changeType === 'down' ? 'var(--claro-error)' : 'inherit' }"
         >{{ change }}</span>
       </div>
+
       <span
         v-if="subtitle"
         class="mini-card__subtitle"
