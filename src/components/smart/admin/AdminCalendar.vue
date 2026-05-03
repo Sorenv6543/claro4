@@ -173,7 +173,6 @@
   import type { Cleaner } from '@/types/user.ts'
   import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
-
   import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
   import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
   import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
@@ -184,8 +183,7 @@
   import { isCleaner } from '@/types/user'
   import { subtractOneDay } from '@/utils/calendarHelpers'
 
-  // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
-  // packages (~250 kB) only download when the schedule route is visited.
+  // Lazy-load the FullCalendar wrapper
   const FullCalendar = defineAsyncComponent(() =>
     import('@/components/smart/shared/FullCalendar.vue'),
   )
