@@ -91,7 +91,23 @@
       </v-container>
     </div>
 
-    <!-- Admin Calendar: Shows all bookings across all properties -->
+    <!-- Admin Calendar Controls (filters, advanced view options) -->
+    <div class="calendar-controls-wrapper">
+      <AdminCalendarControls
+        :cleaners="cleanersList"
+        :current-date="currentDateISO"
+        :current-view="currentView"
+        :loading="loading"
+        :property-owners="ownersList"
+        :selected-bookings="[]"
+        @date-change="handleControlsDateChange"
+        @filter-change="handleFilterChange"
+        @navigate="handleControlsNavigate"
+        @view-change="handleControlsViewChange"
+      />
+    </div>
+
+    <!-- Admin Calendar: Shows all bookings across all properties (filtered) -->
     <!-- Main Content -->
     <div class="page-content">
       <v-row
@@ -106,7 +122,7 @@
         >
           <FullCalendar
             ref="calendarRef"
-            :bookings="calendarBookings"
+            :bookings="filteredCalendarBookings"
             class="admin-calendar"
             :loading="loading"
             :properties="calendarProperties"
@@ -169,6 +185,7 @@
 </template>
 
 <script setup lang="ts">
+  import type { AdminCalendarFilters } from '@/composables/admin/useAdminCalendarState.ts'
   import type { Booking, BookingFormData } from '@/types/booking.ts'
   import type { Cleaner } from '@/types/user.ts'
   import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
@@ -176,6 +193,7 @@
 
   import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
   import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
+  import AdminCalendarControls from '@/components/dumb/admin/AdminCalendarControls.vue'
   import CleanerAssignmentModal from '@/components/dumb/admin/CleanerAssignmentModal.vue'
   import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
   import { useAdminCalendarState } from '@/composables/admin/useAdminCalendarState.ts'
@@ -197,26 +215,35 @@
 
     currentView,
     currentDate,
+    viewMode,
 
     // Computed properties (Maps from store)
-    allBookings,
     allProperties,
+    filteredAdminBookings,
+
+    // Filter state
+    setActiveFilters,
 
     // Functions
     setCalendarView,
     goToDate,
   } = useAdminCalendarState()
 
-  // Convert Maps to arrays for FullCalendar props (which expect Booking[]/Property[])
-  const calendarBookings = computed(() => Array.from(allBookings.value.values()))
+  // Convert Maps/arrays to arrays for FullCalendar props (which expect Booking[]/Property[])
+  const filteredCalendarBookings = computed(() => filteredAdminBookings.value)
   const calendarProperties = computed(() => Array.from(allProperties.value.values()))
-
-  // Shared calendar state (singleton) — gives us viewMode
-  const { viewMode } = useAdminCalendarState()
 
   // Additional composables for admin functionality
   const { updateBooking, deleteBooking, createBooking, assignCleanerToBooking } = useAdminBookings()
   const { users: allUsers } = useAdminUserManagement()
+
+  // Derived lists for AdminCalendarControls
+  const cleanersList = computed<Cleaner[]>(() => allUsers.value.filter(isCleaner))
+  const ownersList = computed(() =>
+    allUsers.value
+      .filter(u => u.role === 'owner')
+      .map(u => ({ id: u.id, name: u.name })),
+  )
 
   // UI store for notifications
   const uiStore = useUIStore()
@@ -265,12 +292,10 @@
   }
 
   function goToToday () {
-    currentViewingDate.value = new Date()
-    goToDateInCalendar(new Date())
+    const today = new Date()
+    goToDate(today)
+    goToDateInCalendar(today)
   }
-
-  // Component state
-  const currentViewingDate = ref(new Date())
 
   // Context menu state
   const contextMenu = ref({
@@ -423,21 +448,49 @@
 
   // Calendar navigation functions
   function getCurrentMonthYear () {
-    return currentViewingDate.value.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+    return currentDate.value.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   }
 
   function navigateToPreviousMonth () {
-    const newDate = new Date(currentViewingDate.value)
+    const newDate = new Date(currentDate.value)
     newDate.setMonth(newDate.getMonth() - 1)
-    currentViewingDate.value = newDate
+    goToDate(newDate)
     goToDateInCalendar(newDate)
   }
 
   function navigateToNextMonth () {
-    const newDate = new Date(currentViewingDate.value)
+    const newDate = new Date(currentDate.value)
     newDate.setMonth(newDate.getMonth() + 1)
-    currentViewingDate.value = newDate
+    goToDate(newDate)
     goToDateInCalendar(newDate)
+  }
+
+  // ISO date string for AdminCalendarControls' :current-date prop
+  const currentDateISO = computed(() => currentDate.value.toISOString().split('T')[0])
+
+  function handleControlsNavigate (direction: 'prev' | 'next' | 'today') {
+    if (direction === 'prev') navigateToPreviousMonth()
+    else if (direction === 'next') navigateToNextMonth()
+    else goToToday()
+  }
+
+  function handleControlsViewChange (view: string) {
+    setCalendarView(view as 'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek')
+    if (calendarRef.value) {
+      calendarRef.value.changeView(view)
+    }
+  }
+
+  function handleControlsDateChange (date: string) {
+    if (!date) return
+    const parsed = new Date(date)
+    if (Number.isNaN(parsed.getTime())) return
+    goToDate(parsed)
+    goToDateInCalendar(parsed)
+  }
+
+  function handleFilterChange (filters: AdminCalendarFilters) {
+    setActiveFilters(filters)
   }
 
   // Context menu handlers

@@ -17,6 +17,30 @@ import { formatPropertyAddress } from '@/types/property'
  * - System-wide calendar management
  * - Cleaner assignment calendar logic
  */
+/**
+ * Filter shape exposed by AdminCalendarControls (mirrors its internal CalendarFilters).
+ */
+export interface AdminCalendarFilters {
+  status: string[]
+  cleaner: string[]
+  bookingType: string[]
+  propertyOwner: string[]
+  priority: string[]
+  dateRange: {
+    start: string
+    end: string
+  }
+}
+
+const EMPTY_FILTERS: AdminCalendarFilters = {
+  status: [],
+  cleaner: [],
+  bookingType: [],
+  propertyOwner: [],
+  priority: [],
+  dateRange: { start: '', end: '' },
+}
+
 // Module-level singleton — created once, shared across all admin consumers
 let _instance: ReturnType<typeof createAdminCalendarState> | null = null
 
@@ -37,6 +61,17 @@ function createAdminCalendarState () {
   const showUnassignedOnly = ref<boolean>(false)
   const showOverdueOnly = ref<boolean>(false)
   const calendarViewMode = ref<'standard' | 'cleaner' | 'owner' | 'priority'>('standard')
+
+  // Reactive filter criteria from AdminCalendarControls
+  const activeFilters = ref<AdminCalendarFilters>({ ...EMPTY_FILTERS, dateRange: { ...EMPTY_FILTERS.dateRange } })
+
+  function setActiveFilters (filters: AdminCalendarFilters) {
+    activeFilters.value = filters
+  }
+
+  function clearActiveFilters () {
+    activeFilters.value = { ...EMPTY_FILTERS, dateRange: { start: '', end: '' } }
+  }
 
   // COMPUTED PROPERTIES - Admin system-wide data access (NO filtering)
 
@@ -298,6 +333,38 @@ function createAdminCalendarState () {
     })
   }
 
+  /**
+   * All bookings filtered by the current `activeFilters` state.
+   * When no filters are active, returns the unfiltered booking list.
+   */
+  const filteredAdminBookings = computed(() => {
+    const f = activeFilters.value
+    const hasFilters = !!(
+      f.status.length
+      || f.cleaner.length
+      || f.bookingType.length
+      || f.propertyOwner.length
+      || f.priority.length
+      || f.dateRange.start
+      || f.dateRange.end
+    )
+
+    if (!hasFilters) {
+      return Array.from(bookingStore.bookings.values())
+    }
+
+    return filterByMultipleCriteria({
+      status: f.status.length ? (f.status as BookingStatus[]) : undefined,
+      bookingType: f.bookingType.length ? (f.bookingType as BookingType[]) : undefined,
+      cleanerIds: f.cleaner.length ? f.cleaner : undefined,
+      ownerIds: f.propertyOwner.length ? f.propertyOwner : undefined,
+      dateRange: f.dateRange.start && f.dateRange.end
+        ? { start: f.dateRange.start, end: f.dateRange.end }
+        : undefined,
+      priorityOnly: f.priority.includes('urgent') || f.priority.includes('high'),
+    })
+  })
+
   // Return admin-specific interface
   return {
     // State
@@ -317,6 +384,7 @@ function createAdminCalendarState () {
     cleanerSchedules,
     ownerSchedules,
     systemMetrics,
+    filteredAdminBookings,
 
     // Admin-specific filters
     selectedCleanerIds,
@@ -324,6 +392,9 @@ function createAdminCalendarState () {
     showUnassignedOnly,
     showOverdueOnly,
     calendarViewMode,
+    activeFilters,
+    setActiveFilters,
+    clearActiveFilters,
 
     // Functions
     handleAdminEventClick,
