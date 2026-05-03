@@ -24,7 +24,7 @@
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
-  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
+  import { useCalendarState } from '@/composables/shared/useCalendarState'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when a calendar route is visited.
