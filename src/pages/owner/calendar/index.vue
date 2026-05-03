@@ -68,7 +68,12 @@
   async function handleBookingFormSubmit (data: BookingFormData) {
     bookingFormModal.value.loading = true
     try {
-      await createMyBooking(data)
+      const createdBooking = await createMyBooking(data)
+      if (!createdBooking) {
+        uiStore.addNotification('error', 'Failed', 'Could not create booking')
+        return
+      }
+
       uiStore.addNotification('success', 'Created', 'Booking created successfully')
       bookingFormModal.value.show = false
     } catch (error_) {
