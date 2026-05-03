@@ -26,7 +26,8 @@ export function useRealtimeSync () {
   })
 
   function subscribeToProfileChanges () {
-    if (profileChannel) {
+    const userId = authStore.user?.id
+    if (profileChannel || !userId) {
       return
     }
     profileChannel = supabase
@@ -37,7 +38,7 @@ export function useRealtimeSync () {
           event: 'UPDATE',
           schema: 'public',
           table: 'user_profiles',
-          filter: `id=eq.${authStore.user?.id}`,
+          filter: `id=eq.${userId}`,
         },
         () => {
           authStore.refreshProfile().catch((error: unknown) =>

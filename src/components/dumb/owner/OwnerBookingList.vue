@@ -206,35 +206,37 @@
               <div class="bl-col-label">Booking details</div>
 
               <table class="bl-stats-table">
-                <tr>
-                  <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-login</v-icon> Check-in</span></td>
-                  <td>{{ formatDate(item.checkinDate) }}<template v-if="item.checkinTime"> · {{ item.checkinTime }}</template></td>
-                </tr>
+                <tbody>
+                  <tr>
+                    <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-login</v-icon> Check-in</span></td>
+                    <td>{{ formatDate(item.checkinDate) }}<template v-if="item.checkinTime"> · {{ item.checkinTime }}</template></td>
+                  </tr>
 
-                <tr>
-                  <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-logout</v-icon> Check-out</span></td>
-                  <td>{{ formatDate(item.checkoutDate) }}<template v-if="item.checkoutTime"> · {{ item.checkoutTime }}</template></td>
-                </tr>
+                  <tr>
+                    <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-logout</v-icon> Check-out</span></td>
+                    <td>{{ formatDate(item.checkoutDate) }}<template v-if="item.checkoutTime"> · {{ item.checkoutTime }}</template></td>
+                  </tr>
 
-                <tr v-if="item.guestCount">
-                  <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-account-group-outline</v-icon> Guests</span></td>
-                  <td>{{ item.guestCount }}</td>
-                </tr>
+                  <tr v-if="item.guestCount">
+                    <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-account-group-outline</v-icon> Guests</span></td>
+                    <td>{{ item.guestCount }}</td>
+                  </tr>
 
-                <tr v-if="item.priority">
-                  <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-flag-outline</v-icon> Priority</span></td>
+                  <tr v-if="item.priority">
+                    <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-flag-outline</v-icon> Priority</span></td>
 
-                  <td>
-                    <v-chip :color="priorityColor(item.priority)" size="x-small" variant="tonal">
-                      {{ item.priority }}
-                    </v-chip>
-                  </td>
-                </tr>
+                    <td>
+                      <v-chip :color="priorityColor(item.priority)" size="x-small" variant="tonal">
+                        {{ item.priority }}
+                      </v-chip>
+                    </td>
+                  </tr>
 
-                <tr v-if="item.createdAt">
-                  <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-clock-outline</v-icon> Created</span></td>
-                  <td>{{ formatDate(item.createdAt) }}</td>
-                </tr>
+                  <tr v-if="item.createdAt">
+                    <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-clock-outline</v-icon> Created</span></td>
+                    <td>{{ formatDate(item.createdAt) }}</td>
+                  </tr>
+                </tbody>
               </table>
             </div>
 

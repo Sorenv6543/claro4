@@ -1,4 +1,3 @@
-import { sentryVitePlugin } from '@sentry/vite-plugin'
 import * as Sentry from '@sentry/vue'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
