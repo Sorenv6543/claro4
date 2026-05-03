@@ -203,7 +203,7 @@ export function useErrorHandler () {
   function logError (errorInfo: ErrorInfo): void {
     const { context, options } = errorInfo
 
-    if (context.userRole === 'admin' || process.env.NODE_ENV === 'development') {
+    if (context.userRole === 'admin' || import.meta.env.DEV) {
       // Detailed logging for admins and development
       console.group(`🚨 Error in ${context.component || 'Unknown Component'}`)
       console.error('Message:', errorInfo.message)
