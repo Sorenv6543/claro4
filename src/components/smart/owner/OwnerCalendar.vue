@@ -62,7 +62,7 @@
 
   const emit = defineEmits<Emits>()
 
-  const { goToDate: calendarStateGoToDate } = useOwnerCalendarState()
+  const { goToDate: calendarStateGoToDate } = useCalendarState()
 
   // ===== REFS AND REACTIVE DATA =====
   const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
