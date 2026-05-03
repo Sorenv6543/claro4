@@ -51,7 +51,6 @@ if (sentryDsn) {
       // Without this, tracesSampleRate above is meaningless — there are
       // no transactions to sample.
       Sentry.browserTracingIntegration({ router }),
-      Sentry.vueIntegration({ tracingOptions: { trackComponents: true } }),
 
       // Browser profiling — samples CPU call stacks during traced transactions.
       // profileSessionSampleRate is a once-per-session coin flip: 1.0 means
