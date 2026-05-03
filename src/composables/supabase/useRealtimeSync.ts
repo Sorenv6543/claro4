@@ -26,7 +26,8 @@ export function useRealtimeSync () {
   })
 
   function subscribeToProfileChanges () {
-    if (profileChannel) {
+    const userId = authStore.user?.id
+    if (profileChannel || !userId) {
       return
     }
     profileChannel = supabase
@@ -37,7 +38,7 @@ export function useRealtimeSync () {
           event: 'UPDATE',
           schema: 'public',
           table: 'user_profiles',
-          filter: `id=eq.${authStore.user?.id}`,
+          filter: `id=eq.${userId}`,
         },
         () => {
           authStore.refreshProfile().catch((error: unknown) =>
@@ -53,6 +54,12 @@ export function useRealtimeSync () {
   }
 
   async function init () {
+    // Block until GoTrue's lock cycle is settled and the token is current.
+    // getSession() acquires the same localStorage lock used by JWT refreshes,
+    // so any in-progress refresh (e.g. from an HMR-orphaned lock) must
+    // complete before this resolves — and our queries below carry a valid token.
+    await supabase.auth.getSession()
+
     const results = await Promise.allSettled([initBookings(), initProperties()])
     const failures = results.filter(r => r.status === 'rejected')
     for (const result of failures) {
@@ -61,9 +68,7 @@ export function useRealtimeSync () {
     if (failures.length === results.length) {
       throw new Error('All data sources failed to initialize')
     }
-    if (failures.length < results.length) {
-      subscribeToProfileChanges()
-    }
+    subscribeToProfileChanges()
   }
 
   function teardown () {

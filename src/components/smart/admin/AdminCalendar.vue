@@ -345,9 +345,8 @@
   })
 
   // Event handlers - simplified using composable
-  function handleDateSelect (selectInfo: DateSelectArg): void {
-    console.log('🗓️ [AdminCalendar] Date selected:', selectInfo.startStr, 'to', selectInfo.endStr)
-  // Handle date selection - could open booking creation modal
+  function handleDateSelect (_selectInfo: DateSelectArg): void {
+    openAdminBookingFormModal(null, 'create')
   }
 
   function handleEventClick (clickInfo: EventClickArg): void {
@@ -484,7 +483,7 @@
   }
 
   // Admin booking form modal handlers
-  function openAdminBookingFormModal (booking: Booking, mode: 'create' | 'edit' = 'edit'): void {
+  function openAdminBookingFormModal (booking: Booking | null, mode: 'create' | 'edit' = 'edit'): void {
     adminBookingFormModal.value = {
       show: true,
       mode,

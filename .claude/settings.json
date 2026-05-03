@@ -120,18 +120,6 @@
   },
   "enabledMcpjsonServers": ["vuetify-mcp"],
   "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node -e \"const d=JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}'); process.exit(d.file_path && d.file_path.includes('.env.local') ? 2 : 0)\"",
-            "timeout": 5000
-          }
-        ]
-      }
-    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",

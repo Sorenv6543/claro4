@@ -1,6 +1,14 @@
 import { createPinia, setActivePinia } from 'pinia'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
+// Mock auth store so subscribeToProfileChanges sees a logged-in user
+vi.mock('@/stores/auth', () => ({
+  useAuthStore: () => ({
+    user: { id: 'test-user-id' },
+    refreshProfile: vi.fn().mockResolvedValue(undefined),
+  }),
+}))
+
 // Mock useSupabaseBookings at module level
 const mockInitBookings = vi.fn().mockResolvedValue(undefined)
 const mockTeardownBookings = vi.fn()

@@ -19,13 +19,14 @@
     EventDropArg,
   } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
+  import type FullCalendarInner from '@fullcalendar/vue3'
   import dayGridPlugin from '@fullcalendar/daygrid'
   import interactionPlugin from '@fullcalendar/interaction'
   import listPlugin from '@fullcalendar/list'
   import timeGridPlugin from '@fullcalendar/timegrid'
-  import FullCalendar from '@fullcalendar/vue3'
   import {
     computed,
+    defineAsyncComponent,
     onBeforeUnmount,
     onMounted,
     onUnmounted,
@@ -78,9 +79,11 @@
     viewMode: 'ranges',
   })
 
+  const FullCalendar = defineAsyncComponent(() => import('@fullcalendar/vue3'))
+
   const emit = defineEmits<Emits>()
 
-  const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
+  const calendarRef = ref<InstanceType<typeof FullCalendarInner> | null>(null)
 
   // Convert bookings array to FullCalendar events
   const calendarEvents = computed(() => {

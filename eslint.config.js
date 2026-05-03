@@ -22,6 +22,7 @@ export default [
       '.nuxt/**',
       '**/*.yaml',
       '**/*.yml',
+      'design/**',
     ],
   },
 

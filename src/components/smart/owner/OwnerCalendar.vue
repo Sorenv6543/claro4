@@ -23,13 +23,16 @@
   import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
+  import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
   import { useCalendarState } from '@/composables/shared/useCalendarState'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when a calendar route is visited.
-  const FullCalendar = defineAsyncComponent(() =>
-    import('@/components/smart/shared/FullCalendar.vue'),
-  )
+  const FullCalendar = defineAsyncComponent({
+    loader: () => import('@/components/smart/shared/FullCalendar.vue'),
+    loadingComponent: LoadingSpinner,
+    delay: 200,
+  })
 
   interface Props {
     bookings: Booking[]

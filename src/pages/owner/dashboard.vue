@@ -1,18 +1,9 @@
 <template>
-  <div class="owner-dashboard">
-    <HomeOwner />
-  </div>
+  <DashboardShowcase />
 </template>
 
 <script setup lang="ts">
-  import HomeOwner from '@/components/smart/owner/HomeOwner.vue'
+  import DashboardShowcase from '@/components/smart/shared/DashboardShowcase.vue'
 
-  defineOptions({
-    name: 'OwnerDashboard',
-  })
+  defineOptions({ name: 'OwnerDashboard' })
 </script>
-<style scoped>
-.owner-dashboard {
-  height: 100%;
-}
-</style>

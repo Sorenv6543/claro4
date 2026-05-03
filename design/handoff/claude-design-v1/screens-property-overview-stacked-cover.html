@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Stacked Cover + Horizontal Rows · Mobile · Claro</title>
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  html, body { margin: 0; padding: 0; height: 100%; overflow: hidden; }
+  body { font-family: var(--claro-font-family); }
+  #root { width: 100vw; height: 100vh; }
+  button { font-family: inherit; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<template id="__bundler_thumbnail" data-bg-color="#1A1626">
+  <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+    <rect width="100" height="100" fill="#1A1626"/>
+    <rect x="28" y="8" width="44" height="84" rx="5" fill="none" stroke="#7367F0" stroke-width="2"/>
+    <!-- Photo band — top 40% of phone interior -->
+    <rect x="30" y="10" width="40" height="32" fill="#7367F0" opacity="0.5"/>
+    <!-- Address text lines overlay -->
+    <rect x="33" y="29" width="12" height="2" fill="#fff" opacity="0.5"/>
+    <rect x="33" y="33" width="20" height="3" fill="#fff" opacity="0.7"/>
+    <!-- Events strip -->
+    <rect x="30" y="44" width="40" height="14" fill="#fff" opacity="0.1"/>
+    <rect x="33" y="47" width="18" height="3" fill="#7367F0" opacity="0.6"/>
+    <rect x="33" y="52" width="14" height="2" fill="#7367F0" opacity="0.4"/>
+    <!-- Mini-cards -->
+    <rect x="30" y="60" width="40" height="9" fill="#7367F0" opacity="0.2"/>
+    <rect x="30" y="71" width="40" height="9" fill="#FF9F43" opacity="0.2"/>
+    <rect x="30" y="82" width="40" height="9" fill="#7367F0" opacity="0.15"/>
+  </svg>
+</template>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="screens-property-overview.jsx"></script>
+<script type="text/babel" src="screens-property-overview-b1variants.jsx"></script>
+<script type="text/babel" src="screens-property-overview-b1a-variants.jsx"></script>
+
+<script type="text/babel">
+function App() {
+  return (
+    <DesignCanvas
+      title="Stacked Cover + Horizontal Rows"
+      subtitle="B.1a-iv — Full-width photo top, event-type-first events strip below, 88px mini-cards.">
+
+      <DCSection
+        title="Stacked Cover + Horizontal Rows"
+        subtitle="Cover photo runs full width (160px). Events strip below leads with event type, time right-aligned. Mini-cards 88px with type-first bottom row.">
+        <DCArtboard label="Stacked cover + horizontal rows" width={393} height={852}>
+          <IOSDevice width={393} height={852} statusBarStyle="dark">
+            <ScreenBv1a_iv />
+          </IOSDevice>
+        </DCArtboard>
+      </DCSection>
+
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
