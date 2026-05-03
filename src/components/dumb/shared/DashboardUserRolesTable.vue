@@ -1,5 +1,5 @@
 <template>
-  <v-card class="roles-table" rounded="sm" :elevation="0">
+  <v-card class="roles-table" :elevation="0" rounded="sm">
     <div class="roles-table__header">
       <span
         v-for="col in columns"
@@ -20,6 +20,7 @@
           >
             <span :style="{ color: row.avatarColor }">{{ row.initials }}</span>
           </div>
+
           <div class="roles-table__name-col">
             <span class="roles-table__name">{{ row.name }}</span>
             <span class="roles-table__handle">{{ row.handle }}</span>
@@ -34,6 +35,7 @@
             :icon="row.roleIcon"
             size="18"
           />
+
           <span>{{ row.roleLabel }}</span>
         </div>
 

@@ -80,7 +80,10 @@
 
   async function handleEventDrop (dropInfo: EventDropArg) {
     const booking = dropInfo.event.extendedProps?.booking as Booking | undefined
-    if (!booking) { dropInfo.revert(); return }
+    if (!booking) {
+      dropInfo.revert()
+      return
+    }
     const ok = await updateMyBooking(booking.id, {
       checkin_date: dropInfo.event.startStr.split('T')[0],
       checkout_date: subtractOneDay(dropInfo.event.endStr).split('T')[0],
@@ -93,7 +96,10 @@
 
   async function handleEventResize (resizeInfo: EventResizeDoneArg) {
     const booking = resizeInfo.event.extendedProps?.booking as Booking | undefined
-    if (!booking) { resizeInfo.revert(); return }
+    if (!booking) {
+      resizeInfo.revert()
+      return
+    }
     const ok = await updateMyBooking(booking.id, {
       checkin_date: resizeInfo.event.startStr.split('T')[0],
       checkout_date: subtractOneDay(resizeInfo.event.endStr).split('T')[0],

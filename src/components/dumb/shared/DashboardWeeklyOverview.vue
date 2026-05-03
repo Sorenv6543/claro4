@@ -1,5 +1,5 @@
 <template>
-  <v-card class="weekly-card" rounded="sm" :elevation="0">
+  <v-card class="weekly-card" :elevation="0" rounded="sm">
     <h3 class="weekly-card__title">Weekly Overview</h3>
 
     <div class="weekly-card__chart">
@@ -16,7 +16,7 @@
       <span class="weekly-card__desc">Your sales performance is 45% 😎 better compared to last month</span>
     </div>
 
-    <v-btn color="primary" rounded="pill" block>Details</v-btn>
+    <v-btn block color="primary" rounded="pill">Details</v-btn>
   </v-card>
 </template>
 

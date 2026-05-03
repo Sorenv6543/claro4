@@ -19,11 +19,11 @@
     EventDropArg,
   } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
+  import type FullCalendarInner from '@fullcalendar/vue3'
   import dayGridPlugin from '@fullcalendar/daygrid'
   import interactionPlugin from '@fullcalendar/interaction'
   import listPlugin from '@fullcalendar/list'
   import timeGridPlugin from '@fullcalendar/timegrid'
-  import type FullCalendarInner from '@fullcalendar/vue3'
   import {
     computed,
     defineAsyncComponent,

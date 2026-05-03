@@ -10,36 +10,40 @@
     <div class="dash-row">
       <DashboardWeeklyOverview />
       <DashboardEarningsCard />
+
       <div class="dash-mini-grid">
         <DashboardStatMiniCard
-          icon="mdi-hexagon-multiple-outline"
-          icon-bg="var(--claro-primary)"
-          title="Total Profit"
-          value="$25.6k"
           change="+42%"
           change-type="up"
+          icon="mdi-hexagon-multiple-outline"
+          icon-bg="var(--claro-primary)"
           subtitle="Weekly Profit"
+          title="Total Profit"
+          value="$25.6k"
         />
+
         <DashboardStatMiniCard
-          icon="mdi-cart-outline"
-          icon-bg="var(--claro-success)"
-          title="New Project"
-          value="862"
           change="-18%"
           change-type="down"
+          icon="mdi-cart-outline"
+          icon-bg="var(--claro-success)"
           subtitle="Last Week"
+          title="New Project"
+          value="862"
         />
+
         <DashboardStatMiniCard
-          variant="bars"
+          :bars="profitBars"
           title="Profit"
           value="624k"
-          :bars="profitBars"
-        />
-        <DashboardStatMiniCard
           variant="bars"
+        />
+
+        <DashboardStatMiniCard
+          :bars="sessionBars"
           title="Sessions"
           value="2,845"
-          :bars="sessionBars"
+          variant="bars"
         />
       </div>
     </div>
@@ -56,15 +60,15 @@
 </template>
 
 <script setup lang="ts">
-  import DashboardShell from '@/components/dumb/shared/DashboardShell.vue'
   import DashboardAwardCard from '@/components/dumb/shared/DashboardAwardCard.vue'
-  import DashboardTransactionsCard from '@/components/dumb/shared/DashboardTransactionsCard.vue'
-  import DashboardWeeklyOverview from '@/components/dumb/shared/DashboardWeeklyOverview.vue'
-  import DashboardEarningsCard from '@/components/dumb/shared/DashboardEarningsCard.vue'
-  import DashboardStatMiniCard from '@/components/dumb/shared/DashboardStatMiniCard.vue'
-  import DashboardSalesCard from '@/components/dumb/shared/DashboardSalesCard.vue'
   import DashboardDepositWithdrawCard from '@/components/dumb/shared/DashboardDepositWithdrawCard.vue'
+  import DashboardEarningsCard from '@/components/dumb/shared/DashboardEarningsCard.vue'
+  import DashboardSalesCard from '@/components/dumb/shared/DashboardSalesCard.vue'
+  import DashboardShell from '@/components/dumb/shared/DashboardShell.vue'
+  import DashboardStatMiniCard from '@/components/dumb/shared/DashboardStatMiniCard.vue'
+  import DashboardTransactionsCard from '@/components/dumb/shared/DashboardTransactionsCard.vue'
   import DashboardUserRolesTable from '@/components/dumb/shared/DashboardUserRolesTable.vue'
+  import DashboardWeeklyOverview from '@/components/dumb/shared/DashboardWeeklyOverview.vue'
 
   defineOptions({ name: 'DashboardShowcase' })
 
