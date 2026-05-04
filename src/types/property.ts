@@ -17,7 +17,7 @@ export interface Property {
   id: string
   owner_id: string
   address_street: string
-  address_unit?: string
+  address_unit?: string | null
   address_city: string
   address_state: string
   address_zip: string

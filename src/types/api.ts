@@ -37,7 +37,7 @@ export interface PaginatedResponse<T> {
 /**
  * Supabase table names
  */
-export type TableName = 'user_profiles' | 'properties' | 'bookings'
+export type TableName = 'user_profiles' | 'properties' | 'bookings' | 'cleaner_teams'
 
 /**
  * Error response from Supabase

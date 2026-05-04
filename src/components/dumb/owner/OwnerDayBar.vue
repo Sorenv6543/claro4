@@ -1,110 +1,120 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+  import { computed, ref, watch } from 'vue'
 
-export interface DayBarEvent {
-  id: string
-  propId: string
-  propName: string
-  propColor: string
-  type: 'checkout' | 'checkin' | 'turn'
-  time: string        // "HH:MM"
-  guestCount?: number
-  needsClean: boolean // no cleaner assigned — triggers amber "Action needed"
-  cleanFrom?: string  // turn only
-  cleanTo?: string    // turn only
-  cleanMins?: number  // turn only
-  bookingName?: string
-}
+  export interface DayBarEvent {
+    id: string
+    propId: string
+    propName: string
+    propColor: string
+    type: 'checkout' | 'checkin' | 'turn'
+    time: string // "HH:MM"
+    guestCount?: number
+    needsClean: boolean // no cleaner assigned — triggers amber "Action needed"
+    cleanFrom?: string // turn only
+    cleanTo?: string // turn only
+    cleanMins?: number // turn only
+    bookingName?: string
+  }
 
-defineOptions({ name: 'OwnerDayBar' })
+  defineOptions({ name: 'OwnerDayBar' })
 
-const props = defineProps<{
-  events: DayBarEvent[]
-  userName: string
-  dateLabel: string
-  currentHour: number
-  currentMin: number
-  checkoutCount: number
-  turnCount: number
-  checkinCount: number
-  needsActionCount: number
-}>()
+  const props = defineProps<{
+    events: DayBarEvent[]
+    userName: string
+    dateLabel: string
+    currentHour: number
+    currentMin: number
+    checkoutCount: number
+    turnCount: number
+    checkinCount: number
+    needsActionCount: number
+  }>()
 
-const emit = defineEmits<{
-  'open-booking': [id: string]
-  'assign-cleaner': [id: string]
-}>()
+  const emit = defineEmits<{
+    'open-booking': [id: string]
+    'assign-cleaner': [id: string]
+  }>()
 
-// ── Day-bar math ─────────────────────────────────────────────────────────────
-// Timeline spans 7am–9pm (14 hours)
-const DAY_START = 7
-const DAY_SPAN  = 14 // hours
+  // ── Day-bar math ─────────────────────────────────────────────────────────────
+  // Timeline spans 7am–9pm (14 hours)
+  const DAY_START = 7
+  const DAY_SPAN = 14 // hours
 
-function timeToMinutes(t: string): number {
-  const [h, m] = t.split(':').map(Number)
-  return (h ?? 0) * 60 + (m ?? 0)
-}
+  function timeToMinutes (t: string): number {
+    const [h, m] = t.split(':').map(Number)
+    return (h ?? 0) * 60 + (m ?? 0)
+  }
 
-function barPct(time: string): number {
-  const [h, m] = time.split(':').map(Number)
-  const frac = ((h ?? 0) + (m ?? 0) / 60 - DAY_START) / DAY_SPAN
-  return Math.max(0, Math.min(100, frac * 100))
-}
+  function barPct (time: string): number {
+    const [h, m] = time.split(':').map(Number)
+    const frac = ((h ?? 0) + (m ?? 0) / 60 - DAY_START) / DAY_SPAN
+    return Math.max(0, Math.min(100, frac * 100))
+  }
 
-const nowPct = computed(() => {
-  const frac = (props.currentHour + props.currentMin / 60 - DAY_START) / DAY_SPAN
-  return Math.max(0, Math.min(100, frac * 100))
-})
+  const nowPct = computed(() => {
+    const frac = (props.currentHour + props.currentMin / 60 - DAY_START) / DAY_SPAN
+    return Math.max(0, Math.min(100, frac * 100))
+  })
 
-function isPast(time: string): boolean {
-  const eventMins = timeToMinutes(time)
-  const nowMins   = props.currentHour * 60 + props.currentMin
-  return eventMins < nowMins
-}
+  function isPast (time: string): boolean {
+    const eventMins = timeToMinutes(time)
+    const nowMins = props.currentHour * 60 + props.currentMin
+    return eventMins < nowMins
+  }
 
-const TICK_HOURS = [7, 10, 13, 16, 19]
-const TIME_LABELS = ['7a', '10a', '1p', '4p', '7p', '9p']
+  const TICK_HOURS = [7, 10, 13, 16, 19]
+  const TIME_LABELS = ['7a', '10a', '1p', '4p', '7p', '9p']
 
-// ── Bottom sheet ─────────────────────────────────────────────────────────────
-const selectedEvent = ref<DayBarEvent | null>(null)
-const sheetOpen = ref(false)
+  // ── Bottom sheet ─────────────────────────────────────────────────────────────
+  const selectedEvent = ref<DayBarEvent | null>(null)
+  const sheetOpen = ref(false)
 
-function openSheet(ev: DayBarEvent) {
-  selectedEvent.value = ev
-  sheetOpen.value = true
-}
+  function openSheet (ev: DayBarEvent) {
+    selectedEvent.value = ev
+    sheetOpen.value = true
+  }
 
-// Clear selection after the close animation finishes (~300ms)
-watch(sheetOpen, (open) => {
-  if (!open) setTimeout(() => { selectedEvent.value = null }, 300)
-})
+  // Clear selection after the close animation finishes (~300ms)
+  watch(sheetOpen, open => {
+    if (!open) setTimeout(() => {
+      selectedEvent.value = null
+    }, 300)
+  })
 
-// ── Display helpers ──────────────────────────────────────────────────────────
-function typeLabel(t: DayBarEvent['type']): string {
-  return t === 'out' ? 'Check-out' : t === 'in' ? 'Check-in'
-    : t === 'checkout' ? 'Check-out' : t === 'checkin' ? 'Check-in'
-    : 'Same-day turn'
-}
+  // ── Display helpers ──────────────────────────────────────────────────────────
+  function typeLabel (t: DayBarEvent['type']): string {
+    const labels: Record<DayBarEvent['type'], string> = {
+      checkout: 'Check-out',
+      checkin: 'Check-in',
+      turn: 'Same-day turn',
+    }
+    return labels[t] ?? 'Same-day turn'
+  }
 
-function typeIcon(t: DayBarEvent['type']): string {
-  return t === 'checkout' ? 'mdi-logout' : t === 'checkin' ? 'mdi-login' : 'mdi-swap-horizontal'
-}
+  function typeIcon (t: DayBarEvent['type']): string {
+    const icons: Record<DayBarEvent['type'], string> = {
+      checkout: 'mdi-logout',
+      checkin: 'mdi-login',
+      turn: 'mdi-swap-horizontal',
+    }
+    return icons[t] ?? 'mdi-swap-horizontal'
+  }
 
-// ── Display time ─────────────────────────────────────────────────────────────
-const displayTime = computed(() => {
-  const h  = props.currentHour
-  const m  = props.currentMin.toString().padStart(2, '0')
-  const ap = h >= 12 ? 'PM' : 'AM'
-  const dh = h > 12 ? h - 12 : h === 0 ? 12 : h
-  return `${dh}:${m} ${ap}`
-})
+  // ── Display time ─────────────────────────────────────────────────────────────
+  const displayTime = computed(() => {
+    const h = props.currentHour
+    const m = props.currentMin.toString().padStart(2, '0')
+    const ap = h >= 12 ? 'PM' : 'AM'
+    const dh = h > 12 ? h - 12 : (h === 0 ? 12 : h)
+    return `${dh}:${m} ${ap}`
+  })
 
-const statCounts = computed(() => [
-  { n: props.checkoutCount,    label: 'Checkouts' },
-  { n: props.turnCount,        label: 'Turns' },
-  { n: props.checkinCount,     label: 'Check-ins' },
-  { n: props.needsActionCount, label: 'Need cleaner', alert: true },
-])
+  const statCounts = computed(() => [
+    { n: props.checkoutCount, label: 'Checkouts' },
+    { n: props.turnCount, label: 'Turns' },
+    { n: props.checkinCount, label: 'Check-ins' },
+    { n: props.needsActionCount, label: 'Need cleaner', alert: true },
+  ])
 </script>
 
 <template>
@@ -120,6 +130,7 @@ const statCounts = computed(() => [
           <div class="hero-date">{{ dateLabel }}</div>
           <div class="hero-greeting">Good morning, {{ userName.split(' ')[0] }}</div>
         </div>
+
         <div class="hero-bell">
           <v-icon color="white" size="18">mdi-bell-outline</v-icon>
         </div>
@@ -146,8 +157,8 @@ const statCounts = computed(() => [
           :key="ev.id"
           class="event-pip"
           :class="{
-            'event-pip--amber':  ev.needsClean,
-            'event-pip--past':   isPast(ev.time),
+            'event-pip--amber': ev.needsClean,
+            'event-pip--past': isPast(ev.time),
             'event-pip--active': selectedEvent?.id === ev.id,
           }"
           :style="{ left: `calc(${barPct(ev.time)}% - 5px)` }"
@@ -170,6 +181,7 @@ const statCounts = computed(() => [
       <div class="hero-stats">
         <template v-for="(s, i) in statCounts" :key="s.label">
           <div v-if="i > 0" class="stat-divider" />
+
           <div class="stat-item" :class="{ 'stat-item--alert': s.alert }">
             <span class="stat-n">{{ s.n }}</span>
             <span class="stat-lbl">{{ s.label }}</span>
@@ -187,7 +199,7 @@ const statCounts = computed(() => [
 
     <!-- ── Event cards ───────────────────────────────────────────────────── -->
     <div v-if="events.length === 0" class="empty-state">
-      <v-icon color="primary" size="40" class="mb-2">mdi-calendar-check-outline</v-icon>
+      <v-icon class="mb-2" color="primary" size="40">mdi-calendar-check-outline</v-icon>
       <p>Nothing scheduled for today</p>
     </div>
 
@@ -198,8 +210,8 @@ const statCounts = computed(() => [
         class="event-card"
         :class="{
           'event-card--active': selectedEvent?.id === ev.id,
-          'event-card--amber':  ev.needsClean,
-          'event-card--past':   isPast(ev.time),
+          'event-card--amber': ev.needsClean,
+          'event-card--past': isPast(ev.time),
         }"
         :style="{ '--card-accent': ev.propColor }"
         @click="openSheet(ev)"
@@ -217,15 +229,16 @@ const statCounts = computed(() => [
           <!-- Row 2: event type + guests + alert chip -->
           <div class="card-row2">
             <v-icon
+              class="mr-1"
               :color="ev.type === 'turn' ? 'warning' : ev.type === 'checkin' ? 'success' : 'error'"
               size="13"
-              class="mr-1"
             >{{ typeIcon(ev.type) }}</v-icon>
+
             <span class="card-kind">{{ typeLabel(ev.type) }}</span>
             <span v-if="ev.guestCount" class="card-dot" />
             <span v-if="ev.guestCount" class="card-guests">{{ ev.guestCount }} guests</span>
             <span v-if="ev.needsClean" class="action-chip">Action needed</span>
-            <v-icon size="14" class="card-chevron">mdi-chevron-right</v-icon>
+            <v-icon class="card-chevron" size="14">mdi-chevron-right</v-icon>
           </div>
         </div>
       </div>
@@ -236,20 +249,22 @@ const statCounts = computed(() => [
 
     <!-- ── Detail bottom sheet ──────────────────────────────────────────── -->
     <v-bottom-sheet v-model="sheetOpen" max-width="600">
-      <v-card v-if="selectedEvent" class="sheet-card" rounded="0" flat>
+      <v-card v-if="selectedEvent" class="sheet-card" flat rounded="0">
         <!-- Drag handle -->
         <div class="sheet-handle" />
 
         <!-- Header row -->
         <div class="sheet-header">
           <div class="sheet-color-dot" :style="{ background: selectedEvent.propColor }" />
+
           <div class="sheet-header-text">
             <div class="sheet-prop">{{ selectedEvent.propName }}</div>
+
             <div class="sheet-sub">
               <v-icon
+                class="mr-1"
                 :color="selectedEvent.type === 'turn' ? 'warning' : selectedEvent.type === 'checkin' ? 'success' : 'error'"
                 size="13"
-                class="mr-1"
               >{{ typeIcon(selectedEvent.type) }}</v-icon>
               {{ typeLabel(selectedEvent.type) }} · {{ selectedEvent.time }}
               <template v-if="selectedEvent.guestCount">
@@ -257,6 +272,7 @@ const statCounts = computed(() => [
               </template>
             </div>
           </div>
+
           <v-btn
             aria-label="Close"
             density="compact"
@@ -270,13 +286,13 @@ const statCounts = computed(() => [
 
         <!-- Action needed banner -->
         <div v-if="selectedEvent.needsClean" class="sheet-alert">
-          <v-icon size="14" class="mr-1" color="warning">mdi-alert-circle-outline</v-icon>
+          <v-icon class="mr-1" color="warning" size="14">mdi-alert-circle-outline</v-icon>
           No cleaner assigned — action needed
         </div>
 
         <!-- Guest name -->
         <div v-if="selectedEvent.bookingName" class="sheet-guest">
-          <v-icon size="13" class="mr-1" style="opacity:0.45">mdi-account-outline</v-icon>
+          <v-icon class="mr-1" size="13" style="opacity:0.45">mdi-account-outline</v-icon>
           {{ selectedEvent.bookingName }}
         </div>
 
@@ -289,6 +305,7 @@ const statCounts = computed(() => [
             <div class="clean-window-label">Cleaning window</div>
             <div class="clean-window-dur">{{ selectedEvent.cleanMins }} min est.</div>
           </div>
+
           <span class="clean-window-times">{{ selectedEvent.cleanFrom }} → {{ selectedEvent.cleanTo }}</span>
         </div>
 
@@ -300,9 +317,10 @@ const statCounts = computed(() => [
             rounded="sm"
             @click="emit('open-booking', selectedEvent.id); sheetOpen = false"
           >
-            <v-icon start size="16">mdi-calendar-check-outline</v-icon>
+            <v-icon size="16" start>mdi-calendar-check-outline</v-icon>
             Open booking
           </v-btn>
+
           <v-btn
             v-if="selectedEvent.needsClean"
             block
@@ -310,7 +328,7 @@ const statCounts = computed(() => [
             variant="outlined"
             @click="emit('assign-cleaner', selectedEvent.id); sheetOpen = false"
           >
-            <v-icon start size="16">mdi-account-plus-outline</v-icon>
+            <v-icon size="16" start>mdi-account-plus-outline</v-icon>
             Assign cleaner
           </v-btn>
         </div>
