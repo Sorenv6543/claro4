@@ -290,201 +290,201 @@ $breakpoints: (
 /* FullCalendar Full Viewport Adjustments */
 .full-viewport-calendar {
   /* Remove any FullCalendar internal spacing */
-  :deep(.fc-view-harness),
-  :deep(.fc-view-harness-active),
-  :deep(.fc) {
+  .fc-view-harness,
+  .fc-view-harness-active,
+  .fc {
     margin: 0 !important;
     padding: 0 !important;
     width: 100vw !important;
     height: 100% !important;
   }
   
-  :deep(.fc-header-toolbar) {
+  .fc-header-toolbar {
     margin: 0 !important;
     padding: 0 !important;
   }
   
-  :deep(.fc-view) {
-    margin: 0 !important;
-    padding: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-  }
-  
-  :deep(.fc-daygrid),
-  :deep(.fc-timegrid) {
+  .fc-view {
     margin: 0 !important;
     padding: 0 !important;
     width: 100% !important;
     height: 100% !important;
   }
   
-  :deep(.fc-scroller) {
+  .fc-daygrid,
+  .fc-timegrid {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  .fc-scroller {
     overflow-x: hidden !important;
     width: 100% !important;
   }
   
   /* Ensure FullCalendar fills the full available height */
-  :deep(.fc-daygrid-body),
-  :deep(.fc-timegrid-body) {
+  .fc-daygrid-body,
+  .fc-timegrid-body {
     height: 100% !important;
   }
   
   /* Make sure week/day views stretch full height */
-  :deep(.fc-timegrid-slots) {
+  .fc-timegrid-slots {
     height: 100% !important;
   }
   
   /* Critical: Make calendar cells stretch to fill viewport height */
-  :deep(.fc-daygrid-day-frame) {
+  .fc-daygrid-day-frame {
     min-height: calc((100vh - 56px - 10vh) / 6) !important; /* Mobile: divide remaining height by 6 weeks */
   }
   
-  :deep(.fc-daygrid-week) {
+  .fc-daygrid-week {
     flex: 1 !important; /* Each week row stretches equally */
   }
   
   /* Tablet adjustments for cell height */
   @media (min-width: 600px) and (max-width: 959px) {
-    :deep(.fc-daygrid-day-frame) {
+    .fc-daygrid-day-frame {
       min-height: calc((100vh - 64px - 15vh) / 6) !important; /* Tablet: adjust for larger header */
     }
   }
   
   /* Desktop adjustments for cell height */
   @media (min-width: 960px) {
-    :deep(.fc-daygrid-day-frame) {
+    .fc-daygrid-day-frame {
       min-height: calc((100vh - 64px - 10vh) / 6) !important; /* Desktop: standard header */
     }
   }
   
   /* Time grid adjustments for full height */
-  :deep(.fc-timegrid-slot) {
+  .fc-timegrid-slot {
     min-height: 40px !important; /* Ensure time slots have reasonable minimum height */
   }
   
   /* Month view: Make sure all weeks are equal height */
-  :deep(.fc-daygrid-body-natural) {
+  .fc-daygrid-body-natural {
     height: 100% !important;
   }
   
-  :deep(.fc-daygrid-body-balanced) {
+  .fc-daygrid-body-balanced {
     height: 100% !important;
   }
   
   /* Complete padding/margin removal for edge-to-edge layout */
-  :deep(.fc-view-harness),
-  :deep(.fc-view-harness-active),
-  :deep(.fc-daygrid),
-  :deep(.fc-timegrid),
-  :deep(.fc-col-header),
-  :deep(.fc-daygrid-header),
-  :deep(.fc-timegrid-header),
-  :deep(.fc-scroller),
-  :deep(.fc-daygrid-body),
-  :deep(.fc-timegrid-body),
-  :deep(.fc-table),
-  :deep(.fc-table-header),
-  :deep(.fc-table-body) {
+  .fc-view-harness,
+  .fc-view-harness-active,
+  .fc-daygrid,
+  .fc-timegrid,
+  .fc-col-header,
+  .fc-daygrid-header,
+  .fc-timegrid-header,
+  .fc-scroller,
+  .fc-daygrid-body,
+  .fc-timegrid-body,
+  .fc-table,
+  .fc-table-header,
+  .fc-table-body {
     margin: 0 !important;
     padding: 0 !important;
     border-spacing: 0 !important;
   }
   
   /* Remove any container padding */
-  :deep(.fc) {
+  .fc {
     padding: 0 !important;
     margin: 0 !important;
     border: none !important;
   }
   
   /* Calendar cells - remove internal padding */
-  :deep(.fc-daygrid-day),
-  :deep(.fc-timegrid-slot),
-  :deep(.fc-col-header-cell) {
+  .fc-daygrid-day,
+  .fc-timegrid-slot,
+  .fc-col-header-cell {
     padding: 2px !important; /* Minimal padding for readability */
     margin: 0 !important;
   }
   
   /* Events - keep minimal padding for text readability */
-  :deep(.fc-event) {
+  .fc-event {
     margin: 1px !important;
     padding: 1px 2px !important;
   }
   
   /* Critical: Force FullCalendar tables to stretch full width */
-  :deep(.fc-scrollgrid),
-  :deep(.fc-scrollgrid-sync-table),
-  :deep(.fc-col-header),
-  :deep(.fc-daygrid-body) {
+  .fc-scrollgrid,
+  .fc-scrollgrid-sync-table,
+  .fc-col-header,
+  .fc-daygrid-body {
     width: 100% !important;
     table-layout: fixed !important;
   }
   
   /* Force table elements to stretch */
-  :deep(.fc table),
-  :deep(.fc-col-header table),
-  :deep(.fc-daygrid-body table) {
+  .fc table,
+  .fc-col-header table,
+  .fc-daygrid-body table {
     width: 100% !important;
     table-layout: fixed !important;
     border-collapse: collapse !important;
   }
   
   /* Days of the week header - stretch to full width */
-  :deep(.fc-col-header-row) {
+  .fc-col-header-row {
     width: 100% !important;
   }
   
-  :deep(.fc-col-header-cell) {
+  .fc-col-header-cell {
     width: calc(100% / 7) !important; /* Each day gets 1/7th of width */
     text-align: center !important;
   }
   
   /* Calendar day cells - stretch to full width */
-  :deep(.fc-daygrid-day) {
+  .fc-daygrid-day {
     width: calc(100% / 7) !important; /* Each day gets 1/7th of width */
   }
   
   /* Table rows - stretch to full width */
-  :deep(.fc-daygrid-week) {
+  .fc-daygrid-week {
     width: 100% !important;
   }
   
-  :deep(.fc-daygrid-week td) {
+  .fc-daygrid-week td {
     width: calc(100% / 7) !important;
   }
   
   /* Scrollgrid sync inner - ensure full width */
-  :deep(.fc-scrollgrid-sync-inner) {
+  .fc-scrollgrid-sync-inner {
     width: 100% !important;
   }
   
   /* Additional table width enforcement */
-  :deep(.fc-scrollgrid-section),
-  :deep(.fc-scrollgrid-section-body),
-  :deep(.fc-scrollgrid-section-header) {
+  .fc-scrollgrid-section,
+  .fc-scrollgrid-section-body,
+  .fc-scrollgrid-section-header {
     width: 100% !important;
   }
   
   /* Table containers - force full width */
-  :deep(.fc-scrollgrid-section-body > td),
-  :deep(.fc-scrollgrid-section-header > th) {
+  .fc-scrollgrid-section-body > td,
+  .fc-scrollgrid-section-header > th {
     width: 100% !important;
     padding: 0 !important;
   }
   
   /* Month view specific - ensure full width */
-  :deep(.fc-daygrid) {
+  .fc-daygrid {
     width: 100vw !important;
   }
   
   /* Week view specific - ensure full width */
-  :deep(.fc-timegrid) {
+  .fc-timegrid {
     width: 100vw !important;
   }
   
   /* List view specific - ensure full width */
-  :deep(.fc-list) {
+  .fc-list {
     width: 100vw !important;
   }
   
@@ -495,30 +495,30 @@ $breakpoints: (
   /* All mobile devices - portrait and landscape */
   @media only screen and (max-width: 768px) {
     /* Force full viewport width on all mobile devices */
-    :deep(.fc),
-    :deep(.fc-view-harness),
-    :deep(.fc-view-harness-active),
-    :deep(.fc-daygrid),
-    :deep(.fc-timegrid),
-    :deep(.fc-list) {
+    .fc,
+    .fc-view-harness,
+    .fc-view-harness-active,
+    .fc-daygrid,
+    .fc-timegrid,
+    .fc-list {
       width: 100vw !important;
       max-width: 100vw !important;
       min-width: 100vw !important;
     }
     
     /* Mobile table structure - ensure full width */
-    :deep(.fc-scrollgrid),
-    :deep(.fc-scrollgrid-sync-table),
-    :deep(.fc table) {
+    .fc-scrollgrid,
+    .fc-scrollgrid-sync-table,
+    .fc table {
       width: 100vw !important;
       max-width: 100vw !important;
       table-layout: fixed !important;
     }
     
     /* Mobile day cells - equal distribution */
-    :deep(.fc-col-header-cell),
-    :deep(.fc-daygrid-day),
-    :deep(.fc-daygrid-week td) {
+    .fc-col-header-cell,
+    .fc-daygrid-day,
+    .fc-daygrid-week td {
       width: calc(100vw / 7) !important;
       max-width: calc(100vw / 7) !important;
       min-width: calc(100vw / 7) !important;
@@ -527,17 +527,17 @@ $breakpoints: (
   
   /* Small phones (iPhone SE, older Android) - 320px to 414px */
   @media only screen and (max-width: 414px) {
-    :deep(.fc-col-header-cell),
-    :deep(.fc-daygrid-day) {
+    .fc-col-header-cell,
+    .fc-daygrid-day {
       font-size: 0.7rem !important;
       padding: 1px !important;
     }
     
-    :deep(.fc-daygrid-day-number) {
+    .fc-daygrid-day-number {
       font-size: 0.75rem !important;
     }
     
-    :deep(.fc-event) {
+    .fc-event {
       font-size: 0.65rem !important;
       padding: 0px 1px !important;
     }
@@ -545,26 +545,26 @@ $breakpoints: (
   
   /* Standard phones (iPhone 12/13/14, Samsung Galaxy S) - 375px to 428px */
   @media only screen and (min-width: 375px) and (max-width: 428px) {
-    :deep(.fc-col-header-cell),
-    :deep(.fc-daygrid-day) {
+    .fc-col-header-cell,
+    .fc-daygrid-day {
       font-size: 0.8rem !important;
       padding: 2px !important;
     }
     
-    :deep(.fc-event) {
+    .fc-event {
       font-size: 0.7rem !important;
     }
   }
   
   /* Large phones (iPhone Pro Max, Samsung Note) - 414px to 480px */
   @media only screen and (min-width: 414px) and (max-width: 480px) {
-    :deep(.fc-col-header-cell),
-    :deep(.fc-daygrid-day) {
+    .fc-col-header-cell,
+    .fc-daygrid-day {
       font-size: 0.85rem !important;
       padding: 2px !important;
     }
     
-    :deep(.fc-event) {
+    .fc-event {
       font-size: 0.75rem !important;
     }
   }
@@ -572,19 +572,19 @@ $breakpoints: (
   /* Phone landscape orientation - all sizes */
   @media only screen and (max-height: 480px) and (orientation: landscape) {
     /* Landscape phones - optimize for wider viewport */
-    :deep(.fc-col-header-cell),
-    :deep(.fc-daygrid-day),
-    :deep(.fc-daygrid-week td) {
+    .fc-col-header-cell,
+    .fc-daygrid-day,
+    .fc-daygrid-week td {
       width: calc(100vw / 7) !important;
     }
     
     /* Smaller text for landscape to fit more content */
-    :deep(.fc-col-header-cell),
-    :deep(.fc-daygrid-day) {
+    .fc-col-header-cell,
+    .fc-daygrid-day {
       font-size: 0.75rem !important;
     }
     
-    :deep(.fc-event) {
+    .fc-event {
       font-size: 0.65rem !important;
       line-height: 1.1 !important;
     }
@@ -593,9 +593,9 @@ $breakpoints: (
   /* High DPI / Retina displays - ensure crisp rendering */
   @media only screen and (-webkit-min-device-pixel-ratio: 2),
          only screen and (min-resolution: 192dpi) {
-    :deep(.fc-event),
-    :deep(.fc-daygrid-day-number),
-    :deep(.fc-col-header-cell) {
+    .fc-event,
+    .fc-daygrid-day-number,
+    .fc-col-header-cell {
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
@@ -604,17 +604,17 @@ $breakpoints: (
   /* Touch device optimizations */
   @media (pointer: coarse) {
     /* Larger touch targets for finger interaction */
-    :deep(.fc-daygrid-day) {
+    .fc-daygrid-day {
       min-height: 44px !important; /* iOS recommended minimum touch target */
     }
     
-    :deep(.fc-event) {
+    .fc-event {
       min-height: 32px !important;
       cursor: pointer !important;
     }
     
     /* Prevent text selection on touch */
-    :deep(.fc) {
+    .fc {
       -webkit-touch-callout: none;
       -webkit-user-select: none;
       -khtml-user-select: none;
@@ -631,29 +631,29 @@ $breakpoints: (
   /* Safari iOS specific fixes */
   @supports (-webkit-touch-callout: none) {
     /* iOS Safari viewport fixes */
-    :deep(.fc),
-    :deep(.fc-view-harness) {
+    .fc,
+    .fc-view-harness {
       width: 100vw !important;
       min-width: 100vw !important;
       
     }
     
     /* iOS Safari table fixes */
-    :deep(.fc table) {
+    .fc table {
       width: 100vw !important;
       border-collapse: collapse !important;
     }
     
     /* Prevent iOS zoom on input focus */
-    :deep(.fc-event) {
+    .fc-event {
       font-size: 16px; /* Prevent zoom */
     }
   }
   
   /* Android Chrome/WebView specific fixes */
   @media screen and (-webkit-min-device-pixel-ratio: 0) {
-    :deep(.fc-scrollgrid),
-    :deep(.fc-daygrid) {
+    .fc-scrollgrid,
+    .fc-daygrid {
       width: 100vw !important;
       overflow-x: hidden !important;
     }
@@ -661,7 +661,7 @@ $breakpoints: (
   
   /* Samsung Internet browser fixes */
   @media screen and (max-width: 768px) {
-    :deep(.fc-view-harness) {
+    .fc-view-harness {
       transform: translateZ(0); /* Force hardware acceleration */
       will-change: transform;
     }
@@ -673,8 +673,8 @@ $breakpoints: (
   
   /* iPhone SE (1st gen) - 320px */
   @media only screen and (device-width: 320px) {
-    :deep(.fc-col-header-cell),
-    :deep(.fc-daygrid-day) {
+    .fc-col-header-cell,
+    .fc-daygrid-day {
       width: calc(100vw / 7) !important;
       font-size: 0.65rem !important;
     }
@@ -682,8 +682,8 @@ $breakpoints: (
   
   /* iPhone 12/13 mini - 375px */
   @media only screen and (device-width: 375px) {
-    :deep(.fc-col-header-cell),
-    :deep(.fc-daygrid-day) {
+    .fc-col-header-cell,
+    .fc-daygrid-day {
       width: calc(100vw / 7) !important;
       font-size: 0.7rem !important;
     }
@@ -691,8 +691,8 @@ $breakpoints: (
   
   /* iPhone 12/13/14 standard - 390px */
   @media only screen and (device-width: 390px) {
-    :deep(.fc-col-header-cell),
-    :deep(.fc-daygrid-day) {
+    .fc-col-header-cell,
+    .fc-daygrid-day {
       width: calc(100vw / 7) !important;
       font-size: 0.75rem !important;
     }
@@ -700,8 +700,8 @@ $breakpoints: (
   
   /* iPhone 12/13/14 Pro Max - 428px */
   @media only screen and (device-width: 428px) {
-    :deep(.fc-col-header-cell),
-    :deep(.fc-daygrid-day) {
+    .fc-col-header-cell,
+    .fc-daygrid-day {
       width: calc(100vw / 7) !important;
       font-size: 0.8rem !important;
     }
@@ -709,8 +709,8 @@ $breakpoints: (
   
   /* Samsung Galaxy S series (various sizes) */
   @media only screen and (min-device-width: 360px) and (max-device-width: 414px) {
-    :deep(.fc-col-header-cell),
-    :deep(.fc-daygrid-day) {
+    .fc-col-header-cell,
+    .fc-daygrid-day {
       width: calc(100vw / 7) !important;
     }
   }
@@ -723,12 +723,12 @@ $breakpoints: (
   @media only screen and (max-device-width: 768px) {
     .full-viewport-calendar {
       /* Force full width on any mobile device */
-      :deep(.fc),
-      :deep(.fc-view-harness),
-      :deep(.fc-daygrid),
-      :deep(.fc-timegrid),
-      :deep(.fc-scrollgrid),
-      :deep(.fc table) {
+      .fc,
+      .fc-view-harness,
+      .fc-daygrid,
+      .fc-timegrid,
+      .fc-scrollgrid,
+      .fc table {
         width: 100vw !important;
         max-width: 100vw !important;
         min-width: 100vw !important;
@@ -738,9 +738,9 @@ $breakpoints: (
       }
       
       /* Ensure day cells use equal width */
-      :deep(.fc-col-header-cell),
-      :deep(.fc-daygrid-day),
-      :deep(.fc-daygrid-week td) {
+      .fc-col-header-cell,
+      .fc-daygrid-day,
+      .fc-daygrid-week td {
         width: calc(100vw / 7) !important;
         max-width: calc(100vw / 7) !important;
         min-width: calc(100vw / 7) !important;
