@@ -7,9 +7,9 @@ export interface CleanerTeam {
   id: string
   name: string
   member_ids: string[]
-  active: boolean
-  created_at: string
-  updated_at: string
+  active: boolean | null
+  created_at: string | null
+  updated_at: string | null
 }
 
 export type CleanerTeamFormData = Omit<CleanerTeam, 'id' | 'created_at' | 'updated_at'>

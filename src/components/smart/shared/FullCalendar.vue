@@ -712,6 +712,27 @@
   color: var(--cal-day-num-muted);
 }
 
+/* Today date circle — Google Calendar-style */
+:deep(.fc-day-today .fc-daygrid-day-number) {
+  background: rgb(var(--v-theme-primary));
+  color: #fff !important;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  margin: 2px;
+  padding: 0;
+}
+
+/* Weekend columns — barely-there lavender tint */
+:deep(.fc-day-sat),
+:deep(.fc-day-sun) {
+  background: rgba(var(--v-theme-primary), 0.025) !important;
+}
+
 /* Explicit cell borders — FullCalendar's default --fc-border-color cascades inconsistently across scrollgrid sections */
 :deep(.fc-daygrid-day),
 :deep(.fc-col-header-cell),
@@ -730,6 +751,7 @@
   margin-left:   2px !important;
   margin-right:  2px !important;
   box-shadow:    none !important;
+  opacity:       0.95;
   transition:    filter 0.15s ease, opacity 0.15s ease;
 }
 :deep(.fc-event:hover)    { filter: brightness(1.05); cursor: grab; }

@@ -6,13 +6,13 @@
   /* Grid */
   --cal-border:                    rgba(var(--v-theme-on-surface), 0.1);
   --cal-bg:                        rgb(var(--v-theme-surface));
-  --cal-today-bg:                  rgba(var(--v-theme-primary), 0.06);
+  --cal-today-bg:                  rgba(var(--v-theme-primary), 0.08);
   --cal-day-num:                   rgba(var(--v-theme-on-surface), 0.72);
   --cal-day-num-muted:             rgba(var(--v-theme-on-surface), 0.28);
 
   /* Header row */
-  --cal-header-bg:                 rgba(var(--v-theme-on-surface), 0.72);
-  --cal-header-text:               #fff;
+  --cal-header-bg:                 rgba(var(--v-theme-primary), 0.09);
+  --cal-header-text:               rgb(var(--v-theme-primary));
 
   /* Event pill */
   --cal-event-radius:              2px;

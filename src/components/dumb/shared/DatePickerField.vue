@@ -3,6 +3,7 @@
     <template #activator="{ props: menuProps }">
       <v-text-field
         v-bind="menuProps"
+        density="compact"
         :disabled="disabled"
         :error-messages="errorMessages"
         :hint="hint"
@@ -12,18 +13,22 @@
         prepend-inner-icon="mdi-calendar"
         readonly
         :rules="wrappedRules"
+        variant="filled"
       />
     </template>
 
-    <v-date-picker
-      color="primary"
-      elevation="4"
-      hide-title
-      :max="max"
-      :min="min"
-      :model-value="strToDate(modelValue)"
-      @update:model-value="onSelect"
-    />
+    <v-container class="pa-0">
+      <v-row class="justify-space-around ma-0">
+        <v-date-picker
+          color="primary"
+          elevation="0"
+          :max="max"
+          :min="min"
+          :model-value="strToDate(modelValue)"
+          @update:model-value="onSelect"
+        />
+      </v-row>
+    </v-container>
   </v-menu>
 </template>
 
@@ -62,7 +67,6 @@
     return `${y}-${m}-${d}`
   }
 
-  // Display value: "Mon, Apr 5 2026" when set, empty string when null/empty
   const displayValue = computed(() => {
     if (!props.modelValue) return ''
     const d = strToDate(props.modelValue)
@@ -72,9 +76,6 @@
     })
   })
 
-  // Rules validate the stored modelValue (YYYY-MM-DD), not the display string.
-  // Without this wrapper, date format rules like /^\d{4}-\d{2}-\d{2}$/ would
-  // incorrectly test "Mon, Apr 5 2026" instead of "2026-04-05".
   const wrappedRules = computed(() =>
     (props.rules ?? []).map(rule => () => rule(props.modelValue ?? '')),
   )
@@ -86,3 +87,17 @@
     }
   }
 </script>
+
+<style scoped>
+:deep(.v-date-picker) {
+  zoom: 0.85;
+}
+
+:deep(.v-date-picker .v-btn) {
+  box-shadow: none !important;
+}
+
+:deep(.v-date-picker-controls .v-btn) {
+  box-shadow: none !important;
+}
+</style>

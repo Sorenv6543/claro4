@@ -9,8 +9,21 @@
     @keydown.esc="handleClose"
   >
     <v-card class="modal-card">
-      <v-card-title class="text-h5 pb-2 shrink-0">
+      <v-card-title class="d-flex align-center text-h5 pb-2 shrink-0">
         {{ formTitle }}
+        <v-spacer />
+
+        <v-btn
+          aria-label="Close"
+          icon
+          rounded="circle"
+          size="small"
+          style="min-width:44px;min-height:44px;"
+          variant="text"
+          @click="handleClose"
+        >
+          <v-icon size="20">mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
 
       <v-divider />
@@ -36,7 +49,7 @@
                   prepend-inner-icon="mdi-home"
                   required
                   :rules="propertyRules"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -278,17 +291,17 @@
                 cols="12"
                 md="6"
               >
-                <v-text-field
-                  v-model.number="form.guest_count"
+                <v-select
+                  v-model="form.guest_count"
+                  clearable
                   :disabled="loading"
                   :error-messages="errors.get('guest_count')"
                   hint="Optional"
+                  :items="[1,2,3,4,5,6,7,8]"
                   label="Guest Count"
-                  min="1"
                   persistent-hint
                   prepend-inner-icon="mdi-account-group"
-                  type="number"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -306,7 +319,7 @@
                   persistent-hint
                   prepend-inner-icon="mdi-note-text"
                   rows="3"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -321,7 +334,7 @@
                   :items="statusItems"
                   label="Status"
                   prepend-inner-icon="mdi-progress-check"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -800,6 +813,11 @@
 </script>
 
 <style scoped>
+.modal-card :deep(.v-card-title) {
+  background-color: rgb(var(--v-theme-primary));
+  color: #fff;
+}
+
 /* Modal viewport constraints */
 .modal-card {
   max-height: 90vh;

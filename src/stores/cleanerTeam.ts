@@ -25,7 +25,7 @@ export const useCleanerTeamStore = defineStore('cleanerTeam', () => {
   // Cached active filter
   const activeTeamsMap = cache.cachedFilter<CleanerTeam>(
     () => teams.value,
-    team => team.active,
+    team => team.active === true,
   )
 
   const activeTeamsArray = computed((): CleanerTeam[] => {

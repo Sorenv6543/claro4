@@ -89,6 +89,18 @@
           </div>
         </div>
 
+        <!-- Sign out -->
+        <v-btn
+          block
+          class="mt-1"
+          color="error"
+          prepend-icon="mdi-logout"
+          size="small"
+          variant="tonal"
+          @click="handleSignOut"
+        >
+          Sign out
+        </v-btn>
       </div>
 
       <div class="pb-2" />
@@ -99,7 +111,7 @@
 <script setup lang="ts">
   import { useAuthStore } from '@stores/auth'
   import { computed } from 'vue'
-  import { useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
 
@@ -112,6 +124,7 @@
   }>()
 
   const route = useRoute()
+  const router = useRouter()
   const { mdAndUp } = useDisplay()
   const authStore = useAuthStore()
   const { myProperties } = useOwnerProperties()
@@ -211,6 +224,11 @@
       emit('update:modelValue', false)
     }
   }
+
+  async function handleSignOut () {
+    await authStore.logout()
+    router.push('/')
+  }
 </script>
 
 <!-- Non-scoped: temporary drawers are teleported to v-app root, so scoped CSS can't reach them.
@@ -258,11 +276,13 @@
   text-decoration: none;
   outline: none;
   font-family: var(--claro-font-family);
-  transition: background 180ms ease;
+  opacity: 0.85;
+  transition: background 180ms ease, opacity 180ms ease;
 }
 
 .claro-nav-item:hover {
   background: rgba(46, 38, 61, 0.05);
+  opacity: 1;
 }
 
 .claro-nav-item:focus-visible {
@@ -273,6 +293,7 @@
 /* Purple tint background on active — preserves current color styling */
 .claro-nav-item--active {
   background: var(--claro-primary-tint, rgba(115, 103, 240, 0.12));
+  opacity: 1;
 }
 
 /* ── Icon: Ghost at rest → fills purple on active ── */
@@ -280,46 +301,34 @@
   flex-shrink: 0;
   width: 22px;
   text-align: center;
-  /* Ghost state */
   color: var(--claro-fg2);
-  opacity: 0.22;
   transform: scale(0.85);
-  /* Spring transition for the scale pop, ease for opacity/color */
   transition:
     transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
-    opacity   260ms ease,
     color     200ms ease;
 }
 
 .claro-nav-item:hover .claro-nav-icon {
-  opacity: 0.6;
   transform: scale(0.95);
 }
 
-/* Active: filled purple icon, scale overshoot, full opacity */
+/* Active: filled purple icon, scale overshoot */
 .claro-nav-item--active .claro-nav-icon {
   color: var(--claro-primary);
-  opacity: 1;
   transform: scale(1.15);
 }
 
-/* ── Label: ghost at rest → bold + full opacity on active ── */
+/* ── Label: muted at rest → bold on active ── */
 .claro-nav-label {
   flex: 1;
   min-width: 0;
   color: var(--claro-fg2);
-  opacity: 0.32;
   font-weight: 400;
-  transition: opacity 200ms ease;
-}
-
-.claro-nav-item:hover .claro-nav-label {
-  opacity: 0.7;
+  transition: color 200ms ease, font-weight 200ms ease;
 }
 
 .claro-nav-item--active .claro-nav-label {
   color: var(--claro-primary-dark);
-  opacity: 1;
   font-weight: 600;
 }
 
@@ -334,13 +343,6 @@
   font-variant-numeric: tabular-nums;
   background: rgba(46, 38, 61, 0.08);
   color: var(--claro-fg3);
-  opacity: 0.6;
-  transition: opacity 200ms ease;
-}
-
-.claro-nav-item:hover .claro-nav-badge,
-.claro-nav-item--active .claro-nav-badge {
-  opacity: 1;
 }
 
 .claro-nav-badge--active {

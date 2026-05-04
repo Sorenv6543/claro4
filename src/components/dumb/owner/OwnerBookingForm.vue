@@ -6,7 +6,7 @@
     @keydown.esc="handleClose"
   >
     <v-card>
-      <v-card-title class="text-h5 pb-2">
+      <v-card-title class="d-flex align-center text-h5 pb-2">
         {{ formTitle }}
         <v-chip
           v-if="form.booking_type === 'turn'"
@@ -16,6 +16,20 @@
         >
           SAME-DAY CLEANING
         </v-chip>
+
+        <v-spacer />
+
+        <v-btn
+          aria-label="Close"
+          icon
+          rounded="circle"
+          size="small"
+          style="min-width:44px;min-height:44px;"
+          variant="text"
+          @click="handleClose"
+        >
+          <v-icon size="20">mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
 
       <v-divider />
@@ -41,7 +55,7 @@
                   prepend-inner-icon="mdi-home"
                   required
                   :rules="propertyRules"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -115,18 +129,17 @@
             <!-- Guest Count -->
             <v-row>
               <v-col cols="12">
-                <v-text-field
-                  v-model.number="form.guest_count"
+                <v-select
+                  v-model="form.guest_count"
+                  clearable
                   :disabled="loading"
                   :error-messages="errors.get('guest_count')"
                   hint="Helps determine cleaning requirements"
+                  :items="[1,2,3,4,5,6,7,8]"
                   label="Number of Guests (Optional)"
-                  max="20"
-                  min="1"
                   persistent-hint
                   prepend-inner-icon="mdi-account-group"
-                  type="number"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -144,7 +157,7 @@
                   persistent-hint
                   prepend-inner-icon="mdi-note-text"
                   rows="3"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -422,7 +435,8 @@
 
 <style scoped>
 .v-card-title {
-  background-color: rgb(var(--v-theme-surface-variant));
+  background-color: rgb(var(--v-theme-primary));
+  color: #fff;
 }
 
 .v-card-actions {

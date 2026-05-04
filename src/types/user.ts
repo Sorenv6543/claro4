@@ -34,12 +34,12 @@ export interface User {
   language: string
   access_level?: 'full' | 'limited'
   skills?: string[] | null
-  max_daily_bookings?: number
-  location_lat?: number
-  location_lng?: number
+  max_daily_bookings?: number | null
+  location_lat?: number | null
+  location_lng?: number | null
   created_at?: string
   updated_at?: string
-  last_sign_in_at?: string
+  last_sign_in_at?: string | null
 }
 
 /**

@@ -17589,5 +17589,8 @@
       "type": "color",
       "value": "#FF9F4329"
     }
+  },
+  "imports": {
+    "k": "materio-vuetify.lib.pen"
   }
 }
