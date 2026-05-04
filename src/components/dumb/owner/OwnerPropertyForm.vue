@@ -6,7 +6,7 @@
     @keydown.esc="handleClose"
   >
     <v-card>
-      <v-card-title class="text-h5 pb-2">
+      <v-card-title class="d-flex align-center text-h5 pb-2">
         {{ formTitle }}
         <v-chip
           v-if="form.active"
@@ -26,7 +26,6 @@
           INACTIVE
         </v-chip>
 
-        <!-- Offline indicator -->
         <v-chip
           v-if="!isOnline"
           class="ml-2"
@@ -36,6 +35,19 @@
         >
           OFFLINE MODE
         </v-chip>
+
+        <v-spacer />
+        <v-btn
+          aria-label="Close"
+          icon
+          rounded="circle"
+          size="small"
+          style="min-width:44px;min-height:44px;"
+          variant="text"
+          @click="handleClose"
+        >
+          <v-icon size="20">mdi-close</v-icon>
+        </v-btn>
       </v-card-title>
 
       <v-divider />
@@ -59,7 +71,7 @@
                   prepend-inner-icon="mdi-home"
                   required
                   :rules="streetRules"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -73,7 +85,7 @@
                   label="Unit / Apt"
                   placeholder="Apt 4B"
                   prepend-inner-icon="mdi-door"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
 
@@ -86,7 +98,7 @@
                   prepend-inner-icon="mdi-city"
                   required
                   :rules="cityRules"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -102,7 +114,7 @@
                   prepend-inner-icon="mdi-map-marker"
                   required
                   :rules="stateRules"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
 
@@ -116,7 +128,7 @@
                   prepend-inner-icon="mdi-mailbox"
                   required
                   :rules="zipRules"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -138,7 +150,7 @@
                   persistent-hint
                   prepend-inner-icon="mdi-bed"
                   type="number"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
 
@@ -158,7 +170,7 @@
                   prepend-inner-icon="mdi-shower"
                   step="0.5"
                   type="number"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
 
@@ -175,7 +187,7 @@
                   label="Property Type"
                   persistent-hint
                   prepend-inner-icon="mdi-home-variant"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -200,7 +212,7 @@
                   :rules="durationRules"
                   step="15"
                   type="number"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
 
@@ -219,7 +231,7 @@
                   prepend-inner-icon="mdi-star"
                   required
                   :rules="pricingTierRules"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -237,7 +249,7 @@
                   persistent-hint
                   prepend-inner-icon="mdi-note-text"
                   rows="3"
-                  variant="outlined"
+                  variant="filled"
                 />
               </v-col>
             </v-row>
@@ -494,7 +506,8 @@
 
 <style scoped>
 .v-card-title {
-  background-color: rgb(var(--v-theme-surface-variant));
+  background-color: rgb(var(--v-theme-primary));
+  color: #fff;
 }
 
 .v-card-actions {

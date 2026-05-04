@@ -1,29 +1,33 @@
 <template>
-  <v-menu v-model="menu" :close-on-content-click="false">
-    <template #activator="{ props: menuProps }">
-      <v-text-field
-        v-bind="menuProps"
-        :disabled="disabled"
-        :error-messages="errorMessages"
-        :hint="hint"
-        :label="label"
-        :model-value="displayValue"
-        persistent-hint
-        prepend-inner-icon="mdi-clock-outline"
-        readonly
-        :rules="wrappedRules"
+  <v-text-field
+    autocomplete="off"
+    density="compact"
+    :disabled="disabled"
+    :error-messages="errorMessages"
+    :hint="hint"
+    :label="label"
+    :model-value="displayValue"
+    persistent-hint
+    prepend-inner-icon="mdi-clock-time-four-outline"
+    readonly
+    :rules="wrappedRules"
+    variant="filled"
+  >
+    <v-menu
+      v-model="showMenu"
+      :close-on-content-click="false"
+      activator="parent"
+      min-width="0"
+    >
+      <v-time-picker
+        elevation="1"
+        format="ampm"
+        :model-value="modelValue"
+        @update:minute="showMenu = false"
+        @update:model-value="onUpdate"
       />
-    </template>
-
-    <v-time-picker
-      color="primary"
-      elevation="4"
-      format="ampm"
-      :model-value="modelValue"
-      @update:minute="menu = false"
-      @update:model-value="onUpdate"
-    />
-  </v-menu>
+    </v-menu>
+  </v-text-field>
 </template>
 
 <script setup lang="ts">
@@ -44,9 +48,8 @@
     'update:modelValue': [value: string]
   }>()
 
-  const menu = ref(false)
+  const showMenu = ref(false)
 
-  // Convert "15:00" → "3:00 PM"
   const displayValue = computed(() => {
     if (!props.modelValue) return ''
     const [hourStr, minStr] = props.modelValue.split(':')
@@ -58,7 +61,6 @@
     return `${displayHour}:${min} ${period}`
   })
 
-  // Rules validate the stored modelValue (HH:mm), not the display string.
   const wrappedRules = computed(() =>
     (props.rules ?? []).map(rule => () => rule(props.modelValue ?? '')),
   )

@@ -164,7 +164,7 @@
         'pl-row-shell--open': isExpanded(item.property.id),
         'pl-row-shell--dimmed': hasOpen && !isExpanded(item.property.id),
       }"
-      :style="isExpanded(item.property.id) ? { '--pl-prop-color': item.property.color } : {}"
+      :style="{ '--row-color': item.property.color, '--pl-prop-color': item.property.color }"
     >
       <!-- Summary row (clickable) -->
       <div
@@ -452,10 +452,23 @@
 
 /* ─── Row shell ──────────────────────────────────────────────────────────── */
 .pl-row-shell {
+  position: relative;
   border-bottom: 1px solid var(--claro-border);
   transition:
     filter var(--claro-dur-slow) var(--claro-ease),
     opacity var(--claro-dur-slow) var(--claro-ease);
+}
+
+.pl-row-shell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--row-color, transparent);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .pl-row-shell:last-child {
@@ -489,14 +502,14 @@
 }
 
 .pl-row:hover {
-  background: rgba(115, 103, 240, 0.025);
+  background: color-mix(in srgb, var(--row-color, rgb(115, 103, 240)) 6%, transparent);
 }
 
 /* ─── Color dot ──────────────────────────────────────────────────────────── */
 .pl-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
   justify-self: center;
 }
 

@@ -7,16 +7,6 @@
   <div class="owner-properties-page">
     <v-container class="pt-0" fluid>
       <!-- Hero banner replaces OwnerPageHeader -->
-      <OwnerWelcomeBanner
-        class="mb-6"
-        page-title="My Properties"
-        :stats="[
-          { icon: 'mdi-home-group', label: 'Active', value: myProperties.length },
-          { icon: 'mdi-swap-horizontal', label: 'Turns Today', value: myTodayTurns.length },
-          { icon: 'mdi-calendar-check', label: 'Total Bookings', value: totalBookingsCount },
-        ]"
-        subtitle="Manage your rental properties and cleaning operations"
-      />
 
       <!-- C3 — Compact Inline Bar -->
       <div class="c3-inline-bar mb-5">
@@ -66,8 +56,8 @@
         </v-btn>
       </div>
 
-      <!-- Property list -->
-      <PropertyList
+      <!-- Property list — B3 map-anchored on mobile, card grid on desktop -->
+      <OwnerMapAnchoredList
         :items="listItems"
         :loading="loading"
         @assign-cleaner="handleAssignCleaner"
@@ -107,12 +97,11 @@
 </template>
 
 <script setup lang="ts">
-  import type { PropertyListEvent, PropertyListItem, PropertyStats, PropertyTimelineEvent } from '@/components/dumb/owner/PropertyList.vue'
+  import type { PropertyListEvent, PropertyListItem, PropertyStats, PropertyTimelineEvent } from '@/components/dumb/owner/OwnerMapAnchoredList.vue'
   import type { Property, PropertyFormData, PropertyRecord } from '@/types'
   import { computed, onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
-  import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
-  import PropertyList from '@/components/dumb/owner/PropertyList.vue'
+  import OwnerMapAnchoredList from '@/components/dumb/owner/OwnerMapAnchoredList.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'

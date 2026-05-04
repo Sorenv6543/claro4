@@ -1,5 +1,22 @@
 <template>
-  <v-container class="owner-overview" fluid>
+  <!-- ── A3 Day-bar: mobile layout ── -->
+  <OwnerDayBar
+    v-if="mobile"
+    :events="dayBarEvents"
+    :user-name="userName"
+    :date-label="todayDateLabel"
+    :current-hour="currentHour"
+    :current-min="currentMin"
+    :checkout-count="checkoutsTodayOnlyCount"
+    :turn-count="turnsTodayCount"
+    :checkin-count="checkinsTodayCount"
+    :needs-action-count="needsActionTodayCount"
+    @open-booking="handleDayBarOpenBooking"
+    @assign-cleaner="handleDayBarAssignCleaner"
+  />
+
+  <!-- ── Desktop layout ── -->
+  <v-container v-else class="owner-overview" fluid>
     <v-progress-linear v-if="loading" class="mb-4" color="primary" indeterminate />
 
     <!-- Hero gradient banner (replaces OwnerPageHeader + old welcome banner) -->
@@ -26,7 +43,7 @@
             <div class="triage-title">Urgent turn · {{ urgentTurns[0].property }}</div>
 
             <div class="triage-sub">
-              Guests out {{ urgentTurns[0].checkoutTime }} · new guests in {{ urgentTurns[0].checkinTime }} · same-day turn
+              Guests out {{ fmt12(urgentTurns[0].checkoutTime) }} · new guests in {{ fmt12(urgentTurns[0].checkinTime) }} · same-day turn
             </div>
           </div>
 
@@ -60,8 +77,8 @@
         </div>
 
         <div class="today-strip">
-          <div v-for="ev in todayEvents" :key="ev.id" class="event-pill">
-            <div class="event-pill-time">{{ ev.time }}</div>
+          <div v-for="ev in todayEvents" :key="ev.id" class="event-pill" :style="{ '--pill-color': ev.propColor }">
+            <div class="event-pill-time">{{ fmt12(ev.time) }}</div>
 
             <div class="event-pill-body">
               <div class="event-pill-prop">
@@ -98,116 +115,109 @@
       </v-col>
     </v-row>
 
-    <!-- Bottom split: Yesterday + Upcoming -->
+    <!-- Bookings section -->
     <v-row>
-      <!-- Upcoming bookings -->
-      <v-col cols="12" md="7">
-        <v-card class="up-card">
-          <div class="up-head">
-            <span class="section-title" style="margin: 0">Upcoming 14 days</span>
-            <router-link class="section-action" to="/owner/calendar">View calendar →</router-link>
+      <v-col cols="12">
+        <div class="section-head">
+          <span class="section-title">Bookings</span>
+        </div>
+
+        <!-- Segment tabs + filters -->
+        <div class="bookings-toolbar">
+          <div class="bookings-segments">
+            <button
+              v-for="seg in segments"
+              :key="seg.value"
+              class="seg-btn"
+              :class="{ 'seg-btn--active': selectedSegment === seg.value }"
+              @click="selectedSegment = seg.value"
+            >
+              {{ seg.title }}
+            </button>
           </div>
 
-          <div v-if="upcoming14d.length === 0" class="up-empty">
-            <v-chip size="small" variant="tonal">No upcoming bookings</v-chip>
+          <div class="bookings-filters">
+            <v-select
+              v-model="selectedProperty"
+              clearable
+              density="compact"
+              hide-details
+              :items="propertyOptions"
+              label="Property"
+              prepend-inner-icon="mdi-home-outline"
+              style="max-width: 200px"
+              variant="outlined"
+            />
+
+            <v-select
+              v-model="selectedType"
+              clearable
+              density="compact"
+              hide-details
+              :items="typeOptions"
+              label="Type"
+              prepend-inner-icon="mdi-tag-outline"
+              style="max-width: 150px"
+              variant="outlined"
+            />
           </div>
+        </div>
 
-          <div v-else class="up-list">
-            <div v-for="item in upcoming14d" :key="item.id" class="up-row">
-              <div class="up-date">
-                <div class="up-date-m">{{ item.month }}</div>
-                <div class="up-date-d">{{ item.day }}</div>
-              </div>
+        <OwnerBookingList
+          expand-mode="sheet"
+          :items="allBookingsItems"
+          :loading="loading"
+          @delete="handleDeleteBooking"
+          @edit="handleEditBooking"
+        />
 
-              <div class="up-info">
-                <div class="up-prop">
-                  <div class="prop-dot" :style="{ background: item.propColor }" />
-                  {{ item.propName }}
-                </div>
-
-                <div class="up-range">{{ item.range }}</div>
-              </div>
-
-              <v-chip
-                :color="item.isTurn ? 'warning' : 'primary'"
-                density="comfortable"
-                rounded="pill"
-                size="x-small"
-                variant="tonal"
-              >
-                {{ item.isTurn ? 'Turn' : 'Standard' }}
-              </v-chip>
-            </div>
-          </div>
-        </v-card>
-      </v-col>
-
-      <!-- Stat cards -->
-      <v-col cols="12" md="5">
-        <v-row>
-          <v-col cols="6">
-            <BookingStatsCard
-              icon="mdi-home-outline"
-              icon-color="var(--claro-primary)"
-              title="Active Properties"
-              :value="myProperties.length"
-            />
-          </v-col>
-
-          <v-col cols="6">
-            <BookingStatsCard
-              icon="mdi-swap-horizontal"
-              icon-color="var(--claro-warning)"
-              title="Upcoming Turns"
-              :value="turnsTodayCount"
-            />
-          </v-col>
-
-          <v-col cols="6">
-            <BookingStatsCard
-              icon="mdi-login"
-              icon-color="var(--claro-success)"
-              title="Week Check-ins"
-              :value="weekCheckinCount"
-            />
-          </v-col>
-
-          <v-col cols="6">
-            <BookingStatsCard
-              icon="mdi-alert-outline"
-              icon-color="var(--claro-error)"
-              title="Unassigned"
-              :value="unassignedCount"
-            />
-          </v-col>
-        </v-row>
+        <ConfirmationDialog
+          confirm-text="Delete"
+          dangerous
+          :message="`Delete this booking at ${bookingToDeleteName}?`"
+          :open="deleteConfirmOpen"
+          title="Delete Booking"
+          @cancel="deleteConfirmOpen = false"
+          @confirm="confirmDeleteBooking"
+        />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script setup lang="ts">
+  import type { BookingListItem } from '@/components/dumb/owner/OwnerBookingList.vue'
+  import type { DayBarEvent } from '@/components/dumb/owner/OwnerDayBar.vue'
   import type { PropertyListEvent, PropertyListItem } from '@/components/dumb/owner/PropertyList.vue'
+  import type { Booking, ModalData } from '@/types'
   import type { Property } from '@/types/property'
   import { useToday } from '@composables/shared/useToday'
   import { computed, onMounted, ref } from 'vue'
-  import BookingStatsCard from '@/components/dumb/owner/BookingStatsCard.vue'
+  import { useDisplay } from 'vuetify'
+  import OwnerBookingList from '@/components/dumb/owner/OwnerBookingList.vue'
+  import OwnerDayBar from '@/components/dumb/owner/OwnerDayBar.vue'
   import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
   import PropertyList from '@/components/dumb/owner/PropertyList.vue'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useAuthStore } from '@/stores/auth'
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { mapLegacyPropertyColor } from '@/utils/constants'
+  import { useRouter } from 'vue-router'
   defineOptions({ name: 'OwnerOverview' })
 
+  const { mobile } = useDisplay()
+  const router = useRouter()
   const authStore = useAuthStore()
   const uiStore = useUIStore()
   const { myProperties, fetchMyProperties } = useOwnerProperties()
-  const { myBookings, myTodayTurns, fetchMyBookings } = useOwnerBookings()
+  const { myBookings, myTodayTurns, fetchMyBookings, deleteMyBooking } = useOwnerBookings()
 
   const loading = ref(false)
+  const deleteConfirmOpen = ref(false)
+  const bookingToDelete = ref<Booking | null>(null)
 
   const propertyMap = computed(() => {
     const m = new Map<string, Property>()
@@ -238,7 +248,7 @@
     authStore.user?.name || authStore.user?.email?.split('@')[0] || 'Owner',
   )
 
-  const { todayStr, weekAhead, fortAhead, todayLabel: todayFullLabel } = useToday()
+  const { todayStr, todayLabel: todayFullLabel } = useToday()
 
   // ── Today events strip ────────────────────────────────────────────────────────
   const todayEvents = computed(() => {
@@ -276,8 +286,105 @@
   // ── Counts ────────────────────────────────────────────────────────────────────
   const turnsTodayCount = computed(() => myTodayTurns.value.length)
   const checkoutsTodayCount = computed(() => myBookings.value.filter(b => b.checkout_date === todayStr.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
-  const weekCheckinCount = computed(() => myBookings.value.filter(b => b.checkin_date >= todayStr.value && b.checkin_date <= weekAhead.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
-  const unassignedCount = computed(() => myBookings.value.filter(b => !b.assigned_cleaner_id && b.status !== 'cancelled' && b.status !== 'completed').length)
+
+  // ── Bookings section state ─────────────────────────────────────────────────
+  const selectedSegment = ref('upcoming')
+  const selectedProperty = ref<string | null>(null)
+  const selectedType = ref<string | null>(null)
+
+  const segments = [
+    { title: 'Upcoming', value: 'upcoming' },
+    { title: 'All', value: 'all' },
+    { title: 'Turns', value: 'turns' },
+    { title: 'Past', value: 'past' },
+  ]
+
+  const typeOptions = [
+    { title: 'Standard', value: 'standard' },
+    { title: 'Turn', value: 'turn' },
+  ]
+
+  const propertyOptions = computed(() =>
+    myProperties.value.map(p => ({
+      title: formatPropertyAddress(p, 'short'),
+      value: p.id,
+    })),
+  )
+
+  // ── A3 Day-bar data (mobile only) ──────────────────────────────────────────
+  const now = new Date()
+  const currentHour = ref(now.getHours())
+  const currentMin  = ref(now.getMinutes())
+
+  const todayDateLabel = computed(() => {
+    const d = new Date()
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+  })
+
+  const checkoutsTodayOnlyCount = computed(() =>
+    myBookings.value.filter(b => b.checkout_date === todayStr.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length,
+  )
+
+  const checkinsTodayCount = computed(() =>
+    myBookings.value.filter(b => b.checkin_date === todayStr.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length,
+  )
+
+  const needsActionTodayCount = computed(() =>
+    myBookings.value.filter(b =>
+      b.status !== 'cancelled'
+      && (b.checkout_date === todayStr.value || b.checkin_date === todayStr.value)
+      && !b.assigned_cleaner_id
+      && !b.assigned_team_id,
+    ).length,
+  )
+
+  const dayBarEvents = computed((): DayBarEvent[] => {
+    const events: DayBarEvent[] = []
+    for (const b of myBookings.value) {
+      if (b.status === 'cancelled') continue
+      const p = propertyMap.value.get(b.property_id)
+      if (!p) continue
+      const name  = formatPropertyAddress(p, 'short')
+      const color = mapLegacyPropertyColor(p.color)
+      const noClean = !b.assigned_cleaner_id && !b.assigned_team_id
+
+      if (b.booking_type === 'turn' && b.checkin_date === todayStr.value) {
+        const cleanFrom = b.turn_start_time ?? b.checkout_time ?? '11:00'
+        const cleanTo   = b.turn_checkin_time ?? b.checkin_time ?? '15:00'
+        events.push({
+          id: b.id + '-t',
+          propId: p.id,
+          propName: name,
+          propColor: color,
+          type: 'turn',
+          time: (b.checkout_time ?? '11:00').slice(0, 5),
+          guestCount: b.guest_count ?? undefined,
+          needsClean: noClean,
+          cleanFrom: cleanFrom.slice(0, 5),
+          cleanTo: cleanTo.slice(0, 5),
+          cleanMins: p.cleaning_duration ?? undefined,
+          bookingName: undefined,
+        })
+      } else {
+        if (b.checkout_date === todayStr.value) {
+          events.push({ id: b.id + '-o', propId: p.id, propName: name, propColor: color, type: 'checkout', time: (b.checkout_time ?? '11:00').slice(0, 5), guestCount: b.guest_count ?? undefined, needsClean: noClean })
+        }
+        if (b.checkin_date === todayStr.value) {
+          events.push({ id: b.id + '-i', propId: p.id, propName: name, propColor: color, type: 'checkin', time: (b.checkin_time ?? '15:00').slice(0, 5), guestCount: b.guest_count ?? undefined, needsClean: false })
+        }
+      }
+    }
+    return events.toSorted((a, b) => a.time.localeCompare(b.time))
+  })
+
+  function handleDayBarOpenBooking (eventId: string): void {
+    const bookingId = eventId.replace(/-[toi]$/, '')
+    router.push({ path: '/owner/bookings', query: { id: bookingId } })
+  }
+
+  function handleDayBarAssignCleaner (_eventId: string): void {
+    uiStore.addNotification('info', 'Cleaner Assignment', 'Contact your admin to assign a cleaner for this turn.')
+  }
 
   // ── Occupancy ─────────────────────────────────────────────────────────────────
   const occupancyMap = computed(() => {
@@ -352,30 +459,81 @@
     }),
   )
 
-  // ── Upcoming 14d ─────────────────────────────────────────────────────────────
-  const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  // ── All bookings (with segment + filter) ─────────────────────────────────────
+  const allBookingsItems = computed((): BookingListItem[] => {
+    let bookings = myBookings.value.filter(b => b.status !== 'cancelled')
 
-  const upcoming14d = computed(() => {
-    const items = myBookings.value
-      .filter(b => b.status !== 'cancelled' && b.checkin_date >= todayStr.value && b.checkin_date <= fortAhead.value)
+    switch (selectedSegment.value) {
+      case 'upcoming': { bookings = bookings.filter(b => b.checkout_date >= todayStr.value); break }
+      case 'turns':    { bookings = bookings.filter(b => b.booking_type === 'turn'); break }
+      case 'past':     { bookings = bookings.filter(b => b.checkout_date < todayStr.value); break }
+    }
+
+    if (selectedProperty.value) bookings = bookings.filter(b => b.property_id === selectedProperty.value)
+    if (selectedType.value)     bookings = bookings.filter(b => b.booking_type === selectedType.value)
+
+    return bookings
       .toSorted((a, b) => a.checkin_date.localeCompare(b.checkin_date))
-      .slice(0, 6)
       .map(b => {
         const p = propertyMap.value.get(b.property_id)
-        const ci = new Date(b.checkin_date)
-        const co = new Date(b.checkout_date)
         return {
           id: b.id,
-          propName: p ? formatPropertyAddress(p, 'short') : 'Unknown',
-          propColor: mapLegacyPropertyColor(p?.color),
-          month: MONTHS[ci.getUTCMonth()].toUpperCase(),
-          day: ci.getUTCDate(),
-          range: `${MONTHS[ci.getUTCMonth()]} ${ci.getUTCDate()} – ${MONTHS[co.getUTCMonth()]} ${co.getUTCDate()}`,
-          isTurn: b.booking_type === 'turn',
+          propertyName: p ? formatPropertyAddress(p, 'short') : 'Unknown',
+          propertyColor: mapLegacyPropertyColor(p?.color),
+          checkinDate: b.checkin_date,
+          checkoutDate: b.checkout_date,
+          bookingType: b.booking_type as 'standard' | 'turn',
+          status: b.status,
+          guestCount: b.guest_count ?? undefined,
+          checkinTime: b.checkin_time ?? undefined,
+          checkoutTime: b.checkout_time ?? undefined,
+          notes: b.notes ?? undefined,
+          priority: b.priority ?? undefined,
+          createdAt: b.created_at ?? undefined,
         }
       })
-    return items
   })
+
+  function fmt12 (time24: string): string {
+    const [h, m] = time24.split(':').map(Number)
+    if (Number.isNaN(h)) return time24
+    const period = h >= 12 ? 'PM' : 'AM'
+    const h12 = h % 12 || 12
+    return `${h12}:${String(m ?? 0).padStart(2, '0')} ${period}`
+  }
+
+  const bookingToDeleteName = computed(() => {
+    if (!bookingToDelete.value) return ''
+    const p = myProperties.value.find(p => p.id === bookingToDelete.value!.property_id)
+    return p ? formatPropertyAddress(p, 'short') : 'this property'
+  })
+
+  function handleEditBooking (id: string): void {
+    const booking = myBookings.value.find(b => b.id === id)
+    if (booking) uiStore.openModal('eventModal', 'edit', { booking: booking as unknown as ModalData })
+  }
+
+  function handleDeleteBooking (id: string): void {
+    const booking = myBookings.value.find(b => b.id === id)
+    if (booking) {
+      bookingToDelete.value = booking
+      deleteConfirmOpen.value = true
+    }
+  }
+
+  async function confirmDeleteBooking (): Promise<void> {
+    if (!bookingToDelete.value) return
+    try {
+      await deleteMyBooking(bookingToDelete.value.id)
+      uiStore.addNotification('success', 'Deleted', 'Booking deleted successfully')
+    } catch (error) {
+      console.error('Failed to delete booking:', error)
+      uiStore.addNotification('error', 'Delete Failed', error instanceof Error ? error.message : 'Could not delete booking')
+    } finally {
+      deleteConfirmOpen.value = false
+      bookingToDelete.value = null
+    }
+  }
 </script>
 
 <style scoped>
@@ -490,6 +648,7 @@
   padding: 12px 16px;
   background: var(--claro-surface);
   border: 1px solid var(--claro-border);
+  border-left: 3px solid var(--pill-color, var(--claro-border));
   border-radius: var(--claro-radius-sm);
   flex-shrink: 0;
   min-width: 160px;
@@ -626,88 +785,54 @@
   transition: width var(--claro-dur-slow) var(--claro-ease);
 }
 
-/* ── Upcoming card ── */
-.up-card {
-  padding: 0;
-  overflow: hidden;
-}
-
-.up-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--claro-border);
-}
-
-.up-empty {
-  padding: 24px 20px;
-}
-
-.up-list {
-  display: flex;
-  flex-direction: column;
-}
-
-.up-row {
+/* ── Bookings toolbar ── */
+.bookings-toolbar {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 20px;
-  border-bottom: 1px solid var(--claro-border);
-  transition: background var(--claro-dur-fast) var(--claro-ease);
+  margin-bottom: 12px;
+  flex-wrap: wrap;
 }
 
-.up-row:last-child {
-  border-bottom: none;
-}
-
-.up-row:hover {
-  background: rgba(115, 103, 240, 0.025);
-}
-
-.up-date {
+.bookings-segments {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-width: 36px;
+  gap: 2px;
+  background: var(--claro-surface-variant);
+  border-radius: var(--claro-radius-sm);
+  padding: 3px;
   flex-shrink: 0;
 }
 
-.up-date-m {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--claro-fg3);
-}
-
-.up-date-d {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--claro-fg1);
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
-.up-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.up-prop {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--claro-text-sm);
-  font-weight: 500;
-  color: var(--claro-fg1);
-}
-
-.up-range {
+.seg-btn {
+  padding: 5px 14px;
+  border: none;
+  background: transparent;
+  border-radius: calc(var(--claro-radius-sm) - 1px);
   font-size: var(--claro-text-xs);
+  font-weight: 500;
   color: var(--claro-fg3);
-  margin-top: 2px;
-  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+  white-space: nowrap;
+}
+
+.seg-btn:hover {
+  color: var(--claro-fg1);
+  background: rgba(var(--v-theme-surface), 0.6);
+}
+
+.seg-btn--active {
+  background: var(--claro-surface);
+  color: var(--claro-fg1);
+  font-weight: 600;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.bookings-filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
 }
 
 /* ── Shared utils ── */

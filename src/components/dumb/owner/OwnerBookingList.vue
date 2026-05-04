@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { computed, ref } from 'vue'
+  import { computed, ref, watch } from 'vue'
   import { useDisplay } from 'vuetify'
 
   export interface BookingListItem {
@@ -19,11 +19,13 @@
     createdAt?: string
   }
 
-  const _props = withDefaults(defineProps<{
+  const props = withDefaults(defineProps<{
     items: BookingListItem[]
     loading?: boolean
+    expandMode?: 'inline' | 'sheet'
   }>(), {
     loading: false,
+    expandMode: 'inline',
   })
 
   const emit = defineEmits<{
@@ -33,16 +35,35 @@
 
   const { mobile } = useDisplay()
 
+  // ── Inline expand ──────────────────────────────────────────────────────────
   const expandedId = ref<string | null>(null)
-  const hasOpen = computed(() => expandedId.value !== null)
+  const hasOpen = computed(() => props.expandMode === 'inline' && expandedId.value !== null)
 
   function isExpanded (id: string): boolean {
-    return expandedId.value === id
+    return props.expandMode === 'inline' && expandedId.value === id
   }
 
   function toggleRow (id: string): void {
-    expandedId.value = expandedId.value === id ? null : id
+    if (props.expandMode === 'sheet') {
+      const item = props.items.find(i => i.id === id)
+      if (item) openSheet(item)
+    } else {
+      expandedId.value = expandedId.value === id ? null : id
+    }
   }
+
+  // ── Sheet expand ───────────────────────────────────────────────────────────
+  const sheetOpen = ref(false)
+  const sheetItem = ref<BookingListItem | null>(null)
+
+  function openSheet (item: BookingListItem): void {
+    sheetItem.value = item
+    sheetOpen.value = true
+  }
+
+  watch(sheetOpen, open => {
+    if (!open) setTimeout(() => { sheetItem.value = null }, 300)
+  })
 
   function formatDateRange (checkin: string, checkout: string): string {
     const ci = new Date(checkin)
@@ -133,6 +154,7 @@
         'bl-row-shell--open': isExpanded(item.id),
         'bl-row-shell--dimmed': hasOpen && !isExpanded(item.id),
       }"
+      :style="{ '--row-color': item.propertyColor }"
     >
       <!-- Summary row -->
       <div
@@ -193,7 +215,7 @@
 
         <!-- Chevron -->
         <div class="bl-chev" :class="{ 'bl-chev--open': isExpanded(item.id) }">
-          <v-icon size="20">mdi-chevron-down</v-icon>
+          <v-icon size="20">{{ expandMode === 'sheet' ? 'mdi-chevron-right' : 'mdi-chevron-down' }}</v-icon>
         </div>
       </div>
 
@@ -278,6 +300,89 @@
       </v-expand-transition>
     </div>
   </div>
+
+  <!-- ── Sheet expand (overview mode) ── -->
+  <v-bottom-sheet v-model="sheetOpen" :inset="!mobile">
+    <v-card v-if="sheetItem" class="sheet-card">
+      <!-- Handle -->
+      <div class="sheet-handle" />
+
+      <!-- Property name -->
+      <div class="sheet-prop-name">{{ sheetItem.propertyName }}</div>
+
+      <!-- Meta row: dot + date range + chevron-down close -->
+      <div class="sheet-meta-row">
+        <div class="sheet-meta-dot" :style="{ background: sheetItem.propertyColor }" />
+        <span class="sheet-meta-dates">{{ formatDateRange(sheetItem.checkinDate, sheetItem.checkoutDate) }}</span>
+        <v-spacer />
+        <v-btn
+          aria-label="Close"
+          icon
+          size="small"
+          style="min-width:44px;min-height:44px;"
+          variant="text"
+          @click="sheetOpen = false"
+        >
+          <v-icon size="22">mdi-chevron-down</v-icon>
+        </v-btn>
+      </div>
+
+      <!-- Chips row -->
+      <div class="sheet-chips-row">
+        <v-chip
+          :color="sheetItem.bookingType === 'turn' ? 'warning' : 'primary'"
+          size="x-small"
+          variant="tonal"
+        >
+          {{ sheetItem.bookingType === 'turn' ? 'Turn' : 'Standard' }}
+        </v-chip>
+        <v-chip :color="statusColor(sheetItem.status)" size="x-small" variant="tonal">
+          {{ fmtStatus(sheetItem.status) }}
+        </v-chip>
+      </div>
+
+      <v-divider />
+
+      <!-- Booking details section -->
+      <div class="sheet-section">
+        <div class="sheet-section-label">Booking Details</div>
+        <table class="sheet-table">
+          <tbody>
+            <tr>
+              <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-login</v-icon> Check-in</span></td>
+              <td>{{ formatDate(sheetItem.checkinDate) }}<template v-if="sheetItem.checkinTime"> · {{ sheetItem.checkinTime }}</template></td>
+            </tr>
+            <tr>
+              <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-logout</v-icon> Check-out</span></td>
+              <td>{{ formatDate(sheetItem.checkoutDate) }}<template v-if="sheetItem.checkoutTime"> · {{ sheetItem.checkoutTime }}</template></td>
+            </tr>
+            <tr v-if="sheetItem.guestCount">
+              <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-account-group-outline</v-icon> Guests</span></td>
+              <td>{{ sheetItem.guestCount }}</td>
+            </tr>
+            <tr v-if="sheetItem.priority">
+              <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-flag-outline</v-icon> Priority</span></td>
+              <td>
+                <v-chip :color="priorityColor(sheetItem.priority)" size="x-small" variant="tonal">
+                  {{ sheetItem.priority }}
+                </v-chip>
+              </td>
+            </tr>
+            <tr v-if="sheetItem.createdAt">
+              <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-clock-outline</v-icon> Created</span></td>
+              <td>{{ formatDate(sheetItem.createdAt) }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Notes section -->
+      <div class="sheet-section sheet-section--notes">
+        <div class="sheet-section-label">Notes</div>
+        <p class="sheet-notes-text">{{ sheetItem.notes || 'No notes for this booking.' }}</p>
+      </div>
+    </v-card>
+  </v-bottom-sheet>
 </template>
 
 <style scoped>
@@ -307,8 +412,21 @@
 
 /* ── Row shell ── */
 .bl-row-shell {
+  position: relative;
   border-bottom: 1px solid var(--claro-border);
   transition: opacity var(--claro-dur-slow) var(--claro-ease);
+}
+
+.bl-row-shell::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  background: var(--row-color, transparent);
+  z-index: 1;
+  pointer-events: none;
 }
 
 .bl-row-shell:last-child {
@@ -338,15 +456,16 @@
 }
 
 .bl-row:hover {
-  background: rgba(115, 103, 240, 0.025);
+  background: color-mix(in srgb, var(--row-color, rgb(115, 103, 240)) 6%, transparent);
 }
 
 /* ── Color dot ── */
 .bl-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+  width: 11px;
+  height: 11px;
+  border-radius: 3px;
   justify-self: center;
+  flex-shrink: 0;
 }
 
 /* ── Info cell ── */
@@ -412,7 +531,8 @@
 /* ── Inlay ── */
 .bl-inlay {
   border-top: 1px solid var(--claro-border);
-  background: var(--claro-surface);
+  background: color-mix(in srgb, var(--row-color, rgb(115, 103, 240)) 3%, transparent);
+  border-left: 3px solid var(--row-color, rgba(var(--v-theme-primary), 0.3));
 }
 
 .bl-inlay-body {
@@ -421,12 +541,13 @@
 }
 
 .bl-inlay-left {
-  padding: 16px 20px 16px 24px;
+  padding: 12px 20px 12px 20px;
 }
 
 .bl-inlay-right {
-  padding: 16px 20px;
-  border-left: 1px solid var(--claro-surface-variant);
+  padding: 12px 20px;
+  border-left: 1px solid rgba(var(--v-theme-primary), 0.1);
+  background: rgba(var(--v-theme-primary), 0.02);
 }
 
 .bl-col-label {
@@ -434,8 +555,9 @@
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--claro-fg3);
-  margin: 0 0 14px;
+  color: var(--row-color, rgb(var(--v-theme-primary)));
+  opacity: 0.75;
+  margin: 0 0 8px;
 }
 
 /* ── Stats table ── */
@@ -446,7 +568,7 @@
 }
 
 .bl-stats-table tr {
-  border-bottom: 1px solid var(--claro-surface-variant);
+  border-bottom: 1px solid rgba(var(--v-theme-primary), 0.07);
 }
 
 .bl-stats-table tr:last-child {
@@ -454,7 +576,7 @@
 }
 
 .bl-stats-table td {
-  padding: 8px 10px;
+  padding: 4px 6px;
   vertical-align: middle;
 }
 
@@ -490,15 +612,126 @@
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 10px 16px 12px;
-  border-top: 1px solid var(--claro-surface-variant);
-  background: var(--claro-surface-variant);
+  padding: 8px 16px 10px;
+  border-top: 1px solid rgba(var(--v-theme-primary), 0.1);
+  background: rgba(var(--v-theme-primary), 0.05);
 }
 
 .bl-actions-group {
   display: flex;
   align-items: center;
   gap: 4px;
+}
+
+/* ── Sheet ── */
+.sheet-card {
+  border-radius: 16px 16px 0 0;
+  overflow: hidden;
+  padding-bottom: 24px;
+}
+
+.sheet-handle {
+  width: 36px;
+  height: 4px;
+  border-radius: 9999px;
+  background: var(--claro-divider);
+  margin: 10px auto 10px;
+}
+
+.sheet-prop-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--claro-fg1);
+  padding: 0 20px 6px;
+  line-height: 1.3;
+}
+
+.sheet-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px 4px 20px;
+}
+
+.sheet-meta-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.sheet-meta-dates {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--claro-fg2);
+}
+
+.sheet-chips-row {
+  display: flex;
+  gap: 8px;
+  padding: 4px 20px 12px;
+}
+
+.sheet-section {
+  padding: 14px 20px 8px;
+}
+
+.sheet-section--notes {
+  padding-top: 10px;
+}
+
+.sheet-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(var(--v-theme-primary));
+  margin-bottom: 10px;
+}
+
+.sheet-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.sheet-table tr {
+  border-bottom: 1px solid rgba(var(--v-theme-primary), 0.07);
+}
+
+.sheet-table tr:last-child {
+  border-bottom: none;
+}
+
+.sheet-table td {
+  padding: 7px 4px;
+  vertical-align: middle;
+}
+
+.sheet-table td:first-child {
+  color: var(--claro-fg3);
+  font-weight: 500;
+  width: 45%;
+  white-space: nowrap;
+}
+
+.sheet-table td:last-child {
+  color: var(--claro-fg1);
+  font-weight: 500;
+}
+
+.sheet-td-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  vertical-align: middle;
+}
+
+.sheet-notes-text {
+  font-size: 13px;
+  color: var(--claro-fg2);
+  line-height: 1.6;
+  margin: 0;
 }
 
 /* ── Stacked (mobile) ── */
