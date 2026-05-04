@@ -1,0 +1,230 @@
+/* Claro Design System — colors_and_type.css
+ * Canonical CSS vars (colors + type) for use in any HTML mock.
+ * Mirrors src/styles/tokens.css in the codebase.
+ * Import with: <link rel="stylesheet" href="colors_and_type.css">
+ */
+
+/* ─── Inter, the canonical Claro typeface ────────────────
+ * Loaded locally as variable fonts (Roman + Italic).
+ * Axes: opsz (14–32, optical sizing) · wght (100–900).
+ * Use `font-weight: 100..900` and `font-variation-settings:
+ * 'opsz' 14..32` to access the full range.
+ *
+ * NOTE: paths are relative to colors_and_type.css. If your
+ * mock lives in a subfolder, the browser still resolves
+ * './fonts/...' against the CSS file's URL, not the HTML's.
+ */
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./fonts/Inter-VariableFont.ttf') format('truetype-variations'),
+       url('./fonts/Inter-VariableFont.ttf') format('truetype');
+  font-variation-settings: 'opsz' auto;
+}
+@font-face {
+  font-family: 'Inter';
+  font-style: italic;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('./fonts/Inter-Italic-VariableFont.ttf') format('truetype-variations'),
+       url('./fonts/Inter-Italic-VariableFont.ttf') format('truetype');
+  font-variation-settings: 'opsz' auto;
+}
+
+:root {
+  /* ─── BRAND ─────────────────────────────────────────── */
+  --claro-primary:        #7367F0;
+  --claro-primary-light:  #9E95F5;
+  --claro-primary-dark:   #5E52EE;
+  --claro-primary-tint:   #F0EEFF; /* 8% tint for active nav bg */
+  --claro-secondary:      #A8AAAE;
+  --claro-accent:         rgba(115, 103, 240, 0.125);
+
+  /* ─── SURFACES ──────────────────────────────────────── */
+  --claro-background:      #F5F5F9;
+  --claro-surface:         #FFFFFF;
+  --claro-surface-variant: #F5F5F9;
+  --claro-card-bg:         #FFFFFF;
+
+  /* ─── TEXT ──────────────────────────────────────────── */
+  --claro-fg1: #2E263D;                    /* primary text */
+  --claro-fg2: rgba(46, 38, 61, 0.72);     /* secondary text */
+  --claro-fg3: rgba(46, 38, 61, 0.50);     /* muted */
+  --claro-fg4: rgba(46, 38, 61, 0.28);     /* disabled / faint */
+  --claro-on-background: var(--claro-fg1);
+  --claro-on-surface:    var(--claro-fg1);
+  --claro-on-primary:    #FFFFFF;
+
+  /* ─── SEMANTIC ──────────────────────────────────────── */
+  --claro-success: #28C76F;
+  --claro-warning: #FF9F43;
+  --claro-error:   #EA5455;
+  --claro-info:    #00CFE8;
+
+  /* tonal (for chip backgrounds) — 16% alpha of the base */
+  --claro-success-tonal: rgba(40, 199, 111, 0.16);
+  --claro-warning-tonal: rgba(255, 159, 67, 0.16);
+  --claro-error-tonal:   rgba(234, 84, 85, 0.16);
+  --claro-info-tonal:    rgba(0, 207, 232, 0.16);
+  --claro-primary-tonal: rgba(115, 103, 240, 0.16);
+
+  /* ─── DOMAIN ────────────────────────────────────────── */
+  --claro-turn-urgent:      #EA5455;
+  --claro-turn-standard:    #FF9F43;
+  --claro-booking-standard: #28C76F;
+
+  /* Per-property accent palette (cycled) */
+  --claro-prop-1: #7367F0; /* indigo */
+  --claro-prop-2: #28C76F; /* green */
+  --claro-prop-3: #9155FD; /* purple */
+  --claro-prop-4: #FF9F43; /* orange */
+  --claro-prop-5: #EA5455; /* red */
+  --claro-prop-6: #FDD835; /* yellow (calendar OUT events) */
+
+  /* ─── DIVIDERS / BORDERS ────────────────────────────── */
+  --claro-divider:       #E8E8E8;
+  --claro-border:        #E8E8E8;
+  --claro-border-strong: #D4D4DB;
+
+  /* ─── TYPE ──────────────────────────────────────────── */
+  --claro-font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --claro-font-weight-normal:   400;
+  --claro-font-weight-medium:   500;
+  --claro-font-weight-semibold: 600;
+
+  /* type scale (rem-ish px) */
+  --claro-text-xs:   11px;
+  --claro-text-sm:   13px;
+  --claro-text-base: 15px;
+  --claro-text-md:   16px;
+  --claro-text-lg:   18px;
+  --claro-text-xl:   22px;
+  --claro-text-2xl:  26px;
+  --claro-text-3xl:  32px;
+  --claro-text-4xl:  40px;
+
+  /* line heights */
+  --claro-lh-tight:  1.2;
+  --claro-lh-snug:   1.35;
+  --claro-lh-normal: 1.5;
+
+  /* ─── SPACING ───────────────────────────────────────── */
+  --claro-space-xs: 4px;
+  --claro-space-sm: 8px;
+  --claro-space-md: 16px;
+  --claro-space-lg: 24px;
+  --claro-space-xl: 32px;
+  --claro-space-2xl: 48px;
+
+  /* ─── RADII ─────────────────────────────────────────── */
+  --claro-radius-sm:   2px;
+  --claro-radius-md:   2px;
+  --claro-radius-lg:   2px;
+  --claro-radius-card: 2px;
+  --claro-radius-pill: 9999px;
+
+  /* ─── ELEVATION ─────────────────────────────────────── */
+  --claro-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --claro-shadow-md: 0 4px 18px rgba(115, 103, 240, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --claro-shadow-lg: 0 8px 28px rgba(115, 103, 240, 0.18), 0 4px 10px rgba(0, 0, 0, 0.08);
+
+  /* ─── GRADIENTS (use sparingly — only on hero) ──────── */
+  --claro-gradient-primary:
+    linear-gradient(135deg, var(--claro-primary-light) 0%, var(--claro-primary) 60%, var(--claro-primary-dark) 100%);
+
+  /* ─── LAYOUT ────────────────────────────────────────── */
+  --claro-app-bar-height:         64px;
+  --claro-app-bar-height-mobile:  56px;
+  --claro-drawer-width:           260px;
+  --claro-drawer-width-collapsed: 72px;
+  --claro-content-padding:        24px;
+  --claro-content-padding-mobile: 12px;
+  --claro-touch-target-min:       44px;
+
+  /* ─── MOTION ────────────────────────────────────────── */
+  --claro-dur-fast: 150ms;
+  --claro-dur-base: 200ms;
+  --claro-dur-slow: 250ms;
+  --claro-ease:     ease;
+}
+
+/* ─── SEMANTIC TYPE ───────────────────────────────────── */
+html, body {
+  font-family: var(--claro-font-family);
+  color: var(--claro-fg1);
+  background: var(--claro-background);
+  font-size: var(--claro-text-base);
+  line-height: var(--claro-lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.claro-h1, h1.claro {
+  font-family: var(--claro-font-family);
+  font-weight: 600;
+  font-size: var(--claro-text-3xl);
+  line-height: var(--claro-lh-tight);
+  letter-spacing: -0.01em;
+  color: var(--claro-fg1);
+  margin: 0;
+}
+
+.claro-h2, h2.claro {
+  font-weight: 600;
+  font-size: var(--claro-text-xl);
+  line-height: var(--claro-lh-tight);
+  color: var(--claro-fg1);
+  margin: 0;
+}
+
+.claro-h3, h3.claro {
+  font-weight: 600;
+  font-size: var(--claro-text-lg);
+  line-height: var(--claro-lh-snug);
+  color: var(--claro-fg1);
+  margin: 0;
+}
+
+.claro-subheading {
+  font-weight: 400;
+  font-size: var(--claro-text-sm);
+  line-height: var(--claro-lh-normal);
+  color: var(--claro-fg3);
+  margin: var(--claro-space-xs) 0 0 0;
+}
+
+.claro-body {
+  font-size: var(--claro-text-base);
+  line-height: var(--claro-lh-normal);
+  color: var(--claro-fg1);
+}
+
+.claro-caption {
+  font-size: var(--claro-text-xs);
+  line-height: var(--claro-lh-snug);
+  color: var(--claro-fg3);
+  letter-spacing: 0.01em;
+}
+
+.claro-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--claro-fg3);
+}
+
+.claro-wordmark {
+  font-family: var(--claro-font-family);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--claro-primary);
+}
+
+.claro-numeric {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}

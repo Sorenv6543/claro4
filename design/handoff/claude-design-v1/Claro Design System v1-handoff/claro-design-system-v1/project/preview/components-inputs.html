@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+<style>
+  body { margin: 0; padding: 18px; background: var(--claro-background); font-family: var(--claro-font-family); }
+  .field { background: #fff; border: 1px solid #E8E8E8; border-radius: 2px; padding: 10px 14px; display: flex; align-items: center; gap: 10px; position: relative; margin-bottom: 14px; }
+  .field.focused { border-color: var(--claro-primary); box-shadow: 0 0 0 3px rgba(115,103,240,.12); }
+  .legend { position: absolute; top: -7px; left: 10px; background: var(--claro-background); padding: 0 6px; font-size: 11px; color: var(--claro-primary); }
+  .field-default .legend { color: var(--claro-fg3); }
+  i { color: var(--claro-fg3); font-size: 18px; }
+  input { border: none; outline: none; background: transparent; font-family: inherit; font-size: 14px; color: var(--claro-fg1); flex: 1; }
+  .helper { font-size: 11px; color: var(--claro-fg3); margin: -8px 0 14px 14px; }
+</style>
+</head>
+<body>
+  <div class="field focused">
+    <div class="legend">Checkin Date</div>
+    <i class="mdi mdi-calendar"></i>
+    <input value="Wed, Apr 15, 2026">
+  </div>
+  <div class="helper">When guests arrive</div>
+  <div class="field field-default">
+    <div class="legend">Property</div>
+    <i class="mdi mdi-home-outline"></i>
+    <input placeholder="Select a property">
+    <i class="mdi mdi-chevron-down"></i>
+  </div>
+</body>
+</html>

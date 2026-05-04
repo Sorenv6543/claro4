@@ -1,0 +1,78 @@
+import { afterAll, beforeAll, vi } from 'vitest'
+
+// Global Supabase mock for all tests
+vi.mock('@/plugins/supabase', () => {
+  const createQueryBuilder = () => ({
+    select: vi.fn().mockReturnThis(),
+    insert: vi.fn().mockReturnThis(),
+    update: vi.fn().mockReturnThis(),
+    delete: vi.fn().mockReturnThis(),
+    eq: vi.fn().mockResolvedValue({ data: null, error: null }),
+    neq: vi.fn().mockResolvedValue({ data: null, error: null }),
+    gt: vi.fn().mockReturnThis(),
+    gte: vi.fn().mockReturnThis(),
+    lt: vi.fn().mockReturnThis(),
+    lte: vi.fn().mockReturnThis(),
+    like: vi.fn().mockResolvedValue({ data: null, error: null }),
+    in: vi.fn().mockResolvedValue({ data: null, error: null }),
+    is: vi.fn().mockResolvedValue({ data: null, error: null }),
+    order: vi.fn().mockReturnThis(),
+    limit: vi.fn().mockReturnThis(),
+    range: vi.fn().mockReturnThis(),
+  })
+
+  const supabase = {
+    from: vi.fn(() => createQueryBuilder()),
+    auth: {
+      onAuthStateChange: vi.fn(), // Mock auth listener
+      getSession: vi.fn().mockResolvedValue({ data: { session: null }, error: null }),
+      signUp: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+      signInWithPassword: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+      signOut: vi.fn().mockResolvedValue({ error: null }),
+      resetPasswordForEmail: vi.fn().mockResolvedValue({ data: null, error: null }),
+      admin: {
+        deleteUser: vi.fn().mockResolvedValue({ data: null, error: null }),
+        createUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+      },
+    },
+    functions: {
+      invoke: vi.fn().mockResolvedValue({ data: null, error: null }),
+    },
+  }
+  return {
+    supabase,
+    default: supabase, // Provide default export
+  }
+})
+
+// Mock CSS imports
+vi.mock('vuetify/styles', () => ({}))
+vi.mock('@mdi/font/css/materialdesignicons.css', () => ({}))
+vi.mock('vuetify/lib/components/VCode/VCode.css', () => ({}))
+vi.mock('vuetify/lib/components/VAlert/VAlert.css', () => ({}))
+
+// Global setup
+beforeAll(() => {
+  // Mock window properties that aren't available in happy-dom
+  global.ResizeObserver = class ResizeObserver {
+    observe () {}
+    unobserve () {}
+    disconnect () {}
+  }
+
+  // Mock matchMedia
+  global.matchMedia = vi.fn().mockImplementation(query => ({
+    matches: false,
+    media: query,
+    onchange: null,
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
+    addEventListener: vi.fn(),
+    removeEventListener: vi.fn(),
+    dispatchEvent: vi.fn(),
+  }))
+})
+
+afterAll(() => {
+  // Cleanup if needed
+})

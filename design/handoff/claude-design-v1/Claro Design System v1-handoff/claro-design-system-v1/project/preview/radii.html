@@ -1,0 +1,21 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 18px; background: #fff; font-family: var(--claro-font-family); }
+  .row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+  .shape { width: 80px; height: 60px; background: var(--claro-primary-tint); border: 1px solid rgba(115,103,240,.35); display: flex; align-items: center; justify-content: center; font-size: 11px; color: var(--claro-primary-dark); font-weight: 500; }
+  .label { text-align: center; font-size: 11px; color: var(--claro-fg3); margin-top: 6px; }
+  .group { display: flex; flex-direction: column; align-items: center; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="group"><div class="shape" style="border-radius:2px">2px</div><div class="label">surfaces · cards, inputs, dialogs</div></div>
+    <div class="group"><div class="shape" style="border-radius:9999px;width:120px">pill</div><div class="label">chips, badges, buttons</div></div>
+    <div class="group"><div class="shape" style="border-radius:50%;width:60px">○</div><div class="label">avatars</div></div>
+  </div>
+</body>
+</html>

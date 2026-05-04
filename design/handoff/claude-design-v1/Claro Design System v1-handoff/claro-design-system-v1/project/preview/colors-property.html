@@ -1,0 +1,26 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 18px; background: #fff; font-family: var(--claro-font-family); }
+  .list { display: flex; flex-direction: column; gap: 6px; }
+  .row { display: grid; grid-template-columns: 6px 1fr auto auto; gap: 12px; align-items: center; background: #fff; border: 1px solid #F2F2F5; padding: 10px 12px; border-radius: 2px; }
+  .bar { height: 28px; border-radius: 1px; }
+  .addr { font-size: 13px; color: var(--claro-fg1); font-weight: 500; }
+  .hex { font-size: 11px; color: var(--claro-fg3); font-variant-numeric: tabular-nums; }
+  .label { font-size: 10px; color: var(--claro-fg3); text-transform: uppercase; letter-spacing: 0.08em; }
+</style>
+</head>
+<body>
+  <div class="list">
+    <div class="row"><div class="bar" style="background:#7367F0"></div><div class="addr">1600 Pennsylvania Ave NW</div><span class="label">prop-1</span><span class="hex">#7367F0</span></div>
+    <div class="row"><div class="bar" style="background:#28C76F"></div><div class="addr">Hall of Justice</div><span class="label">prop-2</span><span class="hex">#28C76F</span></div>
+    <div class="row"><div class="bar" style="background:#9155FD"></div><div class="addr">666 gtgt</div><span class="label">prop-3</span><span class="hex">#9155FD</span></div>
+    <div class="row"><div class="bar" style="background:#FF9F43"></div><div class="addr">32540 Wishing Well Trl</div><span class="label">prop-4</span><span class="hex">#FF9F43</span></div>
+    <div class="row"><div class="bar" style="background:#EA5455"></div><div class="addr">1194 Mulberry Dr</div><span class="label">prop-5</span><span class="hex">#EA5455</span></div>
+    <div class="row"><div class="bar" style="background:#FDD835"></div><div class="addr">Calendar OUT events</div><span class="label">prop-6</span><span class="hex">#FDD835</span></div>
+  </div>
+</body>
+</html>

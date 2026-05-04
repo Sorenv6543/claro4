@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 18px; background: var(--claro-background); font-family: var(--claro-font-family); }
+  .row { display: flex; gap: 14px; align-items: flex-end; }
+  .box { background: var(--claro-primary); border-radius: 2px; flex-shrink: 0; }
+  .token { text-align: center; font-size: 11px; color: var(--claro-fg3); font-variant-numeric: tabular-nums; margin-top: 6px; }
+  .group { display: flex; flex-direction: column; align-items: center; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="group"><div class="box" style="width:4px;height:4px"></div><div class="token">xs / 4</div></div>
+    <div class="group"><div class="box" style="width:8px;height:8px"></div><div class="token">sm / 8</div></div>
+    <div class="group"><div class="box" style="width:16px;height:16px"></div><div class="token">md / 16</div></div>
+    <div class="group"><div class="box" style="width:24px;height:24px"></div><div class="token">lg / 24</div></div>
+    <div class="group"><div class="box" style="width:32px;height:32px"></div><div class="token">xl / 32</div></div>
+    <div class="group"><div class="box" style="width:48px;height:48px"></div><div class="token">2xl / 48</div></div>
+  </div>
+</body>
+</html>

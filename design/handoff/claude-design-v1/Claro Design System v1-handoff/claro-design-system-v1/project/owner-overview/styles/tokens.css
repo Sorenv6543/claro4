@@ -1,0 +1,125 @@
+/**
+ * Light-mode tokens — derived from claro4/src/styles/tokens.css
+ * + overrides for this mock's refined palette.
+ * Purple primary stays the same. Domain colors refined to reduce sprawl.
+ */
+
+:root {
+  /* ─── Base palette — from your real tokens.css ─────────────────────── */
+  --claro-primary:        #7367F0;
+  --claro-primary-light:  #9E95F5;
+  --claro-primary-dark:   #5E52EE;
+  --claro-primary-tint:   rgba(115, 103, 240, 0.08);
+  --claro-primary-tint-2: rgba(115, 103, 240, 0.14);
+  --claro-secondary:      #A8AAAE;
+  --claro-accent:         rgba(115, 103, 240, 0.12);
+
+  /* Surfaces — slightly warmer than your defaults for owner overview */
+  --claro-bg:              #F5F5F9;
+  --claro-surface:         #FFFFFF;
+  --claro-surface-variant: #F5F5F9;
+  --claro-surface-offset:  #EEEEF4;
+  --claro-surface-sunk:    #E7E6EE;
+  --claro-divider:         #E8E8ED;
+  --claro-border:          #DDDCE3;
+  --claro-border-strong:   #C9C8D3;
+
+  /* Text */
+  --claro-text:            #2E263D;
+  --claro-text-muted:      rgba(46, 38, 61, 0.62);
+  --claro-text-faint:      rgba(46, 38, 61, 0.40);
+  --claro-text-inverse:    #FFFFFF;
+
+  /* Semantic — from your tokens.css */
+  --claro-success:         #28C76F;
+  --claro-success-tint:    rgba(40, 199, 111, 0.10);
+  --claro-success-tint-2:  rgba(40, 199, 111, 0.16);
+  --claro-warning:         #FF9F43;
+  --claro-warning-tint:    rgba(255, 159, 67, 0.10);
+  --claro-warning-tint-2:  rgba(255, 159, 67, 0.16);
+  --claro-error:           #EA5455;
+  --claro-error-tint:      rgba(234, 84, 85, 0.10);
+  --claro-error-tint-2:    rgba(234, 84, 85, 0.16);
+  --claro-info:            #00CFE8;
+  --claro-info-tint:       rgba(0, 207, 232, 0.10);
+  --claro-info-tint-2:     rgba(0, 207, 232, 0.16);
+
+  /* Domain — simplified from your tokens.
+     We keep exactly 3 event types; no more urgent/turn/checkout/checkin split. */
+  --claro-event-checkout:  #EA5455;        /* reuses error */
+  --claro-event-checkin:   #28C76F;        /* reuses success */
+  --claro-event-turn:      #FF9F43;        /* reuses warning */
+  --claro-event-idle:      rgba(46, 38, 61, 0.25);
+
+  /* Status (soft) backgrounds for the booking band */
+  --claro-band-standard:   rgba(115, 103, 240, 0.14);
+  --claro-band-standard-2: rgba(115, 103, 240, 0.22);
+  --claro-band-urgent:     rgba(234, 84, 85, 0.16);
+  --claro-band-urgent-2:   rgba(234, 84, 85, 0.26);
+
+  /* Typography — your real stack */
+  --claro-font: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Spacing — your real scale */
+  --claro-space-1: 4px;
+  --claro-space-2: 8px;
+  --claro-space-3: 12px;
+  --claro-space-4: 16px;
+  --claro-space-5: 20px;
+  --claro-space-6: 24px;
+  --claro-space-8: 32px;
+  --claro-space-10: 40px;
+  --claro-space-12: 48px;
+
+  /* Radii — your tokens have 2px, we tighten a few spots up */
+  --claro-radius-xs:  2px;
+  --claro-radius-sm:  4px;
+  --claro-radius-md:  8px;
+  --claro-radius-lg:  12px;
+  --claro-radius-xl:  16px;
+  --claro-radius-pill: 9999px;
+
+  /* Shadows — from your tokens */
+  --claro-shadow-sm: 0 1px 2px rgba(46, 38, 61, 0.06);
+  --claro-shadow-md: 0 4px 18px rgba(115, 103, 240, 0.10), 0 2px 6px rgba(46, 38, 61, 0.05);
+  --claro-shadow-lg: 0 8px 28px rgba(115, 103, 240, 0.14), 0 4px 10px rgba(46, 38, 61, 0.06);
+
+  /* Layout */
+  --claro-nav-width:       248px;
+  --claro-nav-width-mini:  72px;
+  --claro-header-h:        64px;
+  --claro-content-pad:     24px;
+
+  /* Motion */
+  --claro-dur: 180ms;
+  --claro-ease: cubic-bezier(0.2, 0, 0, 1);
+}
+
+/* ─── Density tweak (compact) ─── */
+[data-density="compact"] {
+  --claro-space-3: 8px;
+  --claro-space-4: 12px;
+  --claro-space-5: 14px;
+  --claro-space-6: 16px;
+  --claro-space-8: 20px;
+  --claro-content-pad: 16px;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--claro-font);
+  background: var(--claro-bg);
+  color: var(--claro-text);
+  font-size: 14px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100dvh;
+}
+button { font: inherit; cursor: pointer; background: none; border: none; color: inherit; padding: 0; }
+a { color: inherit; text-decoration: none; }
+input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--claro-primary); outline-offset: 2px; border-radius: var(--claro-radius-sm); }
+
+/* Utility */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); border: 0; }

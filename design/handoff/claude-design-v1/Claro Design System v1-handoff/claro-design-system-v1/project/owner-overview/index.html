@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Owner Overview · Claro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/shell.css">
+<link rel="stylesheet" href="styles/components.css">
+<link rel="stylesheet" href="styles/variants.css">
+
+<template id="__bundler_thumbnail">
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+    <rect width="100" height="100" fill="#7367F0"/>
+    <rect x="20" y="30" width="60" height="8" rx="4" fill="white" opacity="0.9"/>
+    <rect x="20" y="44" width="45" height="8" rx="4" fill="white" opacity="0.7"/>
+    <rect x="20" y="58" width="55" height="8" rx="4" fill="white" opacity="0.5"/>
+    <rect x="20" y="72" width="35" height="8" rx="4" fill="white" opacity="0.3"/>
+  </svg>
+</template>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- ───── NAV RAIL ───── -->
+  <nav class="nav" data-screen-label="Nav">
+    <div class="nav-brand">
+      <div class="nav-brand-mark">C</div>
+      <div class="nav-brand-text">Claro</div>
+    </div>
+
+    <div class="nav-section-label">Owner</div>
+
+    <a class="nav-item active" href="#">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      Overview
+    </a>
+    <a class="nav-item" href="#">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Calendar
+    </a>
+    <a class="nav-item" href="#">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      Properties
+      <span class="nav-badge" id="navPropCount">3</span>
+    </a>
+    <a class="nav-item" href="#">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      Guests
+    </a>
+    <a class="nav-item" href="#">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Billing
+    </a>
+
+    <div class="nav-spacer"></div>
+
+    <a class="nav-item" href="#">
+      <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      Settings
+    </a>
+
+    <div class="nav-user">
+      <div class="nav-user-avatar">MR</div>
+      <div class="nav-user-info">
+        <div class="nav-user-name">Maya Rodriguez</div>
+        <div class="nav-user-role">Owner</div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ───── MAIN ───── -->
+  <div class="main">
+    <header class="header">
+      <div>
+        <div class="header-title">Overview</div>
+      </div>
+      <span class="header-sub" id="headerDate"></span>
+
+      <div class="header-right">
+        <div class="header-variant-switch" role="tablist" aria-label="Layout variant">
+          <button data-variant="a" class="active">Triage</button>
+          <button data-variant="b">Timeline</button>
+          <button data-variant="c">Property</button>
+        </div>
+
+        <button class="icon-btn" aria-label="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <button class="icon-btn" aria-label="Notifications">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="dot"></span>
+        </button>
+      </div>
+    </header>
+
+    <main class="content" id="content" data-screen-label="Owner Overview"></main>
+  </div>
+</div>
+
+<!-- Floating "Add booking" — always accessible -->
+<button class="add-booking-fab" aria-label="Add booking">
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  Add booking
+</button>
+
+<!-- Tweaks panel — toggled by host via postMessage protocol -->
+<aside class="tweaks-panel" id="tweaks" aria-hidden="true">
+  <div class="tweaks-head">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+    Tweaks
+  </div>
+  <div class="tweaks-body" id="tweaksBody"></div>
+</aside>
+
+<!-- Mock data + variants -->
+<script src="js/data.js"></script>
+<script src="js/variant-a-triage.js"></script>
+<script src="js/variant-b-timeline.js"></script>
+<script src="js/variant-c-property.js"></script>
+
+<script>
+(function () {
+  // ─── Tweakable defaults ───────────────────────────────────────
+  const DEFAULTS = /*EDITMODE-BEGIN*/{
+    "variant": "a",
+    "days": 14,
+    "props": "all",
+    "density": "cozy",
+    "strip": true,
+    "cleaner": false
+  }/*EDITMODE-END*/;
+
+  // Restore from localStorage (non-tweak user state — variant + density preview)
+  const STORE_KEY = 'claro.ownerOverview.state';
+  const stored = (() => {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch (e) { return {}; }
+  })();
+  const state = Object.assign({}, DEFAULTS, stored);
+
+  const content = document.getElementById('content');
+  const variantBtns = document.querySelectorAll('.header-variant-switch button');
+  const headerDate = document.getElementById('headerDate');
+
+  // ─── Render pipeline ───────────────────────────────────────────
+  function render () {
+    document.documentElement.setAttribute('data-density', state.density);
+
+    variantBtns.forEach((b) => b.classList.toggle('active', b.dataset.variant === state.variant));
+
+    if (state.variant === 'a') window.renderVariantA(content, state);
+    else if (state.variant === 'b') window.renderVariantB(content, state);
+    else if (state.variant === 'c') window.renderVariantC(content, state);
+
+    // Header date always visible
+    headerDate.textContent = window.CLARO.fmtFullDay(window.CLARO.TODAY);
+
+    // Persist
+    localStorage.setItem(STORE_KEY, JSON.stringify(state));
+
+    // Re-render tweaks panel (so active state stays in sync if host opens it)
+    renderTweaks();
+  }
+
+  // Variant switcher
+  variantBtns.forEach((b) => {
+    b.addEventListener('click', () => {
+      state.variant = b.dataset.variant;
+      render();
+    });
+  });
+
+  // Keyboard shortcut: 1/2/3 switches variants
+  document.addEventListener('keydown', (e) => {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+    if (e.key === '1') { state.variant = 'a'; render(); }
+    else if (e.key === '2') { state.variant = 'b'; render(); }
+    else if (e.key === '3') { state.variant = 'c'; render(); }
+  });
+
+  // ─── Tweaks panel UI ───────────────────────────────────────────
+  const tweaksBody = document.getElementById('tweaksBody');
+  const tweaksPanel = document.getElementById('tweaks');
+
+  const TWEAK_DEFS = [
+    { key: 'variant', label: 'Layout', options: [['a','Triage'],['b','Timeline'],['c','Property']] },
+    { key: 'density', label: 'Density', options: [['cozy','Cozy'],['compact','Compact']] },
+    { key: 'days',    label: 'Time range (variants B, C)', options: [[7,'7d'],[14,'14d'],[21,'21d']] },
+    { key: 'props',   label: 'Properties shown',      options: [['all','All'],[2,'2 only'],[1,'1 only']] },
+    { key: 'strip',   label: "Show Today's event strip (A)", kind: 'switch' },
+    { key: 'cleaner', label: 'Show cleaner assignments',     kind: 'switch' },
+  ];
+
+  function renderTweaks () {
+    tweaksBody.innerHTML = TWEAK_DEFS.map((t) => {
+      if (t.kind === 'switch') {
+        const on = Boolean(state[t.key]);
+        return `
+          <div class="tweak-row">
+            <div class="tweak-switch">
+              <span class="tweak-label" style="text-transform:none; letter-spacing:0; font-size:13px; color:var(--claro-text);">${t.label}</span>
+              <button class="switch ${on ? 'on' : ''}" data-switch="${t.key}" aria-pressed="${on}"></button>
+            </div>
+          </div>`;
+      }
+      return `
+        <div class="tweak-row">
+          <div class="tweak-label">${t.label}</div>
+          <div class="tweak-options" data-group="${t.key}">
+            ${t.options.map(([v, l]) => `<button data-val="${v}" class="${String(state[t.key]) === String(v) ? 'active' : ''}">${l}</button>`).join('')}
+          </div>
+        </div>`;
+    }).join('');
+
+    // Segmented controls
+    tweaksBody.querySelectorAll('.tweak-options').forEach((group) => {
+      const key = group.dataset.group;
+      group.querySelectorAll('button').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          let v = btn.dataset.val;
+          // Preserve numeric type for days and props(when numeric)
+          if (key === 'days') v = Number(v);
+          if (key === 'props' && v !== 'all') v = Number(v);
+          state[key] = v;
+          render();
+          notifyHost(key, v);
+        });
+      });
+    });
+    // Switches
+    tweaksBody.querySelectorAll('.switch').forEach((sw) => {
+      sw.addEventListener('click', () => {
+        const k = sw.dataset.switch;
+        state[k] = !state[k];
+        render();
+        notifyHost(k, state[k]);
+      });
+    });
+  }
+
+  // ─── Tweaks host protocol ───────────────────────────────────────
+  // Persist to disk via parent
+  function notifyHost (key, val) {
+    try {
+      window.parent.postMessage({ type: '__edit_mode_set_keys', edits: { [key]: val } }, '*');
+    } catch (e) {}
+  }
+
+  // Listen for activate/deactivate FIRST, then announce availability
+  window.addEventListener('message', (e) => {
+    const d = e.data;
+    if (!d || !d.type) return;
+    if (d.type === '__activate_edit_mode') {
+      tweaksPanel.classList.add('visible');
+      tweaksPanel.setAttribute('aria-hidden', 'false');
+    } else if (d.type === '__deactivate_edit_mode') {
+      tweaksPanel.classList.remove('visible');
+      tweaksPanel.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  try {
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+  } catch (e) {}
+
+  // ─── Kick it off ────────────────────────────────────────────────
+  render();
+})();
+</script>
+</body>
+</html>

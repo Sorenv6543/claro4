@@ -1,0 +1,635 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Claro — Owner UI Kit</title>
+<style>
+/* Claro Design System — colors_and_type.css
+ * Canonical CSS vars (colors + type) for use in any HTML mock.
+ * Mirrors src/styles/tokens.css in the codebase.
+ * Import with: <link rel="stylesheet" href="colors_and_type.css">
+ */
+
+/* Inter (400/500/600) from Google Fonts — matches @fontsource/inter used in-app */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* ─── BRAND ─────────────────────────────────────────── */
+  --claro-primary:        #7367F0;
+  --claro-primary-light:  #9E95F5;
+  --claro-primary-dark:   #5E52EE;
+  --claro-primary-tint:   #F0EEFF; /* 8% tint for active nav bg */
+  --claro-secondary:      #A8AAAE;
+  --claro-accent:         rgba(115, 103, 240, 0.125);
+
+  /* ─── SURFACES ──────────────────────────────────────── */
+  --claro-background:      #F5F5F9;
+  --claro-surface:         #FFFFFF;
+  --claro-surface-variant: #F5F5F9;
+  --claro-card-bg:         #FFFFFF;
+
+  /* ─── TEXT ──────────────────────────────────────────── */
+  --claro-fg1: #2E263D;                    /* primary text */
+  --claro-fg2: rgba(46, 38, 61, 0.72);     /* secondary text */
+  --claro-fg3: rgba(46, 38, 61, 0.50);     /* muted */
+  --claro-fg4: rgba(46, 38, 61, 0.28);     /* disabled / faint */
+  --claro-on-background: var(--claro-fg1);
+  --claro-on-surface:    var(--claro-fg1);
+  --claro-on-primary:    #FFFFFF;
+
+  /* ─── SEMANTIC ──────────────────────────────────────── */
+  --claro-success: #28C76F;
+  --claro-warning: #FF9F43;
+  --claro-error:   #EA5455;
+  --claro-info:    #00CFE8;
+
+  /* tonal (for chip backgrounds) — 16% alpha of the base */
+  --claro-success-tonal: rgba(40, 199, 111, 0.16);
+  --claro-warning-tonal: rgba(255, 159, 67, 0.16);
+  --claro-error-tonal:   rgba(234, 84, 85, 0.16);
+  --claro-info-tonal:    rgba(0, 207, 232, 0.16);
+  --claro-primary-tonal: rgba(115, 103, 240, 0.16);
+
+  /* ─── DOMAIN ────────────────────────────────────────── */
+  --claro-turn-urgent:      #EA5455;
+  --claro-turn-standard:    #FF9F43;
+  --claro-booking-standard: #28C76F;
+
+  /* Per-property accent palette (cycled) */
+  --claro-prop-1: #7367F0; /* indigo */
+  --claro-prop-2: #28C76F; /* green */
+  --claro-prop-3: #9155FD; /* purple */
+  --claro-prop-4: #FF9F43; /* orange */
+  --claro-prop-5: #EA5455; /* red */
+  --claro-prop-6: #FDD835; /* yellow (calendar OUT events) */
+
+  /* ─── DIVIDERS / BORDERS ────────────────────────────── */
+  --claro-divider:       #E8E8E8;
+  --claro-border:        #E8E8E8;
+  --claro-border-strong: #D4D4DB;
+
+  /* ─── TYPE ──────────────────────────────────────────── */
+  --claro-font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --claro-font-weight-normal:   400;
+  --claro-font-weight-medium:   500;
+  --claro-font-weight-semibold: 600;
+
+  /* type scale (rem-ish px) */
+  --claro-text-xs:   11px;
+  --claro-text-sm:   13px;
+  --claro-text-base: 15px;
+  --claro-text-md:   16px;
+  --claro-text-lg:   18px;
+  --claro-text-xl:   22px;
+  --claro-text-2xl:  26px;
+  --claro-text-3xl:  32px;
+  --claro-text-4xl:  40px;
+
+  /* line heights */
+  --claro-lh-tight:  1.2;
+  --claro-lh-snug:   1.35;
+  --claro-lh-normal: 1.5;
+
+  /* ─── SPACING ───────────────────────────────────────── */
+  --claro-space-xs: 4px;
+  --claro-space-sm: 8px;
+  --claro-space-md: 16px;
+  --claro-space-lg: 24px;
+  --claro-space-xl: 32px;
+  --claro-space-2xl: 48px;
+
+  /* ─── RADII ─────────────────────────────────────────── */
+  --claro-radius-sm:   2px;
+  --claro-radius-md:   2px;
+  --claro-radius-lg:   2px;
+  --claro-radius-card: 2px;
+  --claro-radius-pill: 9999px;
+
+  /* ─── ELEVATION ─────────────────────────────────────── */
+  --claro-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --claro-shadow-md: 0 4px 18px rgba(115, 103, 240, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --claro-shadow-lg: 0 8px 28px rgba(115, 103, 240, 0.18), 0 4px 10px rgba(0, 0, 0, 0.08);
+
+  /* ─── GRADIENTS (use sparingly — only on hero) ──────── */
+  --claro-gradient-primary:
+    linear-gradient(135deg, var(--claro-primary-light) 0%, var(--claro-primary) 60%, var(--claro-primary-dark) 100%);
+
+  /* ─── LAYOUT ────────────────────────────────────────── */
+  --claro-app-bar-height:         64px;
+  --claro-app-bar-height-mobile:  56px;
+  --claro-drawer-width:           260px;
+  --claro-drawer-width-collapsed: 72px;
+  --claro-content-padding:        24px;
+  --claro-content-padding-mobile: 12px;
+  --claro-touch-target-min:       44px;
+
+  /* ─── MOTION ────────────────────────────────────────── */
+  --claro-dur-fast: 150ms;
+  --claro-dur-base: 200ms;
+  --claro-dur-slow: 250ms;
+  --claro-ease:     ease;
+}
+
+/* ─── SEMANTIC TYPE ───────────────────────────────────── */
+html, body {
+  font-family: var(--claro-font-family);
+  color: var(--claro-fg1);
+  background: var(--claro-background);
+  font-size: var(--claro-text-base);
+  line-height: var(--claro-lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.claro-h1, h1.claro {
+  font-family: var(--claro-font-family);
+  font-weight: 600;
+  font-size: var(--claro-text-3xl);
+  line-height: var(--claro-lh-tight);
+  letter-spacing: -0.01em;
+  color: var(--claro-fg1);
+  margin: 0;
+}
+
+.claro-h2, h2.claro {
+  font-weight: 600;
+  font-size: var(--claro-text-xl);
+  line-height: var(--claro-lh-tight);
+  color: var(--claro-fg1);
+  margin: 0;
+}
+
+.claro-h3, h3.claro {
+  font-weight: 600;
+  font-size: var(--claro-text-lg);
+  line-height: var(--claro-lh-snug);
+  color: var(--claro-fg1);
+  margin: 0;
+}
+
+.claro-subheading {
+  font-weight: 400;
+  font-size: var(--claro-text-sm);
+  line-height: var(--claro-lh-normal);
+  color: var(--claro-fg3);
+  margin: var(--claro-space-xs) 0 0 0;
+}
+
+.claro-body {
+  font-size: var(--claro-text-base);
+  line-height: var(--claro-lh-normal);
+  color: var(--claro-fg1);
+}
+
+.claro-caption {
+  font-size: var(--claro-text-xs);
+  line-height: var(--claro-lh-snug);
+  color: var(--claro-fg3);
+  letter-spacing: 0.01em;
+}
+
+.claro-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--claro-fg3);
+}
+
+.claro-wordmark {
+  font-family: var(--claro-font-family);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--claro-primary);
+}
+
+.claro-numeric {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+</style>
+<link rel="stylesheet" href="https://cdn.materialdesignicons.com/7.4.47/css/materialdesignicons.min.css">
+<style>
+  .mdi, .mdi::before { font-family: "Material Design Icons" !important; }
+  html, body, #app { margin: 0; padding: 0; height: 100%; }
+  body { font-family: var(--claro-font-family); background: #F5F5F9; color: #2E263D; }
+  button { font-family: inherit; }
+  * { box-sizing: border-box; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" data-presets="react">
+// ==== shared.js ====
+/* global React */
+const { useState } = React;
+
+const Icon = ({ name, size = 20, color = 'currentColor', style = {} }) => (
+  <i className={`mdi mdi-${name}`} style={{ fontSize: size, color, lineHeight: 1, ...style }} />
+);
+
+const Avatar = ({ initials = 'SV', color = '#7367F0', size = 34, dot = true }) => (
+  <div style={{
+    width: size, height: size, borderRadius: '50%', background: color, color: '#fff',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: size * 0.36, fontWeight: 600, position: 'relative', flexShrink: 0,
+  }}>
+    {initials}
+    {dot && <span style={{ position: 'absolute', right: 0, bottom: 0, width: 8, height: 8, borderRadius: '50%', background: '#28C76F', border: '2px solid #fff' }} />}
+  </div>
+);
+
+const Pill = ({ tone = 'neutral', outlined = false, children, style = {} }) => {
+  const tones = {
+    success: { bg: 'rgba(40,199,111,.16)', fg: '#1fa85d', br: '#28C76F' },
+    warning: { bg: 'rgba(255,159,67,.16)', fg: '#cc7a2e', br: '#FF9F43' },
+    error:   { bg: 'rgba(234,84,85,.16)',  fg: '#c44647', br: '#EA5455' },
+    info:    { bg: 'rgba(0,207,232,.16)',  fg: '#00a7ba', br: '#00CFE8' },
+    primary: { bg: 'rgba(115,103,240,.16)', fg: '#5E52EE', br: '#7367F0' },
+    neutral: { bg: 'rgba(46,38,61,.08)',   fg: '#2E263D', br: '#E8E8E8' },
+  };
+  const t = tones[tone] || tones.neutral;
+  return <span style={{
+    display: 'inline-flex', padding: '3px 10px', borderRadius: 9999,
+    fontSize: 11, fontWeight: 500, lineHeight: 1.4,
+    background: outlined ? 'transparent' : t.bg,
+    border: outlined ? `1px solid ${t.br}` : 'none',
+    color: t.fg, ...style,
+  }}>{children}</span>;
+};
+
+const Button = ({ variant = 'primary', icon, children, onClick, style = {} }) => {
+  const variants = {
+    primary:   { bg: '#7367F0', fg: '#fff', shadow: '0 2px 6px rgba(115,103,240,.35)', border: 'none' },
+    secondary: { bg: 'rgba(0,207,232,.14)', fg: '#00a7ba', shadow: 'none', border: 'none' },
+    outlined:  { bg: '#fff', fg: '#2E263D', shadow: 'none', border: '1px solid #E8E8E8' },
+    danger:    { bg: 'rgba(234,84,85,.12)', fg: '#c44647', shadow: 'none', border: 'none' },
+    ghost:     { bg: 'transparent', fg: '#7367F0', shadow: 'none', border: 'none' },
+  };
+  const v = variants[variant] || variants.primary;
+  return (
+    <button onClick={onClick} style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px',
+      borderRadius: 9999, fontSize: 13, fontWeight: 500, fontFamily: 'inherit',
+      background: v.bg, color: v.fg, border: v.border, boxShadow: v.shadow,
+      cursor: 'pointer', transition: 'transform .15s ease, box-shadow .15s ease', ...style,
+    }}
+      onMouseDown={e => e.currentTarget.style.transform = 'scale(0.97)'}
+      onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+      onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+    >
+      {icon && <Icon name={icon} size={16} />}
+      {children}
+    </button>
+  );
+};
+
+const IconBtn = ({ icon, onClick, active, size = 36 }) => (
+  <button onClick={onClick} style={{
+    width: size, height: size, borderRadius: 2,
+    background: active ? 'rgba(115,103,240,.12)' : 'transparent',
+    border: 'none', color: active ? '#7367F0' : 'rgba(46,38,61,.72)',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    cursor: 'pointer',
+  }}>
+    <Icon name={icon} size={20} />
+  </button>
+);
+
+const Card = ({ children, padding = 18, style = {} }) => (
+  <div style={{
+    background: '#fff', borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,.05)',
+    padding, ...style,
+  }}>{children}</div>
+);
+
+Object.assign(window, { Icon, Avatar, Pill, Button, IconBtn, Card });
+
+
+// ==== Shell.js ====
+/* global React, Icon, Avatar, IconBtn */
+// useState provided by shared.js
+const NAV = [
+  { id: 'overview',   label: 'Overview',          icon: 'view-dashboard-outline' },
+  { id: 'calendar',   label: 'Calendar',          icon: 'calendar' },
+  { id: 'checkins',   label: 'Check-ins & Turns', icon: 'clipboard-check-outline', badge: 'SOON' },
+  { id: 'bookings',   label: 'Bookings',          icon: 'format-list-bulleted' },
+  { id: 'properties', label: 'Properties',        icon: 'home-outline' },
+  { id: 'reports',    label: 'Reports',           icon: 'chart-line' },
+];
+const ACCT = [
+  { id: 'vue',      label: 'Vue Practice', icon: 'alpha-v-box-outline' },
+  { id: 'settings', label: 'Settings',     icon: 'cog-outline' },
+];
+
+const AppBar = ({ onToggleDrawer, drawerOpen }) => (
+  <div style={{
+    height: 64, background: '#fff', borderBottom: '1px solid #F0F0F3',
+    display: 'flex', alignItems: 'center', padding: '0 16px', gap: 14,
+    position: 'sticky', top: 0, zIndex: 10,
+  }}>
+    <div style={{ fontWeight: 600, fontSize: 22, color: '#7367F0', letterSpacing: '-0.01em' }}>Claro</div>
+    <IconBtn icon={drawerOpen ? 'menu-open' : 'menu'} active={drawerOpen} onClick={onToggleDrawer} />
+    <div style={{ flex: 1 }} />
+    <IconBtn icon="weather-sunny" />
+    <IconBtn icon="star-outline" />
+    <IconBtn icon="bell-outline" />
+    <Avatar />
+  </div>
+);
+
+const NavItem = ({ item, active, onClick }) => (
+  <div onClick={onClick} style={{
+    display: 'flex', alignItems: 'center', gap: 12, padding: '10px 12px',
+    borderRadius: 2, margin: '1px 8px',
+    background: active ? '#F0EEFF' : 'transparent',
+    color: active ? '#7367F0' : 'rgba(46,38,61,.72)',
+    fontWeight: 500, fontSize: 13, cursor: 'pointer',
+    transition: 'background .2s ease, color .2s ease',
+  }}>
+    <Icon name={item.icon} size={18} />
+    {item.label}
+    {item.badge && (
+      <span style={{ marginLeft: 'auto', fontSize: 9, letterSpacing: '.06em', padding: '2px 8px', borderRadius: 9999, background: 'rgba(40,199,111,.16)', color: '#1fa85d', fontWeight: 600 }}>{item.badge}</span>
+    )}
+  </div>
+);
+
+const Drawer = ({ route, setRoute, open }) => (
+  <div style={{
+    width: open ? 260 : 0, minWidth: open ? 260 : 0, background: '#fff',
+    borderRight: '1px solid #F0F0F3', overflow: 'hidden',
+    transition: 'width .25s ease, min-width .25s ease',
+    display: 'flex', flexDirection: 'column',
+  }}>
+    <div style={{ width: 260, flex: 1, display: 'flex', flexDirection: 'column', padding: '12px 0' }}>
+      <div style={{ fontSize: 10, color: 'rgba(46,38,61,.5)', textTransform: 'uppercase', letterSpacing: '.08em', padding: '6px 20px' }}>Navigation</div>
+      {NAV.map(item => <NavItem key={item.id} item={item} active={route === item.id} onClick={() => setRoute(item.id)} />)}
+      <div style={{ fontSize: 10, color: 'rgba(46,38,61,.5)', textTransform: 'uppercase', letterSpacing: '.08em', padding: '16px 20px 6px', marginTop: 6, borderTop: '1px solid #F0F0F3' }}>Account</div>
+      {ACCT.map(item => <NavItem key={item.id} item={item} active={route === item.id} onClick={() => setRoute(item.id)} />)}
+      <div style={{ flex: 1 }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderTop: '1px solid #F0F0F3' }}>
+        <Avatar />
+        <div>
+          <div style={{ fontSize: 13, fontWeight: 500, color: '#2E263D' }}>Soren Vinson</div>
+          <div style={{ fontSize: 11, color: 'rgba(46,38,61,.5)' }}>sorenv654@gmail.com</div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const Shell = ({ route, setRoute, children }) => {
+  const [open, setOpen] = useState(true);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#F5F5F9' }}>
+      <AppBar drawerOpen={open} onToggleDrawer={() => setOpen(!open)} />
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        <Drawer route={route} setRoute={setRoute} open={open} />
+        <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>{children}</div>
+      </div>
+    </div>
+  );
+};
+
+Object.assign(window, { Shell });
+
+
+// ==== Pages.js ====
+/* global React, Icon, Card, Button, Pill */
+// useState provided by shared.js
+const StatTile = ({ icon, color, num, label, menu = true }) => (
+  <Card padding={16} style={{ flex: 1, minWidth: 160 }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <div style={{ width: 40, height: 40, borderRadius: 2, background: `${color}26`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Icon name={icon} size={22} color={color} />
+      </div>
+      {menu && <Icon name="dots-vertical" size={16} color="rgba(46,38,61,.4)" />}
+    </div>
+    <div style={{ marginTop: 14 }}>
+      <div style={{ fontSize: 13, color: 'rgba(46,38,61,.5)' }}>{label}</div>
+      <div style={{ fontSize: 26, fontWeight: 600, color: '#2E263D', lineHeight: 1.1, fontVariantNumeric: 'tabular-nums' }}>{num}</div>
+    </div>
+  </Card>
+);
+
+const HeroCard = () => (
+  <div style={{
+    background: 'linear-gradient(135deg, #9E95F5 0%, #7367F0 60%, #5E52EE 100%)',
+    borderRadius: 2, padding: 24, color: '#fff',
+    boxShadow: '0 8px 24px rgba(115,103,240,.35)',
+  }}>
+    <div style={{ fontSize: 18, fontWeight: 600 }}>Welcome back, Soren Vinson</div>
+    <div style={{ fontSize: 14, opacity: .9, marginTop: 4 }}>Here is what is happening with your properties today.</div>
+    <div style={{ display: 'flex', gap: 16, marginTop: 18, flexWrap: 'wrap' }}>
+      {[['home-outline', 'Properties', 14], ['calendar', 'Bookings', 6], ['swap-horizontal', 'Turns', 1]].map(([icon, label, num]) => (
+        <div key={label} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ width: 38, height: 38, borderRadius: 2, background: 'rgba(255,255,255,.22)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Icon name={icon} size={18} color="#fff" />
+          </div>
+          <div>
+            <div style={{ fontSize: 12, opacity: .9 }}>{label}</div>
+            <div style={{ fontSize: 16, fontWeight: 600 }}>{num}</div>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+const Overview = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+    <HeroCard />
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+      <StatTile icon="calendar-check-outline" color="#7367F0" num={6}  label="Total Bookings · All time" />
+      <StatTile icon="calendar-clock"         color="#28C76F" num={4}  label="Active Bookings · Non-cancelled" />
+      <StatTile icon="swap-horizontal"        color="#FF9F43" num={1}  label="Turn Bookings" />
+      <StatTile icon="home-city-outline"      color="#00CFE8" num={14} label="Properties" />
+    </div>
+  </div>
+);
+
+const PROPERTIES = [
+  { addr: '32540 Wishing Well Trl B', color: '#7367F0', status: 'Inactive' },
+  { addr: '1600 Pennsylvania Ave NW', color: '#7367F0', status: 'Active' },
+  { addr: 'Hall of Justice',          color: '#FF9F43', status: 'Active' },
+  { addr: '1600 Pennsylvania Ave NW, B', color: '#EA5455', status: 'Active' },
+  { addr: '666 gtgt, b',              color: '#9155FD', status: 'Inactive' },
+  { addr: '32540 Wishing Well Trl B, B', color: '#FF9F43', status: 'Inactive' },
+  { addr: '1194 Mulberry Dr, San Marcos, CA', color: '#FF9F43', status: 'Inactive' },
+  { addr: '1600 Pennsylvania Ave NW',     color: '#28C76F', status: 'Inactive' },
+];
+
+const Properties = () => {
+  const [selected, setSelected] = useState(null);
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 20 }}>
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <h1 style={{ margin: 0, fontSize: 32, fontWeight: 600, lineHeight: 1.1 }}>My Properties</h1>
+            <Pill tone="primary">14</Pill>
+          </div>
+          <div style={{ fontSize: 14, color: 'rgba(46,38,61,.5)', marginTop: 4 }}>Manage your rental properties and settings</div>
+        </div>
+        <button style={{ width: 44, height: 44, borderRadius: 2, background: '#7367F0', color: '#fff', border: 'none', cursor: 'pointer', boxShadow: '0 2px 8px rgba(115,103,240,.4)' }}>
+          <Icon name="plus" size={22} />
+        </button>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 16 }}>
+        <Card padding={16}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Icon name="home-outline" size={22} color="#7367F0" />
+            <div style={{ fontSize: 22, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>14</div>
+            <div style={{ fontSize: 13, color: 'rgba(46,38,61,.6)' }}>Properties</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10 }}>
+            <Icon name="calendar" size={22} color="#00CFE8" />
+            <div style={{ fontSize: 22, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>6</div>
+            <div style={{ fontSize: 13, color: 'rgba(46,38,61,.6)' }}>Bookings</div>
+          </div>
+        </Card>
+        <Card padding={16}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Icon name="check-circle" size={22} color="#28C76F" />
+            <div style={{ fontSize: 22, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>8</div>
+            <div style={{ fontSize: 13, color: 'rgba(46,38,61,.6)' }}>Active</div>
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginTop: 10 }}>
+            <Icon name="swap-horizontal" size={22} color="#FF9F43" />
+            <div style={{ fontSize: 22, fontWeight: 600, fontVariantNumeric: 'tabular-nums' }}>0</div>
+            <div style={{ fontSize: 13, color: 'rgba(46,38,61,.6)' }}>Turns</div>
+          </div>
+        </Card>
+      </div>
+      <Card padding={0}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', padding: '14px 20px', fontSize: 13, color: 'rgba(46,38,61,.6)', borderBottom: '1px solid #F2F2F5' }}>
+          <div>Property</div><div>Status</div>
+        </div>
+        {PROPERTIES.map((p, i) => (
+          <div key={i} onClick={() => setSelected(i === selected ? null : i)} style={{
+            display: 'grid', gridTemplateColumns: '4px 1fr auto', gap: 14, alignItems: 'center',
+            padding: '14px 20px', borderBottom: '1px solid #F5F5F9', cursor: 'pointer',
+            background: selected === i ? 'rgba(115,103,240,.04)' : 'transparent',
+          }}>
+            <div style={{ alignSelf: 'stretch', background: p.color, borderRadius: 1 }} />
+            <div style={{ fontSize: 14, fontWeight: 500 }}>{p.addr}</div>
+            <Pill tone={p.status === 'Active' ? 'success' : 'error'}>{p.status}</Pill>
+          </div>
+        ))}
+      </Card>
+    </div>
+  );
+};
+
+const BOOKINGS = [
+  { prop: '32540 Wishing Well Trl B', dates: 'Wed, Apr 22 → Sat, May 16', type: 'Turn', status: 'Completed', priority: 'High' },
+  { prop: '1600 Pennsylvania Ave NW', dates: 'Sat, Apr 11 → Fri, May 8', type: 'Standard', status: 'Pending' },
+  { prop: '123 Main Street, B',       dates: 'Sun, Apr 5 → Wed, May 6',  type: 'Standard', status: 'Completed', priority: 'High' },
+  { prop: '1600 Pennsylvania Ave NW, B', dates: 'Mon, Apr 27 → Thu, Apr 30', type: 'Standard', status: 'Pending' },
+  { prop: '1600 Pennsylvania Ave NW', dates: 'Wed, Apr 15 → Sat, Apr 18', type: 'Standard', status: 'Pending' },
+  { prop: '1194 Mulberry Dr, San Marcos, CA', dates: 'Tue, Apr 14 → Thu, Apr 16', type: 'Standard', status: 'In Progress' },
+];
+
+const Bookings = () => (
+  <div>
+    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 20 }}>
+      <div>
+        <h1 style={{ margin: 0, fontSize: 32, fontWeight: 600 }}>My Bookings</h1>
+        <div style={{ fontSize: 14, color: 'rgba(46,38,61,.5)', marginTop: 4 }}>Guest stays and turn cleanings</div>
+      </div>
+      <Button variant="primary" icon="plus">New Booking</Button>
+    </div>
+    <Card padding={0}>
+      <div style={{ padding: 16, borderBottom: '1px solid #F2F2F5', display: 'flex', gap: 8 }}>
+        {['All', 'Pending', 'Scheduled', 'In Progress', 'Done'].map((f, i) => (
+          <Pill key={f} tone="primary" outlined={i !== 0}>{f}</Pill>
+        ))}
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto auto auto', padding: '12px 20px', fontSize: 12, color: 'rgba(46,38,61,.6)', borderBottom: '1px solid #F2F2F5' }}>
+        <div>Property</div><div>Dates</div><div>Type</div><div>Status</div><div>Priority</div>
+      </div>
+      {BOOKINGS.map((b, i) => (
+        <div key={i} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr auto auto auto', gap: 14, alignItems: 'center', padding: '14px 20px', borderBottom: '1px solid #F5F5F9' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <div style={{ width: 8, height: 8, borderRadius: '50%', background: ['#7367F0','#28C76F','#7367F0','#FF9F43','#28C76F','#9155FD'][i % 6] }} />
+            <div style={{ fontSize: 13, fontWeight: 500 }}>{b.prop}</div>
+          </div>
+          <div style={{ fontSize: 13, color: 'rgba(46,38,61,.72)' }}>{b.dates}</div>
+          <Pill tone={b.type === 'Turn' ? 'warning' : 'primary'} outlined>{b.type}</Pill>
+          <Pill tone={b.status === 'Completed' ? 'success' : b.status === 'In Progress' ? 'info' : 'warning'}>{b.status}</Pill>
+          <div style={{ fontSize: 13, color: 'rgba(46,38,61,.4)' }}>{b.priority ? <Pill tone="warning">{b.priority}</Pill> : '—'}</div>
+        </div>
+      ))}
+    </Card>
+  </div>
+);
+
+const Calendar = () => {
+  const days = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+  const cells = Array.from({length: 35}, (_, i) => i - 2);
+  const events = {
+    4: [{ text: '3455555 wishing, Cathedral City', color: '#9E95F5', span: 5 }],
+    12: [{ text: '123 Main Street, B', color: '#9E95F5', span: 2 }, { text: '1600 Pennsylvania Ave NW', color: '#28C76F', span: 3 }],
+    19: [{ text: '1600 Pennsylvania Ave NW', color: '#28C76F', span: 2 }, { text: '32540 Wishing Well Trl B', color: '#00CFE8', span: 4 }],
+  };
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 18, alignItems: 'center' }}>
+        <h1 style={{ margin: 0, fontSize: 32, fontWeight: 600 }}>Calendar</h1>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <Button variant="outlined">Today</Button>
+          <button style={{ width: 36, height: 36, background: '#7367F0', color: '#fff', border: 'none', borderRadius: 2, cursor: 'pointer' }}><Icon name="chevron-left" size={18} /></button>
+          <div style={{ fontSize: 18, fontWeight: 600, color: '#7367F0', minWidth: 140, textAlign: 'center' }}>April 2026</div>
+          <button style={{ width: 36, height: 36, background: '#7367F0', color: '#fff', border: 'none', borderRadius: 2, cursor: 'pointer' }}><Icon name="chevron-right" size={18} /></button>
+        </div>
+      </div>
+      <Card padding={0} style={{ overflow: 'hidden' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', background: 'rgba(46,38,61,.72)' }}>
+          {days.map(d => <div key={d} style={{ padding: '10px 8px', color: '#fff', fontSize: 11, fontWeight: 500, letterSpacing: '.08em', textAlign: 'center' }}>{d}</div>)}
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)' }}>
+          {cells.map(n => {
+            const dayNum = n < 1 ? (31 + n) : n > 30 ? n - 30 : n;
+            const muted = n < 1 || n > 30;
+            const evs = events[n] || [];
+            return (
+              <div key={n} style={{ minHeight: 90, borderRight: '1px solid rgba(46,38,61,.08)', borderBottom: '1px solid rgba(46,38,61,.08)', padding: 4, background: n === 18 ? 'rgba(115,103,240,.06)' : '#fff' }}>
+                <div style={{ fontSize: 12, fontWeight: 500, color: muted ? 'rgba(46,38,61,.28)' : 'rgba(46,38,61,.72)', padding: '2px 6px' }}>{dayNum}</div>
+                {evs.map((e, i) => (
+                  <div key={i} style={{ background: e.color, color: '#fff', fontSize: 10, padding: '2px 6px', borderRadius: 2, marginTop: 2, fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{e.text}</div>
+                ))}
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+Object.assign(window, { Overview, Properties, Bookings, Calendar });
+
+// ==== App ====
+// useState already imported
+const App = () => {
+    const initial = localStorage.getItem('claro-owner-route') || 'overview';
+    const [route, setRoute] = useState(initial);
+    const go = r => { setRoute(r); localStorage.setItem('claro-owner-route', r); };
+    const page = {
+      overview: <Overview />,
+      properties: <Properties />,
+      bookings: <Bookings />,
+      calendar: <Calendar />,
+    }[route] || <div style={{padding:40,color:'rgba(46,38,61,.5)'}}>Section placeholder</div>;
+    return <Shell route={route} setRoute={go}>{page}</Shell>;
+  };
+  ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+</script>
+</body>
+</html>

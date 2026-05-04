@@ -1,0 +1,669 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Claro — Admin UI Kit</title>
+<style>
+/* Claro Design System — colors_and_type.css
+ * Canonical CSS vars (colors + type) for use in any HTML mock.
+ * Mirrors src/styles/tokens.css in the codebase.
+ * Import with: <link rel="stylesheet" href="colors_and_type.css">
+ */
+
+/* Inter (400/500/600) from Google Fonts — matches @fontsource/inter used in-app */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  /* ─── BRAND ─────────────────────────────────────────── */
+  --claro-primary:        #7367F0;
+  --claro-primary-light:  #9E95F5;
+  --claro-primary-dark:   #5E52EE;
+  --claro-primary-tint:   #F0EEFF; /* 8% tint for active nav bg */
+  --claro-secondary:      #A8AAAE;
+  --claro-accent:         rgba(115, 103, 240, 0.125);
+
+  /* ─── SURFACES ──────────────────────────────────────── */
+  --claro-background:      #F5F5F9;
+  --claro-surface:         #FFFFFF;
+  --claro-surface-variant: #F5F5F9;
+  --claro-card-bg:         #FFFFFF;
+
+  /* ─── TEXT ──────────────────────────────────────────── */
+  --claro-fg1: #2E263D;                    /* primary text */
+  --claro-fg2: rgba(46, 38, 61, 0.72);     /* secondary text */
+  --claro-fg3: rgba(46, 38, 61, 0.50);     /* muted */
+  --claro-fg4: rgba(46, 38, 61, 0.28);     /* disabled / faint */
+  --claro-on-background: var(--claro-fg1);
+  --claro-on-surface:    var(--claro-fg1);
+  --claro-on-primary:    #FFFFFF;
+
+  /* ─── SEMANTIC ──────────────────────────────────────── */
+  --claro-success: #28C76F;
+  --claro-warning: #FF9F43;
+  --claro-error:   #EA5455;
+  --claro-info:    #00CFE8;
+
+  /* tonal (for chip backgrounds) — 16% alpha of the base */
+  --claro-success-tonal: rgba(40, 199, 111, 0.16);
+  --claro-warning-tonal: rgba(255, 159, 67, 0.16);
+  --claro-error-tonal:   rgba(234, 84, 85, 0.16);
+  --claro-info-tonal:    rgba(0, 207, 232, 0.16);
+  --claro-primary-tonal: rgba(115, 103, 240, 0.16);
+
+  /* ─── DOMAIN ────────────────────────────────────────── */
+  --claro-turn-urgent:      #EA5455;
+  --claro-turn-standard:    #FF9F43;
+  --claro-booking-standard: #28C76F;
+
+  /* Per-property accent palette (cycled) */
+  --claro-prop-1: #7367F0; /* indigo */
+  --claro-prop-2: #28C76F; /* green */
+  --claro-prop-3: #9155FD; /* purple */
+  --claro-prop-4: #FF9F43; /* orange */
+  --claro-prop-5: #EA5455; /* red */
+  --claro-prop-6: #FDD835; /* yellow (calendar OUT events) */
+
+  /* ─── DIVIDERS / BORDERS ────────────────────────────── */
+  --claro-divider:       #E8E8E8;
+  --claro-border:        #E8E8E8;
+  --claro-border-strong: #D4D4DB;
+
+  /* ─── TYPE ──────────────────────────────────────────── */
+  --claro-font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --claro-font-weight-normal:   400;
+  --claro-font-weight-medium:   500;
+  --claro-font-weight-semibold: 600;
+
+  /* type scale (rem-ish px) */
+  --claro-text-xs:   11px;
+  --claro-text-sm:   13px;
+  --claro-text-base: 15px;
+  --claro-text-md:   16px;
+  --claro-text-lg:   18px;
+  --claro-text-xl:   22px;
+  --claro-text-2xl:  26px;
+  --claro-text-3xl:  32px;
+  --claro-text-4xl:  40px;
+
+  /* line heights */
+  --claro-lh-tight:  1.2;
+  --claro-lh-snug:   1.35;
+  --claro-lh-normal: 1.5;
+
+  /* ─── SPACING ───────────────────────────────────────── */
+  --claro-space-xs: 4px;
+  --claro-space-sm: 8px;
+  --claro-space-md: 16px;
+  --claro-space-lg: 24px;
+  --claro-space-xl: 32px;
+  --claro-space-2xl: 48px;
+
+  /* ─── RADII ─────────────────────────────────────────── */
+  --claro-radius-sm:   2px;
+  --claro-radius-md:   2px;
+  --claro-radius-lg:   2px;
+  --claro-radius-card: 2px;
+  --claro-radius-pill: 9999px;
+
+  /* ─── ELEVATION ─────────────────────────────────────── */
+  --claro-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.05);
+  --claro-shadow-md: 0 4px 18px rgba(115, 103, 240, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --claro-shadow-lg: 0 8px 28px rgba(115, 103, 240, 0.18), 0 4px 10px rgba(0, 0, 0, 0.08);
+
+  /* ─── GRADIENTS (use sparingly — only on hero) ──────── */
+  --claro-gradient-primary:
+    linear-gradient(135deg, var(--claro-primary-light) 0%, var(--claro-primary) 60%, var(--claro-primary-dark) 100%);
+
+  /* ─── LAYOUT ────────────────────────────────────────── */
+  --claro-app-bar-height:         64px;
+  --claro-app-bar-height-mobile:  56px;
+  --claro-drawer-width:           260px;
+  --claro-drawer-width-collapsed: 72px;
+  --claro-content-padding:        24px;
+  --claro-content-padding-mobile: 12px;
+  --claro-touch-target-min:       44px;
+
+  /* ─── MOTION ────────────────────────────────────────── */
+  --claro-dur-fast: 150ms;
+  --claro-dur-base: 200ms;
+  --claro-dur-slow: 250ms;
+  --claro-ease:     ease;
+}
+
+/* ─── SEMANTIC TYPE ───────────────────────────────────── */
+html, body {
+  font-family: var(--claro-font-family);
+  color: var(--claro-fg1);
+  background: var(--claro-background);
+  font-size: var(--claro-text-base);
+  line-height: var(--claro-lh-normal);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.claro-h1, h1.claro {
+  font-family: var(--claro-font-family);
+  font-weight: 600;
+  font-size: var(--claro-text-3xl);
+  line-height: var(--claro-lh-tight);
+  letter-spacing: -0.01em;
+  color: var(--claro-fg1);
+  margin: 0;
+}
+
+.claro-h2, h2.claro {
+  font-weight: 600;
+  font-size: var(--claro-text-xl);
+  line-height: var(--claro-lh-tight);
+  color: var(--claro-fg1);
+  margin: 0;
+}
+
+.claro-h3, h3.claro {
+  font-weight: 600;
+  font-size: var(--claro-text-lg);
+  line-height: var(--claro-lh-snug);
+  color: var(--claro-fg1);
+  margin: 0;
+}
+
+.claro-subheading {
+  font-weight: 400;
+  font-size: var(--claro-text-sm);
+  line-height: var(--claro-lh-normal);
+  color: var(--claro-fg3);
+  margin: var(--claro-space-xs) 0 0 0;
+}
+
+.claro-body {
+  font-size: var(--claro-text-base);
+  line-height: var(--claro-lh-normal);
+  color: var(--claro-fg1);
+}
+
+.claro-caption {
+  font-size: var(--claro-text-xs);
+  line-height: var(--claro-lh-snug);
+  color: var(--claro-fg3);
+  letter-spacing: 0.01em;
+}
+
+.claro-eyebrow {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--claro-fg3);
+}
+
+.claro-wordmark {
+  font-family: var(--claro-font-family);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.01em;
+  color: var(--claro-primary);
+}
+
+.claro-numeric {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+</style>
+<link rel="stylesheet" href="https://cdn.materialdesignicons.com/7.4.47/css/materialdesignicons.min.css">
+<style>
+  .mdi, .mdi::before { font-family: "Material Design Icons" !important; }
+  html, body, #app { margin: 0; padding: 0; height: 100%; }
+  body { font-family: var(--claro-font-family); background: #F5F5F9; color: #2E263D; }
+  button { font-family: inherit; }
+  * { box-sizing: border-box; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" data-presets="react">
+// ==== shared.js ====
+/* global React */
+const { useState } = React;
+
+const Icon = ({ name, size = 20, color = 'currentColor', style = {} }) => (
+  <i className={`mdi mdi-${name}`} style={{ fontSize: size, color, lineHeight: 1, ...style }} />
+);
+
+const Avatar = ({ initials = 'SV', color = '#7367F0', size = 34, dot = true }) => (
+  <div style={{
+    width: size, height: size, borderRadius: '50%', background: color, color: '#fff',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    fontSize: size * 0.36, fontWeight: 600, position: 'relative', flexShrink: 0,
+  }}>
+    {initials}
+    {dot && <span style={{ position: 'absolute', right: 0, bottom: 0, width: 8, height: 8, borderRadius: '50%', background: '#28C76F', border: '2px solid #fff' }} />}
+  </div>
+);
+
+const Pill = ({ tone = 'neutral', outlined = false, children, style = {} }) => {
+  const tones = {
+    success: { bg: 'rgba(40,199,111,.16)', fg: '#1fa85d', br: '#28C76F' },
+    warning: { bg: 'rgba(255,159,67,.16)', fg: '#cc7a2e', br: '#FF9F43' },
+    error:   { bg: 'rgba(234,84,85,.16)',  fg: '#c44647', br: '#EA5455' },
+    info:    { bg: 'rgba(0,207,232,.16)',  fg: '#00a7ba', br: '#00CFE8' },
+    primary: { bg: 'rgba(115,103,240,.16)', fg: '#5E52EE', br: '#7367F0' },
+    neutral: { bg: 'rgba(46,38,61,.08)',   fg: '#2E263D', br: '#E8E8E8' },
+  };
+  const t = tones[tone] || tones.neutral;
+  return <span style={{
+    display: 'inline-flex', padding: '3px 10px', borderRadius: 9999,
+    fontSize: 11, fontWeight: 500, lineHeight: 1.4,
+    background: outlined ? 'transparent' : t.bg,
+    border: outlined ? `1px solid ${t.br}` : 'none',
+    color: t.fg, ...style,
+  }}>{children}</span>;
+};
+
+const Button = ({ variant = 'primary', icon, children, onClick, style = {} }) => {
+  const variants = {
+    primary:   { bg: '#7367F0', fg: '#fff', shadow: '0 2px 6px rgba(115,103,240,.35)', border: 'none' },
+    secondary: { bg: 'rgba(0,207,232,.14)', fg: '#00a7ba', shadow: 'none', border: 'none' },
+    outlined:  { bg: '#fff', fg: '#2E263D', shadow: 'none', border: '1px solid #E8E8E8' },
+    danger:    { bg: 'rgba(234,84,85,.12)', fg: '#c44647', shadow: 'none', border: 'none' },
+    ghost:     { bg: 'transparent', fg: '#7367F0', shadow: 'none', border: 'none' },
+  };
+  const v = variants[variant] || variants.primary;
+  return (
+    <button onClick={onClick} style={{
+      display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 16px',
+      borderRadius: 9999, fontSize: 13, fontWeight: 500, fontFamily: 'inherit',
+      background: v.bg, color: v.fg, border: v.border, boxShadow: v.shadow,
+      cursor: 'pointer', transition: 'transform .15s ease, box-shadow .15s ease', ...style,
+    }}
+      onMouseDown={e => e.currentTarget.style.transform = 'scale(0.97)'}
+      onMouseUp={e => e.currentTarget.style.transform = 'scale(1)'}
+      onMouseLeave={e => e.currentTarget.style.transform = 'scale(1)'}
+    >
+      {icon && <Icon name={icon} size={16} />}
+      {children}
+    </button>
+  );
+};
+
+const IconBtn = ({ icon, onClick, active, size = 36 }) => (
+  <button onClick={onClick} style={{
+    width: size, height: size, borderRadius: 2,
+    background: active ? 'rgba(115,103,240,.12)' : 'transparent',
+    border: 'none', color: active ? '#7367F0' : 'rgba(46,38,61,.72)',
+    display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+    cursor: 'pointer',
+  }}>
+    <Icon name={icon} size={20} />
+  </button>
+);
+
+const Card = ({ children, padding = 18, style = {} }) => (
+  <div style={{
+    background: '#fff', borderRadius: 2, boxShadow: '0 2px 10px rgba(0,0,0,.05)',
+    padding, ...style,
+  }}>{children}</div>
+);
+
+Object.assign(window, { Icon, Avatar, Pill, Button, IconBtn, Card });
+
+
+// ==== Shell.js ====
+/* global React, Icon, Avatar, IconBtn */
+// useState provided by shared.js
+const ADMIN_NAV = [
+  { id: 'dashboard',  label: 'Dashboard',    icon: 'view-dashboard-outline' },
+  { id: 'calendar',   label: 'Calendar',     icon: 'calendar' },
+  { id: 'bookings',   label: 'All Bookings', icon: 'calendar-multiple-check' },
+  { id: 'properties', label: 'Properties',   icon: 'home-outline' },
+  { id: 'reports',    label: 'Reports',      icon: 'chart-line' },
+  { id: 'users',      label: 'Users',        icon: 'account-group-outline', expandable: true,
+    children: [
+      { id: 'cleaners',  label: 'Cleaners',        icon: 'broom' },
+      { id: 'owners',    label: 'Property Owners', icon: 'account-tie-outline' },
+      { id: 'admins',    label: 'Administrators',  icon: 'shield-account-outline' },
+    ],
+  },
+];
+
+const QUICK = [
+  { id: 'new-booking',  label: 'New Booking',     icon: 'calendar-plus' },
+  { id: 'add-property', label: 'Add Property',    icon: 'home-plus-outline' },
+  { id: 'add-cleaner',  label: 'Add Cleaner',     icon: 'account-plus-outline' },
+  { id: 'gen-report',   label: 'Generate Report', icon: 'file-chart-outline' },
+  { id: 'sys-settings', label: 'System Settings', icon: 'cog-outline' },
+];
+
+const AdminAppBar = ({ onToggle, drawerOpen }) => (
+  <div style={{ height: 64, background: '#fff', borderBottom: '1px solid #F0F0F3', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 14, position: 'sticky', top: 0, zIndex: 10 }}>
+    <IconBtn icon={drawerOpen ? 'menu-open' : 'menu'} onClick={onToggle} />
+    <div style={{ fontWeight: 600, fontSize: 22, color: '#7367F0', letterSpacing: '-0.01em' }}>Claro</div>
+    <div style={{ flex: 1 }} />
+    <IconBtn icon="weather-sunny" />
+    <IconBtn icon="star-outline" />
+    <IconBtn icon="bell-outline" />
+    <Avatar initials="AM" />
+  </div>
+);
+
+const NavItem = ({ item, active, onClick, depth = 0 }) => (
+  <div onClick={onClick} style={{
+    display: 'flex', alignItems: 'center', gap: 12,
+    padding: `9px ${12 + depth * 20}px`,
+    borderRadius: 2, margin: '1px 8px',
+    background: active ? '#F0EEFF' : 'transparent',
+    color: active ? '#7367F0' : 'rgba(46,38,61,.72)',
+    fontWeight: 500, fontSize: 13, cursor: 'pointer', transition: 'background .2s ease, color .2s ease',
+  }}>
+    <Icon name={item.icon} size={18} />
+    {item.label}
+    {item.expandable && <Icon name="chevron-down" size={14} style={{ marginLeft: 'auto' }} />}
+  </div>
+);
+
+const NavGroupTitle = ({ children }) => (
+  <div style={{ fontSize: 10, color: 'rgba(46,38,61,.5)', textTransform: 'uppercase', letterSpacing: '.08em', padding: '14px 20px 6px' }}>{children}</div>
+);
+
+const MiniStat = ({ num, label, tone = 'primary' }) => {
+  const colors = { primary: '#7367F0', success: '#28C76F', warning: '#FF9F43', info: '#00CFE8' };
+  return (
+    <div style={{ flex: 1, background: '#fff', border: '1px solid #EDECF2', borderRadius: 2, padding: '12px 10px', textAlign: 'center' }}>
+      <div style={{ fontSize: 20, fontWeight: 600, color: colors[tone], fontVariantNumeric: 'tabular-nums' }}>{num}</div>
+      <div style={{ fontSize: 11, color: 'rgba(46,38,61,.6)' }}>{label}</div>
+    </div>
+  );
+};
+
+const AdminDrawer = ({ route, setRoute, open }) => (
+  <div style={{ width: open ? 240 : 0, minWidth: open ? 240 : 0, background: '#fff', borderRight: '1px solid #F0F0F3', overflow: 'hidden', transition: 'width .25s ease, min-width .25s ease', display: 'flex', flexDirection: 'column' }}>
+    <div style={{ width: 240, flex: 1, display: 'flex', flexDirection: 'column', padding: '12px 0', overflow: 'auto' }}>
+      <NavGroupTitle>Administration</NavGroupTitle>
+      {ADMIN_NAV.map(item => (
+        <React.Fragment key={item.id}>
+          <NavItem item={item} active={route === item.id} onClick={() => setRoute(item.id)} />
+          {item.children && route === item.id && item.children.map(c => (
+            <NavItem key={c.id} item={c} depth={1} active={route === c.id} onClick={e => { e.stopPropagation(); setRoute(c.id); }} />
+          ))}
+        </React.Fragment>
+      ))}
+      <NavGroupTitle>Business Overview</NavGroupTitle>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, padding: '0 12px' }}>
+        <MiniStat num={27} label="Properties" tone="primary" />
+        <MiniStat num={0}  label="Active"     tone="success" />
+        <MiniStat num={0}  label="Urgent"     tone="warning" />
+        <MiniStat num={3}  label="Cleaners"   tone="info" />
+      </div>
+      <NavGroupTitle>Quick Actions</NavGroupTitle>
+      {QUICK.map(q => <NavItem key={q.id} item={q} onClick={() => {}} />)}
+      <div style={{ flex: 1 }} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '12px 16px', borderTop: '1px solid #F0F0F3' }}>
+        <Avatar initials="AM" />
+        <div style={{ overflow: 'hidden' }}>
+          <div style={{ fontSize: 13, fontWeight: 500, color: '#2E263D' }}>ana maria vinson</div>
+          <div style={{ fontSize: 11, color: 'rgba(46,38,61,.5)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>sorenv653@gma…</div>
+        </div>
+        <Icon name="dots-vertical" size={16} color="rgba(46,38,61,.5)" style={{ marginLeft: 'auto' }} />
+      </div>
+    </div>
+  </div>
+);
+
+const AdminShell = ({ route, setRoute, children }) => {
+  const [open, setOpen] = useState(true);
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', background: '#F5F5F9' }}>
+      <AdminAppBar onToggle={() => setOpen(!open)} drawerOpen={open} />
+      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        <AdminDrawer route={route} setRoute={setRoute} open={open} />
+        <div style={{ flex: 1, overflow: 'auto', padding: 24 }}>{children}</div>
+      </div>
+    </div>
+  );
+};
+
+Object.assign(window, { AdminShell });
+
+
+// ==== Pages.js ====
+/* global React, Icon, Card, Button, Pill, Avatar */
+// useState provided by shared.js
+const AlertCard = ({ children }) => (
+  <div style={{
+    background: '#FFF2EE', border: '1px solid #FFD4C4', borderLeft: '4px solid #EA5455',
+    borderRadius: 2, padding: '14px 18px', display: 'flex', alignItems: 'flex-start', gap: 14,
+  }}>
+    <Icon name="alert-circle-outline" size={22} color="#EA5455" />
+    <div style={{ flex: 1 }}>
+      <div style={{ fontSize: 14, fontWeight: 600, color: '#B03A3A' }}>Attention required</div>
+      <div style={{ fontSize: 13, color: 'rgba(46,38,61,.72)', marginTop: 2 }}>{children}</div>
+    </div>
+    <Button variant="outlined" tone="error">Review</Button>
+  </div>
+);
+
+const BigStat = ({ icon, color, num, label, sub }) => (
+  <Card padding={18} style={{ flex: 1, minWidth: 170 }}>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ fontSize: 13, color: 'rgba(46,38,61,.6)' }}>{label}</div>
+      <div style={{ width: 34, height: 34, borderRadius: 2, background: `${color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Icon name={icon} size={18} color={color} />
+      </div>
+    </div>
+    <div style={{ fontSize: 28, fontWeight: 600, marginTop: 12, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{num}</div>
+    {sub && <div style={{ fontSize: 12, color: 'rgba(46,38,61,.5)', marginTop: 4 }}>{sub}</div>}
+  </Card>
+);
+
+const Dashboard = () => (
+  <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+    <div>
+      <h1 style={{ margin: 0, fontSize: 28, fontWeight: 600, color: '#2E263D' }}>Business Dashboard</h1>
+      <div style={{ fontSize: 13, color: 'rgba(46,38,61,.5)', marginTop: 4 }}>System-wide overview · All properties, owners and cleaners</div>
+    </div>
+    <AlertCard>2 unassigned turn cleanings need a cleaner for today. Assign now to avoid a delayed check-in.</AlertCard>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 16 }}>
+      <BigStat icon="home-city-outline" color="#7367F0" num={27} label="Properties"     sub="across 11 owners" />
+      <BigStat icon="calendar-check"    color="#28C76F" num={18} label="Active bookings" sub="this week" />
+      <BigStat icon="swap-horizontal"   color="#FF9F43" num={4}  label="Turn cleanings"  sub="2 urgent" />
+      <BigStat icon="broom"             color="#00CFE8" num={3}  label="Active cleaners" sub="of 12 total" />
+    </div>
+    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: 16 }}>
+      <Card padding={0}>
+        <div style={{ padding: '14px 20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #F2F2F5' }}>
+          <div style={{ fontSize: 14, fontWeight: 600 }}>Recent bookings</div>
+          <Button variant="text">View all</Button>
+        </div>
+        {[
+          { prop: '1600 Pennsylvania Ave NW', owner: 'Soren V.',   dates: 'Apr 11 → May 8',  status: 'Scheduled' },
+          { prop: '32540 Wishing Well Trl B', owner: 'Soren V.',   dates: 'Apr 22 → May 16', status: 'Pending'   },
+          { prop: 'Hall of Justice',          owner: 'Bruce W.',   dates: 'Apr 14 → Apr 16', status: 'In Progress' },
+          { prop: '1194 Mulberry Dr',         owner: 'Ana M.',     dates: 'Apr 27 → Apr 30', status: 'Pending'   },
+        ].map((b, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1.2fr auto', padding: '12px 20px', borderBottom: '1px solid #F5F5F9', fontSize: 13, alignItems: 'center', gap: 12 }}>
+            <div style={{ fontWeight: 500 }}>{b.prop}</div>
+            <div style={{ color: 'rgba(46,38,61,.6)' }}>{b.owner}</div>
+            <div style={{ color: 'rgba(46,38,61,.72)' }}>{b.dates}</div>
+            <Pill tone={b.status === 'In Progress' ? 'info' : b.status === 'Scheduled' ? 'success' : 'warning'}>{b.status}</Pill>
+          </div>
+        ))}
+      </Card>
+      <Card padding={0}>
+        <div style={{ padding: '14px 20px', borderBottom: '1px solid #F2F2F5', fontSize: 14, fontWeight: 600 }}>Cleaner availability</div>
+        {[
+          { name: 'Maria Delgado', status: 'Available', load: 2 },
+          { name: 'Darnell Pike',  status: 'On site',   load: 1 },
+          { name: 'Anika Brown',   status: 'Available', load: 3 },
+          { name: 'Jenny Ko',      status: 'Off today', load: 0 },
+        ].map((c, i) => (
+          <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 20px', borderBottom: '1px solid #F5F5F9' }}>
+            <Avatar initials={c.name.split(' ').map(s => s[0]).join('')} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontSize: 13, fontWeight: 500 }}>{c.name}</div>
+              <div style={{ fontSize: 11, color: 'rgba(46,38,61,.5)' }}>{c.load} assigned today</div>
+            </div>
+            <Pill tone={c.status === 'Available' ? 'success' : c.status === 'On site' ? 'info' : 'default'}>{c.status}</Pill>
+          </div>
+        ))}
+      </Card>
+    </div>
+  </div>
+);
+
+const AllProperties = () => {
+  const rows = [
+    { addr: '32540 Wishing Well Trl B', owner: 'Soren Vinson',   city: 'Cathedral City, CA', status: 'Active',   color: '#7367F0' },
+    { addr: '1600 Pennsylvania Ave NW', owner: 'Soren Vinson',   city: 'Washington, DC',     status: 'Active',   color: '#7367F0' },
+    { addr: 'Hall of Justice',          owner: 'Bruce Wayne',    city: 'Gotham, NJ',         status: 'Active',   color: '#FF9F43' },
+    { addr: '1600 Pennsylvania Ave NW, B', owner: 'Ana Maria',   city: 'Washington, DC',     status: 'Active',   color: '#EA5455' },
+    { addr: '666 gtgt, b',              owner: 'Test Account',   city: 'Los Angeles, CA',    status: 'Inactive', color: '#9155FD' },
+    { addr: '1194 Mulberry Dr',         owner: 'Ana Maria',      city: 'San Marcos, CA',     status: 'Active',   color: '#FF9F43' },
+    { addr: '1600 Pennsylvania Ave NW', owner: 'Soren Vinson',   city: 'Washington, DC',     status: 'Inactive', color: '#28C76F' },
+  ];
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+        <div>
+          <h1 style={{ margin: 0, fontSize: 28, fontWeight: 600 }}>All Properties</h1>
+          <div style={{ fontSize: 13, color: 'rgba(46,38,61,.5)', marginTop: 4 }}>Every property across every owner</div>
+        </div>
+        <div style={{ display: 'flex', gap: 8 }}>
+          <Button variant="outlined" icon="export">Export</Button>
+          <Button variant="primary" icon="plus">Add Property</Button>
+        </div>
+      </div>
+      <Card padding={0}>
+        <div style={{ padding: 14, borderBottom: '1px solid #F2F2F5', display: 'flex', gap: 8, alignItems: 'center' }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', border: '1px solid #EDECF2', borderRadius: 2, background: '#FBFBFC' }}>
+            <Icon name="magnify" size={16} color="rgba(46,38,61,.5)" />
+            <input placeholder="Search address or owner…" style={{ border: 'none', background: 'transparent', outline: 'none', fontSize: 13, flex: 1, fontFamily: 'inherit' }} />
+          </div>
+          <Pill tone="primary">All</Pill>
+          <Pill tone="primary" outlined>Active</Pill>
+          <Pill tone="primary" outlined>Inactive</Pill>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 1.2fr auto auto', padding: '12px 20px', fontSize: 12, color: 'rgba(46,38,61,.6)', borderBottom: '1px solid #F2F2F5' }}>
+          <div>Property</div><div>Owner</div><div>Location</div><div>Status</div><div></div>
+        </div>
+        {rows.map((r, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 1.2fr auto auto', gap: 14, alignItems: 'center', padding: '14px 20px', borderBottom: '1px solid #F5F5F9' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <div style={{ width: 4, height: 28, background: r.color, borderRadius: 1 }} />
+              <div style={{ fontSize: 13, fontWeight: 500 }}>{r.addr}</div>
+            </div>
+            <div style={{ fontSize: 13, color: 'rgba(46,38,61,.72)' }}>{r.owner}</div>
+            <div style={{ fontSize: 13, color: 'rgba(46,38,61,.6)' }}>{r.city}</div>
+            <Pill tone={r.status === 'Active' ? 'success' : 'error'}>{r.status}</Pill>
+            <Icon name="dots-vertical" size={16} color="rgba(46,38,61,.4)" />
+          </div>
+        ))}
+      </Card>
+    </div>
+  );
+};
+
+const Cleaners = () => {
+  const rows = [
+    { name: 'Maria Delgado',  email: 'maria.d@claro.co',  phone: '+1 (555) 221-0098', status: 'Active',   jobs: 42, color: '#7367F0' },
+    { name: 'Darnell Pike',   email: 'darnell@claro.co',  phone: '+1 (555) 118-2244', status: 'Active',   jobs: 28, color: '#28C76F' },
+    { name: 'Anika Brown',    email: 'anika.b@claro.co',  phone: '+1 (555) 442-7711', status: 'Active',   jobs: 64, color: '#FF9F43' },
+    { name: 'Jenny Ko',       email: 'jenny.k@claro.co',  phone: '+1 (555) 890-3120', status: 'Inactive', jobs: 12, color: '#00CFE8' },
+    { name: 'Luis Fernandez', email: 'luis.f@claro.co',   phone: '+1 (555) 776-5501', status: 'Active',   jobs: 37, color: '#9155FD' },
+  ];
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+        <div>
+          <h1 style={{ margin: 0, fontSize: 28, fontWeight: 600 }}>Cleaners</h1>
+          <div style={{ fontSize: 13, color: 'rgba(46,38,61,.5)', marginTop: 4 }}>Assign, schedule and track cleaner availability</div>
+        </div>
+        <Button variant="primary" icon="account-plus-outline">Add Cleaner</Button>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 14, marginBottom: 18 }}>
+        <BigStat icon="broom" color="#7367F0" num={12} label="Total cleaners" />
+        <BigStat icon="check-circle" color="#28C76F" num={9} label="Active" />
+        <BigStat icon="clock-outline" color="#FF9F43" num={183} label="Jobs this month" />
+        <BigStat icon="star-outline" color="#00CFE8" num="4.8" label="Avg. rating" />
+      </div>
+      <Card padding={0}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1.6fr 1.6fr 1.2fr auto auto auto', padding: '12px 20px', fontSize: 12, color: 'rgba(46,38,61,.6)', borderBottom: '1px solid #F2F2F5' }}>
+          <div>Cleaner</div><div>Contact</div><div>Phone</div><div>Jobs</div><div>Status</div><div></div>
+        </div>
+        {rows.map((r, i) => (
+          <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.6fr 1.6fr 1.2fr auto auto auto', gap: 14, alignItems: 'center', padding: '14px 20px', borderBottom: '1px solid #F5F5F9' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <Avatar initials={r.name.split(' ').map(s => s[0]).join('')} bg={r.color} />
+              <div style={{ fontSize: 13, fontWeight: 500 }}>{r.name}</div>
+            </div>
+            <div style={{ fontSize: 13, color: 'rgba(46,38,61,.72)' }}>{r.email}</div>
+            <div style={{ fontSize: 13, color: 'rgba(46,38,61,.6)' }}>{r.phone}</div>
+            <div style={{ fontSize: 13, fontWeight: 500, fontVariantNumeric: 'tabular-nums' }}>{r.jobs}</div>
+            <Pill tone={r.status === 'Active' ? 'success' : 'default'}>{r.status}</Pill>
+            <Icon name="dots-vertical" size={16} color="rgba(46,38,61,.4)" />
+          </div>
+        ))}
+      </Card>
+    </div>
+  );
+};
+
+const Users = () => (
+  <div>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 18 }}>
+      <div>
+        <h1 style={{ margin: 0, fontSize: 28, fontWeight: 600 }}>Users</h1>
+        <div style={{ fontSize: 13, color: 'rgba(46,38,61,.5)', marginTop: 4 }}>All property owners, administrators and cleaners</div>
+      </div>
+      <Button variant="primary" icon="plus">Invite User</Button>
+    </div>
+    <Card padding={0}>
+      <div style={{ padding: 14, borderBottom: '1px solid #F2F2F5', display: 'flex', gap: 8 }}>
+        {['All', 'Owners', 'Cleaners', 'Administrators'].map((f, i) => (
+          <Pill key={f} tone="primary" outlined={i !== 0}>{f}</Pill>
+        ))}
+      </div>
+      {[
+        { name: 'Soren Vinson',    role: 'Owner',    email: 'soren@example.com',  props: 14, color: '#7367F0' },
+        { name: 'Ana Maria Vinson',role: 'Admin',    email: 'ana@claro.co',       props: '—', color: '#EA5455' },
+        { name: 'Bruce Wayne',     role: 'Owner',    email: 'bwayne@wayne.co',    props: 3,  color: '#FF9F43' },
+        { name: 'Maria Delgado',   role: 'Cleaner',  email: 'maria.d@claro.co',   props: '—', color: '#28C76F' },
+        { name: 'Test Account',    role: 'Owner',    email: 'test@example.com',   props: 1,  color: '#9155FD' },
+      ].map((u, i) => (
+        <div key={i} style={{ display: 'grid', gridTemplateColumns: '1.6fr auto 1.6fr auto auto', gap: 14, alignItems: 'center', padding: '14px 20px', borderBottom: '1px solid #F5F5F9' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Avatar initials={u.name.split(' ').map(s => s[0]).join('').slice(0,2)} bg={u.color} />
+            <div style={{ fontSize: 13, fontWeight: 500 }}>{u.name}</div>
+          </div>
+          <Pill tone={u.role === 'Admin' ? 'error' : u.role === 'Owner' ? 'primary' : 'info'} outlined>{u.role}</Pill>
+          <div style={{ fontSize: 13, color: 'rgba(46,38,61,.72)' }}>{u.email}</div>
+          <div style={{ fontSize: 13, color: 'rgba(46,38,61,.6)', fontVariantNumeric: 'tabular-nums' }}>{u.props} properties</div>
+          <Icon name="dots-vertical" size={16} color="rgba(46,38,61,.4)" />
+        </div>
+      ))}
+    </Card>
+  </div>
+);
+
+Object.assign(window, { Dashboard, AllProperties, Cleaners, Users });
+
+// ==== App ====
+// useState already imported
+const App = () => {
+    const initial = localStorage.getItem('claro-admin-route') || 'dashboard';
+    const [route, setRoute] = useState(initial);
+    const go = r => { setRoute(r); localStorage.setItem('claro-admin-route', r); };
+    const page = {
+      dashboard:  <Dashboard />,
+      properties: <AllProperties />,
+      cleaners:   <Cleaners />,
+      users:      <Users />,
+    }[route] || <div style={{padding:40,color:'rgba(46,38,61,.5)'}}>Section placeholder — open Dashboard, Properties, Users or Cleaners.</div>;
+    return <AdminShell route={route} setRoute={go}>{page}</AdminShell>;
+  };
+  ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+</script>
+</body>
+</html>

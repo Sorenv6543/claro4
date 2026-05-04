@@ -1,0 +1,333 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<!-- Full axis range: wght 100–700, FILL 0–1, GRAD -50–200 -->
+<link rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,100..700,0..1,-50..200&display=block">
+<style>
+  body {
+    margin: 0;
+    padding: 32px;
+    background: var(--claro-background);
+    font-family: var(--claro-font-family);
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+  }
+
+  .variant-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .variant-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--claro-fg4);
+    padding-left: 2px;
+  }
+
+  .nav {
+    width: 224px;
+    background: var(--claro-surface);
+    border: 1px solid var(--claro-divider);
+    border-radius: 6px;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    color: var(--claro-fg4);
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    font-weight: 600;
+    padding: 8px 12px 4px;
+    margin-top: 4px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .material-symbols-outlined {
+    font-family: 'Material Symbols Outlined';
+    font-weight: normal;
+    font-style: normal;
+    line-height: 1;
+    letter-spacing: normal;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    flex-shrink: 0;
+  }
+
+  .badge {
+    margin-left: auto;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 9999px;
+    background: rgba(46, 38, 61, 0.07);
+    color: var(--claro-fg2);
+    font-weight: 700;
+    letter-spacing: .02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ════════════════════════════════════════════════════
+     VARIANT A — Hairline Sketch → Max Mass
+     Rest:   wght 100, FILL 0   — ultra-thin wireframe lines
+     Active: wght 700, FILL 1   — maximum ink, fully packed
+     The jump is as wide as the variable font allows.
+  ════════════════════════════════════════════════════ */
+  .nav-a .item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    color: var(--claro-fg3);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease;
+  }
+  .nav-a .item .material-symbols-outlined {
+    font-size: 22px;
+    font-variation-settings: 'FILL' 0, 'wght' 100, 'GRAD' 0, 'opsz' 24;
+    transition: font-variation-settings 360ms cubic-bezier(0.2, 0, 0, 1);
+  }
+  .nav-a .item:hover {
+    background: rgba(46, 38, 61, 0.04);
+    color: var(--claro-fg2);
+  }
+  .nav-a .item:hover .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24;
+  }
+  .nav-a .item.active {
+    background: rgba(46, 38, 61, 0.075);
+    color: var(--claro-fg1);
+    font-weight: 600;
+  }
+  .nav-a .item.active .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24;
+  }
+
+  /* ════════════════════════════════════════════════════
+     VARIANT B — Ghost + Opacity → Bold + Scale
+     Rest:   wght 200, FILL 0, opacity 0.2, scale 0.85
+     Active: wght 700, FILL 1, opacity 1,   scale 1.15
+     Fill change is doubled by the presence amplification.
+  ════════════════════════════════════════════════════ */
+  .nav-b .item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    color: var(--claro-fg1);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 160ms ease;
+  }
+  .nav-b .item .material-symbols-outlined {
+    font-size: 22px;
+    opacity: 0.18;
+    transform: scale(0.85);
+    font-variation-settings: 'FILL' 0, 'wght' 200, 'GRAD' 0, 'opsz' 24;
+    transition:
+      font-variation-settings 360ms cubic-bezier(0.2, 0, 0, 1),
+      opacity 260ms ease,
+      transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .nav-b .item .item-text {
+    opacity: 0.28;
+    transition: opacity 200ms ease, font-weight 0ms;
+  }
+  .nav-b .item:hover { background: rgba(46, 38, 61, 0.04); }
+  .nav-b .item:hover .material-symbols-outlined {
+    opacity: 0.65;
+    transform: scale(1.05);
+    font-variation-settings: 'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24;
+  }
+  .nav-b .item:hover .item-text { opacity: 0.65; }
+  .nav-b .item.active { background: rgba(46, 38, 61, 0.075); }
+  .nav-b .item.active .material-symbols-outlined {
+    opacity: 1;
+    transform: scale(1.15);
+    font-variation-settings: 'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 24;
+  }
+  .nav-b .item.active .item-text { opacity: 1; font-weight: 600; }
+
+  /* ════════════════════════════════════════════════════
+     VARIANT C — GRAD axis extremes
+     Rest:   wght 300, FILL 0, GRAD -50  — thinned, receded strokes
+     Active: wght 600, FILL 1, GRAD 200  — maximum ink density
+     GRAD alters ink weight without changing advance width,
+     so text stays on-grid while icons get dramatically heavier.
+  ════════════════════════════════════════════════════ */
+  .nav-c .item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px 9px 14px;
+    color: var(--claro-fg3);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 160ms ease;
+  }
+  .nav-c .item::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    bottom: 6px;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--claro-fg1);
+    transform: scaleY(0);
+    transition: transform 240ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: center;
+  }
+  .nav-c .item .material-symbols-outlined {
+    font-size: 22px;
+    font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' -50, 'opsz' 24;
+    transition: font-variation-settings 360ms cubic-bezier(0.2, 0, 0, 1);
+  }
+  .nav-c .item:hover { color: var(--claro-fg2); }
+  .nav-c .item:hover .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 100, 'opsz' 24;
+  }
+  .nav-c .item.active {
+    color: var(--claro-fg1);
+    font-weight: 600;
+  }
+  .nav-c .item.active::before { transform: scaleY(1); }
+  .nav-c .item.active .material-symbols-outlined {
+    font-variation-settings: 'FILL' 1, 'wght' 600, 'GRAD' 200, 'opsz' 24;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ── Variant A: Hairline → Max Mass ────────────── -->
+  <div class="variant-wrap">
+    <div class="variant-label">A — Hairline → Solid</div>
+    <nav class="nav nav-a">
+      <div class="section-label">Main</div>
+      <div class="item active">
+        <span class="material-symbols-outlined">dashboard</span>Overview
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">calendar_month</span>Calendar
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">format_list_bulleted</span>Bookings
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">home</span>Properties
+        <span class="badge">5</span>
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">monitoring</span>Charts
+      </div>
+      <div class="section-label">Account</div>
+      <div class="item">
+        <span class="material-symbols-outlined">account_circle</span>Profile
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">settings</span>Settings
+      </div>
+    </nav>
+  </div>
+
+  <!-- ── Variant B: Ghost → Bold + Scale ───────────── -->
+  <div class="variant-wrap">
+    <div class="variant-label">B — Ghost → Bold</div>
+    <nav class="nav nav-b">
+      <div class="section-label">Main</div>
+      <div class="item active">
+        <span class="material-symbols-outlined">dashboard</span>
+        <span class="item-text">Overview</span>
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">calendar_month</span>
+        <span class="item-text">Calendar</span>
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">format_list_bulleted</span>
+        <span class="item-text">Bookings</span>
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">home</span>
+        <span class="item-text">Properties</span>
+        <span class="badge">5</span>
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">monitoring</span>
+        <span class="item-text">Charts</span>
+      </div>
+      <div class="section-label">Account</div>
+      <div class="item">
+        <span class="material-symbols-outlined">account_circle</span>
+        <span class="item-text">Profile</span>
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">settings</span>
+        <span class="item-text">Settings</span>
+      </div>
+    </nav>
+  </div>
+
+  <!-- ── Variant C: GRAD −50 → +200 ────────────────── -->
+  <div class="variant-wrap">
+    <div class="variant-label">C — GRAD −50 → +200</div>
+    <nav class="nav nav-c">
+      <div class="section-label">Main</div>
+      <div class="item active">
+        <span class="material-symbols-outlined">dashboard</span>Overview
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">calendar_month</span>Calendar
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">format_list_bulleted</span>Bookings
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">home</span>Properties
+        <span class="badge">5</span>
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">monitoring</span>Charts
+      </div>
+      <div class="section-label">Account</div>
+      <div class="item">
+        <span class="material-symbols-outlined">account_circle</span>Profile
+      </div>
+      <div class="item">
+        <span class="material-symbols-outlined">settings</span>Settings
+      </div>
+    </nav>
+  </div>
+
+  <script>
+    document.querySelectorAll('.nav').forEach(nav => {
+      nav.querySelectorAll('.item').forEach(item => {
+        item.addEventListener('click', () => {
+          nav.querySelectorAll('.item').forEach(i => i.classList.remove('active'));
+          item.classList.add('active');
+        });
+      });
+    });
+  </script>
+</body>
+</html>

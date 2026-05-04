@@ -1,0 +1,258 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../fonts/materialdesignicons.css">
+<style>
+  @font-face {
+    font-family: "Material Design Icons";
+    src: url('../fonts/materialdesignicons.woff2') format('woff2');
+    font-weight: normal; font-style: normal;
+  }
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #1a1830; font-family: var(--claro-font-family); }
+  .mdi:before { font-family: 'Material Design Icons' !important; }
+
+  /* ── Shared bar shell ── */
+  .bar {
+    height: 64px;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    gap: 14px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .wm { display: block; height: 38px; width: auto; flex-shrink: 0; position: relative; z-index: 1; }
+  .spacer { flex: 1; }
+  .actions { display: flex; gap: 2px; align-items: center; position: relative; z-index: 1; }
+
+  /* Toggle button */
+  .toggle {
+    width: 36px; height: 36px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; flex-shrink: 0; border: none;
+    background: transparent; transition: background 140ms ease;
+    position: relative; z-index: 1;
+  }
+  .tiles { display: grid; grid-template-columns: repeat(2,8px); grid-template-rows: repeat(2,8px); gap: 3px; }
+  .tiles span { border-radius: 1.5px; }
+  .tiles span:nth-child(2), .tiles span:nth-child(3) { opacity: .5; }
+
+  /* Action buttons */
+  .btn {
+    width: 38px; height: 38px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; border: none; background: transparent;
+    transition: background 140ms ease;
+  }
+  .btn i { font-size: 20px; }
+
+  .chevron-btn {
+    display: flex; align-items: center;
+    padding: 0 4px; height: 38px; border-radius: 6px;
+    cursor: pointer; border: none; background: transparent;
+    transition: background 140ms ease;
+    font-family: var(--claro-font-family);
+  }
+
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 12px; margin-left: 4px;
+    position: relative; z-index: 1;
+    flex-shrink: 0;
+  }
+  .status-dot {
+    position: absolute; width: 8px; height: 8px; border-radius: 50%;
+    bottom: 0; right: 0; border: 2px solid transparent;
+  }
+
+  /* ══ VARIANT 1 — Aurora gradient (purple → teal) ══ */
+  .bar-1 {
+    background: linear-gradient(100deg, #3d2fa0 0%, #5A4FE3 35%, #4b8ec4 70%, #38c9b0 100%);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.12) inset,
+      0 4px 24px rgba(61,47,160,.45);
+  }
+  /* Glass shimmer overlay */
+  .bar-1::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,.14) 0%, rgba(255,255,255,0) 55%);
+    pointer-events: none;
+  }
+  /* Bottom edge highlight */
+  .bar-1::after {
+    content: "";
+    position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,.25) 50%, rgba(255,255,255,0) 100%);
+  }
+  .bar-1 .toggle { color: #fff; }
+  .bar-1 .toggle:hover { background: rgba(255,255,255,.12); }
+  .bar-1 .tiles span { background: #fff; }
+  .bar-1 .btn { color: rgba(255,255,255,.90); }
+  .bar-1 .btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+  .bar-1 .chevron-btn { color: rgba(255,255,255,.85); }
+  .bar-1 .chevron-btn:hover { background: rgba(255,255,255,.12); color: #fff; }
+  .bar-1 .avatar {
+    background: rgba(255,255,255,.20);
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,.35);
+    box-shadow: 0 2px 8px rgba(0,0,0,.20);
+  }
+  .bar-1 .status-dot { background: #4ade80; border-color: transparent; }
+
+  /* ══ VARIANT 2 — Deep violet + gold shimmer (3D bevelled) ══ */
+  .bar-2 {
+    background: linear-gradient(160deg, #2d2460 0%, #4035a8 40%, #2a1f70 100%);
+    box-shadow:
+      0 2px 0 rgba(255,255,255,.08) inset,
+      0 -1px 0 rgba(0,0,0,.3) inset,
+      0 6px 32px rgba(20,16,60,.6),
+      0 1px 0 rgba(255,215,100,.18);
+  }
+  .bar-2::before {
+    content: "";
+    position: absolute; left: 0; right: 0; top: 0; height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,.10) 0%, rgba(255,255,255,.02) 100%);
+    pointer-events: none;
+  }
+  /* Gold shimmer streak */
+  .bar-2::after {
+    content: "";
+    position: absolute; top: 0; left: 15%; right: 20%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,210,80,.6), rgba(255,255,255,.4), rgba(255,210,80,.3), transparent);
+  }
+  .bar-2 .toggle { color: #c4b9ff; }
+  .bar-2 .toggle:hover { background: rgba(255,255,255,.08); }
+  .bar-2 .tiles span { background: #c4b9ff; }
+  .bar-2 .btn { color: rgba(196,185,255,.85); }
+  .bar-2 .btn:hover { background: rgba(255,255,255,.08); color: #e8e4ff; }
+  .bar-2 .chevron-btn { color: rgba(196,185,255,.80); }
+  .bar-2 .chevron-btn:hover { background: rgba(255,255,255,.08); color: #e8e4ff; }
+  .bar-2 .avatar {
+    background: linear-gradient(135deg, #7367F0, #a89cf5);
+    color: #fff;
+    box-shadow: 0 2px 10px rgba(115,103,240,.5), 0 1px 0 rgba(255,255,255,.2) inset;
+  }
+  .bar-2 .status-dot { background: #4ade80; border-color: #2d2460; }
+
+  /* ══ VARIANT 3 — Sunset gradient (purple → coral → amber) ══ */
+  .bar-3 {
+    background: linear-gradient(100deg, #5A4FE3 0%, #8B4FD8 30%, #C4507A 65%, #E8854A 100%);
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.15) inset,
+      0 5px 28px rgba(90,79,227,.35);
+  }
+  .bar-3::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,.16) 0%, rgba(255,255,255,.02) 50%);
+    pointer-events: none;
+  }
+  .bar-3::after {
+    content: "";
+    position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,255,255,.20), rgba(255,255,255,0));
+  }
+  .bar-3 .toggle { color: rgba(255,255,255,.95); }
+  .bar-3 .toggle:hover { background: rgba(255,255,255,.13); }
+  .bar-3 .tiles span { background: #fff; }
+  .bar-3 .btn { color: rgba(255,255,255,.90); }
+  .bar-3 .btn:hover { background: rgba(255,255,255,.13); color: #fff; }
+  .bar-3 .chevron-btn { color: rgba(255,255,255,.85); }
+  .bar-3 .chevron-btn:hover { background: rgba(255,255,255,.13); color: #fff; }
+  .bar-3 .avatar {
+    background: rgba(255,255,255,.22);
+    color: #fff;
+    border: 1.5px solid rgba(255,255,255,.40);
+    box-shadow: 0 2px 8px rgba(0,0,0,.15);
+  }
+  .bar-3 .status-dot { background: #4ade80; border-color: transparent; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+
+function Wordmark({ light = false }) {
+  const fill = light ? "#fff" : "#5A4FE3";
+  const arc  = light ? "#fff" : "#5A4FE3";
+  const id   = light ? "wm-light" : "wm-dark";
+  return (
+    <svg className="wm" viewBox="0 -24 420 180" fill="none" aria-label="Claro">
+      <defs>
+        <linearGradient id={id} x1="338" y1="88" x2="140" y2="56" gradientUnits="userSpaceOnUse">
+          <stop offset="0%"   stopColor={arc} stopOpacity="0"/>
+          <stop offset="65%"  stopColor={arc} stopOpacity="0.75"/>
+          <stop offset="100%" stopColor={arc} stopOpacity="1"/>
+        </linearGradient>
+      </defs>
+      <text x="8" y="118" fontFamily="'Inter',system-ui,sans-serif" fontWeight="700" fontSize="128" letterSpacing="-3.2" fill={fill}>Claro</text>
+      <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke={`url(#${id})`} strokeWidth="8" strokeLinecap="round" fill="none"/>
+    </svg>
+  );
+}
+
+function Toggle({ cls }) {
+  return (
+    <button className={`toggle ${cls}`} aria-label="Toggle sidebar">
+      <div className="tiles"><span></span><span></span><span></span><span></span></div>
+    </button>
+  );
+}
+
+function Actions({ cls, variant }) {
+  return (
+    <div className="actions">
+      <button className={`btn ${cls}`} aria-label="Favourites"><i className="mdi mdi-star-outline"></i></button>
+      <button className={`btn ${cls}`} aria-label="Notifications"><i className="mdi mdi-bell-outline"></i></button>
+      <button className={`chevron-btn ${cls}`} aria-label="More"><i className="mdi mdi-chevron-down" style={{fontSize:22}}></i></button>
+      <div className={`avatar ${cls}`}>SV<div className="status-dot"></div></div>
+    </div>
+  );
+}
+
+function Bar({ cls, light }) {
+  return (
+    <div className={`bar ${cls}`}>
+      <Wordmark light={light}/>
+      <Toggle cls={cls}/>
+      <div className="spacer"></div>
+      <Actions cls={cls}/>
+    </div>
+  );
+}
+
+function App() {
+  return (
+    <DesignCanvas title="App Bar — Gradient 3D Variants">
+      <DCSection id="variants" title="Gradient + 3D Variants (base: A)">
+        <DCArtboard id="v1" label="1 — Aurora (Purple → Teal)" width={760} height={80}>
+          <Bar cls="bar-1" light={true}/>
+        </DCArtboard>
+        <DCArtboard id="v2" label="2 — Deep Violet + Gold Shimmer" width={760} height={80}>
+          <Bar cls="bar-2" light={true}/>
+        </DCArtboard>
+        <DCArtboard id="v3" label="3 — Sunset (Purple → Coral → Amber)" width={760} height={80}>
+          <Bar cls="bar-3" light={true}/>
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

@@ -1,0 +1,229 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+<style>
+  :root {
+    --display: 'Inter', system-ui, sans-serif;
+    --body: 'Inter', system-ui, sans-serif;
+    --amber: #FDD835;
+    --amber-dark: #B59300;
+    --amber-soft: #FFF8DC;
+    --ink: #2E263D;
+    --ink-2: #57506A;
+    --ink-3: #8B8499;
+  }
+  body {
+    margin: 0; padding: 28px;
+    background: var(--claro-background);
+    font-family: var(--body);
+    color: var(--ink);
+    font-feature-settings: 'tnum' 1;
+  }
+
+  .card {
+    position: relative;
+    max-width: 480px;
+    background: #fff;
+    border-radius: 2px;
+    overflow: hidden;
+    box-shadow:
+      0 1px 0 rgba(255,255,255,.6) inset,
+      0 1px 2px rgba(46,38,61,.06),
+      0 8px 24px -8px rgba(46,38,61,.18),
+      0 2px 6px rgba(46,38,61,.04);
+  }
+
+  /* Two-tone split: top half = warm cream, bottom half = white */
+  .top {
+    background: linear-gradient(180deg, #FFFAE0 0%, var(--amber-soft) 100%);
+    padding: 18px 20px 22px;
+    border-bottom: 1px solid rgba(181,147,0,.20);
+    position: relative;
+  }
+  .top::before {
+    content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+    background: var(--amber-dark);
+  }
+
+  .kicker {
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--body);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: .12em; text-transform: uppercase;
+    color: #6B5500;
+    margin-bottom: 10px;
+  }
+  .kicker i { font-size: 16px; color: var(--amber-dark); }
+  .kicker .count {
+    margin-left: auto;
+    background: var(--amber-dark); color: #fff;
+    font-size: 10px; font-weight: 600;
+    padding: 2px 9px; border-radius: 9999px;
+    letter-spacing: .05em;
+  }
+
+  /* Display headline — Inter */
+  .headline {
+    font-family: var(--display);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.2;
+    color: var(--ink);
+    margin: 0 0 6px;
+  }
+  .sub {
+    font-family: var(--body);
+    font-size: 13px;
+    color: var(--ink-2);
+    line-height: 1.4;
+  }
+
+  /* Bottom (white) zone */
+  .bottom {
+    padding: 18px 20px 16px;
+    background: #fff;
+  }
+
+  .label-row {
+    display: flex; align-items: center; justify-content: space-between;
+    font-family: var(--body);
+    font-size: 10px; font-weight: 600;
+    letter-spacing: .09em; text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 16px;
+  }
+  .label-row .gap {
+    font-family: var(--display);
+    font-size: 11px; font-weight: 600;
+    letter-spacing: 0; text-transform: none;
+    color: #6B5500;
+    background: rgba(253,216,53,.18);
+    border: 1px solid rgba(181,147,0,.25);
+    padding: 2px 8px; border-radius: 9999px;
+  }
+  .label-row .gap strong { font-weight: 700; }
+
+  /* Timeline */
+  .rail {
+    position: relative;
+    height: 38px;
+    margin: 0 4px 8px;
+  }
+  .rail .track {
+    position: absolute; left: 0; right: 0; top: 16px; height: 3px;
+    background: #E8E8E8;
+    border-radius: 2px;
+  }
+  .rail .fill {
+    position: absolute; left: 22%; right: 40%; top: 16px; height: 3px;
+    background: linear-gradient(90deg, var(--amber) 0%, #F5C518 100%);
+    border-radius: 2px;
+    box-shadow: 0 0 0 2px rgba(253,216,53,.18);
+  }
+  .rail .tick {
+    position: absolute; top: 10px;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid var(--amber-dark);
+    transform: translateX(-50%);
+    box-shadow: 0 1px 2px rgba(46,38,61,.12);
+  }
+  .rail .tick.in { background: var(--amber-dark); }
+  .rail .tick.out { left: 22%; }
+  .rail .tick.in  { left: 60%; }
+  .rail .time {
+    position: absolute; top: 28px;
+    transform: translateX(-50%);
+    font-family: var(--display);
+    font-size: 13px; font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+    letter-spacing: -0.01em;
+  }
+  .rail .tag {
+    position: absolute; top: -16px;
+    transform: translateX(-50%);
+    font-family: var(--body);
+    font-size: 9px; font-weight: 600;
+    color: var(--ink-3);
+    letter-spacing: .08em;
+    text-transform: uppercase;
+  }
+  .rail .out-pos { left: 22%; }
+  .rail .in-pos  { left: 60%; }
+
+  /* Footer with full-width text button */
+  .foot {
+    display: flex; gap: 10px;
+    padding: 14px 20px 18px;
+    background: #fff;
+    border-top: 1px solid #F0F0F3;
+  }
+  .btn {
+    font-family: var(--body);
+    border: none; cursor: pointer;
+    border-radius: 9999px;
+    font-size: 13px; font-weight: 600;
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    transition: transform .15s ease;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn-primary {
+    flex: 1;
+    background: var(--claro-primary);
+    color: #fff;
+    padding: 12px 18px;
+    box-shadow: 0 1px 2px rgba(115,103,240,.35), 0 4px 10px -2px rgba(115,103,240,.4);
+  }
+  .btn-primary i { font-size: 17px; }
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink-2);
+    padding: 12px 16px;
+    border: 1px solid #E8E8E8;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="top">
+      <div class="kicker">
+        <i class="mdi mdi-clock-alert-outline"></i>
+        Same-day turn
+        <span class="count">1</span>
+      </div>
+      <h2 class="headline">1600 Pennsylvania Ave NW</h2>
+      <div class="sub">2 bd · Standard clean · 120 min · No cleaner assigned</div>
+    </div>
+
+    <div class="bottom">
+      <div class="label-row">
+        <span>Cleaning window · Today</span>
+        <span class="gap"><strong>4h</strong> window</span>
+      </div>
+      <div class="rail">
+        <div class="track"></div>
+        <div class="fill"></div>
+
+        <div class="tag out-pos">Guest out</div>
+        <div class="tick out"></div>
+        <div class="time out-pos">11:00</div>
+
+        <div class="tag in-pos">Guest in</div>
+        <div class="tick in"></div>
+        <div class="time in-pos">3:00 PM</div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <button class="btn btn-secondary">View Details</button>
+      <button class="btn btn-primary"><i class="mdi mdi-account-plus-outline"></i>Assign Cleaner</button>
+    </div>
+  </div>
+</body>
+</html>

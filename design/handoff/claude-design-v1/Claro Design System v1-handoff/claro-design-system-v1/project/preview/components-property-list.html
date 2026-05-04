@@ -1,0 +1,307 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+<style>
+  :root {
+    --purple: #5A4FE3;
+    --ink: #2E263D;
+    --ink-2: #57506A;
+    --ink-3: #8B8599;
+    --border: #E6E6EC;
+    --border-soft: #EEEEF1;
+    --out: #EA5455;
+    --turn: #FF9F43;
+    --in: #28C76F;
+  }
+  body { margin: 0; padding: 28px 32px; background: #F5F5F9; font-family: 'Inter', system-ui, sans-serif; color: var(--ink); font-size: 13px; -webkit-font-smoothing: antialiased; }
+  
+
+  .list { background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; max-width: 720px; box-shadow: 0 1px 3px rgba(46,38,61,.05); }
+  .list.has-open .row-shell:not(.open) { opacity: 0.35; transition: opacity .25s ease; }
+  .list .row-shell { transition: opacity .25s ease; }
+  .list.has-open .row-shell.open { position: relative; z-index: 2; box-shadow: 0 0 0 1.5px rgba(90,79,227,.22), 0 2px 8px rgba(46,38,61,.06); }
+  .hdr { display: grid; grid-template-columns: 20px 1fr 160px 80px 28px; gap: 12px; align-items: center; padding: 8px 24px; font-size: 10px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: rgba(46,38,61,.40); border-bottom: 1px solid var(--border); background: #FAFAFA; }
+  .row-shell { border-bottom: 1px solid var(--border); }
+  .row-shell:last-child { border-bottom: none; }
+  .row { display: grid; grid-template-columns: 20px 1fr 160px 80px 28px; gap: 12px; align-items: center; padding: 12px 24px; cursor: pointer; transition: background .15s ease; }
+  .row:hover { background: rgba(115,103,240,.025); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; justify-self: center; }
+  .addr { font-size: 13px; font-weight: 500; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .submeta { font-size: 10px; color: var(--ink-3); margin-top: 2px; }
+  .next-turn .when { font-size: 12px; font-weight: 500; color: var(--ink); }
+  .next-turn .who { font-size: 10px; color: var(--ink-3); }
+  .next-turn.empty { font-size: 12px; color: var(--ink-3); font-style: italic; }
+  .pill { padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 500; justify-self: start; min-width: 0; max-width: 90px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .active   { background: rgba(90,79,227,.10); color: #5A4FE3; border: 1px solid rgba(90,79,227,.15); }
+  .inactive { background: transparent; color: rgba(46,38,61,.42); border: 1px solid var(--border); }
+  .chev { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; color: var(--ink-3); transition: transform .25s ease; justify-self: center; }
+  .row-shell.open .chev { color: var(--purple); transform: rotate(180deg); }
+  .chev .sym { font-size: 18px; }
+  .inlay { max-height: 0; overflow: hidden; transition: max-height .4s cubic-bezier(.4,0,.2,1); background: #fff; border-top: 1px solid var(--border-soft); }
+  .row-shell.open .inlay { max-height: 560px; }
+
+  .inlay-body { display: grid; grid-template-columns: 1fr 1fr; }
+  .inlay-left { padding: 16px 20px 16px 24px; }
+  .inlay-right { padding: 16px 20px 16px 20px; border-left: 1px solid var(--border-soft); }
+  .col-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 14px; }
+
+  /* ─── B2: Time bar (turn day) ────────────── */
+  .timebar-axis { position: relative; height: 48px; margin: 0 0 8px; }
+  .timebar-line { position: absolute; left: 0; right: 0; top: 50%; height: 2px; background: var(--border); border-radius: 2px; transform: translateY(-50%); }
+  .tb-block { position: absolute; top: 50%; height: 16px; border-radius: 3px; transform: translateY(-50%); display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: #fff; white-space: nowrap; overflow: hidden; letter-spacing: .03em; }
+  .tb-out  { background: var(--out); }
+  .tb-turn { background: transparent; border: 1.5px dashed var(--turn); }
+  .tb-in   { background: var(--in); }
+  .timebar-ticks { display: flex; justify-content: space-between; font-size: 9px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .tb-events { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+  .tb-event-row { display: flex; align-items: center; gap: 10px; }
+  .tb-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .tb-event-text { font-size: 12px; color: var(--ink); flex: 1; }
+  .tb-event-time { font-size: 11px; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+  .tb-badge { font-size: 9px; font-weight: 700; padding: 2px 6px; border-radius: 9999px; text-transform: uppercase; letter-spacing: .05em; }
+  .tb-badge.urgent { background: rgba(234,84,85,.14); color: var(--out); }
+
+  /* ─── B1 spine for "no turn" rows ─────────── */
+  .tl-spine { display: flex; flex-direction: column; gap: 0; padding-left: 14px; }
+  .tl-item { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: flex-start; position: relative; padding-bottom: 18px; }
+  .tl-item:last-child { padding-bottom: 0; }
+  .tl-item::before { content: ''; position: absolute; left: 9px; top: 18px; bottom: 0; width: 1.5px; background: var(--border); }
+  .tl-item:last-child::before { display: none; }
+  .tl-dot-wrap { display: flex; align-items: center; justify-content: center; width: 20px; height: 20px; flex-shrink: 0; position: relative; z-index: 1; }
+  .tl-dot { width: 12px; height: 12px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 0 0 1.5px currentColor; }
+  .tl-future { color: var(--purple); }
+  .tl-future .tl-dot { background: transparent; box-shadow: 0 0 0 1.5px var(--purple); }
+  .tl-content { padding-top: 2px; }
+  .tl-date { font-size: 10px; font-weight: 700; color: var(--ink-3); letter-spacing: .04em; text-transform: uppercase; margin-bottom: 2px; }
+  .tl-title { font-size: 13px; font-weight: 600; color: var(--ink); line-height: 1.3; }
+  .tl-sub { font-size: 11px; color: var(--ink-3); margin-top: 2px; }
+
+  /* ─── Right col: data table ──────────────── */
+  .b-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .b-table tr { border-bottom: 1px solid var(--border-soft); }
+  .b-table tr:last-child { border-bottom: none; }
+  .b-table tr:nth-child(even) td { background: #FAFAFA; }
+  .b-table td { padding: 8px 10px; vertical-align: middle; }
+  .b-table td:first-child { color: var(--ink-3); font-weight: 500; width: 45%; white-space: nowrap; vertical-align: middle; }
+  .b-table .td-inner { display: inline-flex; align-items: center; gap: 6px; vertical-align: middle; }
+  
+  .b-table td:first-child .mdi { font-size: 15px; color: var(--purple); }
+  .b-table td:last-child { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .b-table td.critical { color: var(--out); font-weight: 600; }
+  .b-table td.ok { color: var(--in); font-weight: 600; }
+  .right-section-label { font-size: 10px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 8px; }
+
+  .actions { display: flex; gap: 8px; padding: 12px 24px 14px; border-top: 1px solid var(--border-soft); background: #FAFAFA; }
+  .btn { font-family: 'Inter', system-ui, sans-serif; border: none; cursor: pointer; height: 34px; padding: 0 14px; border-radius: 9999px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: opacity .15s ease; }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: #5A4FE3; color: #fff; }
+  .btn-primary .sym { color: #fff; font-size: 15px; }
+  .btn-tonal { background: rgba(90,79,227,.10); color: #5A4FE3; border: 1px solid rgba(90,79,227,.15); }
+  .btn-tonal .sym { font-size: 15px; color: #5A4FE3; }
+  .btn-ghost { background: transparent; color: var(--ink-2); padding: 0 10px; }
+  .btn-ghost .sym { font-size: 15px; }
+  .spacer { flex: 1; }
+</style>
+</head>
+<body>
+
+<div class="list has-open" id="list">
+  <div class="hdr"><div></div><div>Property</div><div>Next check-in</div><div>Status</div><div></div></div>
+
+  <!-- Row 1 — Turn today: B2 time bar layout -->
+  <div class="row-shell open">
+    <div class="row">
+      <div class="dot" style="background:#00BFA6"></div>
+      <div><div class="addr">1600 Pennsylvania Ave NW</div><div class="submeta">4 bd · 3.5 ba</div></div>
+      <div class="next-turn"><div class="when">Today · 3:00 PM</div><div class="who">M. Patel · turn day</div></div>
+      <span class="pill active">Active</span>
+      <div class="chev"><i class="mdi mdi-chevron-down"></i></div>
+    </div>
+    <div class="inlay">
+      <div class="inlay-body">
+        <div class="inlay-left">
+          <div class="col-label">Today's events</div>
+          <div class="timebar-axis">
+            <div class="timebar-line"></div>
+            <div class="tb-block tb-out" style="left:calc(30% - 24px);width:44px;">OUT</div>
+            <div class="tb-block tb-turn" style="left:30%;width:40%;height:22px;">
+              <span style="font-size:10px;color:var(--turn);padding:0 8px">cleaning window</span>
+            </div>
+            <div class="tb-block tb-in" style="left:calc(70% - 20px);width:36px;z-index:2;">IN</div>
+          </div>
+          <div class="timebar-ticks">
+            <span>8am</span><span>10am</span><span>12pm</span><span>2pm</span><span>4pm</span><span>6pm</span>
+          </div>
+          <div class="tb-events">
+            <div class="tb-event-row">
+              <div class="tb-dot" style="background:var(--out)"></div>
+              <div class="tb-event-text">Guest check-out</div>
+              <div class="tb-event-time">11:00 AM</div>
+            </div>
+            <div class="tb-event-row">
+              <div class="tb-dot" style="background:var(--turn)"></div>
+              <div class="tb-event-text">Cleaning <span class="tb-badge urgent">Unassigned</span></div>
+              <div class="tb-event-time">11:00 → 3:00</div>
+            </div>
+            <div class="tb-event-row">
+              <div class="tb-dot" style="background:var(--in)"></div>
+              <div class="tb-event-text">Guest check-in</div>
+              <div class="tb-event-time">3:00 PM</div>
+            </div>
+          </div>
+        </div>
+        <div class="inlay-right">
+          <div class="right-section-label">Property stats</div>
+          <table class="b-table">
+            <tr><td><span class="td-inner"><i class="mdi mdi-star-outline"></i>Rating</span></td><td>4.92 / 128 reviews</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-autorenew"></i>Turns YTD</span></td><td>128</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-clock-outline"></i>Avg clean</span></td><td>118 min</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-cash"></i>Rate</span></td><td>$85 / turn</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-broom"></i>Today</span></td><td class="critical">Unassigned</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-primary"><i class="mdi mdi-account-plus-outline"></i>Assign cleaner</button>
+        <button class="btn btn-tonal"><i class="mdi mdi-calendar-month-outline"></i>View calendar</button>
+        <div class="spacer"></div>
+        <button class="btn btn-ghost"><i class="mdi mdi-pencil-outline"></i>Edit</button>
+        <button class="btn btn-ghost"><i class="mdi mdi-dots-horizontal"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 2 — No turn today: B1 spine "Upcoming events" -->
+  <div class="row-shell">
+    <div class="row">
+      <div class="dot" style="background:#F4A93C"></div>
+      <div><div class="addr">Hall of Justice</div><div class="submeta">6 bd · 4 ba</div></div>
+      <div class="next-turn"><div class="when">Thu · 10:00 AM</div><div class="who">Priya K.</div></div>
+      <span class="pill active">Active</span>
+      <div class="chev"><i class="mdi mdi-chevron-down"></i></div>
+    </div>
+    <div class="inlay">
+      <div class="inlay-body">
+        <div class="inlay-left">
+          <div class="col-label">Upcoming events</div>
+          <div class="tl-spine">
+            <div class="tl-item tl-future">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+              <div class="tl-content">
+                <div class="tl-date">Thu, Apr 25 · 10:00 AM</div>
+                <div class="tl-title">Guest check-out</div>
+                <div class="tl-sub">T. Okonkwo · 7 nights</div>
+              </div>
+            </div>
+            <div class="tl-item tl-future">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+              <div class="tl-content">
+                <div class="tl-date">Thu, Apr 25 · 10:00 → 2:00 PM</div>
+                <div class="tl-title">Luxury clean</div>
+                <div class="tl-sub">180 min · Priya K.</div>
+              </div>
+            </div>
+            <div class="tl-item tl-future">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+              <div class="tl-content">
+                <div class="tl-date">Thu, Apr 25 · 4:00 PM</div>
+                <div class="tl-title">Guest check-in</div>
+                <div class="tl-sub">New guests · 5 nights</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="inlay-right">
+          <div class="right-section-label">Property stats</div>
+          <table class="b-table">
+            <tr><td><span class="td-inner"><i class="mdi mdi-star-outline"></i>Rating</span></td><td>4.88 / 91 reviews</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-autorenew"></i>Turns YTD</span></td><td>91</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-clock-outline"></i>Avg clean</span></td><td>172 min</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-cash"></i>Rate</span></td><td>$140 / turn</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-broom"></i>Next check-in</span></td><td class="ok">Priya K.</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-tonal"><i class="mdi mdi-calendar-month-outline"></i>View calendar</button>
+        <div class="spacer"></div>
+        <button class="btn btn-ghost"><i class="mdi mdi-pencil-outline"></i>Edit</button>
+        <button class="btn btn-ghost"><i class="mdi mdi-dots-horizontal"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Row 3 — No turn, upcoming only -->
+  <div class="row-shell">
+    <div class="row">
+      <div class="dot" style="background:#8A7FE8"></div>
+      <div><div class="addr">32540 Wishing Well Trl, Unit B</div><div class="submeta">3 bd · 2 ba</div></div>
+      <div class="next-turn"><div class="when">Sat, Apr 27 · 3:00 PM</div></div>
+      <span class="pill inactive">Inactive</span>
+      <div class="chev"><i class="mdi mdi-chevron-down"></i></div>
+    </div>
+    <div class="inlay">
+      <div class="inlay-body">
+        <div class="inlay-left">
+          <div class="col-label">Upcoming events</div>
+          <div class="tl-spine">
+            <div class="tl-item tl-future">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+              <div class="tl-content">
+                <div class="tl-date">Sat, Apr 27 · 3:00 PM</div>
+                <div class="tl-title">Guest check-in</div>
+                <div class="tl-sub">A. Roth · 3 nights</div>
+              </div>
+            </div>
+            <div class="tl-item tl-future">
+              <div class="tl-dot-wrap"><div class="tl-dot"></div></div>
+              <div class="tl-content">
+                <div class="tl-date">Tue, Apr 30 · 11:00 AM</div>
+                <div class="tl-title">Guest check-out</div>
+                <div class="tl-sub">A. Roth · 3 nights</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="inlay-right">
+          <div class="right-section-label">Property stats</div>
+          <table class="b-table">
+            <tr><td><span class="td-inner"><i class="mdi mdi-star-outline"></i>Rating</span></td><td>4.78 / 44 reviews</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-autorenew"></i>Turns YTD</span></td><td>44</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-clock-outline"></i>Avg clean</span></td><td>105 min</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-cash"></i>Rate</span></td><td>$75 / turn</td></tr>
+            <tr><td><span class="td-inner"><i class="mdi mdi-broom"></i>Next check-in</span></td><td class="critical">Unassigned</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-tonal"><i class="mdi mdi-calendar-month-outline"></i>View calendar</button>
+        <div class="spacer"></div>
+        <button class="btn btn-ghost"><i class="mdi mdi-pencil-outline"></i>Edit</button>
+        <button class="btn btn-ghost"><i class="mdi mdi-dots-horizontal"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const list = document.getElementById('list');
+  function sync() { list.classList.toggle('has-open', !!list.querySelector('.row-shell.open')); }
+  list.addEventListener('click', e => {
+    if (e.target.closest('.actions')) return;
+    const shell = e.target.closest('.row-shell');
+    if (!shell) return;
+    const wasOpen = shell.classList.contains('open');
+    list.querySelectorAll('.row-shell.open').forEach(s => s.classList.remove('open'));
+    if (!wasOpen) shell.classList.add('open');
+    sync();
+  });
+  sync();
+</script>
+</body>
+</html>

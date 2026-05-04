@@ -1,0 +1,184 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../fonts/materialdesignicons.css">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--claro-background); font-family: var(--claro-font-family); }
+
+  .mdi:before { font-family: 'Material Design Icons' !important; }
+  .nav-icon { font-size: 20px; flex-shrink: 0; width: 22px; text-align: center; }
+
+  /* ── Shared nav base ── */
+  .nav {
+    width: 224px;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    border-radius: 6px;
+  }
+
+  .section-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    font-weight: 600;
+    padding: 8px 12px 4px;
+    margin-top: 4px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 160ms ease, color 160ms ease;
+  }
+
+  .badge {
+    margin-left: auto;
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 9999px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Variant A: primary-tinted active row ── */
+  .nav-a {
+    background: var(--claro-surface);
+    border: 1px solid var(--claro-divider);
+  }
+  .nav-a .section-label { color: var(--claro-fg4); }
+  .nav-a .item { color: var(--claro-fg3); }
+  .nav-a .item:hover { background: rgba(46,38,61,.04); color: var(--claro-fg2); }
+
+  .nav-a .item.active {
+    background: var(--claro-primary-tint);
+    color: var(--claro-primary);
+    font-weight: 600;
+  }
+  .nav-a .item.active .nav-icon { color: var(--claro-primary); }
+  .nav-a .badge { background: rgba(46,38,61,.07); color: var(--claro-fg2); }
+  .nav-a .item.active .badge { background: rgba(115,103,240,.15); color: var(--claro-primary); }
+
+  /* ── Variant B: full primary sidebar overlay ── */
+  .nav-b {
+    background: rgba(115, 103, 240, 0.12);
+    border: 1px solid rgba(115, 103, 240, 0.18);
+    backdrop-filter: blur(8px);
+  }
+  .nav-b .section-label { color: rgba(115,103,240,.55); }
+  .nav-b .item { color: rgba(46,38,61,.55); }
+  .nav-b .item:hover { background: rgba(115,103,240,.10); color: var(--claro-primary-dark); }
+
+  .nav-b .item.active {
+    background: rgba(115,103,240,.18);
+    color: var(--claro-primary-dark);
+    font-weight: 600;
+  }
+  .nav-b .item.active .nav-icon { color: var(--claro-primary); }
+  .nav-b .badge { background: rgba(115,103,240,.12); color: var(--claro-primary); }
+  .nav-b .item.active .badge { background: rgba(115,103,240,.22); color: var(--claro-primary-dark); }
+
+  /* ── Variant C: dark primary sidebar ── */
+  .nav-c {
+    background: var(--claro-primary-dark);
+    border: none;
+  }
+  .nav-c .section-label { color: rgba(255,255,255,.35); }
+  .nav-c .item { color: rgba(255,255,255,.60); }
+  .nav-c .item:hover { background: rgba(255,255,255,.08); color: rgba(255,255,255,.90); }
+  .nav-c .item:hover .nav-icon { color: #fff; }
+  .nav-c .item.active {
+    background: rgba(255,255,255,.14);
+    color: #fff;
+    font-weight: 600;
+  }
+  .nav-c .item.active .nav-icon { color: var(--claro-primary-light); }
+  .nav-c .badge { background: rgba(255,255,255,.12); color: rgba(255,255,255,.7); }
+  .nav-c .item.active .badge { background: rgba(255,255,255,.2); color: #fff; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const ITEMS = [
+  { icon: "mdi-view-dashboard",       label: "Overview",   active: true },
+  { icon: "mdi-calendar",             label: "Calendar"                 },
+  { icon: "mdi-format-list-bulleted", label: "Bookings"                 },
+  { icon: "mdi-home",                 label: "Properties", badge: "5"   },
+  { icon: "mdi-chart-line",           label: "Charts"                   },
+];
+const ACCOUNT = [
+  { icon: "mdi-account-circle", label: "Profile"  },
+  { icon: "mdi-cog",            label: "Settings" },
+];
+
+function Nav({ cls }) {
+  const [active, setActive] = React.useState("Overview");
+  const allItems = [...ITEMS, ...ACCOUNT];
+  return (
+    <nav className={`nav ${cls}`}>
+      <div className="section-label">Main</div>
+      {ITEMS.map(it => (
+        <div
+          key={it.label}
+          className={`item${active === it.label ? " active" : ""}`}
+          onClick={() => setActive(it.label)}
+        >
+          <i className={`mdi ${it.icon} nav-icon`}></i>
+          {it.label}
+          {it.badge && <span className="badge">{it.badge}</span>}
+        </div>
+      ))}
+      <div className="section-label">Account</div>
+      {ACCOUNT.map(it => (
+        <div
+          key={it.label}
+          className={`item${active === it.label ? " active" : ""}`}
+          onClick={() => setActive(it.label)}
+        >
+          <i className={`mdi ${it.icon} nav-icon`}></i>
+          {it.label}
+        </div>
+      ))}
+    </nav>
+  );
+}
+
+function App() {
+  return (
+    <DesignCanvas title="Sidebar Nav — Primary Color Variants">
+      <DCSection id="variants" title="Primary Color Variants">
+        <DCArtboard id="a" label="A — Primary Tint Active" width={256} height={310}>
+          <Nav cls="nav-a"/>
+        </DCArtboard>
+        <DCArtboard id="b" label="B — Primary Overlay Background" width={256} height={310}>
+          <Nav cls="nav-b"/>
+        </DCArtboard>
+        <DCArtboard id="c" label="C — Dark Primary + Icon Accent" width={256} height={310}>
+          <Nav cls="nav-c"/>
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+</script>
+</body>
+</html>

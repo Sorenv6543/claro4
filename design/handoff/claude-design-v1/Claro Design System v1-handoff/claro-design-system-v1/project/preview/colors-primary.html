@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 18px; background: #fff; font-family: var(--claro-font-family); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .swatch { display: flex; flex-direction: column; gap: 4px; }
+  .chip { height: 56px; border-radius: 2px; }
+  .name { font-size: 12px; font-weight: 500; color: var(--claro-fg1); }
+  .hex { font-size: 11px; color: var(--claro-fg3); font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="swatch"><div class="chip" style="background:#7367F0"></div><div class="name">primary</div><div class="hex">#7367F0</div></div>
+    <div class="swatch"><div class="chip" style="background:#9E95F5"></div><div class="name">primary-light</div><div class="hex">#9E95F5</div></div>
+    <div class="swatch"><div class="chip" style="background:#5E52EE"></div><div class="name">primary-dark</div><div class="hex">#5E52EE</div></div>
+    <div class="swatch"><div class="chip" style="background:#F0EEFF;border:1px solid #E8E8E8"></div><div class="name">primary-tint</div><div class="hex">#F0EEFF · active nav bg</div></div>
+    <div class="swatch"><div class="chip" style="background:rgba(115,103,240,0.16)"></div><div class="name">primary-tonal</div><div class="hex">16% alpha</div></div>
+    <div class="swatch"><div class="chip" style="background:#A8AAAE"></div><div class="name">secondary</div><div class="hex">#A8AAAE</div></div>
+  </div>
+</body>
+</html>

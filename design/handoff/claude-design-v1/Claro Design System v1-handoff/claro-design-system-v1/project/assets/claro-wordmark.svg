@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -24 420 180" fill="none" role="img" aria-label="Claro">
+  <title>Claro</title>
+  <desc>Claro wordmark — Inter 700, #5A4FE3. Swash rises off the o and arcs back over the word.</desc>
+
+  <defs>
+    
+    
+
+    
+    <linearGradient id="swashFade" x1="338" y1="88" x2="140" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#5A4FE3" stop-opacity="0"></stop>
+      <stop offset="100%" stop-color="#5A4FE3" stop-opacity="1"></stop>
+    </linearGradient>
+  </defs>
+
+  
+  <text x="8" y="118" font-family="&#39;Inter&#39;, system-ui, -apple-system, sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#5A4FE3">Claro</text>
+
+  
+  <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke="url(#swashFade)" stroke-width="8" stroke-linecap="round" fill="none"></path>
+
+  
+</svg>

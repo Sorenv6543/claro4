@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+<style>
+  body { margin: 0; padding: 18px; background: #fff; font-family: var(--claro-font-family); }
+  .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: 9999px; font-size: 13px; font-weight: 500; font-family: inherit; border: none; cursor: pointer; }
+  .primary { background: #7367F0; color: #fff; box-shadow: 0 2px 6px rgba(115,103,240,.35); }
+  .secondary { background: rgba(0,207,232,.14); color: #00a7ba; }
+  .outlined { background: #fff; color: #2E263D; border: 1px solid #E8E8E8; }
+  .danger { background: rgba(234,84,85,.12); color: #c44647; }
+  .icon-btn { width: 36px; height: 36px; border-radius: 2px; background: #fff; border: 1px solid #E8E8E8; display: inline-flex; align-items: center; justify-content: center; color: var(--claro-fg2); cursor: pointer; }
+  .fab { width: 48px; height: 48px; border-radius: 2px; background: #7367F0; color: #fff; display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 14px rgba(115,103,240,.4); border: none; cursor: pointer; }
+  i { font-size: 18px; }
+  .label { font-size: 10px; color: var(--claro-fg3); text-transform: uppercase; letter-spacing: .08em; width: 70px; }
+  .line { display: flex; align-items: center; gap: 16px; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+  <div class="line"><div class="label">Primary</div><button class="btn primary"><i class="mdi mdi-plus"></i>Add Property</button><button class="btn primary">Save</button></div>
+  <div class="line"><div class="label">Secondary</div><button class="btn secondary"><i class="mdi mdi-cog-outline"></i>Settings</button><button class="btn secondary">Assign</button></div>
+  <div class="line"><div class="label">Outlined</div><button class="btn outlined">Cancel</button><button class="btn outlined"><i class="mdi mdi-eye-outline"></i>View</button></div>
+  <div class="line"><div class="label">Danger</div><button class="btn danger"><i class="mdi mdi-delete-outline"></i>Delete</button></div>
+  <div class="line"><div class="label">Icon</div><button class="icon-btn"><i class="mdi mdi-pencil-outline"></i></button><button class="icon-btn"><i class="mdi mdi-dots-vertical"></i></button><button class="fab"><i class="mdi mdi-plus" style="font-size:22px"></i></button></div>
+</body>
+</html>

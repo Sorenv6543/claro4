@@ -1,0 +1,229 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  :root { --primary: #5A4FE3; --ink: #2E263D; --ink-2: #57506A; --ink-3: #8B8599; --border: #E6E6EC; }
+  body { margin: 0; padding: 28px; background: #fff; font-family: var(--claro-font-family); color: var(--ink); }
+  h2 { margin: 0 0 6px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 860px; }
+  .card { border: 1px solid var(--border); border-radius: 4px; overflow: hidden; }
+  .card-hero { padding: 40px 32px 32px; display: flex; align-items: center; justify-content: center; background: #FAFAFA; border-bottom: 1px solid var(--border); }
+  .card-body { padding: 16px 20px; }
+  .card-label { font-size: 12px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+  .card-desc  { font-size: 11px; color: var(--ink-3); line-height: 1.5; }
+  .swatches { display: flex; gap: 0; border-top: 1px solid var(--border); }
+  .sw { flex: 1; height: 36px; display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); }
+  .sw:last-child { border-right: none; }
+</style>
+</head>
+<body>
+
+<h2 style="margin-bottom:20px;">Brand wordmark · Swash variants</h2>
+
+<div class="grid">
+
+  <!-- Variant A: hook-back arc (current) — fades from o transparent→opaque at tip -->
+  <div class="card">
+    <div class="card-hero">
+      <svg viewBox="0 -24 420 180" fill="none" style="width:320px;height:auto;" aria-label="Claro variant A">
+        <defs>
+          <linearGradient id="fadeA" x1="338" y1="88" x2="140" y2="56" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#5A4FE3" stop-opacity="0"/>
+            <stop offset="65%"  stop-color="#5A4FE3" stop-opacity="0.7"/>
+            <stop offset="100%" stop-color="#5A4FE3" stop-opacity="1"/>
+          </linearGradient>
+        </defs>
+        <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#5A4FE3">Claro</text>
+        <!-- Hook-back arc: rises off o top-right, sweeps left back over word -->
+        <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56"
+              stroke="url(#fadeA)" stroke-width="8" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">A · Hook-back arc</div>
+      <div class="card-desc">Rises off the top of the o, arcs up and hooks back left over the whole word. Reads as a canopy — protective, complete. Fade arrives from tip.</div>
+      <div style="display:flex;gap:8px;margin-top:12px;">
+        <a href="../assets/claro-wordmark-hook.svg" download="claro-wordmark.svg"
+           style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;background:#5A4FE3;color:#fff;font-size:11px;font-weight:600;border-radius:2px;text-decoration:none;">↓ Purple SVG</a>
+        <a href="../assets/claro-wordmark-hook-white.svg" download="claro-wordmark-white.svg"
+           style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;background:#2E263D;color:#fff;font-size:11px;font-weight:600;border-radius:2px;text-decoration:none;">↓ White SVG</a>
+      </div>
+    </div>
+    <div class="swatches">
+      <div class="sw" style="background:#F5F5F9">
+        <svg viewBox="0 -24 420 180" fill="none" style="width:90px;height:auto;">
+          <defs><linearGradient id="fadeA2" x1="338" y1="88" x2="140" y2="56" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#5A4FE3" stop-opacity="0"/><stop offset="100%" stop-color="#5A4FE3" stop-opacity="1"/></linearGradient></defs>
+          <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#5A4FE3">Claro</text>
+          <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke="url(#fadeA2)" stroke-width="8" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="sw" style="background:#2E263D">
+        <svg viewBox="0 -24 420 180" fill="none" style="width:90px;height:auto;">
+          <defs><linearGradient id="fadeA3" x1="338" y1="88" x2="140" y2="56" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="100%" stop-color="#fff" stop-opacity="1"/></linearGradient></defs>
+          <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#fff">Claro</text>
+          <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke="url(#fadeA3)" stroke-width="8" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="sw" style="background:#5A4FE3">
+        <svg viewBox="0 -24 420 180" fill="none" style="width:90px;height:auto;">
+          <defs><linearGradient id="fadeA4" x1="338" y1="88" x2="140" y2="56" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="100%" stop-color="#fff" stop-opacity="1"/></linearGradient></defs>
+          <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#fff">Claro</text>
+          <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke="url(#fadeA4)" stroke-width="8" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Variant B: ascending tail — rises off the baseline of the o, clean upward sweep -->
+  <div class="card">
+    <div class="card-hero">
+      <svg viewBox="0 -24 480 180" fill="none" style="width:320px;height:auto;" aria-label="Claro variant B">
+        <defs>
+          <linearGradient id="fadeB" x1="338" y1="120" x2="440" y2="-10" gradientUnits="userSpaceOnUse">
+            <stop offset="0%"   stop-color="#5A4FE3" stop-opacity="0"/>
+            <stop offset="45%"  stop-color="#5A4FE3" stop-opacity="0.6"/>
+            <stop offset="100%" stop-color="#5A4FE3" stop-opacity="1"/>
+          </linearGradient>
+        </defs>
+        <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#5A4FE3">Claro</text>
+        <!-- Ascending tail: rises from baseline of o, curves up-right, tapering to a fine point -->
+        <path d="M 340 118 Q 370 90 390 55 Q 410 18 420 -10"
+              stroke="url(#fadeB)" stroke-width="8" stroke-linecap="round" fill="none"/>
+      </svg>
+    </div>
+    <div class="card-body">
+      <div class="card-label">B · Ascending tail</div>
+      <div class="card-desc">Rises off the baseline of the o, sweeping up and to the right. Calligraphic — like a pen lifting off the last stroke. Reads as forward momentum.</div>
+    </div>
+    <div class="swatches">
+      <div class="sw" style="background:#F5F5F9">
+        <svg viewBox="0 -24 480 180" fill="none" style="width:90px;height:auto;">
+          <defs><linearGradient id="fadeB2" x1="338" y1="120" x2="420" y2="-10" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#5A4FE3" stop-opacity="0"/><stop offset="100%" stop-color="#5A4FE3" stop-opacity="1"/></linearGradient></defs>
+          <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#5A4FE3">Claro</text>
+          <path d="M 340 118 Q 370 90 390 55 Q 410 18 420 -10" stroke="url(#fadeB2)" stroke-width="8" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="sw" style="background:#2E263D">
+        <svg viewBox="0 -24 480 180" fill="none" style="width:90px;height:auto;">
+          <defs><linearGradient id="fadeB3" x1="338" y1="120" x2="420" y2="-10" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="100%" stop-color="#fff" stop-opacity="1"/></linearGradient></defs>
+          <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#fff">Claro</text>
+          <path d="M 340 118 Q 370 90 390 55 Q 410 18 420 -10" stroke="url(#fadeB3)" stroke-width="8" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="sw" style="background:#5A4FE3">
+        <svg viewBox="0 -24 480 180" fill="none" style="width:90px;height:auto;">
+          <defs><linearGradient id="fadeB4" x1="338" y1="120" x2="420" y2="-10" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="100%" stop-color="#fff" stop-opacity="1"/></linearGradient></defs>
+          <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#fff">Claro</text>
+          <path d="M 340 118 Q 370 90 390 55 Q 410 18 420 -10" stroke="url(#fadeB4)" stroke-width="8" stroke-linecap="round" fill="none"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- Variant A1 + A2 below the main grid -->
+  <div style="margin-top:28px;">
+    <h2 style="margin-bottom:16px;">A · Hook-back arc — 2 downloadable variants</h2>
+    <div class="grid">
+
+      <!-- A1: Fine stroke -->
+      <div class="card">
+        <div class="card-hero">
+          <svg viewBox="0 -24 420 180" fill="none" style="width:320px;height:auto;">
+            <defs>
+              <linearGradient id="pa1" x1="338" y1="88" x2="140" y2="56" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#5A4FE3" stop-opacity="0"/>
+                <stop offset="55%"  stop-color="#5A4FE3" stop-opacity="0.65"/>
+                <stop offset="100%" stop-color="#5A4FE3" stop-opacity="1"/>
+              </linearGradient>
+            </defs>
+            <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#5A4FE3">Claro</text>
+            <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke="url(#pa1)" stroke-width="5" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-label">A1 · Fine stroke (5px)</div>
+          <div class="card-desc">Same hook-back arc, thinner stroke. More editorial, refined. Pairs well with small sizes and print contexts.</div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <a href="../assets/claro-wordmark-a1.svg" download="claro-wordmark-a1.svg"
+               style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;background:#5A4FE3;color:#fff;font-size:11px;font-weight:600;border-radius:2px;text-decoration:none;">↓ Download SVG</a>
+          </div>
+        </div>
+        <div class="swatches">
+          <div class="sw" style="background:#F5F5F9">
+            <svg viewBox="0 -24 420 180" fill="none" style="width:90px;height:auto;">
+              <defs><linearGradient id="pa1s" x1="338" y1="88" x2="140" y2="56" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#5A4FE3" stop-opacity="0"/><stop offset="100%" stop-color="#5A4FE3" stop-opacity="1"/></linearGradient></defs>
+              <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#5A4FE3">Claro</text>
+              <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke="url(#pa1s)" stroke-width="5" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="sw" style="background:#2E263D">
+            <svg viewBox="0 -24 420 180" fill="none" style="width:90px;height:auto;">
+              <defs><linearGradient id="pa1d" x1="338" y1="88" x2="140" y2="56" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="100%" stop-color="#fff" stop-opacity="1"/></linearGradient></defs>
+              <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#fff">Claro</text>
+              <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke="url(#pa1d)" stroke-width="5" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="sw" style="background:#5A4FE3">
+            <svg viewBox="0 -24 420 180" fill="none" style="width:90px;height:auto;">
+              <defs><linearGradient id="pa1p" x1="338" y1="88" x2="140" y2="56" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="100%" stop-color="#fff" stop-opacity="1"/></linearGradient></defs>
+              <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#fff">Claro</text>
+              <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke="url(#pa1p)" stroke-width="5" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- A2: Wide arc -->
+      <div class="card">
+        <div class="card-hero">
+          <svg viewBox="0 -50 440 200" fill="none" style="width:320px;height:auto;">
+            <defs>
+              <linearGradient id="pa2" x1="342" y1="90" x2="110" y2="40" gradientUnits="userSpaceOnUse">
+                <stop offset="0%"   stop-color="#5A4FE3" stop-opacity="0"/>
+                <stop offset="50%"  stop-color="#5A4FE3" stop-opacity="0.6"/>
+                <stop offset="100%" stop-color="#5A4FE3" stop-opacity="1"/>
+              </linearGradient>
+            </defs>
+            <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#5A4FE3">Claro</text>
+            <path d="M 342 90 Q 390 30 355 -14 Q 305 -44 230 -28 Q 148 -10 110 40"
+                  stroke="url(#pa2)" stroke-width="8" stroke-linecap="round" fill="none"/>
+          </svg>
+        </div>
+        <div class="card-body">
+          <div class="card-label">A2 · Wide arc (higher sweep)</div>
+          <div class="card-desc">Bigger, more dramatic arc sweeping further above. More presence at large sizes — hero banners, splash screens, signage.</div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <a href="../assets/claro-wordmark-a2.svg" download="claro-wordmark-a2.svg"
+               style="display:inline-flex;align-items:center;gap:5px;padding:7px 12px;background:#5A4FE3;color:#fff;font-size:11px;font-weight:600;border-radius:2px;text-decoration:none;">↓ Download SVG</a>
+          </div>
+        </div>
+        <div class="swatches">
+          <div class="sw" style="background:#F5F5F9">
+            <svg viewBox="0 -50 440 200" fill="none" style="width:90px;height:auto;">
+              <defs><linearGradient id="pa2s" x1="342" y1="90" x2="110" y2="40" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#5A4FE3" stop-opacity="0"/><stop offset="100%" stop-color="#5A4FE3" stop-opacity="1"/></linearGradient></defs>
+              <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#5A4FE3">Claro</text>
+              <path d="M 342 90 Q 390 30 355 -14 Q 305 -44 230 -28 Q 148 -10 110 40" stroke="url(#pa2s)" stroke-width="8" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="sw" style="background:#2E263D">
+            <svg viewBox="0 -50 440 200" fill="none" style="width:90px;height:auto;">
+              <defs><linearGradient id="pa2d" x1="342" y1="90" x2="110" y2="40" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="100%" stop-color="#fff" stop-opacity="1"/></linearGradient></defs>
+              <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#fff">Claro</text>
+              <path d="M 342 90 Q 390 30 355 -14 Q 305 -44 230 -28 Q 148 -10 110 40" stroke="url(#pa2d)" stroke-width="8" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div class="sw" style="background:#5A4FE3">
+            <svg viewBox="0 -50 440 200" fill="none" style="width:90px;height:auto;">
+              <defs><linearGradient id="pa2p" x1="342" y1="90" x2="110" y2="40" gradientUnits="userSpaceOnUse"><stop offset="0%" stop-color="#fff" stop-opacity="0"/><stop offset="100%" stop-color="#fff" stop-opacity="1"/></linearGradient></defs>
+              <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#fff">Claro</text>
+              <path d="M 342 90 Q 390 30 355 -14 Q 305 -44 230 -28 Q 148 -10 110 40" stroke="url(#pa2p)" stroke-width="8" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</html>

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="../fonts/materialdesignicons.css">
+<style>
+  @font-face {
+    font-family: "Material Design Icons";
+    src: url('../fonts/materialdesignicons.woff2') format('woff2');
+    font-weight: normal; font-style: normal;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--claro-background); font-family: var(--claro-font-family); padding: 24px; }
+  .mdi:before { font-family: 'Material Design Icons' !important; }
+
+  .nav {
+    width: 224px;
+    background: var(--claro-surface);
+    border: 1px solid var(--claro-divider);
+    border-radius: 6px;
+    padding: 10px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .section-label {
+    font-size: 11px;
+    color: rgba(46,38,61,.55);
+    text-transform: uppercase;
+    letter-spacing: .09em;
+    font-weight: 700;
+    padding: 10px 12px 4px;
+    margin-top: 4px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 12px;
+    min-height: 44px;
+    border-radius: 6px;
+    color: rgba(46,38,61,.72);
+    font-size: 13.5px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    background: transparent;
+    width: 100%;
+    text-align: left;
+    font-family: var(--claro-font-family);
+    transition: background 160ms ease, color 160ms ease;
+    outline: none;
+  }
+  .item:hover { background: rgba(46,38,61,.05); color: rgba(46,38,61,.90); }
+  .item:focus-visible { box-shadow: 0 0 0 2px var(--claro-primary); }
+
+  .item.active {
+    background: var(--claro-primary-tint);
+    color: var(--claro-primary-dark);
+    font-weight: 600;
+  }
+
+  .nav-icon { font-size: 20px; flex-shrink: 0; width: 22px; text-align: center; color: inherit; }
+  .item.active .nav-icon { color: var(--claro-primary); }
+
+  .badge {
+    margin-left: auto;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 9999px;
+    font-weight: 700;
+    letter-spacing: .02em;
+    font-variant-numeric: tabular-nums;
+    background: rgba(46,38,61,.08);
+    color: rgba(46,38,61,.72);
+  }
+  .item.active .badge { background: rgba(115,103,240,.18); color: var(--claro-primary-dark); }
+</style>
+</head>
+<body>
+  <nav class="nav" aria-label="Main navigation">
+    <div class="section-label" aria-hidden="true">Main</div>
+    <button class="item active" aria-current="page">
+      <i class="mdi mdi-view-dashboard nav-icon" aria-hidden="true"></i>Overview
+    </button>
+    <button class="item">
+      <i class="mdi mdi-calendar nav-icon" aria-hidden="true"></i>Calendar
+    </button>
+    <button class="item">
+      <i class="mdi mdi-format-list-bulleted nav-icon" aria-hidden="true"></i>Bookings
+    </button>
+    <button class="item">
+      <i class="mdi mdi-home nav-icon" aria-hidden="true"></i>Properties
+      <span class="badge" aria-label="5 items">5</span>
+    </button>
+    <button class="item">
+      <i class="mdi mdi-chart-line nav-icon" aria-hidden="true"></i>Charts
+    </button>
+    <div class="section-label" aria-hidden="true">Account</div>
+    <button class="item">
+      <i class="mdi mdi-account-circle nav-icon" aria-hidden="true"></i>Profile
+    </button>
+    <button class="item">
+      <i class="mdi mdi-cog nav-icon" aria-hidden="true"></i>Settings
+    </button>
+  </nav>
+
+  <script>
+    document.querySelectorAll('.item').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.item').forEach(b => {
+          b.classList.remove('active');
+          b.removeAttribute('aria-current');
+        });
+        btn.classList.add('active');
+        btn.setAttribute('aria-current', 'page');
+      });
+    });
+  </script>
+</body>
+</html>

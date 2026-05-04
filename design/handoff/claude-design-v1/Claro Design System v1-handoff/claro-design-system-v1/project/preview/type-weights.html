@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 18px; background: #fff; font-family: var(--claro-font-family); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .cell { display: flex; flex-direction: column; gap: 4px; }
+  .sample { font-size: 28px; color: var(--claro-fg1); letter-spacing: -0.005em; }
+  .meta { font-size: 11px; color: var(--claro-fg3); }
+  .num { font-variant-numeric: tabular-nums; font-weight: 600; font-size: 32px; color: var(--claro-fg1); }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="cell"><div class="sample" style="font-weight:400">Ag 400</div><div class="meta">Inter Regular · body</div></div>
+    <div class="cell"><div class="sample" style="font-weight:500">Ag 500</div><div class="meta">Inter Medium · labels, chips</div></div>
+    <div class="cell"><div class="sample" style="font-weight:600">Ag 600</div><div class="meta">Inter Semibold · headings, numerals</div></div>
+    <div class="cell"><div class="num">14</div><div class="meta">Tabular nums · stat cards</div></div>
+    <div class="cell"><div class="num">$4,280</div><div class="meta">Tabular nums · revenue</div></div>
+    <div class="cell"><div class="num">61min</div><div class="meta">Tabular nums · durations</div></div>
+  </div>
+</body>
+</html>

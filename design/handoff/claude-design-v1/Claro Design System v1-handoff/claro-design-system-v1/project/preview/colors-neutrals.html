@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 18px; background: #fff; font-family: var(--claro-font-family); }
+  .wrap { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+  .swatch { display: flex; flex-direction: column; gap: 4px; }
+  .chip { height: 44px; border-radius: 2px; border: 1px solid #ECECEE; }
+  .name { font-size: 12px; font-weight: 500; color: var(--claro-fg1); }
+  .hex { font-size: 11px; color: var(--claro-fg3); font-variant-numeric: tabular-nums; }
+  .txt { height: 44px; border: 1px solid #ECECEE; border-radius: 2px; display: flex; align-items: center; justify-content: center; font-weight: 500; font-size: 13px; background: #fff; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="swatch"><div class="chip" style="background:#F5F5F9"></div><div class="name">background</div><div class="hex">#F5F5F9</div></div>
+    <div class="swatch"><div class="chip" style="background:#FFFFFF"></div><div class="name">surface</div><div class="hex">#FFFFFF</div></div>
+    <div class="swatch"><div class="chip" style="background:#E8E8E8"></div><div class="name">divider</div><div class="hex">#E8E8E8</div></div>
+    <div class="swatch"><div class="chip" style="background:#2E263D"></div><div class="name">on-surface</div><div class="hex">#2E263D</div></div>
+
+    <div class="swatch"><div class="txt" style="color:#2E263D">fg1</div><div class="name">text primary</div><div class="hex">#2E263D</div></div>
+    <div class="swatch"><div class="txt" style="color:rgba(46,38,61,.72)">fg2</div><div class="name">text body</div><div class="hex">72% alpha</div></div>
+    <div class="swatch"><div class="txt" style="color:rgba(46,38,61,.5)">fg3</div><div class="name">text secondary</div><div class="hex">50% alpha</div></div>
+    <div class="swatch"><div class="txt" style="color:rgba(46,38,61,.28)">fg4</div><div class="name">text disabled</div><div class="hex">28% alpha</div></div>
+  </div>
+</body>
+</html>
