@@ -12,6 +12,7 @@ permissions:
   actions: read
 
   security-events: write
+  actions: read
 
 jobs:
   analyze:
