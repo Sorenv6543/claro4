@@ -1,10 +1,10 @@
 <script setup lang="ts">
+  import type { PropertyListEvent, PropertyListItem, PropertyStats, PropertyTimelineEvent } from './PropertyList.vue'
   import type { CSSProperties } from 'vue'
-  import type { PropertyListItem, PropertyListEvent, PropertyTimelineEvent, PropertyStats } from './PropertyList.vue'
   import { useDisplay } from 'vuetify'
   import { formatPropertyAddress } from '@/types/property'
 
-  export type { PropertyListItem, PropertyListEvent, PropertyTimelineEvent, PropertyStats }
+  export type { PropertyListEvent, PropertyListItem, PropertyStats, PropertyTimelineEvent }
 
   defineOptions({ name: 'OwnerMapAnchoredList' })
 
@@ -31,6 +31,7 @@
     const y = 12 + ((seed * 2.3) % 58)
     return { left: `${x}%`, top: `${y}%` }
   }
+
 </script>
 
 <template>
@@ -50,6 +51,7 @@
           @click="emit('more', item.property.id)"
         >
           <v-icon :color="item.property.color" size="30">mdi-map-marker</v-icon>
+
           <span class="pin-label" :style="{ color: item.property.color }">
             {{ formatPropertyAddress(item.property, 'short') }}
           </span>
@@ -57,7 +59,7 @@
       </template>
 
       <div class="map-badge">
-        <v-icon size="12" class="mr-1" color="primary">mdi-home-group</v-icon>
+        <v-icon class="mr-1" color="primary" size="12">mdi-home-group</v-icon>
         {{ items.length }} properties
       </div>
     </div>
@@ -69,7 +71,7 @@
       <v-skeleton-loader v-if="loading" class="px-3 pt-2" type="list-item-two-line@4" />
 
       <div v-else-if="items.length === 0" class="empty-state">
-        <v-icon size="32" color="primary" class="mb-2">mdi-home-plus-outline</v-icon>
+        <v-icon class="mb-2" color="primary" size="32">mdi-home-plus-outline</v-icon>
         <p class="empty-text">No properties yet</p>
       </div>
 
@@ -85,6 +87,7 @@
           </template>
 
           <v-list-item-title class="item-name">{{ formatPropertyAddress(item.property, 'short') }}</v-list-item-title>
+
           <v-list-item-subtitle>
             <template v-if="item.nextCheckin">{{ item.nextCheckin.label }}</template>
             <template v-else>No upcoming bookings</template>
@@ -98,6 +101,7 @@
               label
               size="x-small"
             >Turn</v-chip>
+
             <v-btn
               density="compact"
               icon
@@ -119,7 +123,7 @@
 
     <template v-else>
       <div v-if="items.length === 0" class="empty-state">
-        <v-icon size="48" color="primary" class="mb-3">mdi-home-plus-outline</v-icon>
+        <v-icon class="mb-3" color="primary" size="48">mdi-home-plus-outline</v-icon>
         <p class="empty-text">No properties yet</p>
       </div>
 
@@ -132,8 +136,10 @@
         @click="emit('more', item.property.id)"
       >
         <div class="card-color-bar" :style="{ background: item.property.color }" />
+
         <v-card-text class="card-body">
           <div class="card-name">{{ formatPropertyAddress(item.property, 'short') }}</div>
+
           <div class="card-meta">
             <v-chip
               v-if="item.isTurnToday"
@@ -141,28 +147,35 @@
               color="warning"
               size="x-small"
             >Turn Today</v-chip>
+
             <span v-if="item.nextCheckin" class="next-checkin">{{ item.nextCheckin.label }}</span>
             <span v-else class="no-booking">No upcoming bookings</span>
           </div>
+
           <div class="card-stats">
             <span>{{ item.stats.turnsYtd ?? 0 }} turns YTD</span>
+
             <template v-if="item.stats.avgCleanMin">
               <span class="stat-dot">·</span>
               <span>{{ item.stats.avgCleanMin }}min clean</span>
             </template>
           </div>
         </v-card-text>
+
         <v-divider />
+
         <v-card-actions class="card-actions">
           <v-btn
             size="small"
             variant="text"
             @click.stop="emit('view-calendar', item.property.id)"
           >
-            <v-icon start size="14">mdi-calendar</v-icon>
+            <v-icon size="14" start>mdi-calendar</v-icon>
             Calendar
           </v-btn>
+
           <v-spacer />
+
           <v-btn
             density="compact"
             icon
