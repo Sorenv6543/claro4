@@ -1,8 +1,8 @@
 <template>
   <div
     class="owner-calendar-container"
-    @touchstart.passive="onTouchStart"
     @touchend.passive="onTouchEnd"
+    @touchstart.passive="onTouchStart"
   >
     <!-- Month nav strip — sits flush above the weekday header row -->
     <div class="cal-nav-strip">
@@ -54,11 +54,13 @@
           <v-card class="mini-cal" elevation="4" rounded="sm" width="280">
             <!-- Mini cal header -->
             <div class="mini-cal-header">
-              <button class="mini-cal-nav" type="button" aria-label="Previous month" @click="miniPrev">
+              <button aria-label="Previous month" class="mini-cal-nav" type="button" @click="miniPrev">
                 <v-icon size="18">mdi-chevron-left</v-icon>
               </button>
+
               <span class="mini-cal-title">{{ miniCalLabel }}</span>
-              <button class="mini-cal-nav" type="button" aria-label="Next month" @click="miniNext">
+
+              <button aria-label="Next month" class="mini-cal-nav" type="button" @click="miniNext">
                 <v-icon size="18">mdi-chevron-right</v-icon>
               </button>
             </div>
@@ -73,8 +75,8 @@
                 :key="i"
                 class="mini-cal-day"
                 :class="{
-                  'mini-cal-day--other':   !day.isCurrentMonth,
-                  'mini-cal-day--today':    day.isToday,
+                  'mini-cal-day--other': !day.isCurrentMonth,
+                  'mini-cal-day--today': day.isToday,
                 }"
                 type="button"
                 @click="selectMiniDay(day)"
@@ -170,7 +172,7 @@
   // ===== MINI CALENDAR =====
   const MINI_DOW = ['S', 'M', 'T', 'W', 'T', 'F', 'S'] as const
 
-  interface MiniCalDay { date: Date; day: number; isCurrentMonth: boolean; isToday: boolean }
+  interface MiniCalDay { date: Date, day: number, isCurrentMonth: boolean, isToday: boolean }
 
   const miniCalOpen = ref(false)
   const miniCalDate = ref(new Date())
@@ -180,7 +182,7 @@
   )
 
   const miniCalDays = computed((): MiniCalDay[] => {
-    const year  = miniCalDate.value.getFullYear()
+    const year = miniCalDate.value.getFullYear()
     const month = miniCalDate.value.getMonth()
     const startDate = new Date(year, month, 1)
     startDate.setDate(1 - startDate.getDay()) // back up to Sunday
@@ -189,10 +191,10 @@
       const d = new Date(startDate)
       d.setDate(startDate.getDate() + i)
       return {
-        date:             new Date(d),
-        day:              d.getDate(),
-        isCurrentMonth:   d.getMonth() === month,
-        isToday:          d.getTime() === todayMs,
+        date: new Date(d),
+        day: d.getDate(),
+        isCurrentMonth: d.getMonth() === month,
+        isToday: d.getTime() === todayMs,
       }
     })
   })
