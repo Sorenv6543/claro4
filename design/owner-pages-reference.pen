@@ -841,6 +841,4212 @@
       "fontFamily": "Inter",
       "fontSize": 12,
       "fontWeight": "normal"
+    },
+    {
+      "type": "frame",
+      "id": "zfvP7M",
+      "x": -529,
+      "y": 4192,
+      "name": "Owner Pages — Desktop Reference v2",
+      "width": 4947,
+      "height": 3465,
+      "fill": "#F5F5F9",
+      "layout": "vertical",
+      "gap": 48,
+      "padding": 60,
+      "children": [
+        {
+          "type": "text",
+          "id": "Pk6XEh",
+          "name": "ttl",
+          "fill": "#2E263D",
+          "content": "Owner Pages — Desktop Reference v2",
+          "fontFamily": "Inter",
+          "fontSize": 24,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "O8chaD",
+          "name": "sub",
+          "fill": "#9E95F5",
+          "content": "New Layout Pass — 1440 × 900 · Desktop · May 2026",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "ALtH8d",
+          "name": "Row1",
+          "gap": 40,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Py5bRH",
+              "name": "Overview",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "2YqJNJ",
+                  "name": "oLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/overview",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "iEzNQx",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/overview-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "DhbgIL",
+              "name": "Calendar",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "O5drrW",
+                  "name": "cLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/calendar",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "SUTEWZ",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/calendar-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "rqYYIr",
+              "name": "Bookings",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "FsoKph",
+                  "name": "bLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/bookings",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "52IyvS",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/bookings-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "65kJpv",
+          "name": "Row2",
+          "gap": 40,
+          "children": [
+            {
+              "type": "frame",
+              "id": "iu5Vna",
+              "name": "Properties",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "jx2qyF",
+                  "name": "pLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/properties",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "hIPuQR",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/properties-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "C6K1Sb",
+              "name": "Properties Detail",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "KpRFHT",
+                  "name": "dLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/properties (detail panel)",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "q5KHuc",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/properties-detail-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "rqa9uR",
+              "name": "Timeline",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "DgrEFa",
+                  "name": "tLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/timeline",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "aOyAWf",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/timeline-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "dVkl7M",
+          "name": "Row3",
+          "gap": 40,
+          "children": [
+            {
+              "type": "frame",
+              "id": "IZkUkq",
+              "name": "Reports",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "RlI9a4",
+                  "name": "rLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/reports",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "8CvZWM",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/reports-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "P2Sbpo",
+              "name": "Settings",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "GxPHPb",
+                  "name": "sLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/settings",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "7HfQi0",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/settings-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "DzGR1O",
+              "name": "Profile",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "TMSRzo",
+                  "name": "prLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/profile",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "AwUrDM",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/profile-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "HKfQqL",
+          "name": "div",
+          "fill": "#E0E0E0",
+          "width": 6257,
+          "height": 2
+        },
+        {
+          "type": "text",
+          "id": "tYZNgj",
+          "name": "mttl",
+          "fill": "#2E263D",
+          "content": "New Layout Pass — Desktop",
+          "fontFamily": "Inter",
+          "fontSize": 24,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "vPE9Lx",
+      "x": 4675,
+      "y": 4192,
+      "name": "Owner Pages — Mobile Reference v2",
+      "clip": true,
+      "width": 1416,
+      "height": 3411,
+      "fill": "#f5f5f9ff",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "1Hh7ny",
+          "x": 61,
+          "y": 189,
+          "name": "Mobile Row1",
+          "gap": 40,
+          "justifyContent": "space_between",
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "LaYawH",
+              "name": "Overview",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "R7AeXa",
+                  "name": "moLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/overview",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "y3DH48",
+                  "name": "moImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/overview-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "BoA18y",
+              "name": "Calendar",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "yVhAv5",
+                  "name": "mcLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/calendar",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "gsw4LL",
+                  "name": "mcImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/calendar-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Km8b6N",
+              "name": "Bookings",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "3WmZhl",
+                  "name": "mbLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/bookings",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "9Xdws0",
+                  "name": "mbImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/bookings-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "irP3U2",
+          "x": 61,
+          "y": 1198,
+          "name": "Mobile Row2",
+          "gap": 40,
+          "justifyContent": "space_between",
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "k7C9U8",
+              "name": "Properties",
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "o6DrOX",
+                  "name": "mpLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/properties",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "dxhbeW",
+                  "name": "mpImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/properties-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "qqaabb",
+              "name": "Properties Detail",
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "kj2zUl",
+                  "name": "mdLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/properties (detail)",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "t5xM1p",
+                  "name": "mdImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/properties-detail-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "w5ZMfy",
+              "name": "Timeline",
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "OlJieK",
+                  "name": "mtLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/timeline",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "CF4IrC",
+                  "name": "mtImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/timeline-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "CwMG7h",
+          "x": 61,
+          "y": 2115,
+          "name": "Mobile Row3",
+          "width": "fit_content(1250)",
+          "height": "fit_content(869)",
+          "gap": 40,
+          "justifyContent": "space_between",
+          "alignItems": "end"
+        },
+        {
+          "type": "frame",
+          "id": "rgQN7a",
+          "x": 61,
+          "y": 2115,
+          "name": "Reports",
+          "layout": "vertical",
+          "gap": 12,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "UPnoWj",
+              "name": "mrLbl",
+              "fill": "#7367F0",
+              "content": "/owner/reports",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "uDgMCT",
+              "name": "mrImg",
+              "width": 390,
+              "height": 844,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/reports-mobile.png",
+                "mode": "fit"
+              },
+              "cornerRadius": 2,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#E0E0E0"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "XaFrYH",
+          "x": 491,
+          "y": 2115,
+          "name": "Settings",
+          "layout": "vertical",
+          "gap": 12,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "RKXItl",
+              "name": "msLbl",
+              "fill": "#7367F0",
+              "content": "/owner/settings",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "m2JqDn",
+              "name": "msImg",
+              "width": 390,
+              "height": 844,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/settings-mobile.png",
+                "mode": "fit"
+              },
+              "cornerRadius": 2,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#E0E0E0"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "KOdSwo",
+          "x": 921,
+          "y": 2115,
+          "name": "Profile",
+          "layout": "vertical",
+          "gap": 12,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "VFcQOM",
+              "name": "mprLbl",
+              "fill": "#7367F0",
+              "content": "/owner/profile",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "UcY4nD",
+              "name": "mprImg",
+              "width": 390,
+              "height": 844,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/profile-mobile.png",
+                "mode": "fit"
+              },
+              "cornerRadius": 2,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#E0E0E0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "cWj0fX",
+      "x": 4675,
+      "y": 4138,
+      "name": "msub_v2",
+      "fill": "#9E95F5",
+      "content": "Bottom-Nav Layout Pass — 390 × 844 · iOS · May 2026",
+      "fontFamily": "Inter",
+      "fontSize": 12,
+      "fontWeight": "normal"
+    },
+    {
+      "type": "frame",
+      "id": "is1ibj",
+      "x": 6300,
+      "y": 527,
+      "name": "Component Inventory — New Layout",
+      "width": 2200,
+      "fill": "#F5F5F9",
+      "layout": "vertical",
+      "gap": 10,
+      "padding": 48,
+      "children": [
+        {
+          "type": "text",
+          "id": "GqnQft",
+          "name": "inv-ttl",
+          "fill": "#2E263D",
+          "content": "Component Inventory — New Layout",
+          "fontFamily": "Inter",
+          "fontSize": 24,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "zSv0ki",
+          "name": "inv-sub",
+          "fill": "#9E95F5",
+          "content": "All owner + shared components available for the responsive redesign",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "dydMGQ",
+          "name": "legend",
+          "layout": "horizontal",
+          "gap": 20,
+          "children": [
+            {
+              "type": "frame",
+              "id": "8P571F",
+              "name": "leg",
+              "layout": "horizontal",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "9Idbw9",
+                  "name": "dot",
+                  "fill": "#FF9F43",
+                  "width": 10,
+                  "height": 10,
+                  "cornerRadius": 5
+                },
+                {
+                  "type": "text",
+                  "id": "xCEGG2",
+                  "name": "",
+                  "fill": "#5D5A68",
+                  "content": "Real layout",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "O9oXyt",
+              "name": "leg",
+              "layout": "horizontal",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "YU3qJL",
+                  "name": "dot",
+                  "fill": "#7367F0",
+                  "width": 10,
+                  "height": 10,
+                  "cornerRadius": 5
+                },
+                {
+                  "type": "text",
+                  "id": "5jgM3U",
+                  "name": "",
+                  "fill": "#5D5A68",
+                  "content": "Real smart",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "nfc1Rj",
+              "name": "leg",
+              "layout": "horizontal",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "LP5vWF",
+                  "name": "dot",
+                  "fill": "#28C76F",
+                  "width": 10,
+                  "height": 10,
+                  "cornerRadius": 5
+                },
+                {
+                  "type": "text",
+                  "id": "HQSwsn",
+                  "name": "",
+                  "fill": "#5D5A68",
+                  "content": "Real dumb",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zLVvC6",
+              "name": "leg",
+              "layout": "horizontal",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "soIYBE",
+                  "name": "dot",
+                  "fill": "#EA5455",
+                  "width": 10,
+                  "height": 10,
+                  "cornerRadius": 5
+                },
+                {
+                  "type": "text",
+                  "id": "RNyyiJ",
+                  "name": "",
+                  "fill": "#5D5A68",
+                  "content": "Mock",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "jxq5dn",
+              "name": "leg",
+              "layout": "horizontal",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "rectangle",
+                  "id": "ycj1Ga",
+                  "name": "dot",
+                  "fill": "#00CFE8",
+                  "width": 10,
+                  "height": 10,
+                  "cornerRadius": 5
+                },
+                {
+                  "type": "text",
+                  "id": "gJSgIg",
+                  "name": "",
+                  "fill": "#5D5A68",
+                  "content": "Handoff preview",
+                  "fontFamily": "Inter",
+                  "fontSize": 10,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "C9DGZc",
+          "name": "div",
+          "fill": "#E0E0E0",
+          "width": 2200,
+          "height": 1
+        },
+        {
+          "type": "text",
+          "id": "GVfIcb",
+          "name": "sec",
+          "fill": "#2E263D",
+          "content": "Navigation Shell",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "7HzbzC",
+          "name": "secSub",
+          "fill": "#9E95F5",
+          "content": "Components that form the top-level chrome — being redesigned",
+          "fontFamily": "Inter",
+          "fontSize": 10,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "PKr3vL",
+          "name": "cmp-owner.vue",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "FEuSdX",
+              "name": "tag",
+              "fill": "#FF9F43",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "qKyQim",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "owner.vue",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "uPT5nB",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/layouts/owner.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "9g4Hy0",
+          "name": "cmp-OwnerNavigationDrawer",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ybZjO3",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "OUDvsO",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerNavigationDrawer",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "2nWaFr",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/OwnerNavigationDrawer.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Tay0QR",
+          "name": "cmp-MobileBottomNav",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "qONsRH",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "gZGKDH",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "MobileBottomNav",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "hcPdgu",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/MobileBottomNav.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "QGbPpB",
+          "name": "cmp-ClaroWordmark",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "GOpJvP",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "uBBV6L",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "ClaroWordmark",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "Qc0CaE",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/ClaroWordmark.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "3qLkdP",
+          "name": "div",
+          "fill": "#E0E0E0",
+          "width": 2200,
+          "height": 1
+        },
+        {
+          "type": "text",
+          "id": "WWUVzI",
+          "name": "sec",
+          "fill": "#2E263D",
+          "content": "Owner Dumb Components",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "L4o9lX",
+          "name": "secSub",
+          "fill": "#9E95F5",
+          "content": "src/components/dumb/owner/",
+          "fontFamily": "Inter",
+          "fontSize": 10,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "HU9Bxg",
+          "name": "cmp-BookingStatsCard",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "sWcfxj",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "aCkhlS",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "BookingStatsCard",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "XRUriv",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/BookingStatsCard.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "NIAKNf",
+          "name": "cmp-CalendarNavPill",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "qXkQOt",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "aw6yaO",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "CalendarNavPill",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "8OqAmI",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/CalendarNavPill.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "p8Jb92",
+          "name": "cmp-MobileTimelineFeed",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "2sYrft",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "L0GEn4",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "MobileTimelineFeed",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "fmj8bj",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/MobileTimelineFeed.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "1TXiJq",
+          "name": "cmp-OwnerBandGrid",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "5MjEcG",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "sovv5G",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerBandGrid",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "RwRT33",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerBandGrid.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "nujlQQ",
+          "name": "cmp-OwnerBookingForm",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "MOh0yg",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "L8yrQW",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerBookingForm",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "r5NYBc",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerBookingForm.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "SZkee0",
+          "name": "cmp-OwnerBookingList",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Lem8vZ",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "4hG1sX",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerBookingList",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "pQyqj9",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerBookingList.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "daJyeP",
+          "name": "cmp-OwnerCalendarControls",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "5UHB5a",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "MOkxQo",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerCalendarControls",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "QywDpU",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerCalendarControls.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "PB2YGK",
+          "name": "cmp-OwnerChart",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "8JMTay",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "HAIprO",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerChart",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "6amOfD",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerChart.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ri4xtR",
+          "name": "cmp-OwnerChartGallery",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "tvER14",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "ZcJlsw",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerChartGallery",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "C0tzJn",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerChartGallery.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Ae5QXN",
+          "name": "cmp-OwnerCleaningStatus",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "zxQN79",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "7xmavD",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerCleaningStatus",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "mqXQQK",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerCleaningStatus.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "xsG3Ek",
+          "name": "cmp-OwnerDayViewBottomSheet",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "eKv1xf",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "yz7Paq",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerDayViewBottomSheet",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "wGtzt7",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerDayViewBottomSheet.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "gQgh0H",
+          "name": "cmp-OwnerDetailCard",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "bNFmNF",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "JjoRzx",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerDetailCard",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "wuBq1V",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerDetailCard.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "BcGSbE",
+          "name": "cmp-OwnerMiniCalendar",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "E4thEt",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "HF01VS",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerMiniCalendar",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "cf8zRr",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerMiniCalendar.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "OHvyHI",
+          "name": "cmp-OwnerPropertyForm",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Z9hJnm",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "HplnTA",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerPropertyForm",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "hVs80I",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerPropertyForm.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "2oHXrq",
+          "name": "cmp-OwnerPropertySummaryCards",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "4soaNZ",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "eo7Yby",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerPropertySummaryCards",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "EcPRwL",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerPropertySummaryCards.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "E8ykln",
+          "name": "cmp-OwnerQuickActions",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "0tkNpf",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "aP51Lz",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerQuickActions",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "kcLeCh",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerQuickActions.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "U03msp",
+          "name": "cmp-OwnerRecentActivity",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "OXetMN",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "sSkZoa",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerRecentActivity",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "vDGzjR",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerRecentActivity.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "kKoxKD",
+          "name": "cmp-OwnerUpcomingBookings",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "3OGTNX",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "WT8NBd",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerUpcomingBookings",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "TnF6YO",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerUpcomingBookings.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "G0ZmoQ",
+          "name": "cmp-OwnerUrgentTurnsBanner",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "9eWci2",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "maJ6a3",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerUrgentTurnsBanner",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "7oXQnK",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerUrgentTurnsBanner.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "7r3vtN",
+          "name": "cmp-OwnerWelcomeBanner",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "PgQvyM",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "7VXkam",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerWelcomeBanner",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "Xe42jw",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/OwnerWelcomeBanner.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "LnHZXH",
+          "name": "cmp-PropertyAccessSection",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "wm9KIj",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "Vqd78Z",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "PropertyAccessSection",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "xkHYoU",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/PropertyAccessSection.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "3cub4y",
+          "name": "cmp-PropertyCleaningSection",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "MSWcVG",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "hnXcpg",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "PropertyCleaningSection",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "iqsQHc",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/PropertyCleaningSection.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "STr4Xq",
+          "name": "cmp-PropertyColorPicker",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "EwaYxh",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "8N7QF8",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "PropertyColorPicker",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "09VOWu",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/PropertyColorPicker.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "GWN18d",
+          "name": "cmp-PropertyContactSection",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "5bIPpL",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "Hq2kCJ",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "PropertyContactSection",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "0rI8S0",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/PropertyContactSection.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "SpcQz5",
+          "name": "cmp-PropertyInfoSection",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ewMDhM",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "nQwOXF",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "PropertyInfoSection",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "319Rsm",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/PropertyInfoSection.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "U5aA8r",
+          "name": "cmp-PropertyList",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Zoc4xI",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "9XRR49",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "PropertyList",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "WS4EX2",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/PropertyList.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "1nWxpC",
+          "name": "cmp-PropertyPhotosSection",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "SrJ4eG",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "ywC2nw",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "PropertyPhotosSection",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "UgZdwX",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/PropertyPhotosSection.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "zK8mkU",
+          "name": "cmp-PropertySectionCard",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "FJXuYR",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "TWG1tI",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "PropertySectionCard",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "dcYyB5",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/owner/PropertySectionCard.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "KYlkhx",
+          "name": "div",
+          "fill": "#E0E0E0",
+          "width": 2200,
+          "height": 1
+        },
+        {
+          "type": "text",
+          "id": "Ls8Xii",
+          "name": "sec",
+          "fill": "#2E263D",
+          "content": "Shared Dumb Components",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "vQOZYw",
+          "name": "secSub",
+          "fill": "#9E95F5",
+          "content": "src/components/dumb/shared/",
+          "fontFamily": "Inter",
+          "fontSize": 10,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "80QT1C",
+          "name": "cmp-MobileBottomNav",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "7ixxLW",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "lfQwDP",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "MobileBottomNav",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "UPjENz",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/MobileBottomNav.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ACHzLr",
+          "name": "cmp-OwnerPageHeader",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "tR1vGp",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "d3OiOx",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerPageHeader",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "eTzr3Z",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/OwnerPageHeader.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "MoE8V7",
+          "name": "cmp-QuickActionsFab",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Bcfv8e",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "oDySEQ",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "QuickActionsFab",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "bhZlIR",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/QuickActionsFab.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "vorV5s",
+          "name": "cmp-SmartNavigationPanel",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "CtjKkg",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "on1xRk",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "SmartNavigationPanel",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "QwtPNL",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/SmartNavigationPanel.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "uHdKTW",
+          "name": "cmp-StatCard",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "TwjrNH",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "fs2iDF",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "StatCard",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "4ccXUQ",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/StatCard.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "BRzkwq",
+          "name": "cmp-PropertyCard",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "AToskd",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "tuE1k4",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "PropertyCard",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "tSE2hI",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/PropertyCard.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "l2nFsS",
+          "name": "cmp-PropertyModal",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "fkNeaR",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "pky2Qi",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "PropertyModal",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "Gflp7s",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/PropertyModal.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "1LTVy5",
+          "name": "cmp-TurnAlerts",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "HMkWr6",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "zdwUWu",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "TurnAlerts",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "fQEzso",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/TurnAlerts.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "0Vu9ns",
+          "name": "cmp-TurnPriorityBadge",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "3cfL30",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "6TR4hm",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "TurnPriorityBadge",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "pItPHH",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/TurnPriorityBadge.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "DmLKit",
+          "name": "cmp-UpcomingCleanings",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "TIphg4",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "SP2Slf",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "UpcomingCleanings",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "uQAqO8",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/UpcomingCleanings.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "9r29xd",
+          "name": "cmp-UrgentTurnIndicator",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "ewNxng",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "8K2hSz",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "UrgentTurnIndicator",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "NRWdv6",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/UrgentTurnIndicator.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "QtTwq3",
+          "name": "cmp-EnhancedToast",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "qVouBS",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "stH1A0",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "EnhancedToast",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "h2GhMd",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/EnhancedToast.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "LciLF7",
+          "name": "cmp-SkeletonLoader",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "B73ozB",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "OcxzSh",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "SkeletonLoader",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "191dpV",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/SkeletonLoader.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "64RRT8",
+          "name": "cmp-ErrorAlert",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "08D5Li",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "QXLTyC",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "ErrorAlert",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "hbfWCS",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/ErrorAlert.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "FBn7C9",
+          "name": "cmp-LoadingSpinner",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "VkXEwD",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "UISrSe",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "LoadingSpinner",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "ukyKkn",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/LoadingSpinner.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Vu3JiW",
+          "name": "cmp-ConfirmationDialog",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "g76X1m",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "NpapO2",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "ConfirmationDialog",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "dIqJQS",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/ConfirmationDialog.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "oNvsiE",
+          "name": "cmp-DatePickerField",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Xseipd",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "Iegr7J",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "DatePickerField",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "KGeXbg",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/DatePickerField.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "OP3eNe",
+          "name": "cmp-DatePickerModal",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "dFsxZF",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "uM42qX",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "DatePickerModal",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "NE3W7l",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/DatePickerModal.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "MjJs8l",
+          "name": "cmp-TimePickerField",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "QZYlWi",
+              "name": "tag",
+              "fill": "#28C76F",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "oUxWW4",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "TimePickerField",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "bA3YTt",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/dumb/shared/TimePickerField.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "JFSDZK",
+          "name": "div",
+          "fill": "#E0E0E0",
+          "width": 2200,
+          "height": 1
+        },
+        {
+          "type": "text",
+          "id": "KK2yOp",
+          "name": "sec",
+          "fill": "#2E263D",
+          "content": "Smart Owner Components",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "5DXsOD",
+          "name": "secSub",
+          "fill": "#9E95F5",
+          "content": "src/components/smart/owner/",
+          "fontFamily": "Inter",
+          "fontSize": 10,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "1CFY3x",
+          "name": "cmp-GlobalBookingModal",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "DwjUkh",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "7O4BRp",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "GlobalBookingModal",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "0Lm9og",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/GlobalBookingModal.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "y2kvjl",
+          "name": "cmp-HomeOwner",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "LMRbTi",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "oxUr8O",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "HomeOwner",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "53XOGZ",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/HomeOwner.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "oI6xa8",
+          "name": "cmp-OwnerBookings",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "gXTdIg",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "4c1ia3",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerBookings",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "VVe2G5",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/OwnerBookings.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "DXAnqN",
+          "name": "cmp-OwnerCalendar",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "CnNvdr",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "LDlL0K",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerCalendar",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "1B2Axo",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/OwnerCalendar.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "scBuVV",
+          "name": "cmp-OwnerCalendarBoldSplit",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "QxCtGA",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "Mm6hwf",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerCalendarBoldSplit",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "uNsl3j",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/OwnerCalendarBoldSplit.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "EeEJnA",
+          "name": "cmp-OwnerNavigationDrawer",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "NA4ST5",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "DnOx1i",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerNavigationDrawer",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "5ELMDs",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/OwnerNavigationDrawer.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "gYu7Zq",
+          "name": "cmp-OwnerOverview",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "oodgqK",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "VAFwXN",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerOverview",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "EXoPk0",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/OwnerOverview.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "mnYYVh",
+          "name": "cmp-OwnerProperties",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "u8MbcP",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "UCU2jL",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerProperties",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "qdDAbu",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/OwnerProperties.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "zUWcfS",
+          "name": "cmp-OwnerPropertyTimeline",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "vUzdK2",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "l7KNfD",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerPropertyTimeline",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "RZ4mIU",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/OwnerPropertyTimeline.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "IAdWl9",
+          "name": "cmp-OwnerPropertyView",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "MlcGmn",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "D0s5Aw",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerPropertyView",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "n3qXL7",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/OwnerPropertyView.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "8vlXHR",
+          "name": "cmp-OwnerSettings",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "H83nGA",
+              "name": "tag",
+              "fill": "#7367F0",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "eSyAy7",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "OwnerSettings",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "INPiXk",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "src/components/smart/owner/OwnerSettings.vue",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "dlSK3Z",
+          "name": "div",
+          "fill": "#E0E0E0",
+          "width": 2200,
+          "height": 1
+        },
+        {
+          "type": "text",
+          "id": "vjypGP",
+          "name": "sec",
+          "fill": "#2E263D",
+          "content": "Design Handoff Preview Files",
+          "fontFamily": "Inter",
+          "fontSize": 14,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "ithQKl",
+          "name": "secSub",
+          "fill": "#9E95F5",
+          "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/",
+          "fontFamily": "Inter",
+          "fontSize": 10,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "RQtqN8",
+          "name": "cmp-components-appbar.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "16C8Wf",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "7A0sel",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-appbar.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "wYhN60",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-appbar.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "cbxaV7",
+          "name": "cmp-components-appbar-v2.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Ps4IQw",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "KFx0on",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-appbar-v2.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "efUcww",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-appbar-v2.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "6avIWp",
+          "name": "cmp-components-sidebar-nav.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "wAyObN",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "z6oI5g",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-sidebar-nav.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "qzfRpN",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-sidebar-nav.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "z7BV3X",
+          "name": "cmp-components-sidebar-nav v2.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "pceQB0",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "f8hcwd",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-sidebar-nav v2.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "ajpgoh",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-sidebar-nav v2.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "24dtfy",
+          "name": "cmp-components-sidebar-nav v3.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "GmI7tT",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "38ci7G",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-sidebar-nav v3.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "nAy8SV",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-sidebar-nav v3.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "I1nwjA",
+          "name": "cmp-components-sidebar-nav v4-a11y.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "rm4q7i",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "1FvFy1",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-sidebar-nav v4-a11y.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "vMdWdM",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-sidebar-nav v4-a11y.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "OF8m5S",
+          "name": "cmp-components-hero-card.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "o6PLbU",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "jHtlz3",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-hero-card.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "lwmlCT",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-hero-card.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Salm1e",
+          "name": "cmp-components-hero-card-v2.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "mPThDP",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "dXz6g2",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-hero-card-v2.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "4bijI4",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-hero-card-v2.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "gEZ8TU",
+          "name": "cmp-components-hero-card-v3.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "SvIa5u",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "qm6EJR",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-hero-card-v3.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "vveBFn",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-hero-card-v3.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "GHtXd8",
+          "name": "cmp-components-stat-card.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "P51OPK",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "rpyumh",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-stat-card.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "pHAzmf",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-stat-card.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "8GBKNb",
+          "name": "cmp-components-urgent-card.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "iQ1XeN",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "2cCtvd",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-urgent-card.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "dUcizH",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-urgent-card.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "tBxVRk",
+          "name": "cmp-components-urgent-card-v1.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "3LgDRO",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "sLRyAn",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-urgent-card-v1.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "NkkupF",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-urgent-card-v1.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Onky0G",
+          "name": "cmp-components-chips.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "h4LCOf",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "1ZygeI",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-chips.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "8pddpC",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-chips.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "Bu2bNA",
+          "name": "cmp-components-buttons.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "Yq6iOX",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "kXnP2T",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-buttons.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "ZUQx5E",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-buttons.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "3vfSmK",
+          "name": "cmp-components-inputs.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "k36I3c",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "5bCTIG",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "components-inputs.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "PkxVdO",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/components-inputs.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "3pa18N",
+          "name": "cmp-screens-mobile-timeline.html",
+          "layout": "horizontal",
+          "gap": 10,
+          "children": [
+            {
+              "type": "frame",
+              "id": "dOIY8b",
+              "name": "tag",
+              "fill": "#00CFE8",
+              "width": 6,
+              "height": 16,
+              "cornerRadius": 3,
+              "children": []
+            },
+            {
+              "type": "text",
+              "id": "iSqxw4",
+              "name": "",
+              "fill": "#2E263D",
+              "content": "screens-mobile-timeline.html",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "text",
+              "id": "jSzboQ",
+              "name": "",
+              "fill": "#9E95F5",
+              "content": "design/handoff/claude-design-v1/Claro Design System v1-handoff/claro-design-system-v1/project/preview/screens-mobile-timeline.html",
+              "fontFamily": "Inter",
+              "fontSize": 9,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
