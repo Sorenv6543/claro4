@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 18px; background: #fff; font-family: var(--claro-font-family); }
+  .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .swatch { display: flex; flex-direction: column; gap: 4px; }
+  .chip { height: 48px; border-radius: 2px; }
+  .name { font-size: 12px; font-weight: 500; color: var(--claro-fg1); }
+  .hex { font-size: 11px; color: var(--claro-fg3); font-variant-numeric: tabular-nums; }
+  .row2 { margin-top: 12px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .pill { border-radius: 9999px; padding: 4px 10px; font-size: 11px; font-weight: 500; text-align: center; display: inline-block; width: max-content; }
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div class="swatch"><div class="chip" style="background:#28C76F"></div><div class="name">success</div><div class="hex">#28C76F</div></div>
+    <div class="swatch"><div class="chip" style="background:#FF9F43"></div><div class="name">warning</div><div class="hex">#FF9F43</div></div>
+    <div class="swatch"><div class="chip" style="background:#EA5455"></div><div class="name">error</div><div class="hex">#EA5455</div></div>
+    <div class="swatch"><div class="chip" style="background:#00CFE8"></div><div class="name">info</div><div class="hex">#00CFE8</div></div>
+  </div>
+  <div class="row2">
+    <span class="pill" style="background:rgba(40,199,111,0.16);color:#1fa85d">Active</span>
+    <span class="pill" style="background:rgba(255,159,67,0.16);color:#cc7a2e">Pending</span>
+    <span class="pill" style="background:rgba(234,84,85,0.16);color:#c44647">Inactive</span>
+    <span class="pill" style="background:rgba(0,207,232,0.16);color:#00a7ba">In Progress</span>
+  </div>
+</body>
+</html>

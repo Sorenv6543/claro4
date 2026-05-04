@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claro4 — Property Timeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300..700&display=swap" rel="stylesheet">
+<style>
+/* ===== DESIGN TOKENS ===== */
+:root, [data-theme="light"] {
+  --color-bg: #f7f6f2;
+  --color-surface: #f9f8f5;
+  --color-surface-2: #fbfbf9;
+  --color-surface-offset: #f3f0ec;
+  --color-surface-dynamic: #e6e4df;
+  --color-divider: #dcd9d5;
+  --color-border: #d4d1ca;
+  --color-text: #28251d;
+  --color-text-muted: #7a7974;
+  --color-text-faint: #bab9b4;
+  --color-text-inverse: #f9f8f4;
+  --color-primary: #01696f;
+  --color-primary-hover: #0c4e54;
+  --color-primary-highlight: #cedcd8;
+  --color-success: #437a22;
+  --color-success-highlight: #d4dfcc;
+  --color-warning: #964219;
+  --color-warning-highlight: #ddcfc6;
+  --color-error: #a12c7b;
+  --color-error-highlight: #e0ced7;
+  --color-orange: #da7101;
+  --color-orange-highlight: #e7d7c4;
+  --color-blue: #006494;
+  --color-blue-highlight: #c6d8e4;
+  --color-gold: #d19900;
+  --color-gold-highlight: #e9e0c6;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-full: 9999px;
+  --shadow-sm: 0 1px 2px oklch(0.2 0.01 80 / 0.06);
+  --shadow-md: 0 4px 12px oklch(0.2 0.01 80 / 0.08);
+  --shadow-lg: 0 12px 32px oklch(0.2 0.01 80 / 0.12);
+  --font-body: 'Inter', system-ui, sans-serif;
+  --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+  --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+  --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+  --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+  --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+  --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
+  --transition: 180ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-theme="dark"] {
+  --color-bg: #131211;
+  --color-surface: #1a1917;
+  --color-surface-2: #1f1e1c;
+  --color-surface-offset: #242320;
+  --color-surface-dynamic: #2d2c2a;
+  --color-divider: #2e2d2b;
+  --color-border: #383735;
+  --color-text: #d4d3d0;
+  --color-text-muted: #7a7876;
+  --color-text-faint: #52504e;
+  --color-text-inverse: #1a1917;
+  --color-primary: #4f98a3;
+  --color-primary-hover: #3d8590;
+  --color-primary-highlight: #1e3538;
+  --color-success: #6daa45;
+  --color-success-highlight: #1e3018;
+  --color-warning: #c97240;
+  --color-warning-highlight: #3a2415;
+  --color-error: #d163a7;
+  --color-error-highlight: #341828;
+  --color-orange: #e8883a;
+  --color-orange-highlight: #3a2210;
+  --color-blue: #5591c7;
+  --color-blue-highlight: #152535;
+  --color-gold: #dba832;
+  --color-gold-highlight: #342a10;
+  --shadow-sm: 0 1px 2px oklch(0 0 0 / 0.25);
+  --shadow-md: 0 4px 12px oklch(0 0 0 / 0.35);
+  --shadow-lg: 0 12px 32px oklch(0 0 0 / 0.5);
+}
+
+/* ===== BASE ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body {
+  min-height: 100dvh;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.5;
+}
+button { cursor: pointer; border: none; background: none; font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; border-radius: var(--radius-sm); }
+
+/* ===== APP SHELL ===== */
+.app-header {
+  position: sticky; top: 0; z-index: 100;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-divider);
+  padding: var(--space-3) var(--space-6);
+  display: flex; align-items: center; gap: var(--space-4);
+}
+.app-logo {
+  display: flex; align-items: center; gap: var(--space-2);
+  font-size: var(--text-sm); font-weight: 600; letter-spacing: -0.02em;
+  color: var(--color-text); flex-shrink: 0;
+}
+.header-title {
+  font-size: var(--text-sm); font-weight: 500; color: var(--color-text-muted);
+  flex: 1;
+}
+.theme-toggle {
+  width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-md); color: var(--color-text-muted);
+  transition: background var(--transition), color var(--transition);
+}
+.theme-toggle:hover { background: var(--color-surface-offset); color: var(--color-text); }
+
+/* ===== MAIN LAYOUT ===== */
+.main-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  min-height: calc(100dvh - 53px);
+}
+@media (max-width: 768px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .sidebar { display: none; }
+}
+
+/* ===== SIDEBAR: PROPERTY SELECTOR ===== */
+.sidebar {
+  background: var(--color-surface);
+  border-right: 1px solid var(--color-divider);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.sidebar-header {
+  padding: var(--space-4) var(--space-4) var(--space-3);
+  border-bottom: 1px solid var(--color-divider);
+  flex-shrink: 0;
+}
+.sidebar-label {
+  font-size: var(--text-xs); font-weight: 600; color: var(--color-text-muted);
+  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: var(--space-3);
+}
+.select-controls {
+  display: flex; gap: var(--space-2);
+}
+.btn-xs {
+  font-size: var(--text-xs); padding: 3px var(--space-2); border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border); color: var(--color-text-muted);
+  background: var(--color-surface-offset);
+  transition: all var(--transition);
+}
+.btn-xs:hover { background: var(--color-surface-dynamic); color: var(--color-text); border-color: var(--color-text-muted); }
+
+.property-list {
+  flex: 1; overflow-y: auto; padding: var(--space-3) var(--space-3);
+  display: flex; flex-direction: column; gap: var(--space-2);
+}
+.property-chip {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-3) var(--space-3);
+  border-radius: var(--radius-lg);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+  user-select: none;
+  position: relative;
+}
+.property-chip:hover { background: var(--color-surface-offset); border-color: var(--color-border); }
+.property-chip.selected {
+  background: var(--color-surface-offset);
+  border-color: var(--color-border);
+}
+.property-chip.selected .prop-check { opacity: 1; }
+.prop-color-dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+}
+.prop-info { flex: 1; min-width: 0; }
+.prop-street { font-size: var(--text-sm); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.prop-meta { font-size: var(--text-xs); color: var(--color-text-muted); }
+.prop-check {
+  opacity: 0; transition: opacity var(--transition);
+  color: var(--color-primary); flex-shrink: 0;
+}
+.prop-event-badge {
+  font-size: 10px; font-weight: 600; padding: 2px 6px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+.badge-turn { background: var(--color-warning-highlight); color: var(--color-warning); }
+.badge-out { background: var(--color-error-highlight); color: var(--color-error); }
+.badge-in { background: var(--color-success-highlight); color: var(--color-success); }
+.badge-clear { background: var(--color-surface-dynamic); color: var(--color-text-muted); }
+
+/* ===== TIMELINE AREA ===== */
+.timeline-area {
+  display: flex; flex-direction: column; overflow: hidden;
+}
+.timeline-toolbar {
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--color-divider);
+  display: flex; align-items: center; gap: var(--space-4); flex-shrink: 0;
+  flex-wrap: wrap;
+}
+.toolbar-section { display: flex; align-items: center; gap: var(--space-2); }
+.toolbar-label { font-size: var(--text-xs); color: var(--color-text-muted); font-weight: 500; }
+
+/* Day range pill group */
+.range-group { display: flex; border: 1px solid var(--color-border); border-radius: var(--radius-full); overflow: hidden; }
+.range-btn {
+  padding: 5px var(--space-4); font-size: var(--text-xs); font-weight: 500;
+  color: var(--color-text-muted);
+  transition: all var(--transition); border: none; background: transparent;
+}
+.range-btn:hover { background: var(--color-surface-offset); color: var(--color-text); }
+.range-btn.active { background: var(--color-primary); color: white; }
+
+/* Merge toggle */
+.toggle-group { display: flex; align-items: center; gap: var(--space-2); }
+.toggle-switch {
+  position: relative; width: 36px; height: 20px;
+  background: var(--color-surface-dynamic); border-radius: var(--radius-full);
+  cursor: pointer; transition: background var(--transition);
+  border: none;
+}
+.toggle-switch.on { background: var(--color-primary); }
+.toggle-switch::after {
+  content: ''; position: absolute; top: 2px; left: 2px;
+  width: 16px; height: 16px; border-radius: 50%;
+  background: white;
+  transition: transform var(--transition);
+}
+.toggle-switch.on::after { transform: translateX(16px); }
+.toggle-label { font-size: var(--text-xs); color: var(--color-text-muted); }
+
+/* Legend */
+.legend { display: flex; gap: var(--space-3); margin-left: auto; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: var(--space-1); font-size: 11px; color: var(--color-text-muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+/* ===== TIMELINE SCROLL AREA ===== */
+.timeline-scroll {
+  flex: 1; overflow-y: auto; padding: var(--space-6);
+  display: flex; flex-direction: column; gap: var(--space-8);
+}
+
+/* Empty state */
+.empty-state {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: var(--space-4);
+  padding: var(--space-10); text-align: center;
+  color: var(--color-text-muted); flex: 1;
+}
+.empty-icon { font-size: 2.5rem; opacity: 0.3; }
+.empty-state h3 { font-size: var(--text-base); font-weight: 500; color: var(--color-text); }
+.empty-state p { font-size: var(--text-sm); max-width: 32ch; }
+
+/* ===== PROPERTY TIMELINE BLOCK ===== */
+.prop-timeline-block {
+  display: flex; flex-direction: column; gap: var(--space-4);
+}
+.prop-timeline-header {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-divider);
+}
+.prop-timeline-color { width: 12px; height: 12px; border-radius: 2px; flex-shrink: 0; }
+.prop-timeline-name { font-size: var(--text-sm); font-weight: 600; }
+.prop-timeline-address { font-size: var(--text-xs); color: var(--color-text-muted); }
+.prop-timeline-stats {
+  margin-left: auto; display: flex; gap: var(--space-4);
+}
+.stat-pill {
+  font-size: 11px; font-weight: 500; padding: 2px 8px;
+  border-radius: var(--radius-full);
+  display: flex; align-items: center; gap: 4px;
+}
+
+/* ===== VERTICAL TIMELINE ===== */
+/* Date column structure: left (checkin/turn) | center (line+date) | right (checkout/turn) */
+.timeline-body { display: flex; flex-direction: column; gap: 0; }
+
+.timeline-date-group { display: flex; flex-direction: column; gap: 0; }
+
+.date-header {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+.date-label-cell {
+  display: flex; align-items: center; justify-content: center;
+  position: relative;
+}
+.date-label {
+  background: var(--color-surface-offset);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-full);
+  font-size: 11px; font-weight: 600; color: var(--color-text-muted);
+  padding: 3px 10px; white-space: nowrap;
+  position: relative; z-index: 1;
+}
+.date-label.today { background: var(--color-primary-highlight); color: var(--color-primary); border-color: var(--color-primary); }
+.date-spacer { height: 1px; } /* spacer for empty side */
+
+.timeline-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  gap: var(--space-2);
+  align-items: start;
+  min-height: 8px;
+  position: relative;
+}
+
+/* Center spine */
+.timeline-spine {
+  display: flex; flex-direction: column; align-items: center;
+  position: relative; padding: 4px 0;
+}
+.spine-line {
+  position: absolute; top: 0; bottom: 0; left: 50%;
+  width: 2px; background: var(--color-divider);
+  transform: translateX(-50%);
+}
+.spine-dot {
+  width: 12px; height: 12px; border-radius: 50%;
+  border: 2px solid var(--color-bg);
+  position: relative; z-index: 1;
+  flex-shrink: 0; margin-top: 12px;
+}
+
+/* Event cards */
+.event-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-3);
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.event-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-text-faint);
+  transform: translateY(-1px);
+}
+.event-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 3px;
+}
+.event-card.checkout::before { background: var(--color-error); }
+.event-card.checkin::before { background: var(--color-success); }
+.event-card.turn-out::before { background: var(--color-warning); }
+.event-card.turn-in::before { background: var(--color-warning); }
+.event-card.turn::before { background: linear-gradient(90deg, var(--color-error) 50%, var(--color-success) 50%); }
+
+.card-header { display: flex; align-items: flex-start; gap: var(--space-2); margin-bottom: var(--space-2); }
+.event-icon { font-size: 14px; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+.event-type-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+.event-type-label.checkout { color: var(--color-error); }
+.event-type-label.checkin { color: var(--color-success); }
+.event-type-label.turn { color: var(--color-warning); }
+.event-time { font-size: var(--text-xs); color: var(--color-text-muted); margin-left: auto; font-variant-numeric: tabular-nums; }
+
+.card-body { display: flex; flex-direction: column; gap: var(--space-1); }
+.card-prop-name { font-size: var(--text-sm); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-meta-row { display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.card-meta { font-size: 11px; color: var(--color-text-muted); display: flex; align-items: center; gap: 3px; }
+.status-chip {
+  font-size: 10px; font-weight: 600; padding: 1px 6px;
+  border-radius: var(--radius-full); text-transform: uppercase; letter-spacing: 0.04em;
+}
+.status-pending { background: var(--color-gold-highlight); color: var(--color-gold); }
+.status-scheduled { background: var(--color-blue-highlight); color: var(--color-blue); }
+.status-in_progress { background: var(--color-primary-highlight); color: var(--color-primary); }
+.status-completed { background: var(--color-success-highlight); color: var(--color-success); }
+.status-cancelled { background: var(--color-surface-dynamic); color: var(--color-text-muted); text-decoration: line-through; }
+
+.priority-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.priority-urgent { background: var(--color-error); box-shadow: 0 0 0 2px var(--color-error-highlight); }
+.priority-high { background: var(--color-warning); }
+.priority-normal { background: var(--color-blue); }
+.priority-low { background: var(--color-text-faint); }
+
+/* Turn card spans both sides */
+.event-card.turn-combined {
+  grid-column: 1 / -1;
+  display: grid; grid-template-columns: 1fr auto 1fr;
+  gap: var(--space-3); align-items: start;
+}
+.turn-half { display: flex; flex-direction: column; gap: var(--space-1); }
+.turn-divider { width: 1px; background: var(--color-divider); align-self: stretch; }
+.turn-center { text-align: center; }
+
+/* Cleaning window indicator inside turn card */
+.cleaning-window {
+  background: var(--color-warning-highlight);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  margin-top: var(--space-2);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.cleaning-window-label { font-size: 11px; font-weight: 600; color: var(--color-warning); }
+.cleaning-window-time { font-size: 11px; color: var(--color-warning); font-variant-numeric: tabular-nums; }
+
+/* Detail panel */
+.detail-panel {
+  position: fixed; right: 0; top: 53px; bottom: 0;
+  width: 400px; max-width: 90vw;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-divider);
+  z-index: 200;
+  display: flex; flex-direction: column;
+  transform: translateX(100%);
+  transition: transform 350ms cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: var(--shadow-lg);
+}
+.detail-panel.open { transform: translateX(0); }
+.detail-header {
+  padding: var(--space-5) var(--space-5) var(--space-4);
+  border-bottom: 1px solid var(--color-divider);
+  display: flex; align-items: flex-start; gap: var(--space-3); flex-shrink: 0;
+}
+.detail-close {
+  margin-left: auto; width: 28px; height: 28px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--radius-md); color: var(--color-text-muted); flex-shrink: 0;
+}
+.detail-close:hover { background: var(--color-surface-offset); color: var(--color-text); }
+.detail-body { flex: 1; overflow-y: auto; padding: var(--space-5); display: flex; flex-direction: column; gap: var(--space-5); }
+
+.detail-section-title { font-size: var(--text-xs); font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--color-text-muted); margin-bottom: var(--space-3); }
+.detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); }
+.detail-field { display: flex; flex-direction: column; gap: var(--space-1); }
+.detail-field-label { font-size: 11px; color: var(--color-text-muted); font-weight: 500; }
+.detail-field-value { font-size: var(--text-sm); font-weight: 500; }
+.detail-field.full { grid-column: 1 / -1; }
+
+.detail-type-badge {
+  display: inline-flex; align-items: center; gap: var(--space-2);
+  font-size: var(--text-sm); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+}
+.detail-cleaning-block {
+  background: var(--color-warning-highlight);
+  border-radius: var(--radius-lg); padding: var(--space-4);
+}
+.cleaning-time-display {
+  font-size: var(--text-lg); font-weight: 700; font-variant-numeric: tabular-nums;
+  color: var(--color-warning); margin-bottom: var(--space-1);
+}
+.cleaning-duration { font-size: var(--text-xs); color: var(--color-warning); opacity: 0.8; }
+
+.detail-notes {
+  background: var(--color-surface-offset); border-radius: var(--radius-md);
+  padding: var(--space-3); font-size: var(--text-sm); color: var(--color-text-muted);
+  font-style: italic; line-height: 1.6;
+}
+.no-notes { color: var(--color-text-faint); font-style: italic; font-size: var(--text-xs); }
+
+/* Overlay */
+.panel-overlay {
+  position: fixed; inset: 0; background: oklch(0 0 0 / 0.4);
+  z-index: 199; opacity: 0; pointer-events: none;
+  transition: opacity 300ms ease;
+}
+.panel-overlay.open { opacity: 1; pointer-events: auto; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--color-divider); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-border); }
+
+/* No events placeholder */
+.no-events-day {
+  text-align: center; padding: var(--space-2) 0; font-size: 11px;
+  color: var(--color-text-faint); font-style: italic;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="app-header">
+  <div class="app-logo">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-label="Claro4">
+      <rect x="3" y="3" width="8" height="8" rx="1.5" fill="var(--color-primary)" opacity="0.9"/>
+      <rect x="13" y="3" width="8" height="8" rx="1.5" fill="var(--color-primary)" opacity="0.5"/>
+      <rect x="3" y="13" width="8" height="8" rx="1.5" fill="var(--color-primary)" opacity="0.5"/>
+      <rect x="13" y="13" width="8" height="8" rx="1.5" fill="var(--color-primary)" opacity="0.3"/>
+    </svg>
+    Claro4
+  </div>
+  <span class="header-title">Property Timeline — Owner View</span>
+  <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+</header>
+
+<div class="main-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-label">Properties</div>
+      <div class="select-controls">
+        <button class="btn-xs" onclick="selectAll()">All</button>
+        <button class="btn-xs" onclick="selectNone()">None</button>
+      </div>
+    </div>
+    <div class="property-list" id="propertyList"></div>
+  </aside>
+
+  <!-- TIMELINE AREA -->
+  <main class="timeline-area">
+    <div class="timeline-toolbar">
+      <div class="toolbar-section">
+        <span class="toolbar-label">Window</span>
+        <div class="range-group" id="rangeGroup">
+          <button class="range-btn" data-days="3" onclick="setRange(3)">3d</button>
+          <button class="range-btn active" data-days="7" onclick="setRange(7)">7d</button>
+          <button class="range-btn" data-days="14" onclick="setRange(14)">2w</button>
+          <button class="range-btn" data-days="28" onclick="setRange(28)">4w</button>
+        </div>
+      </div>
+      <div class="toolbar-section">
+        <span class="toolbar-label">Merge turns</span>
+        <button class="toggle-switch" id="mergeToggle" onclick="toggleMerge()" aria-pressed="false"></button>
+        <span class="toggle-label" id="mergeLabel">Off</span>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><div class="legend-dot" style="background:var(--color-success)"></div>Check-in</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--color-error)"></div>Check-out</div>
+        <div class="legend-item"><div class="legend-dot" style="background:var(--color-warning)"></div>Turn</div>
+      </div>
+    </div>
+    <div class="timeline-scroll" id="timelineScroll"></div>
+  </main>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="panel-overlay" id="overlay" onclick="closeDetail()"></div>
+<aside class="detail-panel" id="detailPanel" aria-label="Booking details"></aside>
+
+<script>
+// ===== MOCK DATA =====
+const TODAY = new Date();
+TODAY.setHours(0,0,0,0);
+
+function addDays(d, n) {
+  const r = new Date(d); r.setDate(r.getDate() + n); return r;
+}
+function fmtDate(d) {
+  return d.toISOString().split('T')[0];
+}
+function fmtDisplay(dateStr) {
+  const d = new Date(dateStr + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+}
+function isToday(dateStr) {
+  return dateStr === fmtDate(TODAY);
+}
+
+const PROPERTIES = [
+  { id:'p1', color:'#4f98a3', address_street:'412 Ocean Blvd', address_city:'Palm Springs', bedrooms:3, bathrooms:2, property_type:'house', cleaning_duration:120, pricing_tier:'premium' },
+  { id:'p2', color:'#e8883a', address_street:'88 Desert Rose Ct', address_city:'Palm Desert', bedrooms:2, bathrooms:1, property_type:'condo', cleaning_duration:90, pricing_tier:'standard' },
+  { id:'p3', color:'#6daa45', address_street:'1550 Araby Dr', address_city:'Cathedral City', bedrooms:4, bathrooms:3, property_type:'house', cleaning_duration:150, pricing_tier:'luxury' },
+  { id:'p4', color:'#dba832', address_street:'320 Via Soleil', address_city:'Rancho Mirage', bedrooms:2, bathrooms:2, property_type:'townhouse', cleaning_duration:90, pricing_tier:'standard' },
+  { id:'p5', color:'#d163a7', address_street:'70 Smoketree Ave', address_city:'Palm Springs', bedrooms:1, bathrooms:1, property_type:'apartment', cleaning_duration:60, pricing_tier:'basic' },
+];
+
+// Generate bookings relative to today
+const BOOKINGS = [
+  // p1: check-out today, turn in 3 days
+  { id:'b1', property_id:'p1', checkin_date:fmtDate(addDays(TODAY,-4)), checkout_date:fmtDate(TODAY), checkin_time:'15:00:00', checkout_time:'10:00:00', booking_type:'standard', status:'scheduled', guest_count:4, priority:'normal', assigned_cleaner_id:'c1', notes:'No early check-out expected.' },
+  { id:'b2', property_id:'p1', checkin_date:fmtDate(addDays(TODAY,3)), checkout_date:fmtDate(addDays(TODAY,7)), checkin_time:'15:00:00', checkout_time:'11:00:00', booking_type:'standard', status:'pending', guest_count:2, priority:'normal', assigned_cleaner_id:null },
+
+  // p2: turn today (checkout+checkin same day)
+  { id:'b3', property_id:'p2', checkin_date:fmtDate(addDays(TODAY,-3)), checkout_date:fmtDate(TODAY), checkin_time:'15:00:00', checkout_time:'10:00:00', booking_type:'turn', status:'scheduled', guest_count:2, priority:'urgent', assigned_cleaner_id:'c2', turn_date:fmtDate(TODAY), turn_start_time:'10:00', turn_checkin_time:'14:00', notes:'Guest has pet — check for hair on furniture.' },
+  { id:'b4', property_id:'p2', checkin_date:fmtDate(TODAY), checkout_date:fmtDate(addDays(TODAY,5)), checkin_time:'14:00:00', checkout_time:'10:00:00', booking_type:'turn', status:'scheduled', guest_count:3, priority:'urgent', assigned_cleaner_id:'c2', turn_date:fmtDate(TODAY), turn_start_time:'10:00', turn_checkin_time:'14:00' },
+
+  // p3: check-in tomorrow
+  { id:'b5', property_id:'p3', checkin_date:fmtDate(addDays(TODAY,1)), checkout_date:fmtDate(addDays(TODAY,6)), checkin_time:'16:00:00', checkout_time:'11:00:00', booking_type:'standard', status:'in_progress', guest_count:6, priority:'high', assigned_cleaner_id:'c3' },
+
+  // p4: checkout in 2 days, checkin in 4 days
+  { id:'b6', property_id:'p4', checkin_date:fmtDate(addDays(TODAY,-2)), checkout_date:fmtDate(addDays(TODAY,2)), checkin_time:'15:00:00', checkout_time:'10:00:00', booking_type:'standard', status:'scheduled', guest_count:2, priority:'normal', assigned_cleaner_id:null },
+  { id:'b7', property_id:'p4', checkin_date:fmtDate(addDays(TODAY,4)), checkout_date:fmtDate(addDays(TODAY,9)), checkin_time:'15:00:00', checkout_time:'10:00:00', booking_type:'standard', status:'pending', guest_count:2, priority:'normal', assigned_cleaner_id:null },
+
+  // p5: checkout in 5 days + turn in 10 days
+  { id:'b8', property_id:'p5', checkin_date:fmtDate(addDays(TODAY,-1)), checkout_date:fmtDate(addDays(TODAY,5)), checkin_time:'15:00:00', checkout_time:'11:00:00', booking_type:'standard', status:'in_progress', guest_count:1, priority:'low', assigned_cleaner_id:'c1' },
+  { id:'b9', property_id:'p5', checkin_date:fmtDate(addDays(TODAY,10)), checkout_date:fmtDate(addDays(TODAY,13)), checkin_time:'15:00:00', checkout_time:'10:00:00', booking_type:'turn', status:'pending', guest_count:2, priority:'high', assigned_cleaner_id:null, turn_date:fmtDate(addDays(TODAY,10)), turn_start_time:'10:00', turn_checkin_time:'13:00' },
+
+  // p1 turn in 10 days
+  { id:'b10', property_id:'p1', checkin_date:fmtDate(addDays(TODAY,10)), checkout_date:fmtDate(addDays(TODAY,10)), checkin_time:'14:00:00', checkout_time:'10:00:00', booking_type:'turn', status:'pending', guest_count:4, priority:'high', assigned_cleaner_id:null, turn_date:fmtDate(addDays(TODAY,10)), turn_start_time:'10:00', turn_checkin_time:'14:00', notes:'Holiday weekend — confirm cleaner availability.' },
+  { id:'b11', property_id:'p3', checkin_date:fmtDate(addDays(TODAY,8)), checkout_date:fmtDate(addDays(TODAY,12)), checkin_time:'15:00:00', checkout_time:'10:00:00', booking_type:'standard', status:'pending', guest_count:5, priority:'normal', assigned_cleaner_id:null },
+];
+
+// ===== STATE =====
+let selectedProperties = new Set(PROPERTIES.map(p => p.id));
+let rangeDays = 7;
+let mergeMode = false;
+let currentBooking = null;
+
+// ===== RENDER PROPERTY LIST =====
+function renderPropertyList() {
+  const container = document.getElementById('propertyList');
+
+  // Get today's events for badge
+  function getTodayBadge(propId) {
+    const bookings = BOOKINGS.filter(b => b.property_id === propId);
+    const hasTurn = bookings.some(b => b.booking_type === 'turn' && b.turn_date === fmtDate(TODAY));
+    const hasOut = bookings.some(b => b.checkout_date === fmtDate(TODAY) && b.booking_type !== 'turn');
+    const hasIn = bookings.some(b => b.checkin_date === fmtDate(TODAY) && b.booking_type !== 'turn');
+    if (hasTurn) return '<span class="prop-event-badge badge-turn">TURN</span>';
+    if (hasOut) return '<span class="prop-event-badge badge-out">OUT</span>';
+    if (hasIn) return '<span class="prop-event-badge badge-in">IN</span>';
+    return '<span class="prop-event-badge badge-clear">·</span>';
+  }
+
+  container.innerHTML = PROPERTIES.map(p => `
+    <div class="property-chip ${selectedProperties.has(p.id) ? 'selected' : ''}"
+         onclick="toggleProperty('${p.id}')" role="checkbox"
+         aria-checked="${selectedProperties.has(p.id)}">
+      <div class="prop-color-dot" style="background:${p.color}"></div>
+      <div class="prop-info">
+        <div class="prop-street">${p.address_street}</div>
+        <div class="prop-meta">${p.address_city} · ${p.bedrooms}bd/${p.bathrooms}ba</div>
+      </div>
+      ${getTodayBadge(p.id)}
+      <svg class="prop-check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <polyline points="20 6 9 17 4 12"/>
+      </svg>
+    </div>
+  `).join('');
+}
+
+function toggleProperty(id) {
+  if (selectedProperties.has(id)) {
+    selectedProperties.delete(id);
+  } else {
+    selectedProperties.add(id);
+  }
+  renderPropertyList();
+  renderTimeline();
+}
+function selectAll() { PROPERTIES.forEach(p => selectedProperties.add(p.id)); renderPropertyList(); renderTimeline(); }
+function selectNone() { selectedProperties.clear(); renderPropertyList(); renderTimeline(); }
+
+// ===== RANGE =====
+function setRange(days) {
+  rangeDays = days;
+  document.querySelectorAll('.range-btn').forEach(b => {
+    b.classList.toggle('active', parseInt(b.dataset.days) === days);
+  });
+  renderTimeline();
+}
+
+// ===== MERGE TOGGLE =====
+function toggleMerge() {
+  mergeMode = !mergeMode;
+  const btn = document.getElementById('mergeToggle');
+  const lbl = document.getElementById('mergeLabel');
+  btn.classList.toggle('on', mergeMode);
+  btn.setAttribute('aria-pressed', mergeMode);
+  lbl.textContent = mergeMode ? 'On' : 'Off';
+  renderTimeline();
+}
+
+// ===== RENDER TIMELINE =====
+function renderTimeline() {
+  const container = document.getElementById('timelineScroll');
+  const selected = PROPERTIES.filter(p => selectedProperties.has(p.id));
+
+  if (selected.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon">🏠</div><h3>No properties selected</h3><p>Select one or more properties from the sidebar to view their timeline.</p></div>`;
+    return;
+  }
+
+  // Date range
+  const dates = [];
+  for (let i = 0; i < rangeDays; i++) {
+    dates.push(fmtDate(addDays(TODAY, i)));
+  }
+
+  if (mergeMode) {
+    // MERGED: single timeline, all selected properties
+    renderMergedTimeline(container, selected, dates);
+  } else {
+    // SEPARATE: one timeline per property
+    let html = '';
+    for (const prop of selected) {
+      html += renderPropertyTimelineBlock(prop, dates);
+    }
+    container.innerHTML = html || `<div class="empty-state"><div class="empty-icon">📅</div><h3>No events in range</h3><p>No check-ins, check-outs, or turns in the next ${rangeDays} days.</p></div>`;
+  }
+}
+
+function getBookingsForProperty(propId, dates) {
+  return BOOKINGS.filter(b => {
+    if (b.property_id !== propId) return false;
+    // Include if checkout, checkin, or turn_date falls in range
+    return dates.includes(b.checkout_date) || dates.includes(b.checkin_date) || dates.includes(b.turn_date);
+  });
+}
+
+function getProp(id) { return PROPERTIES.find(p => p.id === id); }
+
+// Render a single property's vertical timeline
+function renderPropertyTimelineBlock(prop, dates) {
+  const bookings = getBookingsForProperty(prop.id, dates);
+
+  // Stats
+  const turns = bookings.filter(b => b.booking_type === 'turn').length;
+  const outs = bookings.filter(b => dates.includes(b.checkout_date) && b.booking_type !== 'turn').length;
+  const ins = bookings.filter(b => dates.includes(b.checkin_date) && b.booking_type !== 'turn').length;
+
+  const statsHtml = [
+    outs > 0 ? `<div class="stat-pill" style="background:var(--color-error-highlight);color:var(--color-error)">${outs} out</div>` : '',
+    ins > 0 ? `<div class="stat-pill" style="background:var(--color-success-highlight);color:var(--color-success)">${ins} in</div>` : '',
+    turns > 0 ? `<div class="stat-pill" style="background:var(--color-warning-highlight);color:var(--color-warning)">${turns} turn</div>` : '',
+  ].filter(Boolean).join('');
+
+  let datesHtml = '';
+  for (const dateStr of dates) {
+    datesHtml += renderDateRow(dateStr, bookings, prop, false);
+  }
+
+  return `
+    <div class="prop-timeline-block">
+      <div class="prop-timeline-header">
+        <div class="prop-timeline-color" style="background:${prop.color}"></div>
+        <div>
+          <div class="prop-timeline-name">${prop.address_street}</div>
+          <div class="prop-timeline-address">${prop.address_city} · ${prop.bedrooms}bd ${prop.bathrooms}ba · ${prop.property_type}</div>
+        </div>
+        <div class="prop-timeline-stats">${statsHtml}</div>
+      </div>
+      <div class="timeline-body">${datesHtml}</div>
+    </div>
+  `;
+}
+
+function renderMergedTimeline(container, props, dates) {
+  // Collect all bookings across selected props
+  const allBookings = [];
+  for (const prop of props) {
+    allBookings.push(...getBookingsForProperty(prop.id, dates));
+  }
+
+  let html = `<div class="prop-timeline-block">
+    <div class="prop-timeline-header">
+      <div>
+        <div class="prop-timeline-name">All Properties — Combined View</div>
+        <div class="prop-timeline-address">${props.length} properties selected</div>
+      </div>
+    </div>
+    <div class="timeline-body">`;
+
+  for (const dateStr of dates) {
+    html += renderDateRow(dateStr, allBookings, null, true);
+  }
+  html += `</div></div>`;
+  container.innerHTML = html;
+}
+
+function renderDateRow(dateStr, bookings, prop, showPropName) {
+  // Get events for this date
+  const checkouts = bookings.filter(b => b.checkout_date === dateStr && b.booking_type !== 'turn');
+  const checkins = bookings.filter(b => b.checkin_date === dateStr && b.booking_type !== 'turn');
+  const turnBookings = bookings.filter(b => b.turn_date === dateStr && b.booking_type === 'turn');
+
+  const hasLeft = checkouts.length > 0;
+  const hasRight = checkins.length > 0;
+  const hasTurns = turnBookings.length > 0;
+  const hasAny = hasLeft || hasRight || hasTurns;
+
+  if (!hasAny) return ''; // skip empty days
+
+  const todayClass = isToday(dateStr) ? 'today' : '';
+  const displayDate = isToday(dateStr) ? 'Today' : fmtDisplay(dateStr);
+
+  // For each turn, we get pairs (b.booking_type === 'turn' appears twice — once for checkout side, once for checkin side)
+  // We deduplicate by turn_date
+  const turnDates = [...new Set(turnBookings.map(b => b.turn_date))];
+
+  let rows = '';
+
+  // Checkouts (left) + Checkins (right) — paired by position
+  const maxStandard = Math.max(checkouts.length, checkins.length);
+  for (let i = 0; i < maxStandard; i++) {
+    const co = checkouts[i];
+    const ci = checkins[i];
+    const dotColor = co ? 'var(--color-error)' : ci ? 'var(--color-success)' : 'var(--color-divider)';
+    rows += `
+      <div class="timeline-row">
+        <div>${co ? renderEventCard(co, 'checkout', showPropName) : ''}</div>
+        <div class="timeline-spine">
+          <div class="spine-line"></div>
+          <div class="spine-dot" style="background:${dotColor}"></div>
+        </div>
+        <div>${ci ? renderEventCard(ci, 'checkin', showPropName) : ''}</div>
+      </div>`;
+  }
+
+  // Turn cards (span both columns or show as split)
+  for (const td of turnDates) {
+    const turnSet = turnBookings.filter(b => b.turn_date === td);
+    const outB = turnSet.find(b => b.checkout_date === td);
+    const inB = turnSet.find(b => b.checkin_date === td);
+    // Use first one as representative
+    const rep = outB || inB || turnSet[0];
+    rows += `
+      <div class="timeline-row">
+        <div class="timeline-row" style="grid-column:1/-1;display:grid;grid-template-columns:1fr 80px 1fr;gap:8px">
+          <div>${outB ? renderEventCard(outB, 'turn-out', showPropName) : renderTurnPlaceholder('Departure', rep)}</div>
+          <div class="timeline-spine">
+            <div class="spine-line"></div>
+            <div class="spine-dot" style="background:var(--color-warning)"></div>
+          </div>
+          <div>${inB ? renderEventCard(inB, 'turn-in', showPropName) : renderTurnPlaceholder('Arrival', rep)}</div>
+        </div>
+      </div>
+      ${rep.turn_start_time ? renderCleaningRow(rep, showPropName) : ''}`;
+  }
+
+  return `
+    <div class="timeline-date-group">
+      <div class="date-header">
+        <div></div>
+        <div class="date-label-cell">
+          <div class="date-label ${todayClass}">${displayDate}</div>
+        </div>
+        <div></div>
+      </div>
+      ${rows}
+      <div style="height:var(--space-4)"></div>
+    </div>`;
+}
+
+function renderTurnPlaceholder(label, booking) {
+  const p = getProp(booking.property_id);
+  return `
+    <div class="event-card turn-out" style="opacity:0.5;pointer-events:none">
+      <div class="card-header">
+        <span class="event-type-label turn">${label}</span>
+      </div>
+      <div class="card-body">
+        <div class="card-prop-name">${p ? p.address_street : ''}</div>
+      </div>
+    </div>`;
+}
+
+function renderCleaningRow(booking, showPropName) {
+  const propColor = getProp(booking.property_id)?.color || '#888';
+  return `
+    <div class="timeline-row">
+      <div></div>
+      <div class="timeline-spine"><div class="spine-line"></div></div>
+      <div></div>
+    </div>
+    <div style="padding: 0 calc(80px + 8px + 8px) 0 8px;">
+      <div class="cleaning-window" onclick="openDetail('${booking.id}')" style="cursor:pointer">
+        <div>
+          <div class="cleaning-window-label">🧹 Cleaning Window</div>
+          ${showPropName ? `<div style="font-size:11px;color:var(--color-warning);opacity:0.7">${getProp(booking.property_id)?.address_street || ''}</div>` : ''}
+        </div>
+        <div class="cleaning-window-time">${booking.turn_start_time} → ${booking.turn_checkin_time}</div>
+      </div>
+    </div>`;
+}
+
+function getStatusLabel(status) {
+  const map = { pending:'Pending', scheduled:'Scheduled', in_progress:'In Progress', completed:'Done', cancelled:'Cancelled' };
+  return map[status] || status;
+}
+
+function renderEventCard(booking, side, showPropName) {
+  const prop = getProp(booking.property_id);
+  const isTurn = side === 'turn-out' || side === 'turn-in';
+  const isOut = side === 'checkout' || side === 'turn-out';
+  const typeLabel = isTurn ? (isOut ? 'Turn · Out' : 'Turn · In') : (isOut ? 'Check-out' : 'Check-in');
+  const typeClass = isTurn ? 'turn' : (isOut ? 'checkout' : 'checkin');
+  const time = isOut ? booking.checkout_time?.slice(0,5) : booking.checkin_time?.slice(0,5);
+  const propColorDot = showPropName && prop ? `<div style="width:8px;height:8px;border-radius:50%;background:${prop.color};flex-shrink:0"></div>` : '';
+
+  return `
+    <div class="event-card ${typeClass}" onclick="openDetail('${booking.id}')" role="button" tabindex="0"
+         onkeydown="if(event.key==='Enter')openDetail('${booking.id}')">
+      <div class="card-header">
+        <span class="event-type-label ${typeClass}">${typeLabel}</span>
+        <span class="event-time">${time}</span>
+      </div>
+      <div class="card-body">
+        ${showPropName && prop ? `<div class="card-meta-row">${propColorDot}<div class="card-prop-name">${prop.address_street}</div></div>` : ''}
+        <div class="card-meta-row">
+          <span class="status-chip status-${booking.status}">${getStatusLabel(booking.status)}</span>
+          <div class="priority-dot priority-${booking.priority}"></div>
+          ${booking.guest_count ? `<span class="card-meta">👤 ${booking.guest_count}</span>` : ''}
+          ${booking.assigned_cleaner_id ? `<span class="card-meta">✓ Assigned</span>` : `<span class="card-meta" style="color:var(--color-warning)">⚠ Unassigned</span>`}
+        </div>
+      </div>
+    </div>`;
+}
+
+// ===== DETAIL PANEL =====
+function openDetail(bookingId) {
+  const booking = BOOKINGS.find(b => b.id === bookingId);
+  if (!booking) return;
+  currentBooking = booking;
+  const prop = getProp(booking.property_id);
+  const panel = document.getElementById('detailPanel');
+  const overlay = document.getElementById('overlay');
+
+  const isTurn = booking.booking_type === 'turn';
+  const typeColor = isTurn ? 'var(--color-warning)' : 'var(--color-blue)';
+  const typeLabel = isTurn ? 'Same-Day Turn' : 'Standard Booking';
+  const priorityColors = { urgent:'var(--color-error)', high:'var(--color-warning)', normal:'var(--color-blue)', low:'var(--color-text-muted)' };
+  const pColor = priorityColors[booking.priority] || 'var(--color-text-muted)';
+
+  panel.innerHTML = `
+    <div class="detail-header">
+      <div>
+        <div class="detail-type-badge" style="color:${typeColor}">
+          <div class="priority-dot priority-${booking.priority}" style="width:8px;height:8px"></div>
+          ${typeLabel}
+        </div>
+        ${prop ? `<div style="font-size:var(--text-sm);font-weight:600;margin-top:4px">${prop.address_street}</div>` : ''}
+        ${prop ? `<div style="font-size:var(--text-xs);color:var(--color-text-muted)">${prop.address_city} · ${prop.property_type}</div>` : ''}
+      </div>
+      <button class="detail-close" onclick="closeDetail()" aria-label="Close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="detail-body">
+
+      <div>
+        <div class="detail-section-title">Booking Window</div>
+        <div class="detail-grid">
+          <div class="detail-field">
+            <div class="detail-field-label">Check-out</div>
+            <div class="detail-field-value" style="color:var(--color-error)">${fmtDisplay(booking.checkout_date)} · ${booking.checkout_time?.slice(0,5)}</div>
+          </div>
+          <div class="detail-field">
+            <div class="detail-field-label">Check-in</div>
+            <div class="detail-field-value" style="color:var(--color-success)">${fmtDisplay(booking.checkin_date)} · ${booking.checkin_time?.slice(0,5)}</div>
+          </div>
+          <div class="detail-field">
+            <div class="detail-field-label">Status</div>
+            <div class="detail-field-value"><span class="status-chip status-${booking.status}">${getStatusLabel(booking.status)}</span></div>
+          </div>
+          <div class="detail-field">
+            <div class="detail-field-label">Priority</div>
+            <div class="detail-field-value" style="color:${pColor};font-weight:600;text-transform:capitalize">${booking.priority}</div>
+          </div>
+          ${booking.guest_count ? `<div class="detail-field"><div class="detail-field-label">Guests</div><div class="detail-field-value">${booking.guest_count} guests</div></div>` : ''}
+          <div class="detail-field">
+            <div class="detail-field-label">Cleaner</div>
+            <div class="detail-field-value" style="color:${booking.assigned_cleaner_id ? 'var(--color-success)' : 'var(--color-warning)'}">
+              ${booking.assigned_cleaner_id ? '✓ Assigned' : '⚠ Unassigned'}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      ${isTurn && booking.turn_start_time ? `
+      <div>
+        <div class="detail-section-title">Cleaning Window</div>
+        <div class="detail-cleaning-block">
+          <div class="cleaning-time-display">${booking.turn_start_time} → ${booking.turn_checkin_time}</div>
+          <div class="cleaning-duration">${prop ? prop.cleaning_duration + ' min estimated · ' + prop.pricing_tier + ' tier' : ''}</div>
+        </div>
+      </div>` : ''}
+
+      ${prop ? `
+      <div>
+        <div class="detail-section-title">Property Info</div>
+        <div class="detail-grid">
+          ${prop.access_info ? `<div class="detail-field full"><div class="detail-field-label">Access</div><div class="detail-field-value">${prop.access_info}</div></div>` : ''}
+          <div class="detail-field"><div class="detail-field-label">Type</div><div class="detail-field-value" style="text-transform:capitalize">${prop.property_type}</div></div>
+          <div class="detail-field"><div class="detail-field-label">Size</div><div class="detail-field-value">${prop.bedrooms}bd / ${prop.bathrooms}ba ${prop.square_feet ? '· '+prop.square_feet+'sqft' : ''}</div></div>
+          ${prop.floor_type ? `<div class="detail-field"><div class="detail-field-label">Floors</div><div class="detail-field-value" style="text-transform:capitalize">${prop.floor_type}</div></div>` : ''}
+          <div class="detail-field"><div class="detail-field-label">Tier</div><div class="detail-field-value" style="text-transform:capitalize">${prop.pricing_tier}</div></div>
+          ${prop.parking_instructions ? `<div class="detail-field full"><div class="detail-field-label">Parking</div><div class="detail-field-value">${prop.parking_instructions}</div></div>` : ''}
+        </div>
+      </div>` : ''}
+
+      <div>
+        <div class="detail-section-title">Notes</div>
+        ${booking.notes ? `<div class="detail-notes">${booking.notes}</div>` : '<div class="no-notes">No notes on this booking.</div>'}
+      </div>
+    </div>
+  `;
+
+  panel.classList.add('open');
+  overlay.classList.add('open');
+}
+
+function closeDetail() {
+  document.getElementById('detailPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+// ===== THEME TOGGLE =====
+(function(){
+  const t = document.querySelector('[data-theme-toggle]');
+  const r = document.documentElement;
+  let d = r.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme:dark)').matches ? 'dark' : 'light');
+  r.setAttribute('data-theme', d);
+  function updateIcon() {
+    if (!t) return;
+    t.innerHTML = d === 'dark'
+      ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>'
+      : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>';
+  }
+  updateIcon();
+  t && t.addEventListener('click', () => {
+    d = d === 'dark' ? 'light' : 'dark';
+    r.setAttribute('data-theme', d);
+    updateIcon();
+  });
+})();
+
+// ===== INIT =====
+renderPropertyList();
+renderTimeline();
+</script>
+</body>
+</html>

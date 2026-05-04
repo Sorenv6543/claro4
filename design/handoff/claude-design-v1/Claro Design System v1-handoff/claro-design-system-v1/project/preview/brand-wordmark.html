@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  :root {
+    --primary: #5A4FE3;
+    --ink: #2E263D;
+    --ink-2: #57506A;
+    --ink-3: #8B8599;
+    --border: #E6E6EC;
+  }
+  body { margin: 0; padding: 28px; background: #fff; font-family: var(--claro-font-family); color: var(--ink); }
+  h2 { margin: 32px 0 10px; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-3); }
+  .sub { margin: 0 0 20px; font-size: 12px; color: var(--ink-3); line-height: 1.5; max-width: 640px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 11px; background: #F4F3F8; padding: 1px 5px; border-radius: 2px; }
+
+  /* Primary showcase */
+  .hero { border: 1px solid var(--border); border-radius: 4px; padding: 40px 32px; display: flex; align-items: center; justify-content: center; max-width: 600px; margin-bottom: 6px; }
+  .hero img, .hero object { display: block; }
+  .hero-meta { display: flex; gap: 24px; font-size: 11px; color: var(--ink-3); margin-bottom: 28px; }
+  .hero-meta b { color: var(--ink); font-weight: 600; }
+
+  /* Color treatments */
+  .swatches { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--border); border-radius: 4px; overflow: hidden; max-width: 700px; }
+  .swatch { padding: 28px 20px; display: flex; align-items: center; justify-content: center; border-right: 1px solid var(--border); }
+  .swatch:last-child { border-right: none; }
+  .swatch.dark  { background: var(--ink); }
+  .swatch.purple{ background: var(--primary); }
+  .swatch.cream { background: #F7F4ED; }
+
+  /* Scale tests */
+  .scales { display: flex; align-items: flex-end; gap: 28px; padding: 20px; border: 1px solid var(--border); border-radius: 4px; max-width: 700px; flex-wrap: wrap; }
+  .scale-item { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+  .scale-label { font-size: 10px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+
+  /* Note box */
+  .note { background: #F5F4FB; border: 1px solid #D6D3F5; border-radius: 4px; padding: 14px 16px; font-size: 12px; color: var(--ink-2); max-width: 640px; line-height: 1.5; }
+  .note strong { color: var(--primary); }
+
+  /* Download link */
+  .dl-row { display: flex; align-items: center; gap: 10px; margin-top: 8px; }
+  .dl-btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: var(--primary); color: #fff; font-size: 12px; font-weight: 600; border-radius: 2px; text-decoration: none; border: none; cursor: pointer; }
+  .dl-btn:hover { background: #4A3FCF; }
+</style>
+</head>
+<body>
+
+<h2>Brand wordmark · SVG</h2>
+<p class="sub">
+  Inter 700 · <code>#5A4FE3</code> · mirrored swash off the o.
+  The SVG uses live text — fully scalable, no rasterization. For font-independent use, open in Figma or Illustrator and convert text to outlines.
+</p>
+
+<div class="hero">
+  <img src="../assets/claro-wordmark.svg" width="420" height="130" alt="Claro wordmark" style="width:420px;height:auto;max-width:100%;">
+</div>
+<div class="hero-meta">
+  <span><b>Font</b> Inter 700</span>
+  <span><b>Color</b> #5A4FE3</span>
+  <span><b>Tracking</b> −2.5px</span>
+  <span><b>Swash</b> 8px stroke · fades to transparent at tip</span>
+  <span><b>File</b> assets/claro-wordmark.svg</span>
+</div>
+
+<div class="dl-row">
+  <a class="dl-btn" href="../assets/claro-wordmark.svg" download="claro-wordmark.svg">
+    ↓ Download SVG
+  </a>
+</div>
+
+<h2>Color treatments</h2>
+<div class="swatches">
+  <div class="swatch">
+    <img src="../assets/claro-wordmark.svg" width="160" height="50" alt="Claro on white">
+  </div>
+  <div class="swatch cream">
+    <!-- Ink on cream — recolor via CSS filter (hue-rotate to shift purple→near-black) -->
+    <svg viewBox="0 -24 420 180" fill="none" style="width:160px;height:auto;">
+      <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#2E263D">Claro</text>
+      <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke="#2E263D" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="swatch dark">
+    <svg viewBox="0 -24 420 180" fill="none" style="width:160px;height:auto;">
+      <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#ffffff">Claro</text>
+      <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke="#ffffff" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="swatch purple">
+    <svg viewBox="0 -24 420 180" fill="none" style="width:160px;height:auto;">
+      <text x="8" y="118" font-family="'Inter',system-ui,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#ffffff">Claro</text>
+      <path d="M 338 88 Q 358 40 326 14 Q 288 -8 232 6 Q 168 20 140 56" stroke="#ffffff" stroke-width="8" stroke-linecap="round" fill="none" opacity="0.5"/>
+    </svg>
+  </div>
+</div>
+
+<h2>Scale test</h2>
+<div class="scales">
+  <div class="scale-item">
+    <img src="../assets/claro-wordmark.svg" width="72" height="22" alt="" style="width:72px;height:auto;">
+    <span class="scale-label">24pt · favicon / app-bar</span>
+  </div>
+  <div class="scale-item">
+    <img src="../assets/claro-wordmark.svg" width="140" height="44" alt="" style="width:140px;height:auto;">
+    <span class="scale-label">46pt · print card</span>
+  </div>
+  <div class="scale-item">
+    <img src="../assets/claro-wordmark.svg" width="280" height="87" alt="" style="width:280px;height:auto;">
+    <span class="scale-label">92pt · hero / splash</span>
+  </div>
+</div>
+
+<h2>Usage notes</h2>
+<div class="note">
+  <strong>Live text</strong> — the SVG <code>&lt;text&gt;</code> element loads Inter from Google Fonts. The wordmark renders correctly in any browser with network access. For <strong>fully portable use</strong> (print, Canva, offline), convert text to outlines in Figma (<i>Object › Flatten</i>) or Illustrator (<i>Type › Create Outlines</i>). The swash is already a <code>&lt;path&gt;</code> — only the letterforms need outlining.
+</div>
+
+</body>
+</html>

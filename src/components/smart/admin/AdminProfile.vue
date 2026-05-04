@@ -343,7 +343,7 @@
   import { useAuthStore } from '@/stores/auth'
 
   defineOptions({
-    name: 'OwnerProfileComponent',
+    name: 'AdminProfileComponent',
   })
 
   const router = useRouter()
@@ -369,7 +369,7 @@
   }
 
   function handleSettings () {
-    router.push('/owner/settings')
+    router.push('/admin/settings')
   }
 
   function formatDate (dateString: string) {

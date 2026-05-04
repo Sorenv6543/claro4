@@ -1,6 +1,16 @@
 <template>
   <div class="owner-calendar-container">
-    <!-- Owner Calendar: Shows only owner's bookings across their properties -->
+    <div v-if="legendItems.length > 1" class="owner-cal-legend">
+      <div
+        v-for="item in legendItems"
+        :key="item.id"
+        class="owner-cal-legend__item"
+      >
+        <span class="owner-cal-legend__dot" :style="{ background: item.color }" />
+        <span class="owner-cal-legend__label">{{ item.label }}</span>
+      </div>
+    </div>
+
     <FullCalendar
       ref="calendarRef"
       :bookings="props.bookings"
@@ -22,9 +32,10 @@
   import type { Booking, Property } from '@/types'
   import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
-  import { defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
+  import { computed, defineAsyncComponent, nextTick, ref, watch } from 'vue'
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
   import { useCalendarState } from '@/composables/shared/useCalendarState'
+  import { formatPropertyAddress } from '@/types/property'
 
   // Lazy-load the FullCalendar wrapper so the heavy @fullcalendar/*
   // packages (~250 kB) only download when a calendar route is visited.
@@ -66,6 +77,14 @@
 
   // ===== REFS AND REACTIVE DATA =====
   const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
+
+  const legendItems = computed(() =>
+    props.properties.map(p => ({
+      id: p.id,
+      color: p.color,
+      label: formatPropertyAddress(p, 'short'),
+    })),
+  )
 
   // ===== EVENT HANDLERS (SAFE - SIMPLE EMIT PATTERNS) =====
 
@@ -162,12 +181,6 @@
     })
   })
 
-  // ===== LIFECYCLE =====
-
-  onMounted(async () => {
-    await nextTick()
-  })
-
   // ===== EXPOSE METHODS TO PARENT =====
   defineExpose({
     goToDate,
@@ -188,6 +201,44 @@
   flex-direction: column;
   overflow: hidden;
 }
+
+/* ================================================================ */
+/* PROPERTY LEGEND STRIP */
+/* ================================================================ */
+
+.owner-cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px var(--claro-space-md);
+  padding: 6px var(--claro-space-md);
+  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
+  flex-shrink: 0;
+  background: rgb(var(--v-theme-surface));
+}
+
+.owner-cal-legend__item {
+  display: flex;
+  align-items: center;
+  gap: var(--claro-space-xs);
+}
+
+.owner-cal-legend__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.owner-cal-legend__label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--claro-text-secondary);
+  white-space: nowrap;
+}
+
+/* ================================================================ */
+/* CALENDAR AREA */
+/* ================================================================ */
 
 .owner-calendar {
   flex: 1;
@@ -223,7 +274,7 @@
 }
 
 :deep(.fc-col-header-cell) {
-  background: rgb(var(--v-theme-surface-variant));
+  background: var(--claro-surface-variant);
 }
 
 /* ================================================================ */
@@ -232,17 +283,17 @@
 
 @keyframes pulse-owner-urgent {
   0% {
-    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.8);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--claro-turn-urgent) 80%, transparent);
     transform: scale(1);
   }
 
   70% {
-    box-shadow: 0 0 0 6px rgba(244, 67, 54, 0);
+    box-shadow: 0 0 0 6px transparent;
     transform: scale(1.01);
   }
 
   100% {
-    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0);
+    box-shadow: 0 0 0 0 transparent;
     transform: scale(1);
   }
 }
@@ -253,8 +304,7 @@
 
 @media (max-width: 768px) {
   .owner-calendar-container {
-    height: calc(100vh - 120px);
-  /* TODO: Adjust based on actual header/footer height */
+    height: calc(100dvh - var(--claro-app-bar-height));
   }
 
   :deep(.fc-header-toolbar) {
@@ -287,8 +337,6 @@
 .owner-calendar-container {
   user-select: none;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
 /* Smooth transitions for swipe gestures */

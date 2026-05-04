@@ -1,0 +1,208 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css">
+<style>
+  body {
+    margin: 0;
+    padding: 18px;
+    background: var(--claro-background);
+    font-family: var(--claro-font-family);
+  }
+
+  /* ─── Hero card ────────────────────────────────────────
+     The "flow of life" shape: a continuous ribbon that sweeps
+     through the card, marked with four moments — the rhythm
+     of a short-term rental: arrive · stay · depart · turn.
+     It sits behind the content, establishing the brand metaphor
+     without competing for attention. */
+  .card {
+    position: relative;
+    /* Explicit gradient so the card always paints, even if tokens drift.
+       Blue-leaning family, matching the App Bar revert. */
+    background: #5A4FE3 linear-gradient(135deg, #7367F0 0%, #5A4FE3 55%, #4A3FCF 100%);
+    border-radius: 2px;
+    padding: 24px 28px;
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(74, 63, 207, .35);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  /* The flow shape — absolute-positioned SVG behind content */
+  .flow {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .flow-river {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.16);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-dasharray: 3 5;
+    animation: flow-drift 24s linear infinite;
+  }
+  .flow-river-core {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.32);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    filter: blur(0.4px);
+  }
+  .flow-node {
+    fill: #fff;
+    stroke: rgba(115, 103, 240, 0.40);
+    stroke-width: 1.5;
+  }
+  .flow-node-pulse {
+    fill: none;
+    stroke: rgba(255, 255, 255, 0.45);
+    stroke-width: 1.5;
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: node-pulse 3s ease-out infinite;
+  }
+  .flow-node-pulse:nth-of-type(2) { animation-delay: 0.75s; }
+  .flow-node-pulse:nth-of-type(3) { animation-delay: 1.5s; }
+  .flow-node-pulse:nth-of-type(4) { animation-delay: 2.25s; }
+
+  @keyframes flow-drift {
+    to { stroke-dashoffset: -160; }
+  }
+  @keyframes node-pulse {
+    0%   { r: 4; opacity: 0.9; }
+    80%  { r: 14; opacity: 0; }
+    100% { r: 14; opacity: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .flow-river, .flow-node-pulse { animation: none; }
+  }
+
+  /* Content sits on top of the flow */
+  .content { position: relative; z-index: 1; }
+
+  h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .sub {
+    font-size: 13px;
+    opacity: .88;
+    margin-top: 4px;
+  }
+
+  .row {
+    display: flex;
+    gap: 32px;
+    margin-top: 22px;
+  }
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .box {
+    width: 38px;
+    height: 38px;
+    border-radius: 2px;
+    background: rgba(255, 255, 255, .18);
+    border: 1px solid rgba(255, 255, 255, .12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+  i { font-size: 18px; color: #fff; }
+  .lbl {
+    font-size: 11px;
+    opacity: .85;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: 500;
+  }
+  .val {
+    font-size: 18px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    margin-top: 1px;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <!-- ─── The flow of life ───────────────────────────────
+         A continuous ribbon sweeping left to right, with four
+         nodes marking the rhythm of a stay: arrive, live,
+         depart, turn. The dashed inner line "drifts" so the
+         shape feels alive without being distracting. -->
+    <svg class="flow" viewBox="0 0 800 200" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="riverFade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%"   stop-color="white" stop-opacity="0"/>
+          <stop offset="12%"  stop-color="white" stop-opacity="1"/>
+          <stop offset="88%"  stop-color="white" stop-opacity="1"/>
+          <stop offset="100%" stop-color="white" stop-opacity="0"/>
+        </linearGradient>
+        <mask id="riverMask">
+          <rect width="800" height="200" fill="url(#riverFade)"/>
+        </mask>
+      </defs>
+
+      <g mask="url(#riverMask)">
+        <!-- The river: one continuous curve that bends through the four life-moments -->
+        <path class="flow-river-core"
+              d="M -40,140 C 120,140 180,60 310,60 S 500,150 610,100 760,40 900,70"/>
+        <path class="flow-river"
+              d="M -40,140 C 120,140 180,60 310,60 S 500,150 610,100 760,40 900,70"/>
+
+        <!-- The four nodes — arrive · live · depart · turn -->
+        <circle class="flow-node-pulse" cx="130" cy="132" r="4"/>
+        <circle class="flow-node-pulse" cx="310" cy="60"  r="4"/>
+        <circle class="flow-node-pulse" cx="560" cy="123" r="4"/>
+        <circle class="flow-node-pulse" cx="720" cy="55"  r="4"/>
+
+        <circle class="flow-node" cx="130" cy="132" r="3.5"/>
+        <circle class="flow-node" cx="310" cy="60"  r="3.5"/>
+        <circle class="flow-node" cx="560" cy="123" r="3.5"/>
+        <circle class="flow-node" cx="720" cy="55"  r="3.5"/>
+      </g>
+    </svg>
+
+    <div class="content">
+      <h3>Welcome back, Soren Vinson</h3>
+      <div class="sub">Here is what is happening with your properties today.</div>
+      <div class="row">
+        <div class="item">
+          <div class="box"><i class="mdi mdi-home-outline"></i></div>
+          <div>
+            <div class="lbl">Properties</div>
+            <div class="val">14</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="box"><i class="mdi mdi-calendar"></i></div>
+          <div>
+            <div class="lbl">Bookings</div>
+            <div class="val">6</div>
+          </div>
+        </div>
+        <div class="item">
+          <div class="box"><i class="mdi mdi-swap-horizontal"></i></div>
+          <div>
+            <div class="lbl">Turns</div>
+            <div class="val">1</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

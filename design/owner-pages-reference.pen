@@ -1,0 +1,846 @@
+{
+  "version": "2.11",
+  "children": [
+    {
+      "type": "frame",
+      "id": "Z0Dxpx",
+      "x": -529,
+      "y": 527,
+      "name": "Owner Pages — Desktop Reference",
+      "width": 4947,
+      "height": 3465,
+      "fill": "#F5F5F9",
+      "layout": "vertical",
+      "gap": 48,
+      "padding": 60,
+      "children": [
+        {
+          "type": "text",
+          "id": "MYI0T",
+          "name": "ttl",
+          "fill": "#2E263D",
+          "content": "Owner Pages — Desktop Reference",
+          "fontFamily": "Inter",
+          "fontSize": 24,
+          "fontWeight": "600"
+        },
+        {
+          "type": "text",
+          "id": "VELjC",
+          "name": "sub",
+          "fill": "#9E95F5",
+          "content": "1440 × 900 · Live app · May 2026",
+          "fontFamily": "Inter",
+          "fontSize": 12,
+          "fontWeight": "normal"
+        },
+        {
+          "type": "frame",
+          "id": "H9UgOK",
+          "name": "Row1",
+          "gap": 40,
+          "children": [
+            {
+              "type": "frame",
+              "id": "J7MQ9",
+              "name": "Overview",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "fNL7j",
+                  "name": "oLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/overview",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "XyxXg",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/overview-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "SMUdO",
+              "name": "Calendar",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "iGu23",
+                  "name": "cLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/calendar",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "VFWLd",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/calendar-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "BIXJE",
+              "name": "Bookings",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "X4UhM3",
+                  "name": "bLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/bookings",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "A9Ppw6",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/bookings-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "M9e6p",
+          "name": "Row2",
+          "gap": 40,
+          "children": [
+            {
+              "type": "frame",
+              "id": "cQwiI",
+              "name": "Properties",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "saRib",
+                  "name": "pLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/properties",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "Def4v",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/properties-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ThYsA",
+              "name": "Properties Detail",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Pgvwr",
+                  "name": "dLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/properties (detail panel)",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "tyvlR",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/properties-detail-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "BzC0K",
+              "name": "Timeline",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "mAvSp",
+                  "name": "tLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/timeline",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "O7bw3",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/timeline-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "o80t2",
+          "name": "Row3",
+          "gap": 40,
+          "children": [
+            {
+              "type": "frame",
+              "id": "is1Rv",
+              "name": "Reports",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "E9PZy",
+                  "name": "rLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/reports",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "atECn",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/reports-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "EIaVa",
+              "name": "Settings",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Z8meM",
+                  "name": "sLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/settings",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "PJSI2",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/settings-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "d6oG4d",
+              "name": "Profile",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "eSpRO",
+                  "name": "prLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/profile",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "zEuaA",
+                  "name": "screenshot",
+                  "width": 1440,
+                  "height": 900,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/profile-desktop.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "rectangle",
+          "id": "KhwTZ",
+          "name": "div",
+          "fill": "#E0E0E0",
+          "width": 6257,
+          "height": 2
+        },
+        {
+          "type": "text",
+          "id": "jAZ7G",
+          "name": "mttl",
+          "fill": "#2E263D",
+          "content": "Mobile Layout — 390 × 844 (iPhone 14)",
+          "fontFamily": "Inter",
+          "fontSize": 24,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 4675,
+      "y": 581,
+      "name": "Owner Pages - Mobile Reference",
+      "clip": true,
+      "width": 1416,
+      "height": 3411,
+      "fill": "#f5f5f9ff",
+      "layout": "none",
+      "children": [
+        {
+          "type": "frame",
+          "id": "E2ypH",
+          "x": 61,
+          "y": 189,
+          "name": "Mobile Row1",
+          "gap": 40,
+          "justifyContent": "space_between",
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "CP4fr",
+              "name": "Overview",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "Fryl5",
+                  "name": "moLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/overview",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "UIH9U",
+                  "name": "moImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/overview-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "Xm3Tv",
+              "name": "Calendar",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "bs5dx",
+                  "name": "mcLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/calendar",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "H0T0yt",
+                  "name": "mcImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/calendar-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ytYWF",
+              "name": "Bookings",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "lUvGC",
+                  "name": "mbLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/bookings",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "dsVDn",
+                  "name": "mbImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/bookings-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "znvt0",
+          "x": 61,
+          "y": 1198,
+          "name": "Mobile Row2",
+          "gap": 40,
+          "justifyContent": "space_between",
+          "alignItems": "end",
+          "children": [
+            {
+              "type": "frame",
+              "id": "IL0HT",
+              "name": "Properties",
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "E4N41",
+                  "name": "mpLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/properties",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "vu951",
+                  "name": "mpImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/properties-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "TqHL7",
+              "name": "Properties Detail",
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "K6y1h",
+                  "name": "mdLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/properties (detail)",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "N6dYi",
+                  "name": "mdImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/properties-detail-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "zIfkX",
+              "name": "Timeline",
+              "layout": "vertical",
+              "gap": 12,
+              "justifyContent": "space_between",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "y0Oi0",
+                  "name": "mtLbl",
+                  "fill": "#7367F0",
+                  "content": "/owner/timeline",
+                  "fontFamily": "Inter",
+                  "fontSize": 11,
+                  "fontWeight": "600"
+                },
+                {
+                  "type": "frame",
+                  "id": "vDGCU",
+                  "name": "mtImg",
+                  "width": 390,
+                  "height": 844,
+                  "fill": {
+                    "type": "image",
+                    "enabled": true,
+                    "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/timeline-mobile.png",
+                    "mode": "fit"
+                  },
+                  "cornerRadius": 2,
+                  "stroke": {
+                    "align": "inside",
+                    "thickness": 1,
+                    "fill": "#E0E0E0"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "BcwXe",
+          "x": 61,
+          "y": 2115,
+          "name": "Mobile Row3",
+          "width": "fit_content(1250)",
+          "height": "fit_content(869)",
+          "gap": 40,
+          "justifyContent": "space_between",
+          "alignItems": "end"
+        },
+        {
+          "type": "frame",
+          "id": "OtxKB",
+          "x": 61,
+          "y": 2115,
+          "name": "Reports",
+          "layout": "vertical",
+          "gap": 12,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "GM6Nm",
+              "name": "mrLbl",
+              "fill": "#7367F0",
+              "content": "/owner/reports",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "UqMnL",
+              "name": "mrImg",
+              "width": 390,
+              "height": 844,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/reports-mobile.png",
+                "mode": "fit"
+              },
+              "cornerRadius": 2,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#E0E0E0"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "ImHsc",
+          "x": 491,
+          "y": 2115,
+          "name": "Settings",
+          "layout": "vertical",
+          "gap": 12,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "D6OBKg",
+              "name": "msLbl",
+              "fill": "#7367F0",
+              "content": "/owner/settings",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "tqhpR",
+              "name": "msImg",
+              "width": 390,
+              "height": 844,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/settings-mobile.png",
+                "mode": "fit"
+              },
+              "cornerRadius": 2,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#E0E0E0"
+              }
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "kCT5T",
+          "x": 921,
+          "y": 2115,
+          "name": "Profile",
+          "layout": "vertical",
+          "gap": 12,
+          "justifyContent": "space_between",
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "text",
+              "id": "n4apmG",
+              "name": "mprLbl",
+              "fill": "#7367F0",
+              "content": "/owner/profile",
+              "fontFamily": "Inter",
+              "fontSize": 11,
+              "fontWeight": "600"
+            },
+            {
+              "type": "frame",
+              "id": "klz3d",
+              "name": "mprImg",
+              "width": 390,
+              "height": 844,
+              "fill": {
+                "type": "image",
+                "enabled": true,
+                "url": "C:/Users/Soren/claro4/design/handoff/restyle/screenshots/profile-mobile.png",
+                "mode": "fit"
+              },
+              "cornerRadius": 2,
+              "stroke": {
+                "align": "inside",
+                "thickness": 1,
+                "fill": "#E0E0E0"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "OBMWP",
+      "x": 4675,
+      "y": 527,
+      "name": "msub",
+      "fill": "#9E95F5",
+      "content": "390 × 844 · iOS mobile emulation · May 2026",
+      "fontFamily": "Inter",
+      "fontSize": 12,
+      "fontWeight": "normal"
+    }
+  ]
+}

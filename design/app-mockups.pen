@@ -20033,6 +20033,56 @@
       "ref": "vgtYv",
       "x": 5655,
       "y": -662.6114897760467
+    },
+    {
+      "type": "frame",
+      "id": "LYcX1",
+      "x": 1612,
+      "y": 1363.999999999999,
+      "name": "Frame 3",
+      "clip": true,
+      "width": 1858,
+      "height": 3858,
+      "fill": "#FFFFFF",
+      "layout": "none",
+      "children": [
+        {
+          "type": "script",
+          "id": "ANLdM",
+          "x": 0,
+          "y": 9.094947017729282e-13,
+          "width": 1858,
+          "height": 3858
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "id": "iQY98",
+      "layoutPosition": "absolute",
+      "x": -303,
+      "y": 3077,
+      "name": "vuetify-preview-label",
+      "content": "Vuetify Play — OwnerCalendar.vue live token render",
+      "fontFamily": "Inter",
+      "fontSize": 13,
+      "fontWeight": "600"
+    },
+    {
+      "type": "frame",
+      "id": "fP53S",
+      "layoutPosition": "absolute",
+      "x": -303,
+      "y": 2197,
+      "name": "vuetify-live-preview",
+      "width": 660,
+      "height": 860,
+      "fill": {
+        "type": "image",
+        "enabled": true,
+        "url": "http://localhost:3000/owner-calendar-preview.png",
+        "mode": "stretch"
+      }
     }
   ],
   "themes": {

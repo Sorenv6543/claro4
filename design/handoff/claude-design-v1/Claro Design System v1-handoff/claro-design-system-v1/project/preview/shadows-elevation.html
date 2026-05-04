@@ -1,0 +1,24 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../colors_and_type.css">
+<style>
+  body { margin: 0; padding: 20px; background: var(--claro-background); font-family: var(--claro-font-family); }
+  .row { display: flex; gap: 20px; align-items: center; }
+  .card { width: 140px; height: 90px; background: #fff; display: flex; align-items: center; justify-content: center; color: var(--claro-fg3); font-size: 11px; }
+  .sm { border-radius: 2px; box-shadow: 0 2px 10px rgba(0,0,0,.05); }
+  .md { border-radius: 2px; box-shadow: 0 4px 18px rgba(115,103,240,.12), 0 2px 6px rgba(0,0,0,.06); }
+  .lg { border-radius: 2px; box-shadow: 0 8px 28px rgba(115,103,240,.18), 0 4px 10px rgba(0,0,0,.08); }
+  .label { text-align: center; font-size: 11px; color: var(--claro-fg3); margin-top: 8px; font-variant-numeric: tabular-nums; }
+  .group { display: flex; flex-direction: column; }
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="group"><div class="card sm">baseline</div><div class="label">shadow-sm · card resting</div></div>
+    <div class="group"><div class="card md">hover</div><div class="label">shadow-md · hover lift</div></div>
+    <div class="group"><div class="card lg">floating</div><div class="label">shadow-lg · menus</div></div>
+  </div>
+</body>
+</html>

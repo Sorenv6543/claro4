@@ -4,6 +4,7 @@ import { useSupabaseBookings } from '@/composables/supabase/useSupabaseBookings'
 import { useSupabaseProperties } from '@/composables/supabase/useSupabaseProperties'
 import { supabase } from '@/plugins/supabase'
 import { useAuthStore } from '@/stores/auth'
+import { useUIStore } from '@/stores/ui'
 
 export function useRealtimeSync () {
   const { fetchAndSubscribe: initBookings, unsubscribe: teardownBookings,
@@ -11,6 +12,7 @@ export function useRealtimeSync () {
   const { fetchAndSubscribe: initProperties, unsubscribe: teardownProperties,
     connectionStatus: propertyStatus } = useSupabaseProperties()
   const authStore = useAuthStore()
+  const uiStore = useUIStore()
 
   const isOnline = ref(navigator.onLine)
   let profileChannel: RealtimeChannel | null = null
@@ -49,6 +51,8 @@ export function useRealtimeSync () {
       .subscribe((status: string) => {
         if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
           console.error('[useRealtimeSync] profile channel subscription failed:', status)
+          supabase.removeChannel(profileChannel!)
+          profileChannel = null
         }
       })
   }
@@ -68,6 +72,9 @@ export function useRealtimeSync () {
     if (failures.length === results.length) {
       throw new Error('All data sources failed to initialize')
     }
+    if (failures.length > 0) {
+      uiStore.addNotification('error', 'Data Error', 'Some data failed to load. Please refresh the page.')
+    }
     subscribeToProfileChanges()
   }
 
@@ -83,7 +90,10 @@ export function useRealtimeSync () {
 
   function onOnline () {
     isOnline.value = true
-    init().catch(error => console.error('[useRealtimeSync] reconnection failed:', error))
+    init().catch((error: unknown) => {
+      console.error('[useRealtimeSync] reconnection failed:', error)
+      uiStore.addNotification('error', 'Reconnection Failed', 'Could not reload your data. Please refresh the page.')
+    })
   }
   function onOffline () {
     isOnline.value = false

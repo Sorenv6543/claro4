@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -50 440 200" fill="none" role="img" aria-label="Claro">
+  <title>Claro — Variant A2 · Wide arc</title>
+  <desc>Hook-back swash, wider/higher arc that sweeps further above the word.</desc>
+  <defs>
+    
+    <linearGradient id="a2f" x1="342" y1="90" x2="110" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#5A4FE3" stop-opacity="0"></stop>
+      <stop offset="50%" stop-color="#5A4FE3" stop-opacity="0.6"></stop>
+      <stop offset="100%" stop-color="#5A4FE3" stop-opacity="1"></stop>
+    </linearGradient>
+  </defs>
+  <text x="8" y="118" font-family="&#39;Inter&#39;,system-ui,-apple-system,sans-serif" font-weight="700" font-size="128" letter-spacing="-3.2" fill="#5A4FE3">Claro</text>
+  
+  <path d="M 342 90 Q 390 30 355 -14 Q 305 -44 230 -28 Q 148 -10 110 40" stroke="url(#a2f)" stroke-width="8" stroke-linecap="round" fill="none"></path>
+</svg>

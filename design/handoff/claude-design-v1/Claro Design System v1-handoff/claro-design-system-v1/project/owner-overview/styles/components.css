@@ -1,0 +1,220 @@
+/* Components used across all three variants. */
+
+/* ─── BOOKING BAND (the novel primitive) ────────────────────────────
+   A horizontal pill representing a stay on a date axis.
+   Endcaps indicate check-in (left, green) and check-out (right, red).
+   Width maps to duration in days. Color of the body = status. */
+
+.band {
+  position: relative;
+  height: 28px;
+  border-radius: var(--claro-radius-sm);
+  background: var(--claro-band-standard);
+  display: flex;
+  align-items: center;
+  padding: 0 10px 0 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--claro-primary-dark);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform var(--claro-dur) var(--claro-ease), box-shadow var(--claro-dur) var(--claro-ease);
+  min-width: 24px;
+  white-space: nowrap;
+}
+.band:hover { background: var(--claro-band-standard-2); box-shadow: var(--claro-shadow-sm); }
+.band.urgent { background: var(--claro-band-urgent); color: var(--claro-error); }
+.band.urgent:hover { background: var(--claro-band-urgent-2); }
+.band.pending { background: var(--claro-surface-offset); color: var(--claro-text-muted); border: 1px dashed var(--claro-border-strong); }
+
+.band::before, .band::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  width: 4px;
+}
+.band::before { left: 0; background: var(--claro-event-checkin); border-top-left-radius: var(--claro-radius-sm); border-bottom-left-radius: var(--claro-radius-sm); }
+.band::after { right: 0; background: var(--claro-event-checkout); border-top-right-radius: var(--claro-radius-sm); border-bottom-right-radius: var(--claro-radius-sm); }
+
+.band-label { overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
+
+/* Turn card endcap override (both sides are a turn) */
+.band.turn::before { background: var(--claro-event-turn); }
+.band.turn::after { background: var(--claro-event-turn); }
+
+/* ─── EVENT CHIP — used in strips/cards ──────────────────────────── */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--claro-radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.chip.urgent   { background: var(--claro-error-tint);   color: var(--claro-error);   border: 1px solid var(--claro-error-tint-2); }
+.chip.turn     { background: var(--claro-warning-tint); color: #b56b16;              border: 1px solid var(--claro-warning-tint-2); }
+.chip.checkin  { background: var(--claro-success-tint); color: #1e8f50;              border: 1px solid var(--claro-success-tint-2); }
+.chip.checkout { background: var(--claro-error-tint);   color: var(--claro-error);   border: 1px solid var(--claro-error-tint-2); }
+.chip.idle     { background: var(--claro-surface-offset); color: var(--claro-text-muted); border: 1px solid var(--claro-border); }
+.chip.ok       { background: var(--claro-success-tint); color: #1e8f50;              border: 1px solid var(--claro-success-tint-2); }
+
+.chip-dot { width: 6px; height: 6px; border-radius: 50%; }
+
+/* ─── STATUS DOT ───────────────────────────────────────────────────── */
+.status-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.status-dot.urgent   { background: var(--claro-error); box-shadow: 0 0 0 3px var(--claro-error-tint); }
+.status-dot.turn     { background: var(--claro-warning); box-shadow: 0 0 0 3px var(--claro-warning-tint); }
+.status-dot.checkin  { background: var(--claro-success); }
+.status-dot.checkout { background: var(--claro-error); }
+.status-dot.idle     { background: var(--claro-text-faint); }
+.status-dot.ok       { background: var(--claro-success); }
+
+/* ─── PROPERTY SWATCH (the color identifier from your tokens) ─────── */
+.swatch {
+  width: 36px; height: 36px;
+  border-radius: var(--claro-radius-md);
+  display: grid;
+  place-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.swatch-sm { width: 24px; height: 24px; font-size: 11px; border-radius: var(--claro-radius-sm); }
+.swatch-xs { width: 10px; height: 10px; border-radius: 3px; }
+
+/* ─── BUTTONS (match VBtn rounded:true, elevation:1 defaults) ──── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--claro-radius-md);
+  font-size: 13px;
+  font-weight: 600;
+  transition: background var(--claro-dur) var(--claro-ease), transform var(--claro-dur) var(--claro-ease);
+  white-space: nowrap;
+}
+.btn-primary { background: var(--claro-primary); color: #fff; box-shadow: var(--claro-shadow-sm); }
+.btn-primary:hover { background: var(--claro-primary-dark); }
+.btn-tonal { background: var(--claro-primary-tint); color: var(--claro-primary); }
+.btn-tonal:hover { background: var(--claro-primary-tint-2); }
+.btn-ghost { color: var(--claro-text-muted); }
+.btn-ghost:hover { background: var(--claro-surface-offset); color: var(--claro-text); }
+
+/* ─── TOOLBAR (toggle row) ─────────────────────────────────────── */
+.toolbar-row {
+  display: flex;
+  align-items: center;
+  gap: var(--claro-space-3);
+  flex-wrap: wrap;
+}
+.seg {
+  display: flex;
+  background: var(--claro-surface-offset);
+  border-radius: var(--claro-radius-pill);
+  padding: 3px;
+  gap: 2px;
+}
+.seg button {
+  padding: 5px 12px;
+  border-radius: var(--claro-radius-pill);
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--claro-text-muted);
+}
+.seg button:hover { color: var(--claro-text); }
+.seg button.active {
+  background: var(--claro-surface);
+  color: var(--claro-primary);
+  box-shadow: var(--claro-shadow-sm);
+}
+
+/* ─── TWEAKS PANEL ─────────────────────────────────────────────── */
+.tweaks-panel {
+  position: fixed;
+  bottom: var(--claro-space-6);
+  left: var(--claro-space-6);
+  width: 280px;
+  background: var(--claro-surface);
+  border: 1px solid var(--claro-border);
+  border-radius: var(--claro-radius-lg);
+  box-shadow: var(--claro-shadow-lg);
+  z-index: 100;
+  display: none;
+  overflow: hidden;
+}
+.tweaks-panel.visible { display: block; }
+.tweaks-head {
+  padding: var(--claro-space-3) var(--claro-space-4);
+  border-bottom: 1px solid var(--claro-divider);
+  display: flex;
+  align-items: center;
+  gap: var(--claro-space-2);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--claro-text-muted);
+}
+.tweaks-body { padding: var(--claro-space-3); max-height: 60vh; overflow-y: auto; }
+.tweak-row {
+  padding: var(--claro-space-2) var(--claro-space-2);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.tweak-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--claro-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.tweak-options {
+  display: flex;
+  background: var(--claro-surface-offset);
+  border-radius: var(--claro-radius-md);
+  padding: 2px;
+  gap: 2px;
+}
+.tweak-options button {
+  flex: 1;
+  padding: 6px 8px;
+  border-radius: var(--claro-radius-sm);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--claro-text-muted);
+}
+.tweak-options button.active {
+  background: var(--claro-surface);
+  color: var(--claro-primary);
+  box-shadow: var(--claro-shadow-sm);
+}
+.tweak-switch {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--claro-space-3);
+}
+.switch {
+  width: 36px; height: 20px;
+  background: var(--claro-border-strong);
+  border-radius: var(--claro-radius-pill);
+  position: relative;
+  transition: background var(--claro-dur) var(--claro-ease);
+  flex-shrink: 0;
+}
+.switch::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform var(--claro-dur) var(--claro-ease);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+.switch.on { background: var(--claro-primary); }
+.switch.on::after { transform: translateX(16px); }
