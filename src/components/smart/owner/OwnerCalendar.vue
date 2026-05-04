@@ -32,7 +32,7 @@
   import type { Booking, Property } from '@/types'
   import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
-  import { computed, defineAsyncComponent, nextTick, onMounted, ref, watch } from 'vue'
+  import { computed, defineAsyncComponent, nextTick, ref, watch } from 'vue'
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
   import { useCalendarState } from '@/composables/shared/useCalendarState'
   import { formatPropertyAddress } from '@/types/property'
@@ -179,12 +179,6 @@
         }
       }
     })
-  })
-
-  // ===== LIFECYCLE =====
-
-  onMounted(async () => {
-    await nextTick()
   })
 
   // ===== EXPOSE METHODS TO PARENT =====
@@ -343,8 +337,6 @@
 .owner-calendar-container {
   user-select: none;
   -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
 }
 
 /* Smooth transitions for swipe gestures */

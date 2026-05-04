@@ -189,11 +189,16 @@
       dropInfo.revert()
       return
     }
-    const ok = await updateMyBooking(booking.id, {
-      checkin_date: dropInfo.event.startStr.split('T')[0],
-      checkout_date: subtractOneDay(dropInfo.event.endStr).split('T')[0],
-    })
-    if (!ok) {
+    try {
+      const ok = await updateMyBooking(booking.id, {
+        checkin_date: dropInfo.event.startStr.split('T')[0],
+        checkout_date: subtractOneDay(dropInfo.event.endStr ?? dropInfo.event.startStr).split('T')[0],
+      })
+      if (!ok) {
+        dropInfo.revert()
+        uiStore.addNotification('error', 'Failed', 'Could not update booking dates')
+      }
+    } catch {
       dropInfo.revert()
       uiStore.addNotification('error', 'Failed', 'Could not update booking dates')
     }
@@ -205,11 +210,16 @@
       resizeInfo.revert()
       return
     }
-    const ok = await updateMyBooking(booking.id, {
-      checkin_date: resizeInfo.event.startStr.split('T')[0],
-      checkout_date: subtractOneDay(resizeInfo.event.endStr).split('T')[0],
-    })
-    if (!ok) {
+    try {
+      const ok = await updateMyBooking(booking.id, {
+        checkin_date: resizeInfo.event.startStr.split('T')[0],
+        checkout_date: subtractOneDay(resizeInfo.event.endStr ?? resizeInfo.event.startStr).split('T')[0],
+      })
+      if (!ok) {
+        resizeInfo.revert()
+        uiStore.addNotification('error', 'Failed', 'Could not update booking dates')
+      }
+    } catch {
       resizeInfo.revert()
       uiStore.addNotification('error', 'Failed', 'Could not update booking dates')
     }
