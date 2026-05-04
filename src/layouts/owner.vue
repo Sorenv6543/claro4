@@ -1,12 +1,10 @@
 <!----
   OwnerLayout.vue
 
-  Main layout for owner-facing pages, including the dashboard/schedule and profile.
-  Contains the app bar with the ClaroWordmark, a tiles toggle button that opens/closes
-  the sidebar, prev/next calendar controls (desktop only on the schedule page), and a
-  sidebar for page navigation. The Range/Event view toggle lives inside HomeOwner.vue;
-  on mobile the prev/next/month label moves into a floating CalendarNavPill rendered
-  by HomeOwner.vue.
+  Main layout for owner-facing pages. On desktop renders OwnerNavigationDrawer
+  (permanent sidebar); on mobile renders MobileBottomNav (bottom tab bar).
+  Initializes realtime sync and provides appStatus to child pages. A floating
+  FAB and GlobalBookingModal are rendered on all non-calendar pages.
 -->
 
 <!-- src/layouts/owner.vue -->

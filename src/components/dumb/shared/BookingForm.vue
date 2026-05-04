@@ -812,7 +812,7 @@
 </script>
 
 <style scoped>
-:deep(.v-card-title) {
+.modal-card :deep(.v-card-title) {
   background-color: rgb(var(--v-theme-primary));
   color: #fff;
 }

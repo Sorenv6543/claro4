@@ -2,6 +2,7 @@
   import type { CSSProperties } from 'vue'
   import type { PropertyListItem, PropertyListEvent, PropertyTimelineEvent, PropertyStats } from './PropertyList.vue'
   import { useDisplay } from 'vuetify'
+  import { formatPropertyAddress } from '@/types/property'
 
   export type { PropertyListItem, PropertyListEvent, PropertyTimelineEvent, PropertyStats }
 
@@ -50,7 +51,7 @@
         >
           <v-icon :color="item.property.color" size="30">mdi-map-marker</v-icon>
           <span class="pin-label" :style="{ color: item.property.color }">
-            {{ item.property.name }}
+            {{ formatPropertyAddress(item.property, 'short') }}
           </span>
         </button>
       </template>
@@ -83,7 +84,7 @@
             <div class="color-dot" :style="{ background: item.property.color }" />
           </template>
 
-          <v-list-item-title class="item-name">{{ item.property.name }}</v-list-item-title>
+          <v-list-item-title class="item-name">{{ formatPropertyAddress(item.property, 'short') }}</v-list-item-title>
           <v-list-item-subtitle>
             <template v-if="item.nextCheckin">{{ item.nextCheckin.label }}</template>
             <template v-else>No upcoming bookings</template>
@@ -132,7 +133,7 @@
       >
         <div class="card-color-bar" :style="{ background: item.property.color }" />
         <v-card-text class="card-body">
-          <div class="card-name">{{ item.property.name }}</div>
+          <div class="card-name">{{ formatPropertyAddress(item.property, 'short') }}</div>
           <div class="card-meta">
             <v-chip
               v-if="item.isTurnToday"

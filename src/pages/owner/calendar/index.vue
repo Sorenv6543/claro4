@@ -48,7 +48,6 @@
   const loading = computed(() => bookingsLoading.value || propertiesLoading.value)
   const error = computed(() => bookingsError.value ?? propertiesError.value ?? null)
 
-  const ownerCalendarRef = ref<InstanceType<typeof OwnerCalendar> | null>(null)
   const currentView = ref<'dayGridMonth' | 'timeGridWeek' | 'timeGridDay' | 'listWeek'>('dayGridMonth')
 
   const bookingFormModal = ref({
@@ -102,7 +101,8 @@
         dropInfo.revert()
         uiStore.addNotification('error', 'Failed', 'Could not update booking dates')
       }
-    } catch {
+    } catch (error) {
+      console.error('[OwnerCalendar] Failed to drop booking:', error)
       dropInfo.revert()
       uiStore.addNotification('error', 'Failed', 'Could not update booking dates')
     }
@@ -123,7 +123,8 @@
         resizeInfo.revert()
         uiStore.addNotification('error', 'Failed', 'Could not update booking dates')
       }
-    } catch {
+    } catch (error) {
+      console.error('[OwnerCalendar] Failed to resize booking:', error)
       resizeInfo.revert()
       uiStore.addNotification('error', 'Failed', 'Could not update booking dates')
     }

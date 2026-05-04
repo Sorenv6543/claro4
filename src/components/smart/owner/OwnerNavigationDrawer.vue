@@ -89,6 +89,18 @@
           </div>
         </div>
 
+        <!-- Sign out -->
+        <v-btn
+          block
+          class="mt-1"
+          color="error"
+          prepend-icon="mdi-logout"
+          size="small"
+          variant="tonal"
+          @click="handleSignOut"
+        >
+          Sign out
+        </v-btn>
       </div>
 
       <div class="pb-2" />
@@ -99,7 +111,7 @@
 <script setup lang="ts">
   import { useAuthStore } from '@stores/auth'
   import { computed } from 'vue'
-  import { useRoute } from 'vue-router'
+  import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
 
@@ -112,6 +124,7 @@
   }>()
 
   const route = useRoute()
+  const router = useRouter()
   const { mdAndUp } = useDisplay()
   const authStore = useAuthStore()
   const { myProperties } = useOwnerProperties()
@@ -210,6 +223,11 @@
     if (!mdAndUp.value) {
       emit('update:modelValue', false)
     }
+  }
+
+  async function handleSignOut () {
+    await authStore.logout()
+    router.push('/')
   }
 </script>
 

@@ -167,10 +167,6 @@
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
   }
 
-  const totalBookingsCount = computed(() =>
-    myBookings.value.filter(b => b.status !== 'cancelled').length,
-  )
-
   const listItems = computed<PropertyListItem[]>(() => {
     const todayStr = new Date().toISOString().split('T')[0]
     const currentYear = new Date().getFullYear()

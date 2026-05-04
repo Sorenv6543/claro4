@@ -88,14 +88,15 @@
         </v-menu>
       </div>
 
-      <!-- Right: cog -->
+      <!-- Right: Today -->
       <div class="cal-nav-side cal-nav-side--right">
         <button
-          aria-label="Calendar settings"
-          class="cal-nav-btn"
+          aria-label="Go to today"
+          class="cal-nav-btn cal-nav-today"
           type="button"
+          @click="goToDate(new Date())"
         >
-          <v-icon size="20">mdi-cog-outline</v-icon>
+          Today
         </button>
       </div>
     </div>
@@ -170,7 +171,7 @@
   )
 
   // ===== MINI CALENDAR =====
-  const MINI_DOW = ['S', 'M', 'T', 'W', 'T', 'F', 'S'] as const
+  const MINI_DOW = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const
 
   interface MiniCalDay { date: Date, day: number, isCurrentMonth: boolean, isToday: boolean }
 
@@ -414,6 +415,14 @@
 .cal-nav-chevron {
   min-width: 36px;
   opacity: 0.6;
+}
+
+.cal-nav-today {
+  min-width: unset;
+  padding: 0 12px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .cal-nav-label {

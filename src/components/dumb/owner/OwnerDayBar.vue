@@ -100,6 +100,14 @@
     return icons[t] ?? 'mdi-swap-horizontal'
   }
 
+  function fmt12 (time: string): string {
+    const [h, m] = time.split(':').map(Number)
+    if (!Number.isFinite(h) || !Number.isFinite(m)) return time
+    const period = h >= 12 ? 'PM' : 'AM'
+    const h12 = h % 12 || 12
+    return `${h12}:${String(m).padStart(2, '0')} ${period}`
+  }
+
   // ── Display time ─────────────────────────────────────────────────────────────
   const displayTime = computed(() => {
     const h = props.currentHour
@@ -223,7 +231,7 @@
           <!-- Row 1: property + time -->
           <div class="card-row1">
             <span class="card-prop">{{ ev.propName }}</span>
-            <span class="card-time">{{ ev.time }}</span>
+            <span class="card-time">{{ fmt12(ev.time) }}</span>
           </div>
 
           <!-- Row 2: event type + guests + alert chip -->
@@ -266,7 +274,7 @@
                 :color="selectedEvent.type === 'turn' ? 'warning' : selectedEvent.type === 'checkin' ? 'success' : 'error'"
                 size="13"
               >{{ typeIcon(selectedEvent.type) }}</v-icon>
-              {{ typeLabel(selectedEvent.type) }} · {{ selectedEvent.time }}
+              {{ typeLabel(selectedEvent.type) }} · {{ fmt12(selectedEvent.time) }}
               <template v-if="selectedEvent.guestCount">
                 · {{ selectedEvent.guestCount }} guests
               </template>
