@@ -252,7 +252,7 @@
   }
 
   function handleCreateBooking () {
-    router.push('/admin/bookings')
+    router.push('/admin/bookings?create=true')
   }
 
   function handleCreateProperty () {
