@@ -290,6 +290,7 @@
 <script setup lang="ts">
   import type { Booking, BookingFormData } from '@/types/booking'
   import { computed, onMounted, ref } from 'vue'
+  import { useRoute } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
@@ -302,6 +303,7 @@
   import { getBookingStatusColor, mapLegacyPropertyColor } from '@/utils/constants'
 
   // Composables
+  const route = useRoute()
   const { mobile } = useDisplay()
   const { allBookings, updateBooking, createBooking, deleteBooking, fetchAllBookings } = useAdminBookings()
   const { allProperties, fetchAllProperties } = useAdminProperties()
@@ -317,6 +319,9 @@
         fetchAllBookings(),
         fetchAllProperties(),
       ])
+      if (route.query.create === 'true') {
+        openCreateBookingDialog()
+      }
     } catch (error) {
       console.error('Failed to load bookings data:', error)
       uiStore.addNotification('error', 'Error', 'Failed to load bookings data. Please refresh.')

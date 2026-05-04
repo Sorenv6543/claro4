@@ -78,12 +78,12 @@ if (sentryDsn) {
     ],
     // Drop debug-level log events in production — they're development
     // diagnostics and would inflate log volume without operational value.
-    // beforeSendLog: log => {
-    //   if (log.level === 'debug' && import.meta.env.PROD) {
-    //     return null
-    //   }
-    //   return log
-    // },
+    beforeSendLog: log => {
+      if (log.level === 'debug' && import.meta.env.PROD) {
+        return null
+      }
+      return log
+    },
     // Session Replay sample rates — see replayIntegration above.
     // - replaysSessionSampleRate: record N% of all sessions (UX trend visibility)
     // - replaysOnErrorSampleRate: record 100% of error sessions (root-cause debugging)
