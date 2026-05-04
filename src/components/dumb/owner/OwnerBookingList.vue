@@ -62,7 +62,9 @@
   }
 
   watch(sheetOpen, open => {
-    if (!open) setTimeout(() => { sheetItem.value = null }, 300)
+    if (!open) setTimeout(() => {
+      sheetItem.value = null
+    }, 300)
   })
 
   function formatDateRange (checkin: string, checkout: string): string {
@@ -315,6 +317,7 @@
         <div class="sheet-meta-dot" :style="{ background: sheetItem.propertyColor }" />
         <span class="sheet-meta-dates">{{ formatDateRange(sheetItem.checkinDate, sheetItem.checkoutDate) }}</span>
         <v-spacer />
+
         <v-btn
           aria-label="Close"
           icon
@@ -336,6 +339,7 @@
         >
           {{ sheetItem.bookingType === 'turn' ? 'Turn' : 'Standard' }}
         </v-chip>
+
         <v-chip :color="statusColor(sheetItem.status)" size="x-small" variant="tonal">
           {{ fmtStatus(sheetItem.status) }}
         </v-chip>
@@ -346,28 +350,34 @@
       <!-- Booking details section -->
       <div class="sheet-section">
         <div class="sheet-section-label">Booking Details</div>
+
         <table class="sheet-table">
           <tbody>
             <tr>
               <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-login</v-icon> Check-in</span></td>
               <td>{{ formatDate(sheetItem.checkinDate) }}<template v-if="sheetItem.checkinTime"> · {{ sheetItem.checkinTime }}</template></td>
             </tr>
+
             <tr>
               <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-logout</v-icon> Check-out</span></td>
               <td>{{ formatDate(sheetItem.checkoutDate) }}<template v-if="sheetItem.checkoutTime"> · {{ sheetItem.checkoutTime }}</template></td>
             </tr>
+
             <tr v-if="sheetItem.guestCount">
               <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-account-group-outline</v-icon> Guests</span></td>
               <td>{{ sheetItem.guestCount }}</td>
             </tr>
+
             <tr v-if="sheetItem.priority">
               <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-flag-outline</v-icon> Priority</span></td>
+
               <td>
                 <v-chip :color="priorityColor(sheetItem.priority)" size="x-small" variant="tonal">
                   {{ sheetItem.priority }}
                 </v-chip>
               </td>
             </tr>
+
             <tr v-if="sheetItem.createdAt">
               <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-clock-outline</v-icon> Created</span></td>
               <td>{{ formatDate(sheetItem.createdAt) }}</td>

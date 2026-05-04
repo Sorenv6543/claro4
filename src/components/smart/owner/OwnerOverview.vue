@@ -2,17 +2,17 @@
   <!-- ── A3 Day-bar: mobile layout ── -->
   <OwnerDayBar
     v-if="mobile"
-    :events="dayBarEvents"
-    :user-name="userName"
-    :date-label="todayDateLabel"
+    :checkin-count="checkinsTodayCount"
+    :checkout-count="checkoutsTodayOnlyCount"
     :current-hour="currentHour"
     :current-min="currentMin"
-    :checkout-count="checkoutsTodayOnlyCount"
-    :turn-count="turnsTodayCount"
-    :checkin-count="checkinsTodayCount"
+    :date-label="todayDateLabel"
+    :events="dayBarEvents"
     :needs-action-count="needsActionTodayCount"
-    @open-booking="handleDayBarOpenBooking"
+    :turn-count="turnsTodayCount"
+    :user-name="userName"
     @assign-cleaner="handleDayBarAssignCleaner"
+    @open-booking="handleDayBarOpenBooking"
   />
 
   <!-- ── Desktop layout ── -->
@@ -193,6 +193,7 @@
   import type { Property } from '@/types/property'
   import { useToday } from '@composables/shared/useToday'
   import { computed, onMounted, ref } from 'vue'
+  import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import OwnerBookingList from '@/components/dumb/owner/OwnerBookingList.vue'
   import OwnerDayBar from '@/components/dumb/owner/OwnerDayBar.vue'
@@ -205,7 +206,6 @@
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { mapLegacyPropertyColor } from '@/utils/constants'
-  import { useRouter } from 'vue-router'
   defineOptions({ name: 'OwnerOverview' })
 
   const { mobile } = useDisplay()
@@ -314,7 +314,7 @@
   // ── A3 Day-bar data (mobile only) ──────────────────────────────────────────
   const now = new Date()
   const currentHour = ref(now.getHours())
-  const currentMin  = ref(now.getMinutes())
+  const currentMin = ref(now.getMinutes())
 
   const todayDateLabel = computed(() => {
     const d = new Date()
@@ -344,13 +344,13 @@
       if (b.status === 'cancelled') continue
       const p = propertyMap.value.get(b.property_id)
       if (!p) continue
-      const name  = formatPropertyAddress(p, 'short')
+      const name = formatPropertyAddress(p, 'short')
       const color = mapLegacyPropertyColor(p.color)
       const noClean = !b.assigned_cleaner_id && !b.assigned_team_id
 
       if (b.booking_type === 'turn' && b.checkin_date === todayStr.value) {
         const cleanFrom = b.turn_start_time ?? b.checkout_time ?? '11:00'
-        const cleanTo   = b.turn_checkin_time ?? b.checkin_time ?? '15:00'
+        const cleanTo = b.turn_checkin_time ?? b.checkin_time ?? '15:00'
         events.push({
           id: b.id + '-t',
           propId: p.id,
@@ -464,13 +464,22 @@
     let bookings = myBookings.value.filter(b => b.status !== 'cancelled')
 
     switch (selectedSegment.value) {
-      case 'upcoming': { bookings = bookings.filter(b => b.checkout_date >= todayStr.value); break }
-      case 'turns':    { bookings = bookings.filter(b => b.booking_type === 'turn'); break }
-      case 'past':     { bookings = bookings.filter(b => b.checkout_date < todayStr.value); break }
+      case 'upcoming': {
+        bookings = bookings.filter(b => b.checkout_date >= todayStr.value)
+        break
+      }
+      case 'turns': {
+        bookings = bookings.filter(b => b.booking_type === 'turn')
+        break
+      }
+      case 'past': {
+        bookings = bookings.filter(b => b.checkout_date < todayStr.value)
+        break
+      }
     }
 
     if (selectedProperty.value) bookings = bookings.filter(b => b.property_id === selectedProperty.value)
-    if (selectedType.value)     bookings = bookings.filter(b => b.booking_type === selectedType.value)
+    if (selectedType.value) bookings = bookings.filter(b => b.booking_type === selectedType.value)
 
     return bookings
       .toSorted((a, b) => a.checkin_date.localeCompare(b.checkin_date))

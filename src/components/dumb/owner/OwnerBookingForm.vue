@@ -16,7 +16,9 @@
         >
           SAME-DAY CLEANING
         </v-chip>
+
         <v-spacer />
+
         <v-btn
           aria-label="Close"
           icon

@@ -15,8 +15,8 @@
   >
     <v-menu
       v-model="showMenu"
-      :close-on-content-click="false"
       activator="parent"
+      :close-on-content-click="false"
       min-width="0"
     >
       <v-time-picker

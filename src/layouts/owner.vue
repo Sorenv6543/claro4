@@ -61,11 +61,11 @@
 </template>
 
 <script setup lang="ts">
+  import type { NavItem } from '@/components/dumb/shared/MobileBottomNav.vue'
   import { computed, onMounted, provide, ref } from 'vue'
   import { useRoute } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import MobileBottomNav from '@/components/dumb/shared/MobileBottomNav.vue'
-  import type { NavItem } from '@/components/dumb/shared/MobileBottomNav.vue'
   import GlobalBookingModal from '@/components/smart/owner/GlobalBookingModal.vue'
   import OwnerNavigationDrawer from '@/components/smart/owner/OwnerNavigationDrawer.vue'
   import { useRealtimeSync } from '@/composables/supabase/useRealtimeSync'
