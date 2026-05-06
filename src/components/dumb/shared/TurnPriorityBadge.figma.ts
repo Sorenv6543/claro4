@@ -25,9 +25,9 @@ figma.connect(
       }),
       size: figma.enum('Size', {
         'X-Small': 'x-small',
-        Small: 'small',
-        Default: 'default',
-        Large: 'large',
+        'Small': 'small',
+        'Default': 'default',
+        'Large': 'large',
       }),
       variant: figma.enum('Variant', {
         Flat: 'flat',
