@@ -10,7 +10,7 @@
 import figma, { html } from '@figma/code-connect'
 
 figma.connect(
-  'https://www.figma.com/design/FIGMA_FILE_KEY/Claro?node-id=ERROR_ALERT_NODE_ID',
+  'https://www.figma.com/design/SXfwbTotVeWVwKZr3UvKoJ/Soren?node-id=ERROR_ALERT_NODE_ID',
   {
     props: {
       type: figma.enum('Type', {

@@ -14,7 +14,7 @@
 import figma, { html } from '@figma/code-connect'
 
 figma.connect(
-  'https://www.figma.com/design/FIGMA_FILE_KEY/Claro?node-id=PROPERTY_CARD_NODE_ID',
+  'https://www.figma.com/design/SXfwbTotVeWVwKZr3UvKoJ/Soren?node-id=PROPERTY_CARD_NODE_ID',
   {
     props: {
       active: figma.boolean('Active'),
