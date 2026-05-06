@@ -4,25 +4,23 @@
  * To wire this up:
  *   1. Open your Figma file, click the PropertyCard component
  *   2. Copy the URL from the browser bar (e.g. ?node-id=12-345)
- *   3. Replace FIGMA_FILE_KEY and PROPERTY_CARD_NODE_ID below
+ *   3. Replace PROPERTY_CARD_NODE_ID below with the real node id
  *   4. Run: pnpm figma:publish
  *
  * Note: PropertyCard takes a `property` object (type Property from @/types).
- * The Figma props below map visual states to the most impactful fields.
- * Pass the full property object in real usage.
+ * Supply a real property object in production usage.
  */
-import figma, { html } from '@figma/code-connect'
+import figma, { html } from '@figma/code-connect/html'
 
 figma.connect(
   'https://www.figma.com/design/SXfwbTotVeWVwKZr3UvKoJ/Soren?node-id=PROPERTY_CARD_NODE_ID',
   {
     props: {
-      active: figma.boolean('Active'),
       displayActions: figma.boolean('Show Actions'),
     },
-    example: ({ active, displayActions }) => html`
+    example: ({ displayActions }) => html`
       <PropertyCard
-        :property="property"
+        :property="{ id: '1', name: 'Beach House', active: true }"
         :display-actions="${displayActions}"
       />
     `,

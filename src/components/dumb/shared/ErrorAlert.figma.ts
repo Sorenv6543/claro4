@@ -4,10 +4,10 @@
  * To wire this up:
  *   1. Open your Figma file, click the ErrorAlert component
  *   2. Copy the URL from the browser bar (e.g. ?node-id=12-345)
- *   3. Replace FIGMA_FILE_KEY and ERROR_ALERT_NODE_ID below
+ *   3. Replace ERROR_ALERT_NODE_ID below with the real node id
  *   4. Run: pnpm figma:publish
  */
-import figma, { html } from '@figma/code-connect'
+import figma, { html } from '@figma/code-connect/html'
 
 figma.connect(
   'https://www.figma.com/design/SXfwbTotVeWVwKZr3UvKoJ/Soren?node-id=ERROR_ALERT_NODE_ID',
@@ -41,8 +41,6 @@ figma.connect(
         :retryable="${retryable}"
         :closable="${closable}"
         variant="${variant}"
-        @retry="handleRetry"
-        @close="handleClose"
       />
     `,
   },
