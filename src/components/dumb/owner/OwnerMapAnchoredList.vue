@@ -1,10 +1,8 @@
 <script setup lang="ts">
-  import type { PropertyListEvent, PropertyListItem, PropertyStats, PropertyTimelineEvent } from './PropertyList.vue'
+  import type { PropertyListItem } from './PropertyList.vue'
   import type { CSSProperties } from 'vue'
   import { useDisplay } from 'vuetify'
   import { formatPropertyAddress } from '@/types/property'
-
-  export type { PropertyListEvent, PropertyListItem, PropertyStats, PropertyTimelineEvent }
 
   defineOptions({ name: 'OwnerMapAnchoredList' })
 
@@ -32,6 +30,10 @@
     return { left: `${x}%`, top: `${y}%` }
   }
 
+</script>
+
+<script lang="ts">
+  export { type PropertyListEvent, type PropertyListItem, type PropertyStats, type PropertyTimelineEvent } from './PropertyList.vue'
 </script>
 
 <template>
