@@ -247,7 +247,9 @@ export function useOwnerProperties () {
       }
 
       const propertyBookings = bookingStore.bookingsByProperty(id)
-      if (propertyBookings.size > 0) {
+      const activeBookings = Array.from(propertyBookings.values())
+        .filter(b => b.status !== 'completed' && b.status !== 'cancelled')
+      if (activeBookings.length > 0) {
         throw new Error('Cannot delete property with existing bookings. Please cancel or complete all bookings first.')
       }
 

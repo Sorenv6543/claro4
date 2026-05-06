@@ -32,6 +32,7 @@ src/components/smart/owner/HomeOwner.vue -
           :view-mode="viewMode"
           @create-booking="handleCreateBookingFromCalendar"
           @date-select="handleDateSelect"
+          @dates-set="handleDatesSet"
           @day-view-open="handleDayViewOpen"
           @event-click="handleEventClick"
           @event-drop="handleEventDrop"
@@ -42,16 +43,7 @@ src/components/smart/owner/HomeOwner.vue -
       </div>
     </div>
 
-    <!-- Floating calendar navigation pill — mobile only. Teleported to body so
-         position:fixed escapes any transformed/overflow-hidden parent. -->
-    <Teleport to="body">
-      <CalendarNavPill
-        v-if="mobile"
-        :label="pillMonthLabel"
-        @next="calendarNext()"
-        @prev="calendarPrev()"
-      />
-    </Teleport>
+    <!-- CalendarNavPill removed — calendar controls now live in the app bar -->
 
     <!-- Day View Bottom Sheet -->
     <OwnerDayViewBottomSheet
@@ -106,28 +98,26 @@ src/components/smart/owner/HomeOwner.vue -
 
   // Types
   import type { Booking, BookingFormData, Property, PropertyFormData } from '@/types'
-  import type { DateSelectArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
-  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
+import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   // Real-time sync will auto-initialize when user is authenticated
-  import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-  import { useDisplay } from 'vuetify'
-  import CalendarNavPill from '@/components/dumb/owner/CalendarNavPill.vue'
   import OwnerDayViewBottomSheet from '@/components/dumb/owner/OwnerDayViewBottomSheet.vue'
-  import BookingForm from '@/components/dumb/shared/BookingForm.vue'
-  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
-  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+import BookingForm from '@/components/dumb/shared/BookingForm.vue'
+import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
+import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
   // Owner-specific components
   import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue'
-  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
-  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
+import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
+import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   // Business logic composables
   // Import event logger for component communication
   import eventLogger from '@/composables/shared/useComponentEventLogger'
-  import { useAuthStore } from '@/stores/auth'
-  import { useUIStore } from '@/stores/ui'
-  import { subtractOneDay } from '@/utils/calendarHelpers'
+import { useAuthStore } from '@/stores/auth'
+import { useUIStore } from '@/stores/ui'
+import { subtractOneDay } from '@/utils/calendarHelpers'
 
   // ============================================================================
   // STORE CONNECTIONS & STATE
@@ -164,16 +154,8 @@ src/components/smart/owner/HomeOwner.vue -
     filterBookings,
     setCalendarView,
     viewMode,
-    prev: calendarPrev,
-    next: calendarNext,
+    goToDate: calendarGoToDate,
   } = useOwnerCalendarState()
-
-  const { mobile } = useDisplay()
-
-  // Short label for the floating pill (e.g. "Apr 2026")
-  const pillMonthLabel = computed(() =>
-    currentDate.value.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
-  )
 
   // ============================================================================
   // LOCAL STATE
@@ -423,6 +405,10 @@ src/components/smart/owner/HomeOwner.vue -
   // ============================================================================
   // CALENDAR CONTROL HANDLERS
   // ============================================================================
+
+  function handleDatesSet (arg: DatesSetArg): void {
+    calendarGoToDate(arg.view.currentStart)
+  }
 
   function handleCalendarViewChange (view: string): void {
     // Map CalendarView to FullCalendar view type

@@ -122,7 +122,8 @@
   import type { Booking, Property } from '@/types'
   import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
-  import { computed, defineAsyncComponent, nextTick, ref, watch } from 'vue'
+  import { computed, defineAsyncComponent, inject, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+  import type { Ref } from 'vue'
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
   import { useCalendarState } from '@/composables/shared/useCalendarState'
 
@@ -166,6 +167,18 @@
 
   // ===== REFS AND REACTIVE DATA =====
   const calendarRef = ref<InstanceType<typeof FullCalendar> | null>(null)
+
+  // Register this component's prev/next with the layout so the app bar can drive navigation
+  const calendarNavPrev = inject<Ref<(() => void) | null>>('ownerCalNavPrev')
+  const calendarNavNext = inject<Ref<(() => void) | null>>('ownerCalNavNext')
+  onMounted(() => {
+    if (calendarNavPrev) calendarNavPrev.value = prev
+    if (calendarNavNext) calendarNavNext.value = next
+  })
+  onUnmounted(() => {
+    if (calendarNavPrev) calendarNavPrev.value = null
+    if (calendarNavNext) calendarNavNext.value = null
+  })
   const calendarNavLabel = ref(
     new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
   )

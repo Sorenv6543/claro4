@@ -162,6 +162,49 @@
               </v-col>
             </v-row>
 
+            <!-- Same-Day Turn Option (create mode only) -->
+            <template v-if="showTurnOption">
+              <v-divider class="my-2" />
+
+              <v-row>
+                <v-col cols="12">
+                  <v-switch
+                    v-model="turnEnabled"
+                    color="secondary"
+                    density="compact"
+                    :disabled="loading"
+                    hide-details
+                    label="Schedule same-day turn on checkout"
+                    prepend-icon="mdi-swap-horizontal"
+                  />
+                </v-col>
+              </v-row>
+
+              <v-row v-if="turnEnabled">
+                <v-col cols="12">
+                  <TimePickerField
+                    v-model="turnCheckinTime"
+                    :disabled="loading"
+                    hint="When the next guests arrive on checkout day"
+                    label="Next Guest Arrival Time"
+                    :rules="turnTimeRules"
+                  />
+                </v-col>
+              </v-row>
+
+              <v-row v-if="turnEnabled && turnCheckinTime && turnCheckinTime < '14:00'">
+                <v-col cols="12">
+                  <v-alert
+                    class="mb-0"
+                    text="Early arrival may leave insufficient time for cleaning preparation."
+                    title="Tight Cleaning Window"
+                    type="warning"
+                    variant="tonal"
+                  />
+                </v-col>
+              </v-row>
+            </template>
+
             <!-- Same-Day Cleaning Alert -->
             <v-row v-if="showSameDayAlert">
               <v-col cols="12">
@@ -206,6 +249,20 @@
           @click="handleClose"
         >
           Cancel
+        </v-btn>
+
+        <v-btn
+          v-if="mode === 'edit'
+            && props.booking?.booking_type !== 'turn'
+            && props.booking?.status !== 'completed'
+            && props.booking?.status !== 'cancelled'"
+          color="secondary"
+          :disabled="loading"
+          prepend-icon="mdi-swap-horizontal"
+          variant="tonal"
+          @click="emit('create-turn')"
+        >
+          Create Turn
         </v-btn>
 
         <v-spacer />
@@ -253,8 +310,9 @@
   // Emits
   interface Emits {
     (e: 'update:modelValue', value: boolean): void
-    (e: 'submit', data: BookingFormData): void
+    (e: 'submit', data: BookingFormData, turnCheckinTime?: string): void
     (e: 'close'): void
+    (e: 'create-turn'): void
   }
 
   const emit = defineEmits<Emits>()
@@ -263,6 +321,8 @@
   const formRef = ref()
   const formValid = ref(false)
   const autoDetectType = ref(true)
+  const turnEnabled = ref(false)
+  const turnCheckinTime = ref('')
 
   // Date picker state
   const _now = new Date()
@@ -310,6 +370,10 @@
       && form.value.checkout_date === form.value.checkin_date
   })
 
+  const showTurnOption = computed(() =>
+    props.mode === 'create' && form.value.booking_type !== 'turn',
+  )
+
   const showDateError = computed(() => {
     if (!form.value.checkout_date || !form.value.checkin_date) return false
     const checkinDate = new Date(String(form.value.checkin_date || ''))
@@ -336,6 +400,12 @@
   const timeRules = [
     (v: string) => !!v || 'Time is required',
     (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) || 'Invalid time format',
+  ]
+
+  const turnTimeRules = [
+    (v: string) => !!v || 'Arrival time is required',
+    (v: string) => /^([01]\d|2[0-3]):[0-5]\d$/.test(v) || 'Invalid time format',
+    (v: string) => !v || v > form.value.checkout_time ? true : 'Arrival must be after checkout time',
   ]
 
   // Methods
@@ -369,6 +439,9 @@
       notes: '',
     }
 
+    turnEnabled.value = false
+    turnCheckinTime.value = ''
+
     if (formRef.value) {
       formRef.value.resetValidation()
     }
@@ -401,7 +474,7 @@
     // Additional validation
     if (showDateError.value) return
 
-    emit('submit', { ...form.value })
+    emit('submit', { ...form.value }, turnEnabled.value && turnCheckinTime.value ? turnCheckinTime.value : undefined)
   }
 
   function handleClose () {
@@ -429,6 +502,13 @@
   watch(() => props.booking, newBooking => {
     if (newBooking && props.mode === 'edit') {
       populateForm(newBooking)
+    }
+  })
+
+  watch(() => form.value.booking_type, type => {
+    if (type === 'turn') {
+      turnEnabled.value = false
+      turnCheckinTime.value = ''
     }
   })
 </script>
