@@ -270,17 +270,42 @@
         initError.value = error instanceof Error ? error : new Error(String(error))
         console.error('[OwnerLayout] Failed to initialize realtime sync:', error)
       })
+
+    updateCalendarMonthLabels()
+    window.setInterval(updateCalendarMonthLabels, 300)
   })
 
   const isCalendarPage = computed(() => route.path === '/owner/calendar')
 
-  const formattedMonthYear = computed(() =>
+  const formattedMonthYear = ref(
     calendarState.currentDate.value.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
   )
 
-  const formattedMonthYearShort = computed(() =>
+  const formattedMonthYearShort = ref(
     calendarState.currentDate.value.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }),
   )
+
+  function updateCalendarMonthLabels () {
+    const fallbackLong = calendarState.currentDate.value.toLocaleDateString('en-US', {
+      month: 'long',
+      year: 'numeric',
+    })
+    const fallbackShort = calendarState.currentDate.value.toLocaleDateString('en-US', {
+      month: 'short',
+      year: 'numeric',
+    })
+
+    if (!isCalendarPage.value) {
+      formattedMonthYear.value = fallbackLong
+      formattedMonthYearShort.value = fallbackShort
+      return
+    }
+
+    const toolbarTitle = document.querySelector('.fc-toolbar-title')?.textContent?.trim()
+
+    formattedMonthYear.value = toolbarTitle || fallbackLong
+    formattedMonthYearShort.value = toolbarTitle || fallbackShort
+  }
 
   const userInitials = computed(() => {
     const name
