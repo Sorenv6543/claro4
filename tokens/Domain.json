@@ -1,0 +1,44 @@
+{
+  "turn": {
+    "urgent": {
+      "value": "#EA5455",
+      "type": "color"
+    },
+    "standard": {
+      "value": "#FF9F43",
+      "type": "color"
+    }
+  },
+  "booking": {
+    "standard": {
+      "value": "#28C76F",
+      "type": "color"
+    }
+  },
+  "property": {
+    "1": {
+      "value": "#7367F0",
+      "type": "color"
+    },
+    "2": {
+      "value": "#28C76F",
+      "type": "color"
+    },
+    "3": {
+      "value": "#9155FD",
+      "type": "color"
+    },
+    "4": {
+      "value": "#FF9F43",
+      "type": "color"
+    },
+    "5": {
+      "value": "#EA5455",
+      "type": "color"
+    },
+    "6": {
+      "value": "#FDD835",
+      "type": "color"
+    }
+  }
+}

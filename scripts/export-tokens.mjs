@@ -1,15 +1,15 @@
 /**
  * export-tokens.mjs
  *
- * Reads src/styles/tokens.css and exports a Figma Variables–compatible JSON
- * file per collection to figma-export/.
+ * Reads src/styles/tokens.css and exports Tokens Studio–compatible JSON
+ * files to tokens/ (one file per collection).
  *
  * Only tokens listed in figma-token-map.mjs are exported. Tokens that cannot
- * be represented in Figma Variables (rgba, var(), gradients, shadows, font
- * stacks, layout dimensions) are explicitly excluded in the map.
+ * round-trip through Figma (rgba, var(), gradients, shadows, font stacks,
+ * layout dimensions) are explicitly excluded in the map.
  *
- * Output format: W3C Design Tokens with com.figma extensions, one file per
- * collection named "{Collection}.Light.json" (dot separator).
+ * Output format: Tokens Studio JSON — { value, type } per leaf.
+ *   tokens/Primitives.json, tokens/Domain.json
  *
  * Usage: node scripts/export-tokens.mjs
  */
@@ -19,20 +19,17 @@ import path from 'node:path'
 import { TOKEN_MAP } from './figma-token-map.mjs'
 
 const TOKENS_CSS = path.resolve('src/styles/tokens.css')
-const EXPORT_DIR = path.resolve('figma-export')
+const EXPORT_DIR = path.resolve('tokens')
 
-const FIGMA_EXT = {
-  'com.figma': {
-    hiddenFromPublishing: false,
-    scopes: ['ALL_SCOPES'],
-    codeSyntax: {},
-  },
+// Map our internal types to Tokens Studio type strings
+const TS_TYPE = {
+  color: 'color',
+  number: 'sizing',
+  string: 'other',
 }
 
 function parseCssVars (css) {
   const vars = new Map()
-  // Match single-line property declarations only.
-  // Handles trailing comments and any amount of whitespace before the semicolon.
   const re = /(--claro-[\w-]+):\s+([^;\n]+);/g
   let m
   while ((m = re.exec(css)) !== null) {
@@ -76,7 +73,7 @@ function setNested (obj, pathArr, value) {
 function countLeaves (obj) {
   let n = 0
   for (const v of Object.values(obj)) {
-    if (v && '$value' in v) {
+    if (v && 'value' in v) {
       n++
     } else if (v && typeof v === 'object') {
       n += countLeaves(v)
@@ -109,22 +106,20 @@ for (const { css: cssVar, collection, path: tokenPath, type, stripUnit } of TOKE
     collections[collection] = {}
   }
   setNested(collections[collection], tokenPath, {
-    $type: type,
-    $value: value,
-    $description: '',
-    $extensions: FIGMA_EXT,
+    value,
+    type: TS_TYPE[type],
   })
 }
 
 if (errors > 0) {
-  console.error(`\n${errors} error(s). Fix before pushing to Figma.`)
+  console.error(`\n${errors} error(s). Fix tokens.css before exporting.`)
   process.exit(1)
 }
 
 fs.mkdirSync(EXPORT_DIR, { recursive: true })
 
 for (const [name, tokens] of Object.entries(collections)) {
-  const filename = `${name}.Light.json`
+  const filename = `${name}.json`
   fs.writeFileSync(path.join(EXPORT_DIR, filename), JSON.stringify(tokens, null, 2))
-  console.log(`✅  figma-export/${filename}  (${countLeaves(tokens)} tokens)`)
+  console.log(`✅  tokens/${filename}  (${countLeaves(tokens)} tokens)`)
 }

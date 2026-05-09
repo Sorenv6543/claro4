@@ -1,19 +1,22 @@
-name: Sync tokens → Figma
+name: Export tokens for Tokens Studio
+
+# Runs when tokens.css changes on main, or manually.
+# Exports tokens.css → tokens/*.json so a designer can open Tokens Studio
+# in Figma and click "Pull from GitHub" to sync values into Figma Variables.
+# No Figma API credentials needed — the plugin handles the Figma side.
 
 on:
   workflow_dispatch:
-    inputs:
-      file_key:
-        description: "Figma file key (overrides FIGMA_FILE_KEY secret)"
-        required: false
   push:
     branches: [main]
     paths:
       - "src/styles/tokens.css"
 
 jobs:
-  sync:
+  export:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
@@ -25,25 +28,13 @@ jobs:
         with:
           version: 10.32.1
 
-      - name: Export tokens from tokens.css
+      - name: Export tokens to Tokens Studio format
         run: node scripts/export-tokens.mjs
 
-      - name: Clone Figma variables action
-        run: git clone --depth 1 https://github.com/figma/variables-github-action-example.git .figma-action
-
-      - name: Install action deps
-        working-directory: .figma-action
-        run: npm ci
-
-      - name: Copy exported tokens into action workspace
+      - name: Commit updated token files
         run: |
-          rm -rf .figma-action/tokens
-          mkdir -p .figma-action/tokens
-          cp figma-export/*.json .figma-action/tokens/
-
-      - name: Push to Figma Variables
-        working-directory: .figma-action
-        env:
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN }}
-          FILE_KEY: ${{ github.event.inputs.file_key || secrets.FIGMA_FILE_KEY }}
-        run: npm run sync-tokens-to-figma
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add tokens/
+          git diff --cached --quiet && echo "No token changes to commit." || \
+            git commit -m "chore(tokens): sync tokens/ from tokens.css [skip ci]" && git push

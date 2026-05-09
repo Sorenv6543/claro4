@@ -1,15 +1,12 @@
-name: Sync Figma → tokens (PR)
+name: Apply Tokens Studio changes (PR)
 
-# Manual only — triggered by a designer or dev when Figma Variables have been edited.
+# Manual only — run after a designer pushes token changes from the
+# Tokens Studio Figma plugin to this repo's tokens/ directory.
 # Opens a PR updating src/styles/tokens.css and src/plugins/vuetify.ts.
 # Review the diff before merging; never merges automatically.
 
 on:
   workflow_dispatch:
-    inputs:
-      file_key:
-        description: "Figma file key (overrides FIGMA_FILE_KEY secret)"
-        required: false
 
 jobs:
   sync:
@@ -28,33 +25,19 @@ jobs:
         with:
           version: 10.32.1
 
-      - name: Clone Figma variables action
-        run: git clone --depth 1 https://github.com/figma/variables-github-action-example.git .figma-action
-
-      - name: Install action deps
-        working-directory: .figma-action
-        run: npm ci
-
-      - name: Pull variables from Figma
-        working-directory: .figma-action
-        env:
-          PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN }}
-          FILE_KEY: ${{ github.event.inputs.file_key || secrets.FIGMA_FILE_KEY }}
-        run: npm run sync-figma-to-tokens
-
       - name: Apply token changes to tokens.css and vuetify.ts
-        run: node scripts/import-tokens.mjs .figma-action/tokens_new
+        run: node scripts/import-tokens.mjs
 
       - name: Open PR
         uses: peter-evans/create-pull-request@v7
         with:
-          commit-message: "chore(tokens): sync from Figma Variables"
-          title: "chore(tokens): sync design tokens from Figma"
+          commit-message: "chore(tokens): apply Tokens Studio changes"
+          title: "chore(tokens): apply design token changes from Figma"
           body: |
-            Automated token sync from Figma Variables.
+            Design token sync from Tokens Studio (Figma plugin).
 
             **What changed:** `src/styles/tokens.css` and `src/plugins/vuetify.ts`
-            color/number/string values that differ from the current Figma Variables.
+            color/number/string values that differ from the current `tokens/` files.
 
             **What was NOT touched:** `rgba()` tokens, `var()` aliases, gradients,
             shadows, font stacks, layout dimensions, and calendar tokens — these

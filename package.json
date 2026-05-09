@@ -42,8 +42,8 @@
     "figma:publish": "figma connect publish",
     "figma:unpublish": "figma connect unpublish",
     "tokens:export": "node scripts/export-tokens.mjs",
-    "tokens:import": "node scripts/import-tokens.mjs .figma-action/tokens_new",
-    "tokens:preview": "node scripts/export-tokens.mjs && cat figma-export/*.json"
+    "tokens:import": "node scripts/import-tokens.mjs",
+    "tokens:preview": "node scripts/export-tokens.mjs && cat tokens/*.json"
   },
   "keywords": [],
   "author": "",
