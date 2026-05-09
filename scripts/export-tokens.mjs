@@ -14,7 +14,7 @@
  * Usage: node scripts/export-tokens.mjs
  */
 
-import fs   from 'node:fs'
+import fs from 'node:fs'
 import path from 'node:path'
 import { TOKEN_MAP } from './figma-token-map.mjs'
 
@@ -29,7 +29,7 @@ const FIGMA_EXT = {
   },
 }
 
-function parseCssVars(css) {
+function parseCssVars (css) {
   const vars = new Map()
   // Match single-line property declarations only.
   // Handles trailing comments and any amount of whitespace before the semicolon.
@@ -41,7 +41,7 @@ function parseCssVars(css) {
   return vars
 }
 
-function convertValue(raw, type, stripUnit) {
+function convertValue (raw, type, stripUnit) {
   if (type === 'color') {
     if (!/^#[A-Fa-f0-9]{6,8}$/.test(raw)) {
       throw new Error(`expected hex color, got: "${raw}"`)
@@ -50,8 +50,10 @@ function convertValue(raw, type, stripUnit) {
   }
   if (type === 'number') {
     const cleaned = stripUnit ? raw.replace(stripUnit, '') : raw
-    const n = parseFloat(cleaned)
-    if (isNaN(n)) throw new Error(`cannot parse number from: "${raw}"`)
+    const n = Number.parseFloat(cleaned)
+    if (Number.isNaN(n)) {
+      throw new TypeError(`cannot parse number from: "${raw}"`)
+    }
     return n
   }
   if (type === 'string') {
@@ -60,25 +62,30 @@ function convertValue(raw, type, stripUnit) {
   throw new Error(`unknown type: ${type}`)
 }
 
-function setNested(obj, pathArr, value) {
+function setNested (obj, pathArr, value) {
   let cur = obj
   for (let i = 0; i < pathArr.length - 1; i++) {
-    if (!(pathArr[i] in cur)) cur[pathArr[i]] = {}
+    if (!(pathArr[i] in cur)) {
+      cur[pathArr[i]] = {}
+    }
     cur = cur[pathArr[i]]
   }
   cur[pathArr.at(-1)] = value
 }
 
-function countLeaves(obj) {
+function countLeaves (obj) {
   let n = 0
   for (const v of Object.values(obj)) {
-    if (v && '$value' in v) n++
-    else if (v && typeof v === 'object') n += countLeaves(v)
+    if (v && '$value' in v) {
+      n++
+    } else if (v && typeof v === 'object') {
+      n += countLeaves(v)
+    }
   }
   return n
 }
 
-const css  = fs.readFileSync(TOKENS_CSS, 'utf8')
+const css = fs.readFileSync(TOKENS_CSS, 'utf8')
 const vars = parseCssVars(css)
 
 const collections = {}
@@ -93,12 +100,14 @@ for (const { css: cssVar, collection, path: tokenPath, type, stripUnit } of TOKE
   let value
   try {
     value = convertValue(vars.get(cssVar), type, stripUnit)
-  } catch (e) {
-    console.error(`❌  ${cssVar} — ${e.message}`)
+  } catch (error) {
+    console.error(`❌  ${cssVar} — ${error.message}`)
     errors++
     continue
   }
-  if (!collections[collection]) collections[collection] = {}
+  if (!collections[collection]) {
+    collections[collection] = {}
+  }
   setNested(collections[collection], tokenPath, {
     $type: type,
     $value: value,

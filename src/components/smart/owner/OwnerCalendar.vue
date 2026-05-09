@@ -122,8 +122,8 @@
   import type { Booking, Property } from '@/types'
   import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
-  import { computed, defineAsyncComponent, inject, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
   import type { Ref } from 'vue'
+  import { computed, defineAsyncComponent, inject, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
   import { useCalendarState } from '@/composables/shared/useCalendarState'
 

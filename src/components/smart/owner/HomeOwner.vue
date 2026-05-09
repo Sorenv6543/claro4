@@ -98,26 +98,26 @@ src/components/smart/owner/HomeOwner.vue -
 
   // Types
   import type { Booking, BookingFormData, Property, PropertyFormData } from '@/types'
-import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
-import type { EventResizeDoneArg } from '@fullcalendar/interaction'
+  import type { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from '@fullcalendar/core'
+  import type { EventResizeDoneArg } from '@fullcalendar/interaction'
+  import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
   // Real-time sync will auto-initialize when user is authenticated
   import OwnerDayViewBottomSheet from '@/components/dumb/owner/OwnerDayViewBottomSheet.vue'
-import BookingForm from '@/components/dumb/shared/BookingForm.vue'
-import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
-import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
+  import BookingForm from '@/components/dumb/shared/BookingForm.vue'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
+  import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   // Owner-specific components
   import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue'
-import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
-import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
-import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+  import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
+  import { useOwnerCalendarState } from '@/composables/owner/useOwnerCalendarState'
+  import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   // Business logic composables
   // Import event logger for component communication
   import eventLogger from '@/composables/shared/useComponentEventLogger'
-import { useAuthStore } from '@/stores/auth'
-import { useUIStore } from '@/stores/ui'
-import { subtractOneDay } from '@/utils/calendarHelpers'
+  import { useAuthStore } from '@/stores/auth'
+  import { useUIStore } from '@/stores/ui'
+  import { subtractOneDay } from '@/utils/calendarHelpers'
 
   // ============================================================================
   // STORE CONNECTIONS & STATE
