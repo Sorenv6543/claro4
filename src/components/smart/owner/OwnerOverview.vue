@@ -317,7 +317,13 @@
                 <div class="action-meta">{{ item.dateLabel }} · No cleaner assigned</div>
               </div>
 
-              <v-chip color="warning" rounded="pill" size="x-small" variant="tonal" @click="handleDayBarAssignCleaner(item.bookingId)">
+              <v-chip
+                color="warning"
+                rounded="pill"
+                size="x-small"
+                variant="tonal"
+                @click="handleDayBarAssignCleaner(item.bookingId)"
+              >
                 Request
               </v-chip>
             </div>
@@ -730,7 +736,6 @@
     return (h ?? 0) * 60 + (m ?? 0) < currentHour.value * 60 + currentMin.value
   }
 
-
   // ── Current time (for dbar NOW line) ─────────────────────────────────────
   const currentHour = ref(new Date().getHours())
   const currentMin = ref(new Date().getMinutes())
@@ -742,7 +747,9 @@
       currentMin.value = n.getMinutes()
     }, 60_000)
   })
-  onUnmounted(() => { if (nowTimer) clearInterval(nowTimer) })
+  onUnmounted(() => {
+    if (nowTimer) clearInterval(nowTimer)
+  })
 
   const todayDateLabel = computed(() => {
     const d = new Date()
@@ -800,7 +807,6 @@
       }
     }),
   )
-
 
   function fmt12 (time24: string): string {
     const [h, m] = time24.split(':').map(Number)
@@ -1480,7 +1486,6 @@
   border-radius: 2px;
   transition: width var(--claro-dur-slow) var(--claro-ease);
 }
-
 
 /* ── Shared utils ── */
 .prop-dot {
