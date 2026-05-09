@@ -1,0 +1,49 @@
+name: Sync tokens → Figma
+
+on:
+  workflow_dispatch:
+    inputs:
+      file_key:
+        description: "Figma file key (overrides FIGMA_FILE_KEY secret)"
+        required: false
+  push:
+    branches: [main]
+    paths:
+      - "src/styles/tokens.css"
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - name: Export tokens from tokens.css
+        run: node scripts/export-tokens.mjs
+
+      - name: Clone Figma variables action
+        run: git clone --depth 1 https://github.com/figma/variables-github-action-example.git .figma-action
+
+      - name: Install action deps
+        working-directory: .figma-action
+        run: npm ci
+
+      - name: Copy exported tokens into action workspace
+        run: |
+          rm -rf .figma-action/tokens
+          mkdir -p .figma-action/tokens
+          cp figma-export/*.json .figma-action/tokens/
+
+      - name: Push to Figma Variables
+        working-directory: .figma-action
+        env:
+          GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN: ${{ secrets.GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN }}
+          FIGMA_FILE_KEY: ${{ github.event.inputs.file_key || secrets.FIGMA_FILE_KEY }}
+        run: npm run sync-tokens-to-figma -- --fileKey="$FIGMA_FILE_KEY"
