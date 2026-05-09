@@ -44,6 +44,6 @@ jobs:
       - name: Push to Figma Variables
         working-directory: .figma-action
         env:
-          GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN: ${{ secrets.GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN }}
-          FIGMA_FILE_KEY: ${{ github.event.inputs.file_key || secrets.FIGMA_FILE_KEY }}
-        run: npm run sync-tokens-to-figma -- --fileKey="$FIGMA_FILE_KEY"
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN }}
+          FILE_KEY: ${{ github.event.inputs.file_key || secrets.FIGMA_FILE_KEY }}
+        run: npm run sync-tokens-to-figma

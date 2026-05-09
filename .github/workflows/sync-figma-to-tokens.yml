@@ -38,9 +38,9 @@ jobs:
       - name: Pull variables from Figma
         working-directory: .figma-action
         env:
-          GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN: ${{ secrets.GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN }}
-          FIGMA_FILE_KEY: ${{ github.event.inputs.file_key || secrets.FIGMA_FILE_KEY }}
-        run: npm run sync-figma-to-tokens -- --fileKey="$FIGMA_FILE_KEY"
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN }}
+          FILE_KEY: ${{ github.event.inputs.file_key || secrets.FIGMA_FILE_KEY }}
+        run: npm run sync-figma-to-tokens
 
       - name: Apply token changes to tokens.css and vuetify.ts
         run: node scripts/import-tokens.mjs .figma-action/tokens_new
