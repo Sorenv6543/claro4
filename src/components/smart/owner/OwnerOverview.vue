@@ -89,14 +89,17 @@
                 <span class="tl-legend-dot" style="background: #28C76F" />
                 Check-in
               </div>
+
               <div class="tl-legend-item">
                 <span class="tl-legend-sq" style="background: #7367F0" />
                 Check-out
               </div>
+
               <div class="tl-legend-item">
                 <span class="tl-legend-dot" style="background: #FF9F43" />
                 Turn
               </div>
+
               <div class="tl-legend-item">
                 <span class="tl-legend-dot" style="background: #EA5455" />
                 Urgent
@@ -115,6 +118,7 @@
               <!-- Hour axis at top -->
               <div class="tl-axis-top">
                 <div class="tl-axis-spacer-wide" />
+
                 <div class="tl-axis-ticks-top">
                   <span v-for="h in [8, 10, 12, 14, 16, 18, 20, 22]" :key="h">
                     {{ h < 12 ? `${h}am` : h === 12 ? '12pm' : `${h - 12}pm` }}
@@ -142,6 +146,7 @@
                   >
                     <div class="tl-prop-name">{{ row.propName }}</div>
                     <div v-if="row.subtitle" class="tl-prop-sub">{{ row.subtitle }}</div>
+
                     <div class="tl-status-pill" :class="`tl-status-pill--${row.status}`">
                       {{ deskStatusLabel(row.status) }}
                     </div>
@@ -1042,7 +1047,7 @@
 
 /* ── Timeline card ── */
 .tl-card {
-  background: var(--claro-surface);
+  background: #ffffff;
   border: 1px solid var(--claro-border);
   border-radius: var(--claro-radius-sm);
   padding: 16px 20px;
@@ -1055,7 +1060,7 @@
   gap: 6px;
   font-size: 11px;
   font-weight: 700;
-  color: var(--claro-fg3);
+  color: #9f93b6;
   text-transform: uppercase;
   letter-spacing: 0.09em;
   margin-bottom: 14px;
@@ -1701,7 +1706,7 @@
   display: flex;
   justify-content: space-between;
   padding-bottom: 6px;
-  border-bottom: 1px solid rgba(115, 103, 240, 0.14);
+  border-bottom: 1px solid rgba(115, 113, 143, 0.31);
 }
 
 .tl-axis-ticks-top span {
@@ -1723,7 +1728,7 @@
   display: flex;
   align-items: stretch;
   min-height: 56px;
-  border-bottom: 1px solid rgba(115, 103, 240, 0.06);
+  border-bottom: 1px solid rgba(131, 131, 131, 0.21);
 }
 
 .tl-prop-row:last-child {
@@ -1740,7 +1745,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 1px;
+  gap: 3px;
 }
 
 .tl-prop-name {
@@ -1789,7 +1794,7 @@
   flex: 1;
   display: flex;
   align-items: center;
-  background: rgba(115, 103, 240, 0.025);
+  background: rgba(195, 185, 185, 0.21);
 }
 
 /* Labeled event chips */
