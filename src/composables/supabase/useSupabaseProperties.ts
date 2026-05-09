@@ -203,7 +203,8 @@ export function useSupabaseProperties () {
     }
   }
 
-  // Soft delete — sets active=false, removes from store
+  // Hard delete via RLS policy "Owners can delete own properties".
+  // Cascade on bookings.property_id cleans up associated records in Postgres.
   async function deleteProperty (id: string): Promise<void> {
     const existing = propertyStore.properties.get(id)
     if (!existing) {
@@ -216,7 +217,7 @@ export function useSupabaseProperties () {
     try {
       const { error } = await supabase
         .from('properties')
-        .update({ active: false, updated_at: new Date().toISOString() })
+        .delete()
         .eq('id', id)
       if (error) {
         throw error

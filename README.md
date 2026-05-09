@@ -10,7 +10,7 @@
 Claro4  is a modern web application designed for property cleaning businesses managing multiple clients. It features a role-based architecture serving three distinct user types:
 
 - **Property Owners** (30-40 clients): Personal property and booking management
-- **Business Admin** (1 user): System-wide operations and cleaner management
+- **Business Admin** (1-2 users): System-wide operations and cleaner management
 - **Cleaners** (10-20 users): Assigned cleaning tasks and schedules
 
 ### **Key Features**

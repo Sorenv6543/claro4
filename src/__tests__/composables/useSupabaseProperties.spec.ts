@@ -298,16 +298,16 @@ describe('useSupabaseProperties', () => {
     })
   })
 
-  describe('deleteProperty (soft delete)', () => {
+  describe('deleteProperty (hard delete)', () => {
     it('optimistically removes from store and succeeds', async () => {
       const eqMock = vi.fn().mockResolvedValue({ data: null, error: null })
-      const updateMock = vi.fn().mockReturnValue({ eq: eqMock })
+      const deleteMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
         select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-        update: updateMock,
-        delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
+        update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
+        delete: deleteMock,
       })
 
       supabaseMock.channel = vi.fn().mockReturnValue({
@@ -326,8 +326,7 @@ describe('useSupabaseProperties', () => {
       await composable.deleteProperty('d1')
 
       expect(store.properties.size).toBe(0)
-      // Soft delete uses update, not delete
-      expect(updateMock).toHaveBeenCalled()
+      expect(deleteMock).toHaveBeenCalled()
       expect(eqMock).toHaveBeenCalledWith('id', 'd1')
     })
 
@@ -336,13 +335,13 @@ describe('useSupabaseProperties', () => {
         data: null,
         error: { message: 'Delete failed' },
       })
-      const updateMock = vi.fn().mockReturnValue({ eq: eqMock })
+      const deleteMock = vi.fn().mockReturnValue({ eq: eqMock })
 
       supabaseMock.from.mockReturnValue({
         select: chainableSelect({ data: [], error: null }),
         insert: vi.fn().mockResolvedValue({ data: null, error: null }),
-        update: updateMock,
-        delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
+        update: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ data: null, error: null }) }),
+        delete: deleteMock,
       })
 
       supabaseMock.channel = vi.fn().mockReturnValue({

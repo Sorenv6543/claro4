@@ -40,7 +40,10 @@
     "mcp:revert": "ruler revert",
     "figma:connect": "figma connect",
     "figma:publish": "figma connect publish",
-    "figma:unpublish": "figma connect unpublish"
+    "figma:unpublish": "figma connect unpublish",
+    "tokens:export": "node scripts/export-tokens.mjs",
+    "tokens:import": "node scripts/import-tokens.mjs .figma-action/tokens_new",
+    "tokens:preview": "node scripts/export-tokens.mjs && cat figma-export/*.json"
   },
   "keywords": [],
   "author": "",

@@ -143,10 +143,12 @@
     { title: 'Inactive', value: 'inactive' },
   ]
 
-  // Count bookings per property (for delete guard)
+  // Count active bookings per property (for delete guard).
+  // completed and cancelled bookings don't block deletion — only pending/scheduled/in_progress do.
   const bookingCountByProperty = computed(() => {
     const counts = new Map<string, number>()
     for (const booking of myBookings.value) {
+      if (booking.status === 'completed' || booking.status === 'cancelled') continue
       counts.set(booking.property_id, (counts.get(booking.property_id) ?? 0) + 1)
     }
     return counts

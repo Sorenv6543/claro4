@@ -1,0 +1,65 @@
+name: Sync Figma → tokens (PR)
+
+# Manual only — triggered by a designer or dev when Figma Variables have been edited.
+# Opens a PR updating src/styles/tokens.css and src/plugins/vuetify.ts.
+# Review the diff before merging; never merges automatically.
+
+on:
+  workflow_dispatch:
+    inputs:
+      file_key:
+        description: "Figma file key (overrides FIGMA_FILE_KEY secret)"
+        required: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.32.1
+
+      - name: Clone Figma variables action
+        run: git clone --depth 1 https://github.com/figma/variables-github-action-example.git .figma-action
+
+      - name: Install action deps
+        working-directory: .figma-action
+        run: npm ci
+
+      - name: Pull variables from Figma
+        working-directory: .figma-action
+        env:
+          GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN: ${{ secrets.GH_ACTION_VARIABLES_SYNC_FIGMA_TOKEN }}
+          FIGMA_FILE_KEY: ${{ github.event.inputs.file_key || secrets.FIGMA_FILE_KEY }}
+        run: npm run sync-figma-to-tokens -- --fileKey="$FIGMA_FILE_KEY"
+
+      - name: Apply token changes to tokens.css and vuetify.ts
+        run: node scripts/import-tokens.mjs .figma-action/tokens_new
+
+      - name: Open PR
+        uses: peter-evans/create-pull-request@v7
+        with:
+          commit-message: "chore(tokens): sync from Figma Variables"
+          title: "chore(tokens): sync design tokens from Figma"
+          body: |
+            Automated token sync from Figma Variables.
+
+            **What changed:** `src/styles/tokens.css` and `src/plugins/vuetify.ts`
+            color/number/string values that differ from the current Figma Variables.
+
+            **What was NOT touched:** `rgba()` tokens, `var()` aliases, gradients,
+            shadows, font stacks, layout dimensions, and calendar tokens — these
+            cannot round-trip through Figma and are always preserved as-is.
+
+            Review the diff and confirm the values look intentional before merging.
+          branch: chore/figma-token-sync
+          delete-branch: true
