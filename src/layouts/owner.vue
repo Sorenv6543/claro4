@@ -73,7 +73,16 @@
             :aria-label="viewMode === 'ranges' ? 'Switch to event view' : 'Switch to range view'"
             class="claro-btn"
             type="button"
-            @click="viewMode = viewMode === 'ranges' ? 'events' : 'ranges'"
+            @click="(() => {
+              const nextViewMode = viewMode === 'ranges' ? 'events' : 'ranges'
+              viewMode = nextViewMode
+              $router.replace({
+                query: {
+                  ...$route.query,
+                  viewMode: nextViewMode,
+                },
+              })
+            })()"
           >
             <v-icon size="20">
               {{ viewMode === 'ranges' ? 'mdi-calendar-range' : 'mdi-calendar-check-outline' }}
