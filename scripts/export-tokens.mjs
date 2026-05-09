@@ -9,7 +9,7 @@
  * stacks, layout dimensions) are explicitly excluded in the map.
  *
  * Output format: W3C Design Tokens with com.figma extensions, one file per
- * collection named "{Collection} — Light.json" (em-dash U+2014).
+ * collection named "{Collection}.Light.json" (dot separator).
  *
  * Usage: node scripts/export-tokens.mjs
  */
@@ -124,8 +124,7 @@ if (errors > 0) {
 fs.mkdirSync(EXPORT_DIR, { recursive: true })
 
 for (const [name, tokens] of Object.entries(collections)) {
-  // Em-dash (U+2014) is required by the Figma Variables action file-naming convention
-  const filename = `${name} — Light.json`
+  const filename = `${name}.Light.json`
   fs.writeFileSync(path.join(EXPORT_DIR, filename), JSON.stringify(tokens, null, 2))
   console.log(`✅  figma-export/${filename}  (${countLeaves(tokens)} tokens)`)
 }
