@@ -11,7 +11,7 @@
  * The Figma props below map visual states to the most impactful fields.
  * Pass the full property object in real usage.
  */
-import figma, { html } from '@figma/code-connect'
+import figma, { html } from '@figma/code-connect/html'
 
 figma.connect(
   'https://www.figma.com/design/SXfwbTotVeWVwKZr3UvKoJ/Soren?node-id=PROPERTY_CARD_NODE_ID',
@@ -20,7 +20,7 @@ figma.connect(
       active: figma.boolean('Active'),
       displayActions: figma.boolean('Show Actions'),
     },
-    example: ({ active, displayActions }) => html`
+    example: ({ displayActions }) => html`
       <PropertyCard
         :property="property"
         :display-actions="${displayActions}"
