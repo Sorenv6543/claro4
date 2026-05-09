@@ -20,6 +20,21 @@
   <v-container v-else class="owner-overview" fluid>
     <v-progress-linear v-if="loading" class="mb-4" color="primary" indeterminate />
 
+    <v-alert
+      v-if="loadError"
+      class="mb-4"
+      :text="loadError"
+      title="Couldn't load your overview"
+      type="error"
+      variant="tonal"
+    >
+      <template #append>
+        <v-btn color="error" size="small" variant="tonal" @click="loadData">
+          Retry
+        </v-btn>
+      </template>
+    </v-alert>
+
     <!-- Page header: title + range toggle -->
     <v-row>
       <v-col cols="12">
@@ -302,8 +317,8 @@
                 <div class="action-meta">{{ item.dateLabel }} · No cleaner assigned</div>
               </div>
 
-              <v-chip color="warning" rounded="pill" size="x-small" variant="tonal">
-                Assign
+              <v-chip color="warning" rounded="pill" size="x-small" variant="tonal" @click="handleDayBarAssignCleaner(item.bookingId)">
+                Request
               </v-chip>
             </div>
           </div>
@@ -324,90 +339,19 @@
       </v-col>
     </v-row>
 
-    <!-- Bookings section -->
-    <v-row>
-      <v-col cols="12">
-        <div class="section-head">
-          <span class="section-title">Bookings</span>
-        </div>
-
-        <!-- Segment tabs + filters -->
-        <div class="bookings-toolbar">
-          <div class="bookings-segments">
-            <button
-              v-for="seg in segments"
-              :key="seg.value"
-              class="seg-btn"
-              :class="{ 'seg-btn--active': selectedSegment === seg.value }"
-              @click="selectedSegment = seg.value"
-            >
-              {{ seg.title }}
-            </button>
-          </div>
-
-          <div class="bookings-filters">
-            <v-select
-              v-model="selectedProperty"
-              clearable
-              density="compact"
-              hide-details
-              :items="propertyOptions"
-              label="Property"
-              prepend-inner-icon="mdi-home-outline"
-              style="max-width: 200px"
-              variant="outlined"
-            />
-
-            <v-select
-              v-model="selectedType"
-              clearable
-              density="compact"
-              hide-details
-              :items="typeOptions"
-              label="Type"
-              prepend-inner-icon="mdi-tag-outline"
-              style="max-width: 150px"
-              variant="outlined"
-            />
-          </div>
-        </div>
-
-        <OwnerBookingList
-          expand-mode="sheet"
-          :items="allBookingsItems"
-          :loading="loading"
-          @delete="handleDeleteBooking"
-          @edit="handleEditBooking"
-        />
-
-        <ConfirmationDialog
-          confirm-text="Delete"
-          dangerous
-          :message="`Delete this booking at ${bookingToDeleteName}?`"
-          :open="deleteConfirmOpen"
-          title="Delete Booking"
-          @cancel="deleteConfirmOpen = false"
-          @confirm="confirmDeleteBooking"
-        />
-      </v-col>
-    </v-row>
   </v-container>
 </template>
 
 <script setup lang="ts">
-  import type { BookingListItem } from '@/components/dumb/owner/OwnerBookingList.vue'
   import type { DayBarEvent, DayBarPropertyRow, RangeDayBlock } from '@/components/dumb/owner/OwnerDayBar.vue'
   import type { PropertyListEvent, PropertyListItem } from '@/components/dumb/owner/PropertyList.vue'
-  import type { Booking, ModalData } from '@/types'
   import type { Property } from '@/types/property'
   import { useToday } from '@composables/shared/useToday'
-  import { computed, onMounted, ref } from 'vue'
+  import { computed, onMounted, onUnmounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
-  import OwnerBookingList from '@/components/dumb/owner/OwnerBookingList.vue'
   import OwnerDayBar from '@/components/dumb/owner/OwnerDayBar.vue'
   import PropertyList from '@/components/dumb/owner/PropertyList.vue'
-  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import RangeToggle from '@/components/dumb/shared/RangeToggle.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
@@ -422,7 +366,7 @@
   const authStore = useAuthStore()
   const uiStore = useUIStore()
   const { myProperties, fetchMyProperties } = useOwnerProperties()
-  const { myBookings, myTodayTurns, fetchMyBookings, deleteMyBooking } = useOwnerBookings()
+  const { myBookings, myTodayTurns, fetchMyBookings } = useOwnerBookings()
 
   // ── Range toggle state ─────────────────────────────────────────────────────
   const RANGE_LABELS = ['Today', '3 days', '7 days']
@@ -430,8 +374,7 @@
   const range = ref(0)
 
   const loading = ref(false)
-  const deleteConfirmOpen = ref(false)
-  const bookingToDelete = ref<Booking | null>(null)
+  const loadError = ref<string | null>(null)
 
   const propertyMap = computed(() => {
     const m = new Map<string, Property>()
@@ -439,9 +382,10 @@
     return m
   })
 
-  onMounted(async () => {
+  async function loadData (): Promise<void> {
     if (!authStore.isAuthenticated || authStore.user?.role !== 'owner') return
     loading.value = true
+    loadError.value = null
     const [propResult, bookResult] = await Promise.allSettled([
       fetchMyProperties(),
       fetchMyBookings(),
@@ -454,9 +398,11 @@
       ].filter(Boolean).join(' and ')
       const reason = propResult.status === 'rejected' ? propResult.reason : (bookResult as PromiseRejectedResult).reason
       console.error('Failed to load overview data:', reason)
-      uiStore.addNotification('error', 'Load Error', `Failed to load ${failed}. Please refresh.`)
+      loadError.value = `Failed to load ${failed}.`
     }
-  })
+  }
+
+  onMounted(loadData)
 
   const userName = computed(() =>
     authStore.user?.name || authStore.user?.email?.split('@')[0] || 'Owner',
@@ -784,34 +730,19 @@
     return (h ?? 0) * 60 + (m ?? 0) < currentHour.value * 60 + currentMin.value
   }
 
-  // ── Bookings section state ─────────────────────────────────────────────────
-  const selectedSegment = ref('upcoming')
-  const selectedProperty = ref<string | null>(null)
-  const selectedType = ref<string | null>(null)
-
-  const segments = [
-    { title: 'Upcoming', value: 'upcoming' },
-    { title: 'All', value: 'all' },
-    { title: 'Turns', value: 'turns' },
-    { title: 'Past', value: 'past' },
-  ]
-
-  const typeOptions = [
-    { title: 'Standard', value: 'standard' },
-    { title: 'Turn', value: 'turn' },
-  ]
-
-  const propertyOptions = computed(() =>
-    myProperties.value.map(p => ({
-      title: formatPropertyAddress(p, 'short'),
-      value: p.id,
-    })),
-  )
 
   // ── Current time (for dbar NOW line) ─────────────────────────────────────
-  const now = new Date()
-  const currentHour = ref(now.getHours())
-  const currentMin = ref(now.getMinutes())
+  const currentHour = ref(new Date().getHours())
+  const currentMin = ref(new Date().getMinutes())
+  let nowTimer: ReturnType<typeof setInterval> | null = null
+  onMounted(() => {
+    nowTimer = setInterval(() => {
+      const n = new Date()
+      currentHour.value = n.getHours()
+      currentMin.value = n.getMinutes()
+    }, 60_000)
+  })
+  onUnmounted(() => { if (nowTimer) clearInterval(nowTimer) })
 
   const todayDateLabel = computed(() => {
     const d = new Date()
@@ -870,49 +801,6 @@
     }),
   )
 
-  // ── All bookings (with segment + filter) ─────────────────────────────────────
-  const allBookingsItems = computed((): BookingListItem[] => {
-    let bookings = myBookings.value.filter(b => b.status !== 'cancelled')
-
-    switch (selectedSegment.value) {
-      case 'upcoming': {
-        bookings = bookings.filter(b => b.checkout_date >= todayStr.value)
-        break
-      }
-      case 'turns': {
-        bookings = bookings.filter(b => b.booking_type === 'turn')
-        break
-      }
-      case 'past': {
-        bookings = bookings.filter(b => b.checkout_date < todayStr.value)
-        break
-      }
-    }
-
-    if (selectedProperty.value) bookings = bookings.filter(b => b.property_id === selectedProperty.value)
-    if (selectedType.value) bookings = bookings.filter(b => b.booking_type === selectedType.value)
-
-    return bookings
-      .toSorted((a, b) => a.checkin_date.localeCompare(b.checkin_date))
-      .map(b => {
-        const p = propertyMap.value.get(b.property_id)
-        return {
-          id: b.id,
-          propertyName: p ? formatPropertyAddress(p, 'short') : 'Unknown',
-          propertyColor: mapLegacyPropertyColor(p?.color),
-          checkinDate: b.checkin_date,
-          checkoutDate: b.checkout_date,
-          bookingType: b.booking_type as 'standard' | 'turn',
-          status: b.status,
-          guestCount: b.guest_count ?? undefined,
-          checkinTime: b.checkin_time ?? undefined,
-          checkoutTime: b.checkout_time ?? undefined,
-          notes: b.notes ?? undefined,
-          priority: b.priority ?? undefined,
-          createdAt: b.created_at ?? undefined,
-        }
-      })
-  })
 
   function fmt12 (time24: string): string {
     const [h, m] = time24.split(':').map(Number)
@@ -922,38 +810,6 @@
     return `${h12}:${String(m ?? 0).padStart(2, '0')} ${period}`
   }
 
-  const bookingToDeleteName = computed(() => {
-    if (!bookingToDelete.value) return ''
-    const p = myProperties.value.find(p => p.id === bookingToDelete.value!.property_id)
-    return p ? formatPropertyAddress(p, 'short') : 'this property'
-  })
-
-  function handleEditBooking (id: string): void {
-    const booking = myBookings.value.find(b => b.id === id)
-    if (booking) uiStore.openModal('eventModal', 'edit', { booking: booking as unknown as ModalData })
-  }
-
-  function handleDeleteBooking (id: string): void {
-    const booking = myBookings.value.find(b => b.id === id)
-    if (booking) {
-      bookingToDelete.value = booking
-      deleteConfirmOpen.value = true
-    }
-  }
-
-  async function confirmDeleteBooking (): Promise<void> {
-    if (!bookingToDelete.value) return
-    try {
-      await deleteMyBooking(bookingToDelete.value.id)
-      uiStore.addNotification('success', 'Deleted', 'Booking deleted successfully')
-    } catch (error) {
-      console.error('Failed to delete booking:', error)
-      uiStore.addNotification('error', 'Delete Failed', error instanceof Error ? error.message : 'Could not delete booking')
-    } finally {
-      deleteConfirmOpen.value = false
-      bookingToDelete.value = null
-    }
-  }
 </script>
 
 <style scoped>
@@ -1625,55 +1481,6 @@
   transition: width var(--claro-dur-slow) var(--claro-ease);
 }
 
-/* ── Bookings toolbar ── */
-.bookings-toolbar {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-  flex-wrap: wrap;
-}
-
-.bookings-segments {
-  display: flex;
-  gap: 2px;
-  background: var(--claro-surface-variant);
-  border-radius: var(--claro-radius-sm);
-  padding: 3px;
-  flex-shrink: 0;
-}
-
-.seg-btn {
-  padding: 5px 14px;
-  border: none;
-  background: transparent;
-  border-radius: calc(var(--claro-radius-sm) - 1px);
-  font-size: var(--claro-text-xs);
-  font-weight: 500;
-  color: var(--claro-fg3);
-  cursor: pointer;
-  transition: background 0.12s, color 0.12s;
-  white-space: nowrap;
-}
-
-.seg-btn:hover {
-  color: var(--claro-fg1);
-  background: rgba(var(--v-theme-surface), 0.6);
-}
-
-.seg-btn--active {
-  background: var(--claro-surface);
-  color: var(--claro-fg1);
-  font-weight: 600;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-}
-
-.bookings-filters {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-left: auto;
-}
 
 /* ── Shared utils ── */
 .prop-dot {

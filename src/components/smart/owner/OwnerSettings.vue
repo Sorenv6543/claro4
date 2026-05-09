@@ -173,22 +173,18 @@
                     <v-col cols="12" md="6">
                       <v-text-field
                         v-model="passwordForm.newPassword"
-                        :append-inner-icon="showNewPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                        disabled
                         label="New Password"
-                        :rules="[rules.required, rules.minLength, rules.uppercase, rules.hasNumber]"
-                        :type="showNewPassword ? 'text' : 'password'"
-                        @click:append-inner="showNewPassword = !showNewPassword"
+                        type="password"
                       />
                     </v-col>
 
                     <v-col cols="12" md="6">
                       <v-text-field
                         v-model="passwordForm.confirm"
-                        :append-inner-icon="showConfirmPassword ? 'mdi-eye-off-outline' : 'mdi-eye-outline'"
+                        disabled
                         label="Confirm New Password"
-                        :rules="[rules.required, rules.passwordMatch]"
-                        :type="showConfirmPassword ? 'text' : 'password'"
-                        @click:append-inner="showConfirmPassword = !showConfirmPassword"
+                        type="password"
                       />
                     </v-col>
                   </v-row>
@@ -435,8 +431,6 @@
   // re-authentication before password change. Will be implemented when the
   // re-auth flow (signInWithPassword verification) is added.
   const passwordFormValid = ref(false)
-  const showNewPassword = ref(false)
-  const showConfirmPassword = ref(false)
 
   const passwordForm = reactive({
     newPassword: '',
