@@ -1,40 +1,61 @@
 <template>
-  <!-- ── A3 Day-bar: mobile layout ── -->
+  <!-- ── Day-bar range: mobile layout ── -->
   <OwnerDayBar
     v-if="mobile"
-    :checkin-count="checkinsTodayCount"
-    :checkout-count="checkoutsTodayOnlyCount"
     :current-hour="currentHour"
     :current-min="currentMin"
     :date-label="todayDateLabel"
-    :events="dayBarEvents"
-    :needs-action-count="needsActionTodayCount"
-    :turn-count="turnsTodayCount"
+    :day-blocks="dayBlocks"
+    :has-urgent="urgentTurns.length > 0"
+    :property-rows="propertyRows"
+    :range="range"
+    :urgent-summary="urgentSummary"
     :user-name="userName"
     @assign-cleaner="handleDayBarAssignCleaner"
     @open-booking="handleDayBarOpenBooking"
+    @update:range="range = $event"
   />
 
   <!-- ── Desktop layout ── -->
   <v-container v-else class="owner-overview" fluid>
     <v-progress-linear v-if="loading" class="mb-4" color="primary" indeterminate />
 
-    <!-- Hero gradient banner (replaces OwnerPageHeader + old welcome banner) -->
+    <!-- Page header: title + range toggle -->
     <v-row>
       <v-col cols="12">
-        <OwnerWelcomeBanner
-          :checkouts-today-count="checkoutsTodayCount"
-          :turns-today-count="turnsTodayCount"
-          :user-name="userName"
-          :weekly-occupancy-pct="avgOccupancyPct"
-        />
+        <div class="ov-header">
+          <div class="ov-header-left">
+            <span class="ov-title">Overview</span>
+            <span class="ov-title-sep">·</span>
+            <span class="ov-range-label">{{ RANGE_LABELS[range] }}</span>
+          </div>
+
+          <RangeToggle v-model="range" variant="light" />
+        </div>
       </v-col>
     </v-row>
 
-    <!-- Urgent / OK banner -->
+    <!-- Stat row -->
     <v-row>
       <v-col cols="12">
-        <div v-if="urgentTurns.length > 0" class="triage-banner triage-banner--urgent">
+        <div class="stat-row">
+          <div
+            v-for="stat in rangeStats"
+            :key="stat.label"
+            class="stat-chip"
+            :class="{ 'stat-chip--urgent': stat.urgent }"
+          >
+            <span class="stat-chip-n">{{ stat.n }}</span>
+            <span class="stat-chip-lbl">{{ stat.label }}</span>
+          </div>
+        </div>
+      </v-col>
+    </v-row>
+
+    <!-- Urgent banner (today only) -->
+    <v-row v-if="urgentTurns.length > 0">
+      <v-col cols="12">
+        <div class="triage-banner triage-banner--urgent">
           <div class="triage-icon triage-icon--urgent">
             <v-icon aria-hidden="true" color="error" size="18">mdi-alert-circle-outline</v-icon>
           </div>
@@ -51,50 +72,194 @@
             View details
           </v-btn>
         </div>
+      </v-col>
+    </v-row>
 
-        <div v-else class="triage-banner triage-banner--ok">
-          <div class="triage-icon triage-icon--ok">
-            <v-icon aria-hidden="true" color="success" size="18">mdi-check</v-icon>
+    <!-- Timeline card -->
+    <v-row>
+      <v-col cols="12">
+        <div class="tl-card">
+          <div class="tl-card-hd">
+            <span>Schedule</span>
+            <span class="tl-card-hd-sep">·</span>
+            <span>{{ RANGE_LABELS[range] }}</span>
           </div>
 
-          <div class="triage-body">
-            <div class="triage-title">You're all set</div>
-
-            <div class="triage-sub">
-              Nothing urgent across your {{ myProperties.length }} properties right now.
+          <!-- Single-day: per-property dbar rows (light) -->
+          <template v-if="range === 0">
+            <div v-if="propertyRows.length === 0" class="tl-empty">
+              <v-icon class="mr-1" size="16">mdi-calendar-check-outline</v-icon>
+              Nothing scheduled for today
             </div>
-          </div>
+
+            <div v-else class="tl-single-rows">
+              <div v-for="row in propertyRows" :key="row.propId" class="tl-single-row">
+                <div class="tl-row-lbl">
+                  <div class="tl-row-dot" :style="{ background: row.propColor }" />
+                  <span>{{ row.propName }}</span>
+                </div>
+
+                <div class="tl-dbar">
+                  <button
+                    v-for="ev in row.events"
+                    :key="ev.id"
+                    class="tl-pip"
+                    :class="{
+                      'tl-pip--turn': ev.type === 'turn',
+                      'tl-pip--checkin': ev.type === 'checkin',
+                      'tl-pip--urgent': ev.needsClean,
+                      'tl-pip--past': deskIsPast(ev.time),
+                    }"
+                    :style="{ left: `calc(${deskBarPct(ev.time)}% - 5px)` }"
+                    :title="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
+                    @click="handleDayBarOpenBooking(ev.id)"
+                  />
+
+                  <div class="tl-now-line" :style="{ left: `calc(${deskNowPct}% - 1px)` }" />
+                </div>
+              </div>
+
+              <!-- Shared time axis -->
+              <div class="tl-axis">
+                <div class="tl-axis-spacer" />
+
+                <div class="tl-axis-ticks">
+                  <span v-for="h in [8, 10, 12, 14, 16, 18, 20, 22]" :key="h">
+                    {{ h < 12 ? `${h}a` : h === 12 ? '12p' : `${h - 12}p` }}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </template>
+
+          <!-- Multi-day: per-property swimlane grid -->
+          <template v-else>
+            <div v-if="desktopMultiRows.length === 0" class="tl-empty">
+              Nothing scheduled in this period
+            </div>
+
+            <div v-else class="tl-multi-wrap">
+              <!-- Column day headers -->
+              <div class="tl-col-headers">
+                <div class="tl-row-lbl tl-row-lbl--ghost" />
+
+                <div class="tl-col-hd-row">
+                  <span
+                    v-for="(day, i) in rangeColumnDays"
+                    :key="i"
+                    class="tl-col-hd"
+                    :class="{ 'tl-col-hd--today': i === 0 }"
+                    :style="{ width: (100 / rangeDays) + '%' }"
+                  >
+                    {{ day }}
+                  </span>
+                </div>
+              </div>
+
+              <!-- Per-property swimlane rows -->
+              <div
+                v-for="row in desktopMultiRows"
+                :key="row.propId"
+                class="tl-multi-row"
+              >
+                <div class="tl-row-lbl">
+                  <div class="tl-row-dot" :style="{ background: row.propColor }" />
+                  <span>{{ row.propName }}</span>
+                </div>
+
+                <div class="tl-multi-grid">
+                  <!-- Day dividers -->
+                  <div
+                    v-for="i in rangeDays - 1"
+                    :key="i"
+                    class="tl-day-div"
+                    :style="{ left: (i / rangeDays) * 100 + '%' }"
+                  />
+
+                  <!-- Stay span bars -->
+                  <div
+                    v-for="(span, si) in row.spans"
+                    :key="'span-' + si"
+                    class="tl-span-bar"
+                    :style="{
+                      left: (span.startDay / rangeDays) * 100 + '%',
+                      width: ((span.endDay - span.startDay) / rangeDays) * 100 + '%',
+                      background: span.color,
+                    }"
+                  />
+
+                  <!-- Event day markers -->
+                  <div
+                    v-for="(marker, mi) in row.markers"
+                    :key="'mk-' + mi"
+                    class="tl-day-marker"
+                    :class="'tl-day-marker--' + marker.type"
+                    :style="{ left: ((marker.day + 0.5) / rangeDays) * 100 + '%' }"
+                  >
+                    {{ marker.type === 'checkin' ? 'In' : marker.type === 'checkout' ? 'Out' : 'Trn' }}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
         </div>
       </v-col>
     </v-row>
 
-    <!-- Today events strip -->
-    <v-row v-if="todayEvents.length > 0">
-      <v-col cols="12">
-        <div class="section-head">
-          <span class="section-title">Today · {{ todayFullLabel }}</span>
-          <span class="section-count">{{ todayEvents.length }} event{{ todayEvents.length !== 1 ? 's' : '' }}</span>
-        </div>
+    <!-- 2-col: Upcoming events + Action queue -->
+    <v-row>
+      <v-col cols="12" md="6">
+        <div class="tl-card">
+          <div class="tl-card-hd">Upcoming</div>
 
-        <div class="today-strip">
-          <div v-for="ev in todayEvents" :key="ev.id" class="event-pill" :style="{ '--pill-color': ev.propColor }">
-            <div class="event-pill-time">{{ fmt12(ev.time) }}</div>
+          <div v-if="upcomingEvents.length === 0" class="tl-empty">
+            No upcoming check-ins in this window
+          </div>
 
-            <div class="event-pill-body">
-              <div class="event-pill-prop">
-                <div class="prop-dot" :style="{ background: ev.propColor }" />
-                <span>{{ ev.propName }}</span>
+          <div v-else class="upcoming-list">
+            <button
+              v-for="ev in upcomingEvents"
+              :key="ev.bookingId"
+              class="upcoming-item"
+              @click="handleDayBarOpenBooking(ev.bookingId)"
+            >
+              <div class="upcoming-dot" :style="{ background: ev.propColor }" />
+
+              <div class="upcoming-body">
+                <div class="upcoming-prop">{{ ev.propName }}</div>
+                <div class="upcoming-meta">{{ ev.dateLabel }} · {{ fmt12(ev.time) }} · {{ ev.type === 'turn' ? 'Turn' : 'Check-in' }}</div>
               </div>
 
-              <v-chip
-                :color="ev.kind === 'checkin' ? 'success' : ev.kind === 'checkout' ? 'error' : 'warning'"
-                density="comfortable"
-                rounded="pill"
-                size="x-small"
-                variant="tonal"
-              >
-                {{ ev.kind === 'checkin' ? 'Check-in' : ev.kind === 'checkout' ? 'Check-out' : 'Turn' }}
-                <template v-if="ev.guestCount"> · {{ ev.guestCount }}g</template>
+              <v-icon class="upcoming-chevron" size="14">mdi-chevron-right</v-icon>
+            </button>
+          </div>
+        </div>
+      </v-col>
+
+      <v-col cols="12" md="6">
+        <div class="tl-card">
+          <div class="tl-card-hd">Action Queue</div>
+
+          <div v-if="actionQueue.length === 0" class="tl-empty tl-empty--ok">
+            <v-icon class="mr-1" color="success" size="15">mdi-check-circle-outline</v-icon>
+            All cleaners assigned
+          </div>
+
+          <div v-else class="action-list">
+            <div
+              v-for="item in actionQueue"
+              :key="item.bookingId"
+              class="action-item"
+            >
+              <div class="action-dot" :style="{ background: item.propColor }" />
+
+              <div class="action-body">
+                <div class="action-prop">{{ item.propName }}</div>
+                <div class="action-meta">{{ item.dateLabel }} · No cleaner assigned</div>
+              </div>
+
+              <v-chip color="warning" rounded="pill" size="x-small" variant="tonal">
+                Assign
               </v-chip>
             </div>
           </div>
@@ -187,7 +352,7 @@
 
 <script setup lang="ts">
   import type { BookingListItem } from '@/components/dumb/owner/OwnerBookingList.vue'
-  import type { DayBarEvent } from '@/components/dumb/owner/OwnerDayBar.vue'
+  import type { DayBarEvent, DayBarPropertyRow, RangeDayBlock } from '@/components/dumb/owner/OwnerDayBar.vue'
   import type { PropertyListEvent, PropertyListItem } from '@/components/dumb/owner/PropertyList.vue'
   import type { Booking, ModalData } from '@/types'
   import type { Property } from '@/types/property'
@@ -197,9 +362,9 @@
   import { useDisplay } from 'vuetify'
   import OwnerBookingList from '@/components/dumb/owner/OwnerBookingList.vue'
   import OwnerDayBar from '@/components/dumb/owner/OwnerDayBar.vue'
-  import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
   import PropertyList from '@/components/dumb/owner/PropertyList.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
+  import RangeToggle from '@/components/dumb/shared/RangeToggle.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
   import { useAuthStore } from '@/stores/auth'
@@ -214,6 +379,11 @@
   const uiStore = useUIStore()
   const { myProperties, fetchMyProperties } = useOwnerProperties()
   const { myBookings, myTodayTurns, fetchMyBookings, deleteMyBooking } = useOwnerBookings()
+
+  // ── Range toggle state ─────────────────────────────────────────────────────
+  const RANGE_LABELS = ['Today', '3 days', '7 days']
+  const RANGE_DAYS = [1, 3, 7]
+  const range = ref(0)
 
   const loading = ref(false)
   const deleteConfirmOpen = ref(false)
@@ -248,26 +418,7 @@
     authStore.user?.name || authStore.user?.email?.split('@')[0] || 'Owner',
   )
 
-  const { todayStr, todayLabel: todayFullLabel } = useToday()
-
-  // ── Today events strip ────────────────────────────────────────────────────────
-  const todayEvents = computed(() => {
-    const events: Array<{ id: string, propId: string, propName: string, propColor: string, time: string, kind: 'checkout' | 'checkin' | 'turn', guestCount?: number }> = []
-    for (const b of myBookings.value) {
-      if (b.status === 'cancelled') continue
-      const p = propertyMap.value.get(b.property_id)
-      if (!p) continue
-      const name = formatPropertyAddress(p, 'short')
-      const color = mapLegacyPropertyColor(p.color)
-      if (b.booking_type === 'turn' && b.checkin_date === todayStr.value) {
-        events.push({ id: b.id + '-t', propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'turn', guestCount: b.guest_count ?? undefined })
-      } else {
-        if (b.checkout_date === todayStr.value) events.push({ id: b.id + '-o', propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'checkout', guestCount: b.guest_count ?? undefined })
-        if (b.checkin_date === todayStr.value) events.push({ id: b.id + '-i', propId: p.id, propName: name, propColor: color, time: b.checkin_time ?? '15:00', kind: 'checkin', guestCount: b.guest_count ?? undefined })
-      }
-    }
-    return events.toSorted((a, b) => a.time.localeCompare(b.time))
-  })
+  const { todayStr } = useToday()
 
   // ── Urgent turns ──────────────────────────────────────────────────────────────
   const urgentTurns = computed(() =>
@@ -283,61 +434,34 @@
       }),
   )
 
-  // ── Counts ────────────────────────────────────────────────────────────────────
-  const turnsTodayCount = computed(() => myTodayTurns.value.length)
-  const checkoutsTodayCount = computed(() => myBookings.value.filter(b => b.checkout_date === todayStr.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length)
-
-  // ── Bookings section state ─────────────────────────────────────────────────
-  const selectedSegment = ref('upcoming')
-  const selectedProperty = ref<string | null>(null)
-  const selectedType = ref<string | null>(null)
-
-  const segments = [
-    { title: 'Upcoming', value: 'upcoming' },
-    { title: 'All', value: 'all' },
-    { title: 'Turns', value: 'turns' },
-    { title: 'Past', value: 'past' },
-  ]
-
-  const typeOptions = [
-    { title: 'Standard', value: 'standard' },
-    { title: 'Turn', value: 'turn' },
-  ]
-
-  const propertyOptions = computed(() =>
-    myProperties.value.map(p => ({
-      title: formatPropertyAddress(p, 'short'),
-      value: p.id,
-    })),
-  )
-
-  // ── A3 Day-bar data (mobile only) ──────────────────────────────────────────
-  const now = new Date()
-  const currentHour = ref(now.getHours())
-  const currentMin = ref(now.getMinutes())
-
-  const todayDateLabel = computed(() => {
-    const d = new Date()
-    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+  const urgentSummary = computed(() => {
+    const turn = urgentTurns.value[0]
+    if (!turn) return undefined
+    return { property: turn.property, checkoutTime: turn.checkoutTime, checkinTime: turn.checkinTime }
   })
 
-  const checkoutsTodayOnlyCount = computed(() =>
-    myBookings.value.filter(b => b.checkout_date === todayStr.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length,
-  )
+  // ── Range window helpers ───────────────────────────────────────────────────
+  const rangeDays = computed(() => RANGE_DAYS[range.value])
 
-  const checkinsTodayCount = computed(() =>
-    myBookings.value.filter(b => b.checkin_date === todayStr.value && b.status !== 'cancelled' && b.booking_type !== 'turn').length,
-  )
+  const rangeEndDate = computed(() => {
+    const d = new Date(todayStr.value + 'T00:00:00')
+    d.setDate(d.getDate() + rangeDays.value - 1)
+    return d.toISOString().slice(0, 10)
+  })
 
-  const needsActionTodayCount = computed(() =>
-    myBookings.value.filter(b =>
-      b.status !== 'cancelled'
-      && (b.checkout_date === todayStr.value || b.checkin_date === todayStr.value)
-      && !b.assigned_cleaner_id
-      && !b.assigned_team_id,
-    ).length,
-  )
+  function daysDiff (from: string, to: string): number {
+    const a = new Date(from + 'T00:00:00')
+    const b = new Date(to + 'T00:00:00')
+    return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24))
+  }
 
+  function formatDateLabel (date: string): string {
+    if (date === todayStr.value) return 'Today'
+    const d = new Date(date + 'T00:00:00')
+    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
+  }
+
+  // ── Day-bar events (today's events, used by propertyRows) ─────────────────
   const dayBarEvents = computed((): DayBarEvent[] => {
     const events: DayBarEvent[] = []
     for (const b of myBookings.value) {
@@ -377,6 +501,209 @@
     return events.toSorted((a, b) => a.time.localeCompare(b.time))
   })
 
+  // Per-property dbar rows for today mode (mobile + desktop single-day)
+  const propertyRows = computed((): DayBarPropertyRow[] =>
+    myProperties.value
+      .map(p => ({
+        propId: p.id,
+        propName: formatPropertyAddress(p, 'short'),
+        propColor: mapLegacyPropertyColor(p.color),
+        events: dayBarEvents.value.filter(e => e.propId === p.id),
+      }))
+      .filter(r => r.events.length > 0),
+  )
+
+  // Per-day event blocks for mobile multi-day view
+  const dayBlocks = computed((): RangeDayBlock[] => {
+    const days = rangeDays.value
+    return Array.from({ length: days }, (_, i) => {
+      const d = new Date(todayStr.value + 'T00:00:00')
+      d.setDate(d.getDate() + i)
+      const dateStr = d.toISOString().slice(0, 10)
+      const label = i === 0 ? 'Today' : d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })
+
+      const events: RangeDayBlock['events'] = []
+      for (const b of myBookings.value) {
+        if (b.status === 'cancelled') continue
+        const p = propertyMap.value.get(b.property_id)
+        if (!p) continue
+        const noClean = !b.assigned_cleaner_id && !b.assigned_team_id
+
+        if (b.booking_type === 'turn' && b.checkin_date === dateStr) {
+          events.push({ bookingId: b.id, propId: p.id, propName: formatPropertyAddress(p, 'short'), propColor: mapLegacyPropertyColor(p.color), type: 'turn', time: b.checkout_time?.slice(0, 5) ?? '11:00', needsClean: noClean })
+        } else {
+          if (b.checkout_date === dateStr) events.push({ bookingId: b.id, propId: p.id, propName: formatPropertyAddress(p, 'short'), propColor: mapLegacyPropertyColor(p.color), type: 'checkout', time: b.checkout_time?.slice(0, 5) ?? '11:00', needsClean: noClean })
+          if (b.checkin_date === dateStr) events.push({ bookingId: b.id, propId: p.id, propName: formatPropertyAddress(p, 'short'), propColor: mapLegacyPropertyColor(p.color), type: 'checkin', time: b.checkin_time?.slice(0, 5) ?? '15:00', needsClean: false })
+        }
+      }
+      events.sort((a, b) => a.time.localeCompare(b.time))
+      return { date: dateStr, label, isToday: i === 0, events }
+    })
+  })
+
+  // Desktop stat chips
+  const rangeStats = computed(() => {
+    const end = rangeEndDate.value
+    let checkouts = 0, checkins = 0, turns = 0
+    for (const b of myBookings.value) {
+      if (b.status === 'cancelled') continue
+      if (b.booking_type === 'turn') {
+        if (b.checkin_date >= todayStr.value && b.checkin_date <= end) turns++
+      } else {
+        if (b.checkout_date >= todayStr.value && b.checkout_date <= end) checkouts++
+        if (b.checkin_date >= todayStr.value && b.checkin_date <= end) checkins++
+      }
+    }
+    return [
+      { n: checkouts + checkins + turns, label: 'Total events', urgent: false },
+      { n: checkouts, label: 'Check-outs', urgent: false },
+      { n: checkins, label: 'Check-ins', urgent: false },
+      { n: turns, label: 'Turns', urgent: urgentTurns.value.length > 0 },
+    ]
+  })
+
+  // Desktop multi-day swimlane rows (span bars + event markers)
+  const desktopMultiRows = computed(() => {
+    const days = rangeDays.value
+    const end = rangeEndDate.value
+
+    return myProperties.value
+      .map(p => {
+        const name = formatPropertyAddress(p, 'short')
+        const color = mapLegacyPropertyColor(p.color)
+        const spans: Array<{ startDay: number, endDay: number, color: string }> = []
+        const markers: Array<{ day: number, type: 'checkin' | 'checkout' | 'turn', bookingId: string }> = []
+
+        for (const b of myBookings.value) {
+          if (b.property_id !== p.id || b.status === 'cancelled') continue
+          if (b.checkout_date < todayStr.value || b.checkin_date > end) continue
+
+          const spanStart = Math.max(0, daysDiff(todayStr.value, b.checkin_date))
+          const spanEnd = Math.min(days, daysDiff(todayStr.value, b.checkout_date) + 1)
+          if (spanEnd > spanStart) spans.push({ startDay: spanStart, endDay: spanEnd, color })
+
+          if (b.booking_type === 'turn') {
+            const day = daysDiff(todayStr.value, b.checkin_date)
+            if (day >= 0 && day < days) markers.push({ day, type: 'turn', bookingId: b.id })
+          } else {
+            const outDay = daysDiff(todayStr.value, b.checkout_date)
+            if (outDay >= 0 && outDay < days) markers.push({ day: outDay, type: 'checkout', bookingId: b.id })
+            const inDay = daysDiff(todayStr.value, b.checkin_date)
+            if (inDay >= 0 && inDay < days) markers.push({ day: inDay, type: 'checkin', bookingId: b.id })
+          }
+        }
+
+        return { propId: p.id, propName: name, propColor: color, spans, markers }
+      })
+      .filter(r => r.spans.length > 0 || r.markers.length > 0)
+  })
+
+  // Day column labels for desktop multi-day header
+  const rangeColumnDays = computed(() =>
+    Array.from({ length: rangeDays.value }, (_, i) => {
+      if (i === 0) return 'Today'
+      const d = new Date(todayStr.value + 'T00:00:00')
+      d.setDate(d.getDate() + i)
+      return d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })
+    }),
+  )
+
+  // Upcoming check-ins in the range window (for 2-col bottom)
+  const upcomingEvents = computed(() => {
+    const end = rangeEndDate.value
+    const events: Array<{ bookingId: string, propName: string, propColor: string, type: 'checkin' | 'turn', time: string, dateLabel: string }> = []
+
+    for (const b of myBookings.value) {
+      if (b.status === 'cancelled') continue
+      const p = propertyMap.value.get(b.property_id)
+      if (!p) continue
+
+      if (b.booking_type === 'turn' && b.checkin_date >= todayStr.value && b.checkin_date <= end) {
+        events.push({ bookingId: b.id, propName: formatPropertyAddress(p, 'short'), propColor: mapLegacyPropertyColor(p.color), type: 'turn', time: b.checkin_time?.slice(0, 5) ?? '15:00', dateLabel: formatDateLabel(b.checkin_date) })
+      } else if (b.booking_type !== 'turn' && b.checkin_date >= todayStr.value && b.checkin_date <= end) {
+        events.push({ bookingId: b.id, propName: formatPropertyAddress(p, 'short'), propColor: mapLegacyPropertyColor(p.color), type: 'checkin', time: b.checkin_time?.slice(0, 5) ?? '15:00', dateLabel: formatDateLabel(b.checkin_date) })
+      }
+    }
+
+    return events.toSorted((a, b) => a.dateLabel.localeCompare(b.dateLabel) || a.time.localeCompare(b.time))
+  })
+
+  // Bookings without cleaners in the range window
+  const actionQueue = computed(() => {
+    const end = rangeEndDate.value
+    return myBookings.value
+      .filter(b => {
+        if (b.status === 'cancelled' || b.assigned_cleaner_id || b.assigned_team_id) return false
+        return (b.checkout_date >= todayStr.value && b.checkout_date <= end)
+          || (b.checkin_date >= todayStr.value && b.checkin_date <= end)
+      })
+      .map(b => {
+        const p = propertyMap.value.get(b.property_id)
+        return {
+          bookingId: b.id,
+          propName: p ? formatPropertyAddress(p, 'short') : 'Unknown',
+          propColor: p ? mapLegacyPropertyColor(p.color) : '#7367F0',
+          type: b.booking_type === 'turn' ? 'turn' as const : 'checkout' as const,
+          dateLabel: formatDateLabel(b.checkout_date),
+        }
+      })
+      .toSorted((a, b) => a.dateLabel.localeCompare(b.dateLabel))
+  })
+
+  // Desktop dbar position helpers (8 AM – 10 PM = 14 hours)
+  const DESK_DAY_START = 8
+  const DESK_DAY_SPAN = 14
+
+  function deskBarPct (time: string): number {
+    const [h, m] = time.split(':').map(Number)
+    const frac = ((h ?? 0) + (m ?? 0) / 60 - DESK_DAY_START) / DESK_DAY_SPAN
+    return Math.max(0, Math.min(100, frac * 100))
+  }
+
+  const deskNowPct = computed(() => {
+    const frac = (currentHour.value + currentMin.value / 60 - DESK_DAY_START) / DESK_DAY_SPAN
+    return Math.max(0, Math.min(100, frac * 100))
+  })
+
+  function deskIsPast (time: string): boolean {
+    const [h, m] = time.split(':').map(Number)
+    return (h ?? 0) * 60 + (m ?? 0) < currentHour.value * 60 + currentMin.value
+  }
+
+  // ── Bookings section state ─────────────────────────────────────────────────
+  const selectedSegment = ref('upcoming')
+  const selectedProperty = ref<string | null>(null)
+  const selectedType = ref<string | null>(null)
+
+  const segments = [
+    { title: 'Upcoming', value: 'upcoming' },
+    { title: 'All', value: 'all' },
+    { title: 'Turns', value: 'turns' },
+    { title: 'Past', value: 'past' },
+  ]
+
+  const typeOptions = [
+    { title: 'Standard', value: 'standard' },
+    { title: 'Turn', value: 'turn' },
+  ]
+
+  const propertyOptions = computed(() =>
+    myProperties.value.map(p => ({
+      title: formatPropertyAddress(p, 'short'),
+      value: p.id,
+    })),
+  )
+
+  // ── Current time (for dbar NOW line) ─────────────────────────────────────
+  const now = new Date()
+  const currentHour = ref(now.getHours())
+  const currentMin = ref(now.getMinutes())
+
+  const todayDateLabel = computed(() => {
+    const d = new Date()
+    return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
+  })
+
   function handleDayBarOpenBooking (eventId: string): void {
     const bookingId = eventId.replace(/-[toi]$/, '')
     router.push({ path: '/owner/bookings', query: { id: bookingId } })
@@ -385,36 +712,6 @@
   function handleDayBarAssignCleaner (_eventId: string): void {
     uiStore.addNotification('info', 'Cleaner Assignment', 'Contact your admin to assign a cleaner for this turn.')
   }
-
-  // ── Occupancy ─────────────────────────────────────────────────────────────────
-  const occupancyMap = computed(() => {
-    const now = new Date()
-    now.setHours(23, 59, 59, 999)
-    const past = new Date()
-    past.setDate(past.getDate() - 30)
-    const result = new Map<string, number>()
-    for (const p of myProperties.value) {
-      const days = new Set<string>()
-      for (const b of myBookings.value) {
-        if (b.property_id !== p.id || b.status === 'cancelled') continue
-        const start = new Date(Math.max(new Date(b.checkin_date).getTime(), past.getTime()))
-        const end = new Date(Math.min(new Date(b.checkout_date).getTime(), now.getTime()))
-        const cur = new Date(start)
-        while (cur <= end) {
-          days.add(cur.toISOString().slice(0, 10))
-          cur.setDate(cur.getDate() + 1)
-        }
-      }
-      result.set(p.id, Math.min(Math.round((days.size / 30) * 100), 100))
-    }
-    return result
-  })
-
-  const avgOccupancyPct = computed(() => {
-    if (myProperties.value.length === 0) return 0
-    const total = [...occupancyMap.value.values()].reduce((a, b) => a + b, 0)
-    return Math.round(total / myProperties.value.length)
-  })
 
   // ── PropertyList items for overview accordion ────────────────────────────────
   const overviewListItems = computed((): PropertyListItem[] =>
@@ -553,6 +850,426 @@
 
 .owner-overview :deep(.v-row + .v-row) {
   margin-top: var(--claro-section-gap);
+}
+
+/* ── Page header ── */
+.ov-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 4px;
+}
+
+.ov-header-left {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.ov-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--claro-fg1);
+  letter-spacing: -0.02em;
+}
+
+.ov-title-sep {
+  color: var(--claro-fg3);
+  font-weight: 400;
+}
+
+.ov-range-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--claro-primary);
+}
+
+/* ── Stat row ── */
+.stat-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.stat-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: var(--claro-surface);
+  border: 1px solid var(--claro-border);
+  border-radius: var(--claro-radius-sm);
+  flex: 1;
+  min-width: 100px;
+}
+
+.stat-chip--urgent {
+  border-color: rgba(234, 84, 85, 0.30);
+  background: var(--claro-error-tonal);
+}
+
+.stat-chip-n {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--claro-fg1);
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.stat-chip--urgent .stat-chip-n {
+  color: var(--claro-error);
+}
+
+.stat-chip-lbl {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--claro-fg3);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  line-height: 1.3;
+}
+
+/* ── Timeline card ── */
+.tl-card {
+  background: var(--claro-surface);
+  border: 1px solid var(--claro-border);
+  border-radius: var(--claro-radius-sm);
+  padding: 16px 20px;
+  box-shadow: var(--claro-shadow-sm);
+}
+
+.tl-card-hd {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--claro-fg3);
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  margin-bottom: 14px;
+}
+
+.tl-card-hd-sep {
+  opacity: 0.45;
+}
+
+.tl-empty {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
+  color: var(--claro-fg3);
+  padding: 8px 0;
+}
+
+.tl-empty--ok {
+  color: var(--claro-success);
+  font-weight: 500;
+}
+
+/* ── Single-day per-property rows ── */
+.tl-single-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.tl-single-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tl-row-lbl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 130px;
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--claro-fg2);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.tl-row-lbl--ghost {
+  visibility: hidden;
+}
+
+.tl-row-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Dbar track (light) */
+.tl-dbar {
+  position: relative;
+  flex: 1;
+  height: 30px;
+  background: rgba(115, 103, 240, 0.06);
+  border: 1px solid rgba(115, 103, 240, 0.12);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Event pips on desktop */
+.tl-pip {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  width: 10px;
+  border-radius: 1px;
+  background: var(--claro-primary);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: opacity 0.15s, box-shadow 0.15s;
+  z-index: 3;
+}
+
+.tl-pip--turn    { background: #FF9F43; }
+.tl-pip--checkin { background: #28C76F; }
+.tl-pip--urgent  { background: #EA5455; box-shadow: 0 0 0 2px rgba(234,84,85,0.25); }
+.tl-pip--past    { opacity: 0.35; }
+
+.tl-pip:hover {
+  box-shadow: 0 0 0 3px rgba(115, 103, 240, 0.25);
+  opacity: 1;
+}
+
+.tl-pip:focus-visible {
+  outline: 2px solid var(--claro-primary);
+  outline-offset: 2px;
+}
+
+/* NOW line on desktop dbar */
+.tl-now-line {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 2px;
+  background: var(--claro-primary);
+  border-radius: 1px;
+  z-index: 5;
+}
+
+/* Shared axis for desktop single-day */
+.tl-axis {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.tl-axis-spacer {
+  width: 130px;
+  flex-shrink: 0;
+}
+
+.tl-axis-ticks {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+}
+
+.tl-axis-ticks span {
+  font-size: 9px;
+  color: var(--claro-fg3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Multi-day swimlane ── */
+.tl-multi-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tl-col-headers {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tl-col-hd-row {
+  flex: 1;
+  display: flex;
+}
+
+.tl-col-hd {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--claro-fg3);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-align: center;
+}
+
+.tl-col-hd--today {
+  color: var(--claro-primary);
+}
+
+.tl-multi-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tl-multi-grid {
+  position: relative;
+  flex: 1;
+  height: 30px;
+  background: rgba(115, 103, 240, 0.04);
+  border: 1px solid rgba(115, 103, 240, 0.10);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+/* Day column dividers */
+.tl-day-div {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: rgba(115, 103, 240, 0.12);
+}
+
+/* Stay span bars */
+.tl-span-bar {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  opacity: 0.22;
+  border-radius: 2px;
+  border-left: 3px solid currentColor;
+}
+
+/* Event day markers */
+.tl-day-marker {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+  font-size: 8px;
+  font-weight: 700;
+  padding: 2px 5px;
+  border-radius: 2px;
+  color: #fff;
+  white-space: nowrap;
+}
+
+.tl-day-marker--checkin  { background: #28C76F; }
+.tl-day-marker--checkout { background: var(--claro-primary); }
+.tl-day-marker--turn     { background: #FF9F43; }
+
+/* ── Upcoming list ── */
+.upcoming-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.upcoming-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--claro-radius-sm);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  transition: background 0.12s;
+}
+
+.upcoming-item:hover {
+  background: var(--claro-background);
+}
+
+.upcoming-item:focus-visible {
+  outline: 2px solid var(--claro-primary);
+  outline-offset: 2px;
+}
+
+.upcoming-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.upcoming-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.upcoming-prop {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--claro-fg1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.upcoming-meta {
+  font-size: 11px;
+  color: var(--claro-fg3);
+  margin-top: 1px;
+}
+
+.upcoming-chevron {
+  opacity: 0.30;
+  flex-shrink: 0;
+}
+
+/* ── Action queue ── */
+.action-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.action-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--claro-radius-sm);
+}
+
+.action-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.action-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.action-prop {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--claro-fg1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.action-meta {
+  font-size: 11px;
+  color: var(--claro-fg3);
+  margin-top: 1px;
 }
 
 /* ── Urgent / OK banner ── */

@@ -1,5 +1,7 @@
+<!-- src/components/dumb/owner/OwnerDayBar.vue -->
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
+  import RangeToggle from '@/components/dumb/shared/RangeToggle.vue'
 
   export interface DayBarEvent {
     id: string
@@ -9,41 +11,58 @@
     type: 'checkout' | 'checkin' | 'turn'
     time: string // "HH:MM"
     guestCount?: number
-    needsClean: boolean // no cleaner assigned — triggers amber "Action needed"
-    cleanFrom?: string // turn only
-    cleanTo?: string // turn only
-    cleanMins?: number // turn only
+    needsClean: boolean
+    cleanFrom?: string
+    cleanTo?: string
+    cleanMins?: number
     bookingName?: string
+  }
+
+  export interface DayBarPropertyRow {
+    propId: string
+    propName: string
+    propColor: string
+    events: DayBarEvent[]
+  }
+
+  export interface RangeDayBlock {
+    date: string
+    label: string
+    isToday: boolean
+    events: Array<{
+      bookingId: string
+      propId: string
+      propName: string
+      propColor: string
+      type: 'checkin' | 'checkout' | 'turn'
+      time: string
+      needsClean?: boolean
+    }>
   }
 
   defineOptions({ name: 'OwnerDayBar' })
 
   const props = defineProps<{
-    events: DayBarEvent[]
-    userName: string
-    dateLabel: string
     currentHour: number
     currentMin: number
-    checkoutCount: number
-    turnCount: number
-    checkinCount: number
-    needsActionCount: number
+    userName: string
+    dateLabel: string
+    range: number // 0=today, 1=3-day, 2=7-day
+    propertyRows: DayBarPropertyRow[]
+    dayBlocks: RangeDayBlock[]
+    hasUrgent: boolean
+    urgentSummary?: { property: string, checkoutTime: string, checkinTime: string }
   }>()
 
   const emit = defineEmits<{
+    'update:range': [value: number]
     'open-booking': [id: string]
     'assign-cleaner': [id: string]
   }>()
 
-  // ── Day-bar math ─────────────────────────────────────────────────────────────
-  // Timeline spans 7am–9pm (14 hours)
-  const DAY_START = 7
-  const DAY_SPAN = 14 // hours
-
-  function timeToMinutes (t: string): number {
-    const [h, m] = t.split(':').map(Number)
-    return (h ?? 0) * 60 + (m ?? 0)
-  }
+  // ── Day-bar math: 8 AM–10 PM (14 hours) ─────────────────────────────────────
+  const DAY_START = 8
+  const DAY_SPAN = 14
 
   function barPct (time: string): number {
     const [h, m] = time.split(':').map(Number)
@@ -57,13 +76,22 @@
   })
 
   function isPast (time: string): boolean {
-    const eventMins = timeToMinutes(time)
-    const nowMins = props.currentHour * 60 + props.currentMin
-    return eventMins < nowMins
+    const [h, m] = time.split(':').map(Number)
+    const eventMins = (h ?? 0) * 60 + (m ?? 0)
+    return eventMins < props.currentHour * 60 + props.currentMin
   }
 
-  const TICK_HOURS = [7, 10, 13, 16, 19]
-  const TIME_LABELS = ['7a', '10a', '1p', '4p', '7p', '9p']
+  // ── Range labels ─────────────────────────────────────────────────────────────
+  const RANGE_LABELS = ['Today', '3 days', '7 days']
+
+  const totalEventCount = computed(() => {
+    if (props.range === 0) {
+      return props.propertyRows.reduce((n, r) => n + r.events.length, 0)
+    }
+    return props.dayBlocks.reduce((n, d) => n + d.events.length, 0)
+  })
+
+  const firstName = computed(() => props.userName.split(' ')[0])
 
   // ── Bottom sheet ─────────────────────────────────────────────────────────────
   const selectedEvent = ref<DayBarEvent | null>(null)
@@ -74,7 +102,6 @@
     sheetOpen.value = true
   }
 
-  // Clear selection after the close animation finishes (~300ms)
   watch(sheetOpen, open => {
     if (!open) setTimeout(() => {
       selectedEvent.value = null
@@ -83,21 +110,15 @@
 
   // ── Display helpers ──────────────────────────────────────────────────────────
   function typeLabel (t: DayBarEvent['type']): string {
-    const labels: Record<DayBarEvent['type'], string> = {
-      checkout: 'Check-out',
-      checkin: 'Check-in',
-      turn: 'Same-day turn',
-    }
-    return labels[t] ?? 'Same-day turn'
+    return { checkout: 'Check-out', checkin: 'Check-in', turn: 'Same-day turn' }[t] ?? t
   }
 
   function typeIcon (t: DayBarEvent['type']): string {
-    const icons: Record<DayBarEvent['type'], string> = {
-      checkout: 'mdi-logout',
-      checkin: 'mdi-login',
-      turn: 'mdi-swap-horizontal',
-    }
-    return icons[t] ?? 'mdi-swap-horizontal'
+    return { checkout: 'mdi-logout', checkin: 'mdi-login', turn: 'mdi-swap-horizontal' }[t] ?? 'mdi-swap-horizontal'
+  }
+
+  function typeDotClass (t: string): string {
+    return { checkout: 'dot--checkout', checkin: 'dot--checkin', turn: 'dot--turn' }[t] ?? ''
   }
 
   function fmt12 (time: string): string {
@@ -108,160 +129,155 @@
     return `${h12}:${String(m).padStart(2, '0')} ${period}`
   }
 
-  // ── Display time ─────────────────────────────────────────────────────────────
   const displayTime = computed(() => {
     const h = props.currentHour
-    const m = props.currentMin.toString().padStart(2, '0')
+    const m = String(props.currentMin).padStart(2, '0')
     const ap = h >= 12 ? 'PM' : 'AM'
     const dh = h > 12 ? h - 12 : (h === 0 ? 12 : h)
     return `${dh}:${m} ${ap}`
   })
-
-  const statCounts = computed(() => [
-    { n: props.checkoutCount, label: 'Checkouts' },
-    { n: props.turnCount, label: 'Turns' },
-    { n: props.checkinCount, label: 'Check-ins' },
-    { n: props.needsActionCount, label: 'Need cleaner', alert: true },
-  ])
 </script>
 
 <template>
-  <!-- ── A3 · Horizontal day-bar ── Mobile only ──────────────────────────── -->
+  <!-- ── Variant 1b · Day-bar with range toggle ── Mobile ────────────────────── -->
   <div class="daybar-root">
 
-    <!-- ── Hero gradient ─────────────────────────────────────────────────── -->
+    <!-- ── Hero (dark gradient) ──────────────────────────────────────────────── -->
     <div class="daybar-hero">
       <div class="hero-glow" />
 
+      <!-- Greeting row -->
       <div class="hero-top">
-        <div>
+        <div class="hero-text">
           <div class="hero-date">{{ dateLabel }}</div>
-          <div class="hero-greeting">Good morning, {{ userName.split(' ')[0] }}</div>
+          <div class="hero-greeting">Hi {{ firstName }}</div>
         </div>
 
-        <div class="hero-bell">
-          <v-icon color="white" size="18">mdi-bell-outline</v-icon>
+        <div class="hero-meta">
+          <span class="hero-range-chip">{{ RANGE_LABELS[range] }}</span>
+          <span class="hero-count">{{ totalEventCount }} event{{ totalEventCount !== 1 ? 's' : '' }}</span>
         </div>
       </div>
 
-      <!-- Day timeline bar -->
-      <div class="timeline-label-row">
-        <span class="timeline-label">Today's timeline</span>
-        <span class="timeline-now-time">{{ displayTime }}</span>
-      </div>
+      <!-- Now time + range toggle row -->
+      <div class="hero-controls">
+        <span class="hero-now-time">{{ displayTime }}</span>
 
-      <div class="timeline-track">
-        <!-- Hour ticks -->
-        <div
-          v-for="h in TICK_HOURS"
-          :key="h"
-          class="tick"
-          :style="{ left: `${(h - DAY_START) / DAY_SPAN * 100}%` }"
+        <RangeToggle
+          :model-value="range"
+          variant="dark"
+          @update:model-value="emit('update:range', $event)"
         />
-
-        <!-- Event markers -->
-        <button
-          v-for="ev in events"
-          :key="ev.id"
-          class="event-pip"
-          :class="{
-            'event-pip--amber': ev.needsClean,
-            'event-pip--past': isPast(ev.time),
-            'event-pip--active': selectedEvent?.id === ev.id,
-          }"
-          :style="{ left: `calc(${barPct(ev.time)}% - 5px)` }"
-          :title="`${ev.propName} · ${ev.time}`"
-          @click.stop="openSheet(ev)"
-        />
-
-        <!-- NOW line -->
-        <div class="now-line" :style="{ left: `calc(${nowPct}% - 1px)` }">
-          <span class="now-label">NOW</span>
-        </div>
       </div>
 
-      <!-- Time axis labels -->
-      <div class="timeline-axis">
-        <span v-for="t in TIME_LABELS" :key="t">{{ t }}</span>
-      </div>
+      <!-- Urgent banner (today mode only) -->
+      <div v-if="hasUrgent && urgentSummary && range === 0" class="hero-urgent">
+        <v-icon class="urgent-bolt" size="14">mdi-lightning-bolt</v-icon>
 
-      <!-- Stat counts -->
-      <div class="hero-stats">
-        <template v-for="(s, i) in statCounts" :key="s.label">
-          <div v-if="i > 0" class="stat-divider" />
+        <div class="urgent-body">
+          <div class="urgent-title">Urgent turn · {{ urgentSummary.property }}</div>
 
-          <div class="stat-item" :class="{ 'stat-item--alert': s.alert }">
-            <span class="stat-n">{{ s.n }}</span>
-            <span class="stat-lbl">{{ s.label }}</span>
+          <div class="urgent-sub">
+            Guests out {{ fmt12(urgentSummary.checkoutTime) }} · new guests in {{ fmt12(urgentSummary.checkinTime) }}
           </div>
-        </template>
+        </div>
       </div>
     </div><!-- /hero -->
 
-    <!-- ── Section header ────────────────────────────────────────────────── -->
-    <div class="section-head">
-      <span class="section-title">Schedule</span>
-      <div class="section-rule" />
-      <span class="section-count">{{ events.length }} events</span>
-    </div>
+    <!-- ── Single-day: per-property dbar rows ─────────────────────────────────── -->
+    <template v-if="range === 0">
+      <div v-if="propertyRows.length === 0" class="empty-state">
+        <v-icon class="mb-2" color="primary" size="36">mdi-calendar-check-outline</v-icon>
+        <p>Nothing scheduled for today</p>
+      </div>
 
-    <!-- ── Event cards ───────────────────────────────────────────────────── -->
-    <div v-if="events.length === 0" class="empty-state">
-      <v-icon class="mb-2" color="primary" size="40">mdi-calendar-check-outline</v-icon>
-      <p>Nothing scheduled for today</p>
-    </div>
-
-    <div v-else class="event-list">
-      <div
-        v-for="ev in events"
-        :key="ev.id"
-        class="event-card"
-        :class="{
-          'event-card--active': selectedEvent?.id === ev.id,
-          'event-card--amber': ev.needsClean,
-          'event-card--past': isPast(ev.time),
-        }"
-        :style="{ '--card-accent': ev.propColor }"
-        @click="openSheet(ev)"
-      >
-        <!-- Left color stripe -->
-        <div class="card-stripe" :style="{ background: ev.propColor }" />
-
-        <div class="card-body">
-          <!-- Row 1: property + time -->
-          <div class="card-row1">
-            <span class="card-prop">{{ ev.propName }}</span>
-            <span class="card-time">{{ fmt12(ev.time) }}</span>
+      <div v-else class="prop-rows">
+        <div v-for="row in propertyRows" :key="row.propId" class="prop-row">
+          <div class="prop-row-lbl">
+            <div class="prop-dot" :style="{ background: row.propColor }" />
+            <span>{{ row.propName }}</span>
           </div>
 
-          <!-- Row 2: event type + guests + alert chip -->
-          <div class="card-row2">
-            <v-icon
-              class="mr-1"
-              :color="ev.type === 'turn' ? 'warning' : ev.type === 'checkin' ? 'success' : 'error'"
-              size="13"
-            >{{ typeIcon(ev.type) }}</v-icon>
+          <!-- Dbar track -->
+          <div class="dbar-track">
+            <!-- Event pips -->
+            <button
+              v-for="ev in row.events"
+              :key="ev.id"
+              class="dbar-pip"
+              :class="{
+                'dbar-pip--turn': ev.type === 'turn',
+                'dbar-pip--checkin': ev.type === 'checkin',
+                'dbar-pip--urgent': ev.needsClean,
+                'dbar-pip--past': isPast(ev.time),
+                'dbar-pip--active': selectedEvent?.id === ev.id,
+              }"
+              :style="{ left: `calc(${barPct(ev.time)}% - 5px)` }"
+              :title="`${ev.propName} · ${fmt12(ev.time)}`"
+              @click.stop="openSheet(ev)"
+            />
 
-            <span class="card-kind">{{ typeLabel(ev.type) }}</span>
-            <span v-if="ev.guestCount" class="card-dot" />
-            <span v-if="ev.guestCount" class="card-guests">{{ ev.guestCount }} guests</span>
-            <span v-if="ev.needsClean" class="action-chip">Action needed</span>
-            <v-icon class="card-chevron" size="14">mdi-chevron-right</v-icon>
+            <!-- NOW line -->
+            <div class="dbar-now" :style="{ left: `calc(${nowPct}% - 1px)` }">
+              <span class="now-label">NOW</span>
+            </div>
           </div>
+
+          <!-- Time axis (first row only) -->
         </div>
       </div>
-    </div>
 
-    <!-- bottom breathing room above nav -->
+      <!-- Shared axis for all rows -->
+      <div v-if="propertyRows.length > 0" class="dbar-axis">
+        <span v-for="h in [8, 10, 12, 14, 16, 18, 20, 22]" :key="h">
+          {{ h <= 12 ? `${h}a` : `${h - 12}p` }}
+        </span>
+      </div>
+    </template>
+
+    <!-- ── Multi-day: per-day event blocks ───────────────────────────────────── -->
+    <template v-else>
+      <div class="day-blocks">
+        <div v-for="block in dayBlocks" :key="block.date" class="day-block">
+          <div class="day-block-hd" :class="{ 'day-block-hd--today': block.isToday }">
+            {{ block.label }}
+          </div>
+
+          <div v-if="block.events.length === 0" class="day-empty">
+            Nothing scheduled
+          </div>
+
+          <button
+            v-for="ev in block.events"
+            :key="ev.bookingId + ev.type"
+            class="day-evt"
+            @click="emit('open-booking', ev.bookingId)"
+          >
+            <div class="day-evt-dot" :class="typeDotClass(ev.type)" />
+
+            <div class="day-evt-body">
+              <span class="day-evt-prop">{{ ev.propName }}</span>
+              <span class="day-evt-sep">·</span>
+              <span class="day-evt-time">{{ fmt12(ev.time) }}</span>
+              <span class="day-evt-sep">·</span>
+              <span class="day-evt-kind">{{ typeLabel(ev.type) }}</span>
+            </div>
+
+            <span v-if="ev.needsClean" class="day-evt-action">Action needed</span>
+            <v-icon class="day-evt-chevron" size="13">mdi-chevron-right</v-icon>
+          </button>
+        </div>
+      </div>
+    </template>
+
+    <!-- Bottom breathing room -->
     <div class="bottom-spacer" />
 
-    <!-- ── Detail bottom sheet ──────────────────────────────────────────── -->
+    <!-- ── Detail bottom sheet ──────────────────────────────────────────────── -->
     <v-bottom-sheet v-model="sheetOpen" max-width="600">
       <v-card v-if="selectedEvent" class="sheet-card" flat rounded="0">
-        <!-- Drag handle -->
         <div class="sheet-handle" />
 
-        <!-- Header row -->
         <div class="sheet-header">
           <div class="sheet-color-dot" :style="{ background: selectedEvent.propColor }" />
 
@@ -275,9 +291,7 @@
                 size="13"
               >{{ typeIcon(selectedEvent.type) }}</v-icon>
               {{ typeLabel(selectedEvent.type) }} · {{ fmt12(selectedEvent.time) }}
-              <template v-if="selectedEvent.guestCount">
-                · {{ selectedEvent.guestCount }} guests
-              </template>
+              <template v-if="selectedEvent.guestCount"> · {{ selectedEvent.guestCount }} guests</template>
             </div>
           </div>
 
@@ -292,19 +306,16 @@
           </v-btn>
         </div>
 
-        <!-- Action needed banner -->
         <div v-if="selectedEvent.needsClean" class="sheet-alert">
           <v-icon class="mr-1" color="warning" size="14">mdi-alert-circle-outline</v-icon>
           No cleaner assigned — action needed
         </div>
 
-        <!-- Guest name -->
         <div v-if="selectedEvent.bookingName" class="sheet-guest">
           <v-icon class="mr-1" size="13" style="opacity:0.45">mdi-account-outline</v-icon>
           {{ selectedEvent.bookingName }}
         </div>
 
-        <!-- Cleaning window (turn only) -->
         <div
           v-if="selectedEvent.type === 'turn' && selectedEvent.cleanFrom && selectedEvent.cleanTo"
           class="sheet-clean-window"
@@ -317,7 +328,6 @@
           <span class="clean-window-times">{{ selectedEvent.cleanFrom }} → {{ selectedEvent.cleanTo }}</span>
         </div>
 
-        <!-- Action buttons -->
         <div class="sheet-actions">
           <v-btn
             block
@@ -350,17 +360,16 @@
 .daybar-root {
   display: flex;
   flex-direction: column;
-  background: #FAFAFB;
+  background: #F5F4FB;
   font-family: 'Inter', system-ui, sans-serif;
   min-height: 100%;
   overflow-y: auto;
 }
 
-/* ── Hero gradient ─────────────────────────────────────────────────────────── */
+/* ── Hero ──────────────────────────────────────────────────────────────────── */
 .daybar-hero {
-  background: linear-gradient(170deg, #1F1840 0%, #3D348B 50%, #7367F0 100%);
-  /* env() falls back to 20px on non-notched devices */
-  padding: calc(env(safe-area-inset-top, 0px) + 20px) 20px 22px;
+  background: linear-gradient(160deg, #1A1626 0%, #2D2450 60%, #4A3F8A 100%);
+  padding: calc(env(safe-area-inset-top, 0px) + 20px) 16px 16px;
   position: relative;
   overflow: hidden;
 }
@@ -378,94 +387,167 @@
 
 .hero-top {
   display: flex;
-  justify-content: space-between;
   align-items: flex-start;
-  margin-bottom: 14px;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.hero-text {
+  min-width: 0;
 }
 
 .hero-date {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
-  color: rgba(255,255,255,0.55);
+  color: rgba(255, 255, 255, 0.45);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
 .hero-greeting {
-  font-size: 26px;
+  font-size: 24px;
   font-weight: 700;
   color: #fff;
   letter-spacing: -0.02em;
   margin-top: 2px;
 }
 
-.hero-bell {
-  width: 38px;
-  height: 38px;
-  border-radius: 2px;
-  background: rgba(255,255,255,0.18);
+.hero-meta {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 3px;
   flex-shrink: 0;
+  padding-top: 2px;
 }
 
-/* ── Timeline ──────────────────────────────────────────────────────────────── */
-.timeline-label-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.timeline-label {
-  font-size: 9px;
+.hero-range-chip {
+  font-size: 10px;
   font-weight: 700;
-  color: rgba(255,255,255,0.45);
-  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.55);
   text-transform: uppercase;
+  letter-spacing: 0.09em;
 }
 
-.timeline-now-time {
-  font-size: 11px;
+.hero-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.hero-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.hero-now-time {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255, 255, 255, 0.55);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/* ── Urgent banner ─────────────────────────────────────────────────────────── */
+.hero-urgent {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  background: linear-gradient(90deg, rgba(234, 84, 85, 0.25) 0%, rgba(234, 84, 85, 0.08) 100%);
+  border: 1px solid rgba(234, 84, 85, 0.35);
+  border-radius: 6px;
+  padding: 10px 12px;
+  margin-top: 8px;
+}
+
+.urgent-bolt {
+  color: #EA5455;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.urgent-body {
+  min-width: 0;
+}
+
+.urgent-title {
+  font-size: 12px;
   font-weight: 700;
   color: #fff;
-  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.urgent-sub {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.65);
+  margin-top: 2px;
+}
+
+/* ── Per-property dbar rows ────────────────────────────────────────────────── */
+.prop-rows {
+  padding: 14px 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.prop-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.prop-row-lbl {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(46, 38, 61, 0.60);
   letter-spacing: -0.01em;
 }
 
-.timeline-track {
+.prop-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* The dbar track */
+.dbar-track {
   position: relative;
-  height: 36px;
-  background: rgba(255,255,255,0.08);
+  height: 34px;
+  background: rgba(115, 103, 240, 0.06);
+  border: 1px solid rgba(115, 103, 240, 0.12);
   border-radius: 2px;
-  border: 1px solid rgba(255,255,255,0.10);
+  overflow: hidden;
 }
 
-.tick {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: rgba(255,255,255,0.08);
-}
-
-.event-pip {
+/* Event pip markers */
+.dbar-pip {
   position: absolute;
   top: 6px;
   bottom: 6px;
   width: 10px;
   border-radius: 1px;
-  background: #fff;
-  border: 1px solid rgba(255,255,255,0.4);
+  background: var(--claro-primary, #7367F0);
+  border: none;
   cursor: pointer;
   padding: 0;
   touch-action: manipulation;
   transition: opacity 0.15s, box-shadow 0.15s;
+  z-index: 3;
 }
 
-/* Expand touch target to 44×44px without affecting visual pip size */
-.event-pip::before {
+.dbar-pip::before {
   content: '';
   position: absolute;
   top: 50%;
@@ -475,24 +557,21 @@
   height: 44px;
 }
 
-.event-pip--amber {
-  background: #E8A33D;
-  border-color: #E8A33D;
-  box-shadow: 0 0 0 3px rgba(232,163,61,0.33);
-}
+.dbar-pip--turn    { background: #FF9F43; }
+.dbar-pip--checkin { background: #28C76F; }
+.dbar-pip--urgent  { background: #EA5455; box-shadow: 0 0 0 2px rgba(234, 84, 85, 0.28); }
+.dbar-pip--past    { opacity: 0.35; }
+.dbar-pip--active  { box-shadow: 0 0 0 3px rgba(115, 103, 240, 0.35); }
 
-.event-pip--past {
-  opacity: 0.35;
-}
-
-.now-line {
+/* NOW line */
+.dbar-now {
   position: absolute;
   top: -4px;
   bottom: -4px;
   width: 2px;
-  background: #fff;
+  background: var(--claro-primary, #7367F0);
   border-radius: 1px;
-  box-shadow: 0 0 0 2px rgba(255,255,255,0.25);
+  z-index: 5;
 }
 
 .now-label {
@@ -500,213 +579,172 @@
   top: -12px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 8px;
+  font-size: 7px;
   font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.1em;
+  color: var(--claro-primary, #7367F0);
+  letter-spacing: 0.08em;
   white-space: nowrap;
 }
 
-.timeline-axis {
+/* Shared time axis */
+.dbar-axis {
   display: flex;
   justify-content: space-between;
-  margin-top: 6px;
+  padding: 5px 16px 14px;
 }
 
-.timeline-axis span {
+.dbar-axis span {
   font-size: 9px;
-  color: rgba(255,255,255,0.35);
+  color: rgba(46, 38, 61, 0.35);
   font-variant-numeric: tabular-nums;
 }
 
-/* ── Hero stats ────────────────────────────────────────────────────────────── */
-.hero-stats {
-  display: flex;
-  gap: 14px;
-  margin-top: 14px;
-  padding-top: 12px;
-  border-top: 1px solid rgba(255,255,255,0.10);
-}
-
-.stat-divider {
-  width: 1px;
-  background: rgba(255,255,255,0.10);
-}
-
-.stat-item {
-  flex: 1;
-  display: flex;
-  align-items: baseline;
-  gap: 6px;
-}
-
-.stat-n {
-  font-size: 20px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: -0.02em;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
-}
-
-.stat-lbl {
-  font-size: 9px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.55);
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  line-height: 1.2;
-}
-
-.stat-item--alert .stat-n {
-  color: #E8A33D;
-}
-
-.stat-item--alert .stat-lbl {
-  color: #E8A33D;
-}
-
-/* ── Section header ────────────────────────────────────────────────────────── */
-.section-head {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 14px 16px 10px;
-}
-
-.section-title {
-  font-size: 11px;
-  font-weight: 700;
-  color: rgba(46,38,61,0.42);
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.section-rule {
-  flex: 1;
-  height: 1px;
-  background: #E8E8E8;
-}
-
-.section-count {
-  font-size: 11px;
-  color: rgba(46,38,61,0.42);
-  white-space: nowrap;
-}
-
-/* ── Event cards ───────────────────────────────────────────────────────────── */
-.event-list {
-  padding: 0 16px;
+/* ── Multi-day blocks ──────────────────────────────────────────────────────── */
+.day-blocks {
+  padding: 14px 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 18px;
 }
 
-.event-card {
+.day-block {
   display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.day-block-hd {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(46, 38, 61, 0.45);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding-bottom: 4px;
+  border-bottom: 1px solid rgba(46, 38, 61, 0.08);
+  margin-bottom: 4px;
+}
+
+.day-block-hd--today {
+  color: var(--claro-primary, #7367F0);
+  border-bottom-color: rgba(115, 103, 240, 0.22);
+}
+
+.day-empty {
+  font-size: 12px;
+  color: rgba(46, 38, 61, 0.35);
+  padding: 6px 0;
+}
+
+.day-evt {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
   background: #fff;
+  border: 1px solid rgba(46, 38, 61, 0.08);
   border-radius: 2px;
-  border: 1px solid #E8E8E8;
-  overflow: hidden;
   cursor: pointer;
-  touch-action: manipulation;
-  transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+  text-align: left;
+  width: 100%;
+  transition: border-color 0.12s, box-shadow 0.12s;
 }
 
-.event-card--active {
-  border-color: var(--card-accent, #7367F0);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+.day-evt:hover {
+  border-color: rgba(115, 103, 240, 0.25);
+  box-shadow: 0 2px 8px rgba(115, 103, 240, 0.08);
 }
 
-.event-card--amber {
-  border-color: rgba(232,163,61,0.35);
-  box-shadow: 0 2px 12px rgba(232,163,61,0.14);
+.day-evt-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--claro-primary, #7367F0);
 }
 
-.event-card--past {
-  opacity: 0.55;
+.dot--checkout { background: #7367F0; }
+.dot--checkin  { background: #28C76F; }
+.dot--turn     { background: #FF9F43; }
+
+.day-evt-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.card-stripe {
-  width: 3px;
+.day-evt-prop {
+  font-weight: 600;
+  color: #2E263D;
   flex-shrink: 0;
 }
 
-.card-body {
-  flex: 1;
-  padding: 12px 14px;
-  min-width: 0;
+.day-evt-sep {
+  color: rgba(46, 38, 61, 0.30);
+  flex-shrink: 0;
 }
 
-.card-row1 {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
-.card-prop {
-  font-size: 13px;
-  font-weight: 600;
-  color: #2E263D;
-  flex: 1;
-  letter-spacing: -0.01em;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.card-time {
-  font-size: 12px;
-  font-weight: 600;
-  color: #2E263D;
+.day-evt-time {
+  color: rgba(46, 38, 61, 0.60);
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
 }
 
-.card-row2 {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 5px;
-  flex-wrap: wrap;
+.day-evt-kind {
+  color: rgba(46, 38, 61, 0.50);
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.card-kind {
-  font-size: 11px;
-  font-weight: 600;
-  color: rgba(46,38,61,0.68);
-  letter-spacing: -0.01em;
-}
-
-.card-dot {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: rgba(46,38,61,0.42);
-}
-
-.card-guests {
-  font-size: 11px;
-  color: rgba(46,38,61,0.42);
-}
-
-.action-chip {
-  padding: 3px 8px;
+.day-evt-action {
+  padding: 2px 7px;
   border-radius: 2px;
   background: #E8A33D;
   color: #fff;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  line-height: 1.4;
   flex-shrink: 0;
 }
 
-.card-chevron {
-  margin-left: auto;
+.day-evt-chevron {
   opacity: 0.25;
+  flex-shrink: 0;
+}
+
+/* ── Focus rings ───────────────────────────────────────────────────────────── */
+.dbar-pip:focus-visible {
+  outline: 2px solid rgba(115, 103, 240, 0.8);
+  outline-offset: 3px;
+}
+
+.day-evt:focus-visible {
+  outline: 2px solid var(--claro-primary, #7367F0);
+  outline-offset: 2px;
+}
+
+/* ── Empty state ───────────────────────────────────────────────────────────── */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  color: rgba(46, 38, 61, 0.42);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ── Bottom spacer ─────────────────────────────────────────────────────────── */
+.bottom-spacer {
+  height: 40px;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   flex-shrink: 0;
 }
 
@@ -719,7 +757,7 @@
   width: 36px;
   height: 4px;
   border-radius: 9999px;
-  background: rgba(46,38,61,0.16);
+  background: rgba(46, 38, 61, 0.16);
   margin: 10px auto 4px;
 }
 
@@ -756,7 +794,7 @@
   display: flex;
   align-items: center;
   font-size: 12px;
-  color: rgba(46,38,61,0.60);
+  color: rgba(46, 38, 61, 0.60);
   margin-top: 2px;
 }
 
@@ -764,8 +802,8 @@
   display: flex;
   align-items: center;
   background: #FFF8EE;
-  border-top: 1px solid rgba(232,163,61,0.22);
-  border-bottom: 1px solid rgba(232,163,61,0.22);
+  border-top: 1px solid rgba(232, 163, 61, 0.22);
+  border-bottom: 1px solid rgba(232, 163, 61, 0.22);
   padding: 10px 16px;
   font-size: 12px;
   font-weight: 600;
@@ -777,7 +815,7 @@
   align-items: center;
   padding: 10px 16px 0;
   font-size: 13px;
-  color: rgba(46,38,61,0.68);
+  color: rgba(46, 38, 61, 0.68);
 }
 
 .sheet-clean-window {
@@ -785,7 +823,7 @@
   justify-content: space-between;
   align-items: center;
   background: #F5F3FF;
-  border: 1px solid rgba(115,103,240,0.20);
+  border: 1px solid rgba(115, 103, 240, 0.20);
   border-radius: 2px;
   padding: 10px 12px;
   margin: 12px 16px 0;
@@ -801,7 +839,7 @@
 
 .clean-window-dur {
   font-size: 11px;
-  color: rgba(46,38,61,0.68);
+  color: rgba(46, 38, 61, 0.68);
   margin-top: 2px;
 }
 
@@ -819,40 +857,9 @@
   padding: 16px;
 }
 
-/* ── Focus rings ───────────────────────────────────────────────────────────── */
-.event-pip:focus-visible {
-  outline: 2px solid rgba(255,255,255,0.9);
-  outline-offset: 3px;
-}
-
-.event-card:focus-visible {
-  outline: 2px solid #7367F0;
-  outline-offset: 2px;
-}
-
-/* ── Empty state ───────────────────────────────────────────────────────────── */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 24px;
-  color: rgba(46,38,61,0.42);
-  font-size: 14px;
-  text-align: center;
-}
-
-.bottom-spacer {
-  height: 40px;
-  /* account for iOS home indicator */
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  flex-shrink: 0;
-}
-
-/* ── Reduced motion ────────────────────────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
-  .event-pip,
-  .event-card {
+  .dbar-pip,
+  .day-evt {
     transition: none;
   }
 }
