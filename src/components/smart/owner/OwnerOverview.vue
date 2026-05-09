@@ -83,50 +83,89 @@
             <span>Schedule</span>
             <span class="tl-card-hd-sep">·</span>
             <span>{{ RANGE_LABELS[range] }}</span>
+
+            <div v-if="range === 0" class="tl-legend">
+              <div class="tl-legend-item">
+                <span class="tl-legend-dot" style="background: #28C76F" />
+                Check-in
+              </div>
+              <div class="tl-legend-item">
+                <span class="tl-legend-sq" style="background: #7367F0" />
+                Check-out
+              </div>
+              <div class="tl-legend-item">
+                <span class="tl-legend-dot" style="background: #FF9F43" />
+                Turn
+              </div>
+              <div class="tl-legend-item">
+                <span class="tl-legend-dot" style="background: #EA5455" />
+                Urgent
+              </div>
+            </div>
           </div>
 
-          <!-- Single-day: per-property dbar rows (light) -->
+          <!-- Single-day: full-width labeled chips, shared NOW scrubber -->
           <template v-if="range === 0">
-            <div v-if="propertyRows.length === 0" class="tl-empty">
+            <div v-if="deskPropertyRows.length === 0" class="tl-empty">
               <v-icon class="mr-1" size="16">mdi-calendar-check-outline</v-icon>
               Nothing scheduled for today
             </div>
 
-            <div v-else class="tl-single-rows">
-              <div v-for="row in propertyRows" :key="row.propId" class="tl-single-row">
-                <div class="tl-row-lbl">
-                  <div class="tl-row-dot" :style="{ background: row.propColor }" />
-                  <span>{{ row.propName }}</span>
-                </div>
-
-                <div class="tl-dbar">
-                  <button
-                    v-for="ev in row.events"
-                    :key="ev.id"
-                    class="tl-pip"
-                    :class="{
-                      'tl-pip--turn': ev.type === 'turn',
-                      'tl-pip--checkin': ev.type === 'checkin',
-                      'tl-pip--urgent': ev.needsClean,
-                      'tl-pip--past': deskIsPast(ev.time),
-                    }"
-                    :style="{ left: `calc(${deskBarPct(ev.time)}% - 5px)` }"
-                    :title="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
-                    @click="handleDayBarOpenBooking(ev.id)"
-                  />
-
-                  <div class="tl-now-line" :style="{ left: `calc(${deskNowPct}% - 1px)` }" />
+            <div v-else class="tl-timeline-wrap">
+              <!-- Hour axis at top -->
+              <div class="tl-axis-top">
+                <div class="tl-axis-spacer-wide" />
+                <div class="tl-axis-ticks-top">
+                  <span v-for="h in [8, 10, 12, 14, 16, 18, 20, 22]" :key="h">
+                    {{ h < 12 ? `${h}am` : h === 12 ? '12pm' : `${h - 12}pm` }}
+                  </span>
                 </div>
               </div>
 
-              <!-- Shared time axis -->
-              <div class="tl-axis">
-                <div class="tl-axis-spacer" />
+              <!-- Property rows + shared NOW scrubber spanning all rows -->
+              <div class="tl-rows-wrap">
+                <div
+                  class="tl-now-overlay"
+                  :style="{ left: `calc(200px + (100% - 200px) * ${(deskNowPct / 100).toFixed(4)})` }"
+                >
+                  <div class="tl-now-bubble">NOW</div>
+                </div>
 
-                <div class="tl-axis-ticks">
-                  <span v-for="h in [8, 10, 12, 14, 16, 18, 20, 22]" :key="h">
-                    {{ h < 12 ? `${h}a` : h === 12 ? '12p' : `${h - 12}p` }}
-                  </span>
+                <div
+                  v-for="row in deskPropertyRows"
+                  :key="row.propId"
+                  class="tl-prop-row"
+                >
+                  <div
+                    class="tl-prop-info"
+                    :style="{ '--prop-color': row.propColor }"
+                  >
+                    <div class="tl-prop-name">{{ row.propName }}</div>
+                    <div v-if="row.subtitle" class="tl-prop-sub">{{ row.subtitle }}</div>
+                    <div class="tl-status-pill" :class="`tl-status-pill--${row.status}`">
+                      {{ deskStatusLabel(row.status) }}
+                    </div>
+                  </div>
+
+                  <div class="tl-ribbon">
+                    <button
+                      v-for="ev in row.events"
+                      :key="ev.id"
+                      class="tl-chip"
+                      :class="{
+                        'tl-chip--checkout': ev.type === 'checkout' && !ev.needsClean,
+                        'tl-chip--checkin': ev.type === 'checkin',
+                        'tl-chip--turn': ev.type === 'turn' && !ev.needsClean,
+                        'tl-chip--urgent': ev.needsClean,
+                        'tl-chip--past': deskIsPast(ev.time),
+                      }"
+                      :style="{ left: `${deskBarPct(ev.time)}%` }"
+                      :title="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
+                      @click="handleDayBarOpenBooking(ev.id)"
+                    >
+                      {{ fmtChipLabel(ev.time, ev.type) }}
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -512,6 +551,76 @@
       }))
       .filter(r => r.events.length > 0),
   )
+
+  // Desktop single-day rows: rich property info + labeled chips
+  const deskPropertyRows = computed(() =>
+    myProperties.value
+      .map(p => {
+        const name = formatPropertyAddress(p, 'short')
+        const color = mapLegacyPropertyColor(p.color)
+        const events = dayBarEvents.value.filter(e => e.propId === p.id)
+
+        const subtitleParts = [
+          p.address_city || null,
+          p.bedrooms ? `${p.bedrooms}bd` : null,
+          p.property_type
+            ? p.property_type.charAt(0).toUpperCase() + p.property_type.slice(1)
+            : null,
+        ].filter(Boolean)
+
+        const isOccupied = myBookings.value.some(
+          b => b.property_id === p.id
+            && b.status !== 'cancelled'
+            && b.booking_type !== 'turn'
+            && b.checkin_date <= todayStr.value
+            && b.checkout_date > todayStr.value,
+        )
+
+        const hasUrgent = events.some(e => e.needsClean)
+        const hasTurn = events.some(e => e.type === 'turn')
+        const hasCheckout = events.some(e => e.type === 'checkout')
+        const hasCheckin = events.some(e => e.type === 'checkin')
+
+        let status: 'urgent' | 'turn' | 'checkout' | 'checkin' | 'occupied' | 'vacant'
+        if (hasUrgent) status = 'urgent'
+        else if (hasTurn) status = 'turn'
+        else if (hasCheckout) status = 'checkout'
+        else if (hasCheckin) status = 'checkin'
+        else if (isOccupied) status = 'occupied'
+        else status = 'vacant'
+
+        return {
+          propId: p.id,
+          propName: name,
+          propColor: color,
+          subtitle: subtitleParts.join(' · '),
+          status,
+          events,
+        }
+      })
+      .filter(r => r.events.length > 0),
+  )
+
+  function fmtChipLabel (time: string, type: 'checkout' | 'checkin' | 'turn'): string {
+    const [h, m] = time.split(':').map(Number)
+    if (Number.isNaN(h)) return time
+    const period = (h ?? 0) >= 12 ? 'pm' : 'am'
+    const h12 = (h ?? 0) % 12 || 12
+    const minStr = (m ?? 0) > 0 ? `:${String(m ?? 0).padStart(2, '0')}` : ''
+    const timeStr = `${h12}${minStr}${period}`
+    if (type === 'checkout') return `${timeStr} Out`
+    if (type === 'checkin') return `${timeStr} In`
+    return `${timeStr} Turn!`
+  }
+
+  function deskStatusLabel (status: string): string {
+    if (status === 'urgent') return 'Urgent turn'
+    if (status === 'turn') return 'Turn'
+    if (status === 'checkout') return 'Check-out'
+    if (status === 'checkin') return 'Check-in'
+    if (status === 'occupied') return 'Occupied'
+    return 'Vacant'
+  }
 
   // Per-day event blocks for mobile multi-day view
   const dayBlocks = computed((): RangeDayBlock[] => {
@@ -1566,6 +1675,219 @@
   width: 8px;
   height: 8px;
   border-radius: 2px;
+  flex-shrink: 0;
+}
+
+/* ── Desktop timeline redesign (labeled chips, shared NOW) ── */
+.tl-timeline-wrap {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hour axis at top */
+.tl-axis-top {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 2px;
+}
+
+.tl-axis-spacer-wide {
+  width: 200px;
+  flex-shrink: 0;
+}
+
+.tl-axis-ticks-top {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(115, 103, 240, 0.14);
+}
+
+.tl-axis-ticks-top span {
+  font-size: 9px;
+  color: var(--claro-fg3);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+}
+
+/* Row wrapper — establishes stacking context for shared NOW line */
+.tl-rows-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Per-property row */
+.tl-prop-row {
+  display: flex;
+  align-items: stretch;
+  min-height: 56px;
+  border-bottom: 1px solid rgba(115, 103, 240, 0.06);
+}
+
+.tl-prop-row:last-child {
+  border-bottom: none;
+}
+
+/* Left info column with color accent border */
+.tl-prop-info {
+  width: 200px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  padding: 8px 12px 8px 11px;
+  border-left: 3px solid var(--prop-color, #7367F0);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1px;
+}
+
+.tl-prop-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--claro-fg1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+.tl-prop-sub {
+  font-size: 10px;
+  color: var(--claro-fg3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.3;
+}
+
+/* Status pill */
+.tl-status-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 9999px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  margin-top: 3px;
+  width: fit-content;
+}
+
+.tl-status-pill--urgent   { background: rgba(234, 84, 85, 0.14);   color: #EA5455; }
+.tl-status-pill--turn     { background: rgba(255, 159, 67, 0.14);  color: #FF9F43; }
+.tl-status-pill--checkout { background: rgba(115, 103, 240, 0.12); color: var(--claro-primary); }
+.tl-status-pill--checkin  { background: rgba(40, 199, 111, 0.14);  color: #28C76F; }
+.tl-status-pill--occupied { background: rgba(30, 200, 222, 0.12);  color: #1EC8DE; }
+.tl-status-pill--vacant   { background: rgba(0, 0, 0, 0.06);       color: var(--claro-fg3); }
+
+/* Ribbon — event chip container */
+.tl-ribbon {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  background: rgba(115, 103, 240, 0.025);
+}
+
+/* Labeled event chips */
+.tl-chip {
+  position: absolute;
+  transform: translateX(-50%);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+  white-space: nowrap;
+  cursor: pointer;
+  border: none;
+  line-height: 1.4;
+  z-index: 3;
+  transition: opacity 0.15s, box-shadow 0.15s;
+  font-family: var(--claro-font-family, 'Inter', sans-serif);
+}
+
+.tl-chip--checkout { background: var(--claro-primary, #7367F0); }
+.tl-chip--checkin  { background: #28C76F; }
+.tl-chip--turn     { background: #FF9F43; }
+.tl-chip--urgent   { background: #EA5455; animation: urgentPulse 1.5s ease-in-out infinite; }
+.tl-chip--past     { opacity: 0.42; }
+
+.tl-chip:hover:not(.tl-chip--past) {
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+.tl-chip:focus-visible {
+  outline: 2px solid var(--claro-primary);
+  outline-offset: 2px;
+}
+
+@keyframes urgentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(234, 84, 85, 0.55); }
+  50%       { box-shadow: 0 0 0 8px rgba(234, 84, 85, 0); }
+}
+
+/* Shared NOW scrubber spanning all rows */
+.tl-now-overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--claro-primary, #7367F0);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.tl-now-bubble {
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--claro-primary, #7367F0);
+  color: #fff;
+  font-size: 8px;
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* Legend in card header */
+.tl-legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+  flex-wrap: wrap;
+}
+
+.tl-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--claro-fg3);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.tl-legend-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tl-legend-sq {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
   flex-shrink: 0;
 }
 </style>
