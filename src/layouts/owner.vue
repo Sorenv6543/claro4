@@ -223,9 +223,9 @@
 
 <script setup lang="ts">
   import type { NavItem } from '@/components/dumb/shared/MobileBottomNav.vue'
+  import type { Ref } from 'vue'
   import { useAuthStore } from '@stores/auth'
   import { computed, onMounted, provide, ref } from 'vue'
-  import type { Ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import ClaroWordmark from '@/components/dumb/shared/ClaroWordmark.vue'

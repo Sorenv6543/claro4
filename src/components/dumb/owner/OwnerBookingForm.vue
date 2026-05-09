@@ -311,8 +311,7 @@
   interface Emits {
     (e: 'update:modelValue', value: boolean): void
     (e: 'submit', data: BookingFormData, turnCheckinTime?: string): void
-    (e: 'close'): void
-    (e: 'create-turn'): void
+    (e: 'close' | 'create-turn'): void
   }
 
   const emit = defineEmits<Emits>()
