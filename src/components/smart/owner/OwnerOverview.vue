@@ -307,7 +307,7 @@
           <div v-else class="action-list">
             <div
               v-for="item in actionQueue"
-              :key="item.bookingId"
+              :key="item.itemKey"
               class="action-item"
             >
               <div class="action-dot" :style="{ background: item.propColor }" />
@@ -697,23 +697,29 @@
   // Bookings without cleaners in the range window
   const actionQueue = computed(() => {
     const end = rangeEndDate.value
-    return myBookings.value
-      .filter(b => {
-        if (b.status === 'cancelled' || b.assigned_cleaner_id || b.assigned_team_id) return false
-        return (b.checkout_date >= todayStr.value && b.checkout_date <= end)
-          || (b.checkin_date >= todayStr.value && b.checkin_date <= end)
-      })
-      .map(b => {
-        const p = propertyMap.value.get(b.property_id)
-        return {
-          bookingId: b.id,
-          propName: p ? formatPropertyAddress(p, 'short') : 'Unknown',
-          propColor: p ? mapLegacyPropertyColor(p.color) : '#7367F0',
-          type: b.booking_type === 'turn' ? 'turn' as const : 'checkout' as const,
-          dateLabel: formatDateLabel(b.checkout_date),
+    const items: Array<{ bookingId: string, itemKey: string, propName: string, propColor: string, type: 'checkout' | 'checkin' | 'turn', dateLabel: string }> = []
+
+    for (const b of myBookings.value) {
+      if (b.status === 'cancelled' || b.assigned_cleaner_id || b.assigned_team_id) continue
+      const p = propertyMap.value.get(b.property_id)
+      const propName = p ? formatPropertyAddress(p, 'short') : 'Unknown'
+      const propColor = p ? mapLegacyPropertyColor(p.color) : '#7367F0'
+
+      if (b.booking_type === 'turn') {
+        if (b.checkin_date >= todayStr.value && b.checkin_date <= end) {
+          items.push({ bookingId: b.id, itemKey: `${b.id}-turn`, propName, propColor, type: 'turn', dateLabel: formatDateLabel(b.checkin_date) })
         }
-      })
-      .toSorted((a, b) => a.dateLabel.localeCompare(b.dateLabel))
+      } else {
+        if (b.checkout_date >= todayStr.value && b.checkout_date <= end) {
+          items.push({ bookingId: b.id, itemKey: `${b.id}-checkout`, propName, propColor, type: 'checkout', dateLabel: formatDateLabel(b.checkout_date) })
+        }
+        if (b.checkin_date >= todayStr.value && b.checkin_date <= end) {
+          items.push({ bookingId: b.id, itemKey: `${b.id}-checkin`, propName, propColor, type: 'checkin', dateLabel: formatDateLabel(b.checkin_date) })
+        }
+      }
+    }
+
+    return items.toSorted((a, b) => a.dateLabel.localeCompare(b.dateLabel))
   })
 
   // Desktop dbar position helpers (8 AM – 10 PM = 14 hours)
