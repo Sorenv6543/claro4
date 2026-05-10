@@ -1517,7 +1517,7 @@
   flex: 1;
   display: flex;
   justify-content: space-between;
-  padding-bottom: 6px;
+  padding-bottom: 10px;
   border-bottom: 1px solid rgba(115, 113, 143, 0.31);
 }
 
@@ -1526,6 +1526,28 @@
   color: var(--claro-fg3);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
+  position: relative;
+  padding-bottom: 8px;
+}
+
+.tl-axis-ticks-top span:nth-child(even) {
+  color: transparent;
+}
+
+.tl-axis-ticks-top span::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 3px;
+  background: rgba(115, 103, 240, 0.2);
+}
+
+.tl-axis-ticks-top span:nth-child(odd)::after {
+  height: 7px;
+  background: rgba(115, 103, 240, 0.5);
 }
 
 /* Row wrapper — establishes stacking context for shared NOW line */
