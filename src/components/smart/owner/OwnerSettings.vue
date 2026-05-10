@@ -494,10 +494,6 @@
   // --- Validation rules ---
   const rules = {
     required: (v: string) => !!v || 'Required',
-    minLength: (v: string) => v.length >= 8 || 'Minimum 8 characters',
-    uppercase: (v: string) => /[A-Z]/.test(v) || 'At least one uppercase letter required',
-    hasNumber: (v: string) => /\d/.test(v) || 'At least one number required',
-    passwordMatch: (v: string) => v === passwordForm.newPassword || 'Passwords must match',
   }
 
   // --- Select options ---

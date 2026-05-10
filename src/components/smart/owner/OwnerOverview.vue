@@ -966,19 +966,6 @@
   font-weight: 500;
 }
 
-/* ── Single-day per-property rows ── */
-.tl-single-rows {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.tl-single-row {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 .tl-row-lbl {
   display: flex;
   align-items: center;
@@ -1002,83 +989,6 @@
   height: 7px;
   border-radius: 50%;
   flex-shrink: 0;
-}
-
-/* Dbar track (light) */
-.tl-dbar {
-  position: relative;
-  flex: 1;
-  height: 30px;
-  background: rgba(115, 103, 240, 0.06);
-  border: 1px solid rgba(115, 103, 240, 0.12);
-  border-radius: 2px;
-  overflow: hidden;
-}
-
-/* Event pips on desktop */
-.tl-pip {
-  position: absolute;
-  top: 5px;
-  bottom: 5px;
-  width: 10px;
-  border-radius: 1px;
-  background: var(--claro-primary);
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  transition: opacity 0.15s, box-shadow 0.15s;
-  z-index: 3;
-}
-
-.tl-pip--turn    { background: #FF9F43; }
-.tl-pip--checkin { background: #28C76F; }
-.tl-pip--urgent  { background: #EA5455; box-shadow: 0 0 0 2px rgba(234,84,85,0.25); }
-.tl-pip--past    { opacity: 0.35; }
-
-.tl-pip:hover {
-  box-shadow: 0 0 0 3px rgba(115, 103, 240, 0.25);
-  opacity: 1;
-}
-
-.tl-pip:focus-visible {
-  outline: 2px solid var(--claro-primary);
-  outline-offset: 2px;
-}
-
-/* NOW line on desktop dbar */
-.tl-now-line {
-  position: absolute;
-  top: -4px;
-  bottom: -4px;
-  width: 2px;
-  background: var(--claro-primary);
-  border-radius: 1px;
-  z-index: 5;
-}
-
-/* Shared axis for desktop single-day */
-.tl-axis {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-  margin-top: 6px;
-}
-
-.tl-axis-spacer {
-  width: 130px;
-  flex-shrink: 0;
-}
-
-.tl-axis-ticks {
-  flex: 1;
-  display: flex;
-  justify-content: space-between;
-}
-
-.tl-axis-ticks span {
-  font-size: 9px;
-  color: var(--claro-fg3);
-  font-variant-numeric: tabular-nums;
 }
 
 /* ── Multi-day swimlane ── */
@@ -1350,48 +1260,6 @@
 
 .section-action:hover {
   text-decoration: underline;
-}
-
-/* ── Today strip ── */
-.today-strip {
-  display: flex;
-  gap: 10px;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-  padding-bottom: 4px;
-}
-
-.today-strip::-webkit-scrollbar { display: none; }
-
-.event-pill {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  padding: 12px 16px;
-  background: var(--claro-surface);
-  border: 1px solid var(--claro-border);
-  border-left: 3px solid var(--pill-color, var(--claro-border));
-  border-radius: var(--claro-radius-sm);
-  flex-shrink: 0;
-  min-width: 160px;
-}
-
-.event-pill-time {
-  font-size: var(--claro-text-xs);
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-  color: var(--claro-fg3);
-  letter-spacing: 0.04em;
-}
-
-.event-pill-prop {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: var(--claro-text-sm);
-  font-weight: 500;
-  color: var(--claro-fg1);
 }
 
 /* ── Property health rows ── */
