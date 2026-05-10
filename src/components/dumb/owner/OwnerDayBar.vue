@@ -1,7 +1,7 @@
 <script setup lang="ts">
+  import { fmt12, TIMELINE_DAY_SPAN, TIMELINE_DAY_START, timelineIsPast, timelinePct } from '@utils/timelineMath'
   import { computed, ref, watch } from 'vue'
   import RangeToggle from '@/components/dumb/shared/RangeToggle.vue'
-  import { TIMELINE_DAY_START, TIMELINE_DAY_SPAN, timelinePct, timelineIsPast, fmt12 } from '@utils/timelineMath'
 
   export interface DayBarEvent {
     id: string

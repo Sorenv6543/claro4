@@ -14,14 +14,14 @@
 </script>
 
 <template>
-  <div class="range-toggle" :class="variant ?? 'light'" role="group" aria-label="Time range">
+  <div aria-label="Time range" class="range-toggle" :class="variant ?? 'light'" role="group">
     <button
       v-for="(label, i) in labels"
       :key="i"
-      type="button"
+      :aria-pressed="modelValue === i"
       class="toggle-pill"
       :class="{ 'toggle-pill--active': modelValue === i }"
-      :aria-pressed="modelValue === i"
+      type="button"
       @click="emit('update:modelValue', i)"
     >
       {{ label }}

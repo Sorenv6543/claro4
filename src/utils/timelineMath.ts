@@ -61,7 +61,9 @@ export function timelineIsPast (timeStr: string, currentHour: number, currentMin
  */
 export function fmt12 (timeStr: string): string {
   const [h, m] = timeStr.split(':').map(Number)
-  if (!Number.isFinite(h) || !Number.isFinite(m)) return timeStr
+  if (!Number.isFinite(h) || !Number.isFinite(m)) {
+    return timeStr
+  }
   const period = h >= 12 ? 'PM' : 'AM'
   const h12 = h % 12 || 12
   return `${h12}:${String(m).padStart(2, '0')} ${period}`
@@ -75,13 +77,19 @@ export function fmt12 (timeStr: string): string {
  */
 export function fmtChipLabel (timeStr: string, type: string): string {
   const [h, m] = timeStr.split(':').map(Number)
-  if (Number.isNaN(h)) return timeStr
+  if (Number.isNaN(h)) {
+    return timeStr
+  }
   const period = (h ?? 0) >= 12 ? 'pm' : 'am'
   const h12 = (h ?? 0) % 12 || 12
   const minStr = (m ?? 0) > 0 ? `:${String(m ?? 0).padStart(2, '0')}` : ''
   const timePart = `${h12}${minStr}${period}`
-  if (type === 'checkout') return `${timePart} Out`
-  if (type === 'checkin') return `${timePart} In`
+  if (type === 'checkout') {
+    return `${timePart} Out`
+  }
+  if (type === 'checkin') {
+    return `${timePart} In`
+  }
   return `${timePart} Turn!`
 }
 
@@ -93,7 +101,9 @@ export function fmtChipLabel (timeStr: string, type: string): string {
  * Was: `formatDateLabel` in OwnerOverview.vue.
  */
 export function formatDateLabel (dateStr: string, todayStr: string): string {
-  if (dateStr === todayStr) return 'Today'
+  if (dateStr === todayStr) {
+    return 'Today'
+  }
   const d = new Date(dateStr + 'T00:00:00')
   return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
 }
