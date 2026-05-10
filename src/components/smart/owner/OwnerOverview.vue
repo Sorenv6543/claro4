@@ -36,7 +36,7 @@
     </v-alert>
 
     <!-- Page header: title + range toggle -->
-    <v-row>
+    <v-row class="ov-row-header">
       <v-col cols="12">
         <div class="ov-header">
           <div class="ov-header-left">
@@ -51,7 +51,7 @@
     </v-row>
 
     <!-- Stat row -->
-    <v-row>
+    <v-row class="ov-row-stats">
       <v-col cols="12">
         <div class="stat-row">
           <div
@@ -68,7 +68,7 @@
     </v-row>
 
     <!-- Urgent banner (today only) -->
-    <v-row v-if="urgentTurns.length > 0">
+    <v-row v-if="urgentTurns.length > 0" class="ov-row-urgent">
       <v-col cols="12">
         <div class="triage-banner triage-banner--urgent">
           <div class="triage-icon triage-icon--urgent">
@@ -91,7 +91,7 @@
     </v-row>
 
     <!-- Timeline card -->
-    <v-row>
+    <v-row class="ov-row-timeline">
       <v-col cols="12">
         <div class="tl-card">
           <div class="tl-card-hd">
@@ -266,7 +266,7 @@
     </v-row>
 
     <!-- 2-col: Upcoming events + Action queue -->
-    <v-row>
+    <v-row class="ov-row-details">
       <v-col cols="12" md="6">
         <div class="tl-card">
           <div class="tl-card-hd">Upcoming</div>
@@ -824,9 +824,12 @@
   padding-bottom: var(--claro-space-2xl);
 }
 
-.owner-overview :deep(.v-row + .v-row) {
-  margin-top: var(--claro-section-gap);
-}
+/* Tiered section rhythm: tight within header group, mid between operational sections, generous before portfolio */
+.owner-overview :deep(.v-row + .v-row)             { margin-top: 20px; }
+.owner-overview :deep(.ov-row-header + .v-row)     { margin-top: 10px; }
+.owner-overview :deep(.ov-row-stats + .v-row)      { margin-top: 10px; }
+.owner-overview :deep(.ov-row-urgent + .v-row)     { margin-top: 14px; }
+.owner-overview :deep(.ov-row-details + .v-row)    { margin-top: 48px; }
 
 /* ── Page header ── */
 .ov-header {
@@ -834,7 +837,6 @@
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  margin-bottom: 4px;
 }
 
 .ov-header-left {
@@ -864,7 +866,7 @@
 /* ── Stat row ── */
 .stat-row {
   display: flex;
-  gap: 10px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 
@@ -1148,7 +1150,7 @@
 .upcoming-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
 }
 
 .upcoming-item {
@@ -1210,7 +1212,7 @@
 .action-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 6px;
 }
 
 .action-item {
@@ -1569,17 +1571,17 @@
   border-bottom: none;
 }
 
-/* Left info column with color accent border */
+/* Left info column: tonal fill from property color */
 .tl-prop-info {
   width: 200px;
   box-sizing: border-box;
   flex-shrink: 0;
-  padding: 8px 12px 8px 11px;
-  border-left: 3px solid var(--prop-color, #7367F0);
+  padding: 10px 12px;
+  background: color-mix(in srgb, var(--prop-color, #7367F0) 10%, transparent);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 3px;
+  gap: 4px;
 }
 
 .tl-prop-name {
