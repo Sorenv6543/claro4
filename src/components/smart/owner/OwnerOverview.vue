@@ -9,7 +9,7 @@
     variant="tonal"
   >
     <template #append>
-      <v-btn color="error" size="small" variant="text" @click="loadData">
+      <v-btn aria-label="Retry loading overview data" color="error" size="small" variant="text" @click="loadData">
         Retry
       </v-btn>
     </template>
