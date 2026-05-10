@@ -2,6 +2,7 @@
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
   import RangeToggle from '@/components/dumb/shared/RangeToggle.vue'
+  import { TIMELINE_DAY_START, TIMELINE_DAY_SPAN, timelinePct, timelineIsPast, fmt12 } from '@utils/timelineMath'
 
   export interface DayBarEvent {
     id: string
@@ -61,25 +62,12 @@
   }>()
 
   // ── Day-bar math: 8 AM–10 PM (14 hours) ─────────────────────────────────────
-  const DAY_START = 8
-  const DAY_SPAN = 14
-
-  function barPct (time: string): number {
-    const [h, m] = time.split(':').map(Number)
-    const frac = ((h ?? 0) + (m ?? 0) / 60 - DAY_START) / DAY_SPAN
-    return Math.max(0, Math.min(100, frac * 100))
-  }
-
+  // Constants and pure helpers come from @utils/timelineMath; only the
+  // reactive NOW percentage is kept here because it depends on live props.
   const nowPct = computed(() => {
-    const frac = (props.currentHour + props.currentMin / 60 - DAY_START) / DAY_SPAN
+    const frac = (props.currentHour + props.currentMin / 60 - TIMELINE_DAY_START) / TIMELINE_DAY_SPAN
     return Math.max(0, Math.min(100, frac * 100))
   })
-
-  function isPast (time: string): boolean {
-    const [h, m] = time.split(':').map(Number)
-    const eventMins = (h ?? 0) * 60 + (m ?? 0)
-    return eventMins < props.currentHour * 60 + props.currentMin
-  }
 
   // ── Range labels ─────────────────────────────────────────────────────────────
   const RANGE_LABELS = ['Today', '3 days', '7 days']
@@ -119,14 +107,6 @@
 
   function typeDotClass (t: string): string {
     return { checkout: 'dot--checkout', checkin: 'dot--checkin', turn: 'dot--turn' }[t] ?? ''
-  }
-
-  function fmt12 (time: string): string {
-    const [h, m] = time.split(':').map(Number)
-    if (!Number.isFinite(h) || !Number.isFinite(m)) return time
-    const period = h >= 12 ? 'PM' : 'AM'
-    const h12 = h % 12 || 12
-    return `${h12}:${String(m).padStart(2, '0')} ${period}`
   }
 
   const displayTime = computed(() => {
@@ -209,10 +189,10 @@
                 'dbar-pip--turn': ev.type === 'turn',
                 'dbar-pip--checkin': ev.type === 'checkin',
                 'dbar-pip--urgent': ev.needsClean,
-                'dbar-pip--past': isPast(ev.time),
+                'dbar-pip--past': timelineIsPast(ev.time, currentHour, currentMin),
                 'dbar-pip--active': selectedEvent?.id === ev.id,
               }"
-              :style="{ left: `calc(${barPct(ev.time)}% - 5px)` }"
+              :style="{ left: `calc(${timelinePct(ev.time)}% - 5px)` }"
               :title="`${ev.propName} · ${fmt12(ev.time)}`"
               @click.stop="openSheet(ev)"
             />

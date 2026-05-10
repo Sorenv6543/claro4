@@ -367,6 +367,7 @@
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { mapLegacyPropertyColor } from '@/utils/constants'
+  import { timelinePct, timelineNowPct, timelineIsPast, fmt12, fmtChipLabel, formatDateLabel } from '@utils/timelineMath'
   defineOptions({ name: 'OwnerOverview' })
 
   const { mobile } = useDisplay()
@@ -454,12 +455,6 @@
     const a = new Date(from + 'T00:00:00')
     const b = new Date(to + 'T00:00:00')
     return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24))
-  }
-
-  function formatDateLabel (date: string): string {
-    if (date === todayStr.value) return 'Today'
-    const d = new Date(date + 'T00:00:00')
-    return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })
   }
 
   // ── Day-bar events (today's events, used by propertyRows) ─────────────────
@@ -562,18 +557,6 @@
       })
       .filter(r => r.events.length > 0),
   )
-
-  function fmtChipLabel (time: string, type: 'checkout' | 'checkin' | 'turn'): string {
-    const [h, m] = time.split(':').map(Number)
-    if (Number.isNaN(h)) return time
-    const period = (h ?? 0) >= 12 ? 'pm' : 'am'
-    const h12 = (h ?? 0) % 12 || 12
-    const minStr = (m ?? 0) > 0 ? `:${String(m ?? 0).padStart(2, '0')}` : ''
-    const timeStr = `${h12}${minStr}${period}`
-    if (type === 'checkout') return `${timeStr} Out`
-    if (type === 'checkin') return `${timeStr} In`
-    return `${timeStr} Turn!`
-  }
 
   function deskStatusLabel (status: string): string {
     if (status === 'urgent') return 'Urgent turn'
@@ -690,9 +673,9 @@
       if (!p) continue
 
       if (b.booking_type === 'turn' && b.checkin_date >= todayStr.value && b.checkin_date <= end) {
-        events.push({ bookingId: b.id, propName: formatPropertyAddress(p, 'short'), propColor: mapLegacyPropertyColor(p.color), type: 'turn', time: b.checkin_time?.slice(0, 5) ?? '15:00', dateLabel: formatDateLabel(b.checkin_date) })
+        events.push({ bookingId: b.id, propName: formatPropertyAddress(p, 'short'), propColor: mapLegacyPropertyColor(p.color), type: 'turn', time: b.checkin_time?.slice(0, 5) ?? '15:00', dateLabel: formatDateLabel(b.checkin_date, todayStr.value) })
       } else if (b.booking_type !== 'turn' && b.checkin_date >= todayStr.value && b.checkin_date <= end) {
-        events.push({ bookingId: b.id, propName: formatPropertyAddress(p, 'short'), propColor: mapLegacyPropertyColor(p.color), type: 'checkin', time: b.checkin_time?.slice(0, 5) ?? '15:00', dateLabel: formatDateLabel(b.checkin_date) })
+        events.push({ bookingId: b.id, propName: formatPropertyAddress(p, 'short'), propColor: mapLegacyPropertyColor(p.color), type: 'checkin', time: b.checkin_time?.slice(0, 5) ?? '15:00', dateLabel: formatDateLabel(b.checkin_date, todayStr.value) })
       }
     }
 
@@ -715,14 +698,14 @@
 
       if (b.booking_type === 'turn') {
         if (b.checkin_date >= todayStr.value && b.checkin_date <= end) {
-          items.push({ bookingId: b.id, itemKey: `${b.id}-turn`, propName, propColor, type: 'turn', dateLabel: formatDateLabel(b.checkin_date) })
+          items.push({ bookingId: b.id, itemKey: `${b.id}-turn`, propName, propColor, type: 'turn', dateLabel: formatDateLabel(b.checkin_date, todayStr.value) })
         }
       } else {
         if (b.checkout_date >= todayStr.value && b.checkout_date <= end) {
-          items.push({ bookingId: b.id, itemKey: `${b.id}-checkout`, propName, propColor, type: 'checkout', dateLabel: formatDateLabel(b.checkout_date) })
+          items.push({ bookingId: b.id, itemKey: `${b.id}-checkout`, propName, propColor, type: 'checkout', dateLabel: formatDateLabel(b.checkout_date, todayStr.value) })
         }
         if (b.checkin_date >= todayStr.value && b.checkin_date <= end) {
-          items.push({ bookingId: b.id, itemKey: `${b.id}-checkin`, propName, propColor, type: 'checkin', dateLabel: formatDateLabel(b.checkin_date) })
+          items.push({ bookingId: b.id, itemKey: `${b.id}-checkin`, propName, propColor, type: 'checkin', dateLabel: formatDateLabel(b.checkin_date, todayStr.value) })
         }
       }
     }
@@ -730,25 +713,10 @@
     return items.toSorted((a, b) => a.dateLabel.localeCompare(b.dateLabel))
   })
 
-  // Desktop dbar position helpers (8 AM – 10 PM = 14 hours)
-  const DESK_DAY_START = 8
-  const DESK_DAY_SPAN = 14
-
-  function deskBarPct (time: string): number {
-    const [h, m] = time.split(':').map(Number)
-    const frac = ((h ?? 0) + (m ?? 0) / 60 - DESK_DAY_START) / DESK_DAY_SPAN
-    return Math.max(0, Math.min(100, frac * 100))
-  }
-
-  const deskNowPct = computed(() => {
-    const frac = (currentHour.value + currentMin.value / 60 - DESK_DAY_START) / DESK_DAY_SPAN
-    return Math.max(0, Math.min(100, frac * 100))
-  })
-
-  function deskIsPast (time: string): boolean {
-    const [h, m] = time.split(':').map(Number)
-    return (h ?? 0) * 60 + (m ?? 0) < currentHour.value * 60 + currentMin.value
-  }
+  // Desktop dbar position helpers — thin reactive wrappers around timelineMath utilities
+  const deskNowPct = computed(() => timelineNowPct())
+  const deskBarPct = (time: string) => timelinePct(time)
+  const deskIsPast = (time: string) => timelineIsPast(time, currentHour.value, currentMin.value)
 
   // ── Current time (for dbar NOW line) ─────────────────────────────────────
   const currentHour = ref(new Date().getHours())
@@ -827,13 +795,6 @@
     }),
   )
 
-  function fmt12 (time24: string): string {
-    const [h, m] = time24.split(':').map(Number)
-    if (Number.isNaN(h)) return time24
-    const period = h >= 12 ? 'PM' : 'AM'
-    const h12 = h % 12 || 12
-    return `${h12}:${String(m ?? 0).padStart(2, '0')} ${period}`
-  }
 
 </script>
 
