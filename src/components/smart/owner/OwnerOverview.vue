@@ -108,22 +108,22 @@
 
             <div v-if="range === 0" class="tl-legend">
               <div class="tl-legend-item">
-                <span class="tl-legend-dot" style="background: #28C76F" />
+                <span class="tl-legend-mark" style="background: #28C76F" />
                 Check-in
               </div>
 
               <div class="tl-legend-item">
-                <span class="tl-legend-sq" style="background: #7367F0" />
+                <span class="tl-legend-mark" style="background: #7367F0" />
                 Check-out
               </div>
 
               <div class="tl-legend-item">
-                <span class="tl-legend-dot" style="background: #FF9F43" />
+                <span class="tl-legend-mark" style="background: #FF9F43" />
                 Turn
               </div>
 
               <div class="tl-legend-item">
-                <span class="tl-legend-dot" style="background: #EA5455" />
+                <span class="tl-legend-mark" style="background: #EA5455" />
                 Urgent
               </div>
             </div>
@@ -132,7 +132,7 @@
           <!-- Single-day: full-width labeled chips, shared NOW scrubber -->
           <template v-if="range === 0">
             <div v-if="deskPropertyRows.length === 0" class="tl-empty">
-              <v-icon class="mr-1" size="16">mdi-calendar-check-outline</v-icon>
+              <v-icon class="mr-1" size="16" aria-hidden="true">mdi-calendar-check-outline</v-icon>
               Nothing scheduled for today
             </div>
 
@@ -188,7 +188,7 @@
                         'tl-chip--past': deskIsPast(ev.time),
                       }"
                       :style="{ left: `${deskBarPct(ev.time)}%` }"
-                      :title="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
+                      :aria-label="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
                       @click="handleDayBarOpenBooking(ev.id)"
                     >
                       {{ fmtChipLabel(ev.time, ev.type) }}
@@ -273,69 +273,62 @@
       </v-col>
     </v-row>
 
-    <!-- 2-col: Upcoming events + Action queue -->
+    <!-- Unified tabbed Upcoming section -->
     <v-row class="ov-row-details">
-      <v-col cols="12" md="6">
+      <v-col cols="12">
         <div class="tl-card">
           <div class="tl-card-hd">Upcoming</div>
 
-          <div v-if="upcomingEvents.length === 0" class="tl-empty">
-            No upcoming check-ins in this window
-          </div>
+          <v-tabs v-model="upcomingTab" density="compact" color="primary" class="bk-tabs">
+            <v-tab :value="0">All ({{ unifiedUpcomingEvents.length }})</v-tab>
+            <v-tab v-if="unassignedBookingCount > 0" :value="1">Unassigned ({{ unassignedEvents.length }})</v-tab>
+            <v-tab :value="2">Check-ins ({{ checkinEvents.length }})</v-tab>
+            <v-tab :value="3">Check-outs ({{ checkoutEvents.length }})</v-tab>
+            <v-tab :value="4">Turns ({{ turnEvents.length }})</v-tab>
+          </v-tabs>
 
-          <div v-else class="upcoming-list">
-            <button
-              v-for="ev in upcomingEvents"
-              :key="ev.bookingId"
-              class="upcoming-item"
-              @click="handleDayBarOpenBooking(ev.bookingId)"
-            >
-              <div class="upcoming-dot" :style="{ background: ev.propColor }" />
-
-              <div class="upcoming-body">
-                <div class="upcoming-prop">{{ ev.propName }}</div>
-                <div class="upcoming-meta">{{ ev.dateLabel }} · {{ fmt12(ev.time) }} · {{ ev.type === 'turn' ? 'Turn' : 'Check-in' }}</div>
+          <v-window v-model="upcomingTab">
+            <v-window-item v-for="tabIdx in [0, 1, 2, 3, 4]" :key="tabIdx" :value="tabIdx">
+              <div v-if="eventsForTab(tabIdx).length === 0" :class="tabIdx === 1 ? 'tl-empty tl-empty--ok' : 'tl-empty'">
+                <template v-if="tabIdx === 0">
+                  <v-icon size="16" class="mr-1" aria-hidden="true">mdi-calendar-check-outline</v-icon>
+                  Nothing scheduled in this window
+                </template>
+                <template v-else-if="tabIdx === 1">
+                  <v-icon size="15" color="success" class="mr-1" aria-hidden="true">mdi-check-circle-outline</v-icon>
+                  All cleaners assigned
+                </template>
+                <template v-else>
+                  <v-icon size="16" class="mr-1" aria-hidden="true">mdi-calendar-blank-outline</v-icon>
+                  Nothing here
+                </template>
               </div>
 
-              <v-icon class="upcoming-chevron" size="14">mdi-chevron-right</v-icon>
-            </button>
-          </div>
-        </div>
-      </v-col>
+              <div v-else class="bk-list">
+                <button
+                  v-for="ev in eventsForTab(tabIdx)"
+                  :key="ev.itemKey"
+                  class="bk-item"
+                  @click="handleDayBarOpenBooking(ev.bookingId)"
+                >
+                  <div class="bk-dot" :style="{ background: ev.propColor }" />
 
-      <v-col cols="12" md="6">
-        <div class="tl-card">
-          <div class="tl-card-hd">Action Queue</div>
+                  <div class="bk-body">
+                    <div class="bk-prop">{{ ev.propName }}</div>
+                    <div class="bk-meta">{{ ev.dateLabel }} · {{ fmt12(ev.time) }}</div>
+                  </div>
 
-          <div v-if="actionQueue.length === 0" class="tl-empty tl-empty--ok">
-            <v-icon class="mr-1" color="success" size="15">mdi-check-circle-outline</v-icon>
-            All cleaners assigned
-          </div>
+                  <span :class="`bk-type-chip bk-type-chip--${ev.type}`">
+                    {{ ev.type === 'checkin' ? 'Check-in' : ev.type === 'checkout' ? 'Check-out' : 'Turn' }}
+                  </span>
 
-          <div v-else class="action-list">
-            <div
-              v-for="item in actionQueue"
-              :key="item.itemKey"
-              class="action-item"
-            >
-              <div class="action-dot" :style="{ background: item.propColor }" />
+                  <span v-if="ev.needsCleaner" class="bk-unassigned-chip">Unassigned</span>
 
-              <div class="action-body">
-                <div class="action-prop">{{ item.propName }}</div>
-                <div class="action-meta">{{ item.dateLabel }} · No cleaner assigned</div>
+                  <v-icon size="14" class="bk-chevron">mdi-chevron-right</v-icon>
+                </button>
               </div>
-
-              <v-chip
-                color="primary"
-                rounded="pill"
-                size="x-small"
-                variant="flat"
-                @click="handleDayBarAssignCleaner(item.bookingId)"
-              >
-                Request
-              </v-chip>
-            </div>
-          </div>
+            </v-window-item>
+          </v-window>
         </div>
       </v-col>
     </v-row>
@@ -362,7 +355,7 @@
   import type { Property } from '@/types/property'
   import { useToday } from '@composables/shared/useToday'
   import { fmt12, fmtChipLabel, formatDateLabel, timelineIsPast, timelinePct } from '@utils/timelineMath'
-  import { computed, onMounted, onUnmounted, ref } from 'vue'
+  import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
   import { isNavigationFailure, NavigationFailureType, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import OwnerDayBar from '@/components/dumb/owner/OwnerDayBar.vue'
@@ -375,6 +368,19 @@
   import { formatPropertyAddress } from '@/types/property'
   import { mapLegacyPropertyColor } from '@/utils/constants'
   defineOptions({ name: 'OwnerOverview' })
+
+  // ── Unified event shape ────────────────────────────────────────────────────
+  interface UnifiedEvent {
+    bookingId: string
+    itemKey: string
+    propName: string
+    propColor: string
+    type: 'checkin' | 'checkout' | 'turn'
+    time: string
+    dateLabel: string
+    sortDate: string
+    needsCleaner: boolean
+  }
 
   const { mobile } = useDisplay()
   const router = useRouter()
@@ -601,6 +607,15 @@
     })
   })
 
+  const unassignedBookingCount = computed(() => {
+    const end = rangeEndDate.value
+    return myBookings.value.filter(b => {
+      if (b.status === 'cancelled' || b.assigned_cleaner_id || b.assigned_team_id) return false
+      if (b.booking_type === 'turn') return b.checkin_date >= todayStr.value && b.checkin_date <= end
+      return b.checkout_date >= todayStr.value && b.checkout_date <= end
+    }).length
+  })
+
   // Desktop stat chips
   const rangeStats = computed(() => {
     const end = rangeEndDate.value
@@ -615,7 +630,7 @@
       }
     }
     return [
-      { n: checkouts + checkins + turns, label: 'Total events', urgent: false },
+      { n: unassignedBookingCount.value, label: 'Unassigned', urgent: unassignedBookingCount.value > 0 },
       { n: checkouts, label: 'Check-outs', urgent: false },
       { n: checkins, label: 'Check-ins', urgent: false },
       { n: turns, label: 'Turns', urgent: urgentTurns.value.length > 0 },
@@ -668,55 +683,85 @@
     }),
   )
 
-  // Upcoming check-ins in the range window (for 2-col bottom)
-  const upcomingEvents = computed(() => {
+  // ── Unified upcoming events (all types, full range window) ──────────────────
+  const unifiedUpcomingEvents = computed((): UnifiedEvent[] => {
     const end = rangeEndDate.value
-    const events: Array<{ bookingId: string, propName: string, propColor: string, type: 'checkin' | 'turn', time: string, dateLabel: string }> = []
+    const events: UnifiedEvent[] = []
 
     for (const b of myBookings.value) {
       if (b.status === 'cancelled') continue
       const p = propertyMap.value.get(b.property_id)
       if (!p) continue
-
-      if (b.booking_type === 'turn' && b.checkin_date >= todayStr.value && b.checkin_date <= end) {
-        events.push({ bookingId: b.id, propName: formatPropertyAddress(p, 'short'), propColor: mapLegacyPropertyColor(p.color), type: 'turn', time: b.checkin_time?.slice(0, 5) ?? '15:00', dateLabel: formatDateLabel(b.checkin_date, todayStr.value) })
-      } else if (b.booking_type !== 'turn' && b.checkin_date >= todayStr.value && b.checkin_date <= end) {
-        events.push({ bookingId: b.id, propName: formatPropertyAddress(p, 'short'), propColor: mapLegacyPropertyColor(p.color), type: 'checkin', time: b.checkin_time?.slice(0, 5) ?? '15:00', dateLabel: formatDateLabel(b.checkin_date, todayStr.value) })
-      }
-    }
-
-    return events.toSorted((a, b) => a.dateLabel.localeCompare(b.dateLabel) || a.time.localeCompare(b.time))
-  })
-
-  // Bookings without cleaners in the range window
-  const actionQueue = computed(() => {
-    const end = rangeEndDate.value
-    const items: Array<{ bookingId: string, itemKey: string, propName: string, propColor: string, type: 'checkout' | 'checkin' | 'turn', dateLabel: string }> = []
-
-    for (const b of myBookings.value) {
-      if (b.status === 'cancelled' || b.assigned_cleaner_id || b.assigned_team_id) continue
-      const p = propertyMap.value.get(b.property_id)
-      if (!p) {
-        console.warn('[OwnerOverview] booking references unknown property', { bookingId: b.id, propertyId: b.property_id })
-      }
-      const propName = p ? formatPropertyAddress(p, 'short') : 'Unknown'
-      const propColor = p ? mapLegacyPropertyColor(p.color) : '#7367F0'
+      const propName = formatPropertyAddress(p, 'short')
+      const propColor = mapLegacyPropertyColor(p.color)
+      const needsCleaner = !b.assigned_cleaner_id && !b.assigned_team_id
 
       if (b.booking_type === 'turn') {
         if (b.checkin_date >= todayStr.value && b.checkin_date <= end) {
-          items.push({ bookingId: b.id, itemKey: `${b.id}-turn`, propName, propColor, type: 'turn', dateLabel: formatDateLabel(b.checkin_date, todayStr.value) })
+          events.push({
+            bookingId: b.id,
+            itemKey: `${b.id}-turn`,
+            propName,
+            propColor,
+            type: 'turn',
+            time: (b.checkout_time ?? '11:00').slice(0, 5),
+            dateLabel: formatDateLabel(b.checkin_date, todayStr.value),
+            sortDate: b.checkin_date,
+            needsCleaner,
+          })
         }
       } else {
         if (b.checkout_date >= todayStr.value && b.checkout_date <= end) {
-          items.push({ bookingId: b.id, itemKey: `${b.id}-checkout`, propName, propColor, type: 'checkout', dateLabel: formatDateLabel(b.checkout_date, todayStr.value) })
+          events.push({
+            bookingId: b.id,
+            itemKey: `${b.id}-checkout`,
+            propName,
+            propColor,
+            type: 'checkout',
+            time: (b.checkout_time ?? '11:00').slice(0, 5),
+            dateLabel: formatDateLabel(b.checkout_date, todayStr.value),
+            sortDate: b.checkout_date,
+            needsCleaner,
+          })
         }
         if (b.checkin_date >= todayStr.value && b.checkin_date <= end) {
-          items.push({ bookingId: b.id, itemKey: `${b.id}-checkin`, propName, propColor, type: 'checkin', dateLabel: formatDateLabel(b.checkin_date, todayStr.value) })
+          events.push({
+            bookingId: b.id,
+            itemKey: `${b.id}-checkin`,
+            propName,
+            propColor,
+            type: 'checkin',
+            time: (b.checkin_time ?? '15:00').slice(0, 5),
+            dateLabel: formatDateLabel(b.checkin_date, todayStr.value),
+            sortDate: b.checkin_date,
+            needsCleaner: false, // cleaners are needed before checkout, not before checkin
+          })
         }
       }
     }
 
-    return items.toSorted((a, b) => a.dateLabel.localeCompare(b.dateLabel))
+    return events.toSorted((a, b) => a.sortDate.localeCompare(b.sortDate) || a.time.localeCompare(b.time))
+  })
+
+  // Tab state and per-tab filtered lists
+  const upcomingTab = ref<number>(0)
+  const unassignedEvents = computed(() => unifiedUpcomingEvents.value.filter(e => e.needsCleaner))
+  const checkinEvents   = computed(() => unifiedUpcomingEvents.value.filter(e => e.type === 'checkin'))
+  const checkoutEvents  = computed(() => unifiedUpcomingEvents.value.filter(e => e.type === 'checkout'))
+  const turnEvents      = computed(() => unifiedUpcomingEvents.value.filter(e => e.type === 'turn'))
+
+  // Per-tab event lookup: plain function avoids fragile shared-reactive computed
+  function eventsForTab (idx: number): UnifiedEvent[] {
+    if (idx === 1) return unassignedEvents.value
+    if (idx === 2) return checkinEvents.value
+    if (idx === 3) return checkoutEvents.value
+    if (idx === 4) return turnEvents.value
+    return unifiedUpcomingEvents.value
+  }
+
+  // Reset to "All" tab when Unassigned count drops to zero while that tab is active
+  watch(unassignedBookingCount, (n) => {
+    if (n === 0 && upcomingTab.value === 1) upcomingTab.value = 0
   })
 
   // ── Current time (for dbar NOW line) ─────────────────────────────────────
@@ -1022,7 +1067,6 @@
   bottom: 4px;
   opacity: 0.22;
   border-radius: 2px;
-  border-left: 3px solid currentColor;
 }
 
 /* Event day markers */
@@ -1043,14 +1087,19 @@
 .tl-day-marker--checkout { background: var(--claro-primary); }
 .tl-day-marker--turn     { background: #FF9F43; }
 
-/* ── Upcoming list ── */
-.upcoming-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+/* ── Unified booking item list ── */
+.bk-tabs {
+  margin-bottom: 12px;
+  border-bottom: 1px solid var(--claro-border);
 }
 
-.upcoming-item {
+.bk-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bk-item {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1064,87 +1113,72 @@
   transition: background 0.12s;
 }
 
-.upcoming-item:hover {
-  background: var(--claro-background);
-}
+.bk-item:hover { background: var(--claro-background); }
+.bk-item:focus-visible { outline: 2px solid var(--claro-primary); outline-offset: 2px; }
 
-.upcoming-item:focus-visible {
-  outline: 2px solid var(--claro-primary);
-  outline-offset: 2px;
-}
-
-.upcoming-dot {
-  width: 8px;
-  height: 8px;
+.bk-dot {
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.upcoming-body {
+.bk-body {
   flex: 1;
   min-width: 0;
 }
 
-.upcoming-prop {
-  font-size: 13px;
+.bk-prop {
+  font-size: 14px;
   font-weight: 600;
   color: var(--claro-fg1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.3;
 }
 
-.upcoming-meta {
+.bk-meta {
   font-size: 11px;
   color: var(--claro-fg3);
   margin-top: 1px;
 }
 
-.upcoming-chevron {
+.bk-type-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 9999px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.bk-type-chip--checkin  { background: rgba(40, 199, 111, 0.14);  color: #28C76F; }
+.bk-type-chip--checkout { background: rgba(115, 103, 240, 0.12); color: var(--claro-primary); }
+.bk-type-chip--turn     { background: rgba(255, 159, 67, 0.14);  color: #FF9F43; }
+
+.bk-unassigned-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 9999px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: rgba(234, 84, 85, 0.12);
+  color: #EA5455;
+}
+
+.bk-chevron {
   opacity: 0.30;
   flex-shrink: 0;
-}
-
-/* ── Action queue ── */
-.action-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.action-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: var(--claro-radius-sm);
-}
-
-.action-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.action-body {
-  flex: 1;
-  min-width: 0;
-}
-
-.action-prop {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--claro-fg1);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.action-meta {
-  font-size: 11px;
-  color: var(--claro-fg3);
-  margin-top: 1px;
 }
 
 /* ── Urgent / OK banner ── */
@@ -1228,128 +1262,6 @@
 
 .section-action:hover {
   text-decoration: underline;
-}
-
-/* ── Property health rows ── */
-.health-list {
-  overflow: hidden;
-}
-
-.health-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--claro-border);
-}
-
-.health-row:last-child {
-  border-bottom: none;
-}
-
-.health-swatch {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--claro-radius-sm);
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.health-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.health-addr {
-  font-size: var(--claro-text-sm);
-  font-weight: 600;
-  color: var(--claro-fg1);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.health-sub {
-  font-size: var(--claro-text-xs);
-  color: var(--claro-fg3);
-  margin-top: 2px;
-}
-
-.health-state {
-  flex-shrink: 0;
-}
-
-.health-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  margin-right: 4px;
-  vertical-align: middle;
-}
-
-.health-next {
-  min-width: 140px;
-}
-
-.health-next-label {
-  font-size: var(--claro-text-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--claro-fg3);
-}
-
-.health-next-val {
-  font-size: var(--claro-text-xs);
-  color: var(--claro-fg1);
-  margin-top: 2px;
-  font-variant-numeric: tabular-nums;
-}
-
-.health-occ {
-  min-width: 80px;
-}
-
-.health-occ-label {
-  font-size: var(--claro-text-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--claro-fg3);
-}
-
-.health-occ-val {
-  font-size: var(--claro-text-sm);
-  font-weight: 700;
-  color: var(--claro-fg1);
-  font-variant-numeric: tabular-nums;
-  margin-top: 2px;
-}
-
-.health-occ-bar {
-  height: 4px;
-  background: var(--claro-border);
-  border-radius: 2px;
-  margin-top: 4px;
-  overflow: hidden;
-}
-
-.health-occ-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width var(--claro-dur-slow) var(--claro-ease);
-}
-
-/* ── Shared utils ── */
-.prop-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  flex-shrink: 0;
 }
 
 /* ── Desktop timeline redesign (labeled chips, shared NOW) ── */
@@ -1485,7 +1397,7 @@
   flex: 1;
   display: flex;
   align-items: center;
-  background: rgba(195, 185, 185, 0.21);
+  background: rgba(115, 103, 240, 0.05);
 }
 
 /* Labeled event chips */
@@ -1493,7 +1405,7 @@
   position: absolute;
   transform: translateX(-50%);
   padding: 3px 8px;
-  border-radius: 4px;
+  border-radius: var(--claro-radius-sm);
   font-size: 11px;
   font-weight: 700;
   color: #fff;
@@ -1523,7 +1435,7 @@
 
 @keyframes urgentPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(234, 84, 85, 0.55); }
-  50%       { box-shadow: 0 0 0 8px rgba(234, 84, 85, 0); }
+  50%       { box-shadow: 0 0 0 4px rgba(234, 84, 85, 0); }
 }
 
 /* NOW scrubber: one per ribbon row, all sharing the same % coordinate space as chips */
@@ -1572,19 +1484,11 @@
   white-space: nowrap;
 }
 
-.tl-legend-dot {
+.tl-legend-mark {
   display: inline-block;
-  width: 8px;
+  width: 12px;
   height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.tl-legend-sq {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 1px;
+  border-radius: 2px;
   flex-shrink: 0;
 }
 </style>

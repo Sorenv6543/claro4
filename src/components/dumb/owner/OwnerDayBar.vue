@@ -213,6 +213,26 @@
           {{ h <= 12 ? `${h}a` : `${h - 12}p` }}
         </span>
       </div>
+
+      <!-- Pip legend -->
+      <div v-if="propertyRows.length > 0" class="dbar-legend">
+        <div class="dbar-legend-item">
+          <span class="dbar-legend-pip dbar-legend-pip--checkin" />
+          <span>Check-in</span>
+        </div>
+        <div class="dbar-legend-item">
+          <span class="dbar-legend-pip dbar-legend-pip--checkout" />
+          <span>Check-out</span>
+        </div>
+        <div class="dbar-legend-item">
+          <span class="dbar-legend-pip dbar-legend-pip--turn" />
+          <span>Turn</span>
+        </div>
+        <div class="dbar-legend-item">
+          <span class="dbar-legend-pip dbar-legend-pip--urgent" />
+          <span>Unassigned</span>
+        </div>
+      </div>
     </template>
 
     <!-- ── Multi-day: per-day event blocks ───────────────────────────────────── -->
@@ -341,14 +361,14 @@
   display: flex;
   flex-direction: column;
   background: #F5F4FB;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--claro-font-family, 'Inter'), system-ui, sans-serif;
   min-height: 100%;
   overflow-y: auto;
 }
 
 /* ── Hero ──────────────────────────────────────────────────────────────────── */
 .daybar-hero {
-  background: linear-gradient(160deg, #1A1626 0%, #2D2450 60%, #4A3F8A 100%);
+  background: linear-gradient(160deg, #221B36 0%, #2F2558 60%, #3E3478 100%);
   padding: calc(env(safe-area-inset-top, 0px) + 20px) 16px 16px;
   position: relative;
   overflow: hidden;
@@ -361,7 +381,7 @@
   width: 160px;
   height: 160px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.10) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -541,7 +561,7 @@
 .dbar-pip--checkin { background: #28C76F; }
 .dbar-pip--urgent  { background: #EA5455; box-shadow: 0 0 0 2px rgba(234, 84, 85, 0.28); }
 .dbar-pip--past    { opacity: 0.35; }
-.dbar-pip--active  { box-shadow: 0 0 0 3px rgba(115, 103, 240, 0.35); }
+.dbar-pip--active  { box-shadow: 0 0 0 2px rgba(115, 103, 240, 0.25); }
 
 /* NOW line */
 .dbar-now {
@@ -578,6 +598,37 @@
   color: rgba(46, 38, 61, 0.35);
   font-variant-numeric: tabular-nums;
 }
+
+/* ── Pip legend ────────────────────────────────────────────────────────────── */
+.dbar-legend {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 6px 16px 12px;
+}
+
+.dbar-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  font-weight: 500;
+  color: rgba(46, 38, 61, 0.40);
+  letter-spacing: 0.02em;
+}
+
+.dbar-legend-pip {
+  display: inline-block;
+  width: 10px;
+  height: 16px;
+  border-radius: 1px;
+  flex-shrink: 0;
+}
+
+.dbar-legend-pip--checkin  { background: #28C76F; }
+.dbar-legend-pip--checkout { background: var(--claro-primary, #7367F0); }
+.dbar-legend-pip--turn     { background: #FF9F43; }
+.dbar-legend-pip--urgent   { background: #EA5455; }
 
 /* ── Multi-day blocks ──────────────────────────────────────────────────────── */
 .day-blocks {

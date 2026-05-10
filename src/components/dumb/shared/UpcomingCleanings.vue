@@ -513,11 +513,11 @@
   background: rgb(var(--v-theme-secondary)) !important;
   color: rgb(var(--v-theme-secondary)) !important;
   border: 1px solid rgba(var(--v-theme-on-surface), 0.12) !important;
-  border-left: 4px solid rgb(var(--v-theme-primary)) !important;
 }
 
 .upcoming-cleanings.has-urgent {
-  border-left-color: rgb(var(--v-theme-error)) !important;
+  background: rgba(var(--v-theme-error), 0.08) !important;
+  border: 1px solid rgba(var(--v-theme-error), 0.20) !important;
 }
 
 /* List theming */
@@ -541,11 +541,13 @@
 
 /* Booking type indicators */
 .turn-booking {
-  border-left: 3px solid rgb(var(--v-theme-warning)) !important;
+  background: rgba(var(--v-theme-warning), 0.08) !important;
+  border: 1px solid rgba(var(--v-theme-warning), 0.20) !important;
 }
 
 .standard-booking {
-  border-left: 3px solid rgb(var(--v-theme-primary)) !important;
+  background: rgba(var(--v-theme-primary), 0.08) !important;
+  border: 1px solid rgba(var(--v-theme-primary), 0.20) !important;
 }
 
 /* Date heading theming */
