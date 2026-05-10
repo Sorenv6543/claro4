@@ -1,4 +1,3 @@
-<!-- src/components/dumb/owner/OwnerDayBar.vue -->
 <script setup lang="ts">
   import { computed, ref, watch } from 'vue'
   import RangeToggle from '@/components/dumb/shared/RangeToggle.vue'
@@ -69,7 +68,6 @@
     return Math.max(0, Math.min(100, frac * 100))
   })
 
-  // ── Range labels ─────────────────────────────────────────────────────────────
   const RANGE_LABELS = ['Today', '3 days', '7 days']
 
   const totalEventCount = computed(() => {
@@ -91,9 +89,12 @@
   }
 
   watch(sheetOpen, open => {
-    if (!open) setTimeout(() => {
-      selectedEvent.value = null
-    }, 300)
+    if (!open) {
+      // Clear selection after the close animation finishes (~300ms)
+      setTimeout(() => {
+        selectedEvent.value = null
+      }, 300)
+    }
   })
 
   // ── Display helpers ──────────────────────────────────────────────────────────
@@ -203,7 +204,6 @@
             </div>
           </div>
 
-          <!-- Time axis (first row only) -->
         </div>
       </div>
 

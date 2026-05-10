@@ -1,4 +1,3 @@
-<!-- src/components/dumb/shared/RangeToggle.vue -->
 <script setup lang="ts">
   defineOptions({ name: 'RangeToggle' })
 

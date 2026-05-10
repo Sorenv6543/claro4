@@ -438,8 +438,7 @@
   })
 
   async function savePassword () {
-    // TODO: Implement via supabase.auth.signInWithPassword (verify current session)
-    // then supabase.auth.updateUser({ password: passwordForm.newPassword })
+    // Placeholder — password change is disabled
   }
 
   // --- Notification form ---
