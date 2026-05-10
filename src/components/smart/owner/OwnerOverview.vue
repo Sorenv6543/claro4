@@ -9,7 +9,13 @@
     variant="tonal"
   >
     <template #append>
-      <v-btn aria-label="Retry loading overview data" color="error" size="small" variant="text" @click="loadData">
+      <v-btn
+        aria-label="Retry loading overview data"
+        color="error"
+        size="small"
+        variant="text"
+        @click="loadData"
+      >
         Retry
       </v-btn>
     </template>
@@ -355,6 +361,7 @@
   import type { PropertyListEvent, PropertyListItem } from '@/components/dumb/owner/PropertyList.vue'
   import type { Property } from '@/types/property'
   import { useToday } from '@composables/shared/useToday'
+  import { fmt12, fmtChipLabel, formatDateLabel, timelineIsPast, timelinePct } from '@utils/timelineMath'
   import { computed, onMounted, onUnmounted, ref } from 'vue'
   import { isNavigationFailure, NavigationFailureType, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
@@ -367,7 +374,6 @@
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
   import { mapLegacyPropertyColor } from '@/utils/constants'
-  import { timelinePct, timelineNowPct, timelineIsPast, fmt12, fmtChipLabel, formatDateLabel } from '@utils/timelineMath'
   defineOptions({ name: 'OwnerOverview' })
 
   const { mobile } = useDisplay()
@@ -719,7 +725,7 @@
 
   // Desktop dbar position helpers — thin reactive wrappers around timelineMath utilities
   const deskNowPct = computed(() =>
-    timelinePct(`${currentHour.value}:${String(currentMin.value).padStart(2, '0')}`)
+    timelinePct(`${currentHour.value}:${String(currentMin.value).padStart(2, '0')}`),
   )
   const deskBarPct = (time: string) => timelinePct(time)
   const deskIsPast = (time: string) => timelineIsPast(time, currentHour.value, currentMin.value)
@@ -743,9 +749,9 @@
   function handleDayBarOpenBooking (eventId: string): void {
     const bookingId = eventId.replace(/-[toi]$/, '')
     router.push({ path: '/owner/bookings', query: { id: bookingId } })
-      .catch((err: unknown) => {
-        if (!isNavigationFailure(err, NavigationFailureType.duplicated)) {
-          console.warn('[OwnerOverview] navigation failed', err)
+      .catch((error: unknown) => {
+        if (!isNavigationFailure(error, NavigationFailureType.duplicated)) {
+          console.warn('[OwnerOverview] navigation failed', error)
         }
       })
   }
@@ -796,7 +802,6 @@
       }
     }),
   )
-
 
 </script>
 
