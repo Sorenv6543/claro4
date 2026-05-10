@@ -713,14 +713,16 @@
     return items.toSorted((a, b) => a.dateLabel.localeCompare(b.dateLabel))
   })
 
-  // Desktop dbar position helpers — thin reactive wrappers around timelineMath utilities
-  const deskNowPct = computed(() => timelineNowPct())
-  const deskBarPct = (time: string) => timelinePct(time)
-  const deskIsPast = (time: string) => timelineIsPast(time, currentHour.value, currentMin.value)
-
   // ── Current time (for dbar NOW line) ─────────────────────────────────────
   const currentHour = ref(new Date().getHours())
   const currentMin = ref(new Date().getMinutes())
+
+  // Desktop dbar position helpers — thin reactive wrappers around timelineMath utilities
+  const deskNowPct = computed(() =>
+    timelinePct(`${currentHour.value}:${String(currentMin.value).padStart(2, '0')}`)
+  )
+  const deskBarPct = (time: string) => timelinePct(time)
+  const deskIsPast = (time: string) => timelineIsPast(time, currentHour.value, currentMin.value)
   let nowTimer: ReturnType<typeof setInterval> | null = null
   onMounted(() => {
     nowTimer = setInterval(() => {
