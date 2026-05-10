@@ -15,12 +15,14 @@
 </script>
 
 <template>
-  <div class="range-toggle" :class="variant ?? 'light'">
+  <div class="range-toggle" :class="variant ?? 'light'" role="group" aria-label="Time range">
     <button
       v-for="(label, i) in labels"
       :key="i"
+      type="button"
       class="toggle-pill"
       :class="{ 'toggle-pill--active': modelValue === i }"
+      :aria-pressed="modelValue === i"
       @click="emit('update:modelValue', i)"
     >
       {{ label }}
@@ -32,7 +34,7 @@
 .range-toggle {
   display: inline-flex;
   gap: 3px;
-  border-radius: 9999px;
+  border-radius: 2px;
   padding: 3px;
 }
 
