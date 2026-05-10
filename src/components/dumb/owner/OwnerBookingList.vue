@@ -541,8 +541,7 @@
 /* ── Inlay ── */
 .bl-inlay {
   border-top: 1px solid var(--claro-border);
-  background: color-mix(in srgb, var(--row-color, rgb(115, 103, 240)) 3%, transparent);
-  border-left: 3px solid var(--row-color, rgba(var(--v-theme-primary), 0.3));
+  background: color-mix(in srgb, var(--row-color, #7367F0) 8%, transparent);
 }
 
 .bl-inlay-body {

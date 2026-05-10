@@ -461,8 +461,8 @@
 }
 
 .booking-turn {
-  border-left: 4px solid rgb(var(--v-theme-error)) !important;
-  background: rgb(var(--v-theme-error), 0.05);
+  background: rgba(var(--v-theme-error), 0.08) !important;
+  border: 1px solid rgba(var(--v-theme-error), 0.20) !important;
 }
 
 .booking-urgent {
@@ -470,7 +470,8 @@
 }
 
 .booking-high {
-  border-left: 4px solid rgb(var(--v-theme-warning)) !important;
+  background: rgba(var(--v-theme-warning), 0.08) !important;
+  border: 1px solid rgba(var(--v-theme-warning), 0.20) !important;
 }
 
 .booking-header {
