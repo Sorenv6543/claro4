@@ -361,14 +361,14 @@
   display: flex;
   flex-direction: column;
   background: #F5F4FB;
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: var(--claro-font-family, 'Inter'), system-ui, sans-serif;
   min-height: 100%;
   overflow-y: auto;
 }
 
 /* ── Hero ──────────────────────────────────────────────────────────────────── */
 .daybar-hero {
-  background: linear-gradient(160deg, #1A1626 0%, #2D2450 60%, #4A3F8A 100%);
+  background: linear-gradient(160deg, #221B36 0%, #2F2558 60%, #3E3478 100%);
   padding: calc(env(safe-area-inset-top, 0px) + 20px) 16px 16px;
   position: relative;
   overflow: hidden;
@@ -381,7 +381,7 @@
   width: 160px;
   height: 160px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255,255,255,0.10) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%);
   pointer-events: none;
 }
 
@@ -561,7 +561,7 @@
 .dbar-pip--checkin { background: #28C76F; }
 .dbar-pip--urgent  { background: #EA5455; box-shadow: 0 0 0 2px rgba(234, 84, 85, 0.28); }
 .dbar-pip--past    { opacity: 0.35; }
-.dbar-pip--active  { box-shadow: 0 0 0 3px rgba(115, 103, 240, 0.35); }
+.dbar-pip--active  { box-shadow: 0 0 0 2px rgba(115, 103, 240, 0.25); }
 
 /* NOW line */
 .dbar-now {
