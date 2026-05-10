@@ -846,7 +846,7 @@
 }
 
 .ov-title {
-  font-size: 20px;
+  font-size: var(--claro-text-xl);
   font-weight: 700;
   color: var(--claro-fg1);
   letter-spacing: -0.02em;
@@ -858,7 +858,7 @@
 }
 
 .ov-range-label {
-  font-size: 14px;
+  font-size: var(--claro-text-sm);
   font-weight: 500;
   color: var(--claro-primary);
 }
@@ -888,7 +888,7 @@
 }
 
 .stat-chip-n {
-  font-size: 22px;
+  font-size: var(--claro-text-xl);
   font-weight: 700;
   color: var(--claro-fg1);
   letter-spacing: -0.02em;
@@ -924,7 +924,7 @@
   gap: 6px;
   font-size: 11px;
   font-weight: 700;
-  color: #9f93b6;
+  color: var(--claro-fg3);
   text-transform: uppercase;
   letter-spacing: 0.09em;
   margin-bottom: 14px;
@@ -966,7 +966,7 @@
   gap: 6px;
   width: 130px;
   flex-shrink: 0;
-  font-size: 12px;
+  font-size: var(--claro-text-sm);
   font-weight: 500;
   color: var(--claro-fg2);
   overflow: hidden;
@@ -1309,7 +1309,7 @@
 
 .section-title {
   font-size: var(--claro-text-sm);
-  font-weight: 700;
+  font-weight: var(--claro-font-weight-semibold);
   color: var(--claro-fg2);
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -1441,7 +1441,7 @@
 }
 
 .health-next-label {
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -1460,7 +1460,7 @@
 }
 
 .health-occ-label {
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
@@ -1585,7 +1585,7 @@
 }
 
 .tl-prop-name {
-  font-size: 12px;
+  font-size: var(--claro-text-sm);
   font-weight: 700;
   color: var(--claro-fg1);
   white-space: nowrap;
@@ -1595,7 +1595,7 @@
 }
 
 .tl-prop-sub {
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   color: var(--claro-fg3);
   white-space: nowrap;
   overflow: hidden;
@@ -1710,9 +1710,9 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   color: var(--claro-fg3);
-  font-weight: 500;
+  font-weight: 400;
   white-space: nowrap;
 }
 
