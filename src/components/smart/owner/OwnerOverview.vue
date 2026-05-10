@@ -356,7 +356,7 @@
   import type { Property } from '@/types/property'
   import { useToday } from '@composables/shared/useToday'
   import { computed, onMounted, onUnmounted, ref } from 'vue'
-  import { useRouter } from 'vue-router'
+  import { isNavigationFailure, NavigationFailureType, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import OwnerDayBar from '@/components/dumb/owner/OwnerDayBar.vue'
   import PropertyList from '@/components/dumb/owner/PropertyList.vue'
@@ -405,7 +405,7 @@
           bookResult.status === 'rejected' ? 'bookings' : null,
         ].filter(Boolean).join(' and ')
         const reason = propResult.status === 'rejected' ? propResult.reason : (bookResult as PromiseRejectedResult).reason
-        console.error('Failed to load overview data:', reason)
+        console.warn('[OwnerOverview] Failed to load overview data', { failed, reason, userId: authStore.user?.id })
         loadError.value = `Failed to load ${failed}.`
       }
     } finally {
@@ -707,6 +707,9 @@
     for (const b of myBookings.value) {
       if (b.status === 'cancelled' || b.assigned_cleaner_id || b.assigned_team_id) continue
       const p = propertyMap.value.get(b.property_id)
+      if (!p) {
+        console.warn('[OwnerOverview] booking references unknown property', { bookingId: b.id, propertyId: b.property_id })
+      }
       const propName = p ? formatPropertyAddress(p, 'short') : 'Unknown'
       const propColor = p ? mapLegacyPropertyColor(p.color) : '#7367F0'
 
@@ -770,6 +773,11 @@
   function handleDayBarOpenBooking (eventId: string): void {
     const bookingId = eventId.replace(/-[toi]$/, '')
     router.push({ path: '/owner/bookings', query: { id: bookingId } })
+      .catch((err: unknown) => {
+        if (!isNavigationFailure(err, NavigationFailureType.duplicated)) {
+          console.warn('[OwnerOverview] navigation failed', err)
+        }
+      })
   }
 
   function handleDayBarAssignCleaner (_eventId: string): void {
