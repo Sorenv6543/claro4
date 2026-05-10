@@ -141,17 +141,10 @@
                 </div>
               </div>
 
-              <!-- Property rows + shared NOW scrubber spanning all rows -->
+              <!-- Property rows + per-ribbon NOW line (same coordinate space as chips) -->
               <div class="tl-rows-wrap">
                 <div
-                  class="tl-now-overlay"
-                  :style="{ left: `calc(200px + (100% - 200px) * ${(deskNowPct / 100).toFixed(4)})` }"
-                >
-                  <div class="tl-now-bubble">NOW</div>
-                </div>
-
-                <div
-                  v-for="row in deskPropertyRows"
+                  v-for="(row, rowIdx) in deskPropertyRows"
                   :key="row.propId"
                   class="tl-prop-row"
                 >
@@ -168,6 +161,14 @@
                   </div>
 
                   <div class="tl-ribbon">
+                    <!-- NOW line inside ribbon — same % coordinate space as chips -->
+                    <div
+                      class="tl-now-line-v"
+                      :style="{ left: `${deskNowPct}%` }"
+                    >
+                      <div v-if="rowIdx === 0" class="tl-now-bubble">NOW</div>
+                    </div>
+
                     <button
                       v-for="ev in row.events"
                       :key="ev.id"
@@ -1677,12 +1678,13 @@
   50%       { box-shadow: 0 0 0 8px rgba(234, 84, 85, 0); }
 }
 
-/* Shared NOW scrubber spanning all rows */
-.tl-now-overlay {
+/* NOW scrubber: one per ribbon row, all sharing the same % coordinate space as chips */
+.tl-now-line-v {
   position: absolute;
   top: 0;
   bottom: 0;
   width: 2px;
+  transform: translateX(-50%);
   background: var(--claro-primary, #7367F0);
   z-index: 10;
   pointer-events: none;
