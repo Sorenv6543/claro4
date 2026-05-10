@@ -1,4 +1,20 @@
 <template>
+  <!-- Error alert — visible on both mobile and desktop -->
+  <v-alert
+    v-if="loadError"
+    class="mb-4"
+    :text="loadError"
+    title="Couldn't load your overview"
+    type="error"
+    variant="tonal"
+  >
+    <template #append>
+      <v-btn color="error" size="small" variant="text" @click="loadData">
+        Retry
+      </v-btn>
+    </template>
+  </v-alert>
+
   <!-- ── Day-bar range: mobile layout ── -->
   <OwnerDayBar
     v-if="mobile"
@@ -19,21 +35,6 @@
   <!-- ── Desktop layout ── -->
   <v-container v-else class="owner-overview" fluid>
     <v-progress-linear v-if="loading" class="mb-4" color="primary" indeterminate />
-
-    <v-alert
-      v-if="loadError"
-      class="mb-4"
-      :text="loadError"
-      title="Couldn't load your overview"
-      type="error"
-      variant="tonal"
-    >
-      <template #append>
-        <v-btn color="error" size="small" variant="tonal" @click="loadData">
-          Retry
-        </v-btn>
-      </template>
-    </v-alert>
 
     <!-- Page header: title + range toggle -->
     <v-row class="ov-row-header">
@@ -393,19 +394,22 @@
     if (!authStore.isAuthenticated || authStore.user?.role !== 'owner') return
     loading.value = true
     loadError.value = null
-    const [propResult, bookResult] = await Promise.allSettled([
-      fetchMyProperties(),
-      fetchMyBookings(),
-    ])
-    loading.value = false
-    if (propResult.status === 'rejected' || bookResult.status === 'rejected') {
-      const failed = [
-        propResult.status === 'rejected' ? 'properties' : null,
-        bookResult.status === 'rejected' ? 'bookings' : null,
-      ].filter(Boolean).join(' and ')
-      const reason = propResult.status === 'rejected' ? propResult.reason : (bookResult as PromiseRejectedResult).reason
-      console.error('Failed to load overview data:', reason)
-      loadError.value = `Failed to load ${failed}.`
+    try {
+      const [propResult, bookResult] = await Promise.allSettled([
+        fetchMyProperties(),
+        fetchMyBookings(),
+      ])
+      if (propResult.status === 'rejected' || bookResult.status === 'rejected') {
+        const failed = [
+          propResult.status === 'rejected' ? 'properties' : null,
+          bookResult.status === 'rejected' ? 'bookings' : null,
+        ].filter(Boolean).join(' and ')
+        const reason = propResult.status === 'rejected' ? propResult.reason : (bookResult as PromiseRejectedResult).reason
+        console.error('Failed to load overview data:', reason)
+        loadError.value = `Failed to load ${failed}.`
+      }
+    } finally {
+      loading.value = false
     }
   }
 
