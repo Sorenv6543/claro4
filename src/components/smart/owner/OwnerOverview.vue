@@ -108,22 +108,22 @@
 
             <div v-if="range === 0" class="tl-legend">
               <div class="tl-legend-item">
-                <span class="tl-legend-dot" style="background: #28C76F" />
+                <span class="tl-legend-mark" style="background: #28C76F" />
                 Check-in
               </div>
 
               <div class="tl-legend-item">
-                <span class="tl-legend-sq" style="background: #7367F0" />
+                <span class="tl-legend-mark" style="background: #7367F0" />
                 Check-out
               </div>
 
               <div class="tl-legend-item">
-                <span class="tl-legend-dot" style="background: #FF9F43" />
+                <span class="tl-legend-mark" style="background: #FF9F43" />
                 Turn
               </div>
 
               <div class="tl-legend-item">
-                <span class="tl-legend-dot" style="background: #EA5455" />
+                <span class="tl-legend-mark" style="background: #EA5455" />
                 Urgent
               </div>
             </div>
@@ -305,7 +305,7 @@
 
       <v-col cols="12" md="6">
         <div class="tl-card">
-          <div class="tl-card-hd">Action Queue</div>
+          <div class="tl-card-hd">Needs Attention</div>
 
           <div v-if="actionQueue.length === 0" class="tl-empty tl-empty--ok">
             <v-icon class="mr-1" color="success" size="15">mdi-check-circle-outline</v-icon>
@@ -313,28 +313,21 @@
           </div>
 
           <div v-else class="action-list">
-            <div
+            <button
               v-for="item in actionQueue"
               :key="item.itemKey"
               class="action-item"
+              @click="handleDayBarOpenBooking(item.bookingId)"
             >
               <div class="action-dot" :style="{ background: item.propColor }" />
 
               <div class="action-body">
                 <div class="action-prop">{{ item.propName }}</div>
-                <div class="action-meta">{{ item.dateLabel }} · No cleaner assigned</div>
+                <div class="action-meta">{{ item.dateLabel }} · Open to request a cleaner</div>
               </div>
 
-              <v-chip
-                color="primary"
-                rounded="pill"
-                size="x-small"
-                variant="flat"
-                @click="handleDayBarAssignCleaner(item.bookingId)"
-              >
-                Request
-              </v-chip>
-            </div>
+              <v-icon class="action-chevron" size="14">mdi-chevron-right</v-icon>
+            </button>
           </div>
         </div>
       </v-col>
@@ -601,6 +594,16 @@
     })
   })
 
+  const unassignedBookingCount = computed(() => {
+    const end = rangeEndDate.value
+    return myBookings.value.filter(b => {
+      if (b.status === 'cancelled' || b.assigned_cleaner_id || b.assigned_team_id) return false
+      if (b.booking_type === 'turn') return b.checkin_date >= todayStr.value && b.checkin_date <= end
+      return (b.checkout_date >= todayStr.value && b.checkout_date <= end) ||
+             (b.checkin_date >= todayStr.value && b.checkin_date <= end)
+    }).length
+  })
+
   // Desktop stat chips
   const rangeStats = computed(() => {
     const end = rangeEndDate.value
@@ -615,7 +618,7 @@
       }
     }
     return [
-      { n: checkouts + checkins + turns, label: 'Total events', urgent: false },
+      { n: unassignedBookingCount.value, label: 'Unassigned', urgent: unassignedBookingCount.value > 0 },
       { n: checkouts, label: 'Check-outs', urgent: false },
       { n: checkins, label: 'Check-ins', urgent: false },
       { n: turns, label: 'Turns', urgent: urgentTurns.value.length > 0 },
@@ -1022,7 +1025,6 @@
   bottom: 4px;
   opacity: 0.22;
   border-radius: 2px;
-  border-left: 3px solid currentColor;
 }
 
 /* Event day markers */
@@ -1118,6 +1120,26 @@
   gap: 10px;
   padding: 10px 12px;
   border-radius: var(--claro-radius-sm);
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  text-align: left;
+  width: 100%;
+  transition: background 0.12s;
+}
+
+.action-item:hover {
+  background: var(--claro-background);
+}
+
+.action-item:focus-visible {
+  outline: 2px solid var(--claro-primary);
+  outline-offset: 2px;
+}
+
+.action-chevron {
+  opacity: 0.30;
+  flex-shrink: 0;
 }
 
 .action-dot {
@@ -1228,128 +1250,6 @@
 
 .section-action:hover {
   text-decoration: underline;
-}
-
-/* ── Property health rows ── */
-.health-list {
-  overflow: hidden;
-}
-
-.health-row {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--claro-border);
-}
-
-.health-row:last-child {
-  border-bottom: none;
-}
-
-.health-swatch {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--claro-radius-sm);
-  display: grid;
-  place-items: center;
-  font-weight: 700;
-  font-size: 14px;
-  flex-shrink: 0;
-}
-
-.health-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.health-addr {
-  font-size: var(--claro-text-sm);
-  font-weight: 600;
-  color: var(--claro-fg1);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.health-sub {
-  font-size: var(--claro-text-xs);
-  color: var(--claro-fg3);
-  margin-top: 2px;
-}
-
-.health-state {
-  flex-shrink: 0;
-}
-
-.health-dot {
-  display: inline-block;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  margin-right: 4px;
-  vertical-align: middle;
-}
-
-.health-next {
-  min-width: 140px;
-}
-
-.health-next-label {
-  font-size: var(--claro-text-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--claro-fg3);
-}
-
-.health-next-val {
-  font-size: var(--claro-text-xs);
-  color: var(--claro-fg1);
-  margin-top: 2px;
-  font-variant-numeric: tabular-nums;
-}
-
-.health-occ {
-  min-width: 80px;
-}
-
-.health-occ-label {
-  font-size: var(--claro-text-xs);
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: var(--claro-fg3);
-}
-
-.health-occ-val {
-  font-size: var(--claro-text-sm);
-  font-weight: 700;
-  color: var(--claro-fg1);
-  font-variant-numeric: tabular-nums;
-  margin-top: 2px;
-}
-
-.health-occ-bar {
-  height: 4px;
-  background: var(--claro-border);
-  border-radius: 2px;
-  margin-top: 4px;
-  overflow: hidden;
-}
-
-.health-occ-fill {
-  height: 100%;
-  border-radius: 2px;
-  transition: width var(--claro-dur-slow) var(--claro-ease);
-}
-
-/* ── Shared utils ── */
-.prop-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  flex-shrink: 0;
 }
 
 /* ── Desktop timeline redesign (labeled chips, shared NOW) ── */
@@ -1572,19 +1472,11 @@
   white-space: nowrap;
 }
 
-.tl-legend-dot {
+.tl-legend-mark {
   display: inline-block;
-  width: 8px;
+  width: 12px;
   height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.tl-legend-sq {
-  display: inline-block;
-  width: 8px;
-  height: 8px;
-  border-radius: 1px;
+  border-radius: 2px;
   flex-shrink: 0;
 }
 </style>

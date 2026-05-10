@@ -459,18 +459,6 @@
     opacity var(--claro-dur-slow) var(--claro-ease);
 }
 
-.pl-row-shell::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 3px;
-  background: var(--row-color, transparent);
-  z-index: 1;
-  pointer-events: none;
-}
-
 .pl-row-shell:last-child {
   border-bottom: none;
 }
