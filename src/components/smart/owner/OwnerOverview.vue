@@ -318,10 +318,10 @@
               </div>
 
               <v-chip
-                color="warning"
+                color="primary"
                 rounded="pill"
                 size="x-small"
-                variant="tonal"
+                variant="flat"
                 @click="handleDayBarAssignCleaner(item.bookingId)"
               >
                 Request

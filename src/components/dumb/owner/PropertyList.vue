@@ -189,7 +189,7 @@
             <v-chip
               :color="item.property.active ? 'primary' : undefined"
               size="x-small"
-              :variant="item.property.active ? 'tonal' : 'outlined'"
+              :variant="item.property.active ? 'flat' : 'outlined'"
             >
               {{ item.property.active ? 'Active' : 'Inactive' }}
             </v-chip>
@@ -218,7 +218,7 @@
           <v-chip
             :color="item.property.active ? 'primary' : undefined"
             size="small"
-            :variant="item.property.active ? 'tonal' : 'outlined'"
+            :variant="item.property.active ? 'flat' : 'outlined'"
           >
             {{ item.property.active ? 'Active' : 'Inactive' }}
           </v-chip>

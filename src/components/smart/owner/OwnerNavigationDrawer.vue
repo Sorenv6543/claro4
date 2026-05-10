@@ -304,7 +304,7 @@
   color: var(--claro-fg2);
   transform: scale(0.85);
   transition:
-    transform 300ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 300ms cubic-bezier(0.25, 0, 0, 1),
     color     200ms ease;
 }
 
