@@ -132,7 +132,7 @@
           <!-- Single-day: full-width labeled chips, shared NOW scrubber -->
           <template v-if="range === 0">
             <div v-if="deskPropertyRows.length === 0" class="tl-empty">
-              <v-icon class="mr-1" size="16">mdi-calendar-check-outline</v-icon>
+              <v-icon class="mr-1" size="16" aria-hidden="true">mdi-calendar-check-outline</v-icon>
               Nothing scheduled for today
             </div>
 
@@ -289,23 +289,24 @@
 
           <v-window v-model="upcomingTab">
             <v-window-item v-for="tabIdx in [0, 1, 2, 3, 4]" :key="tabIdx" :value="tabIdx">
-              <div v-if="filteredUpcoming.length === 0" :class="tabIdx === 1 ? 'tl-empty tl-empty--ok' : 'tl-empty'">
+              <div v-if="eventsForTab(tabIdx).length === 0" :class="tabIdx === 1 ? 'tl-empty tl-empty--ok' : 'tl-empty'">
                 <template v-if="tabIdx === 0">
-                  <v-icon size="16" class="mr-1">mdi-calendar-check-outline</v-icon>
+                  <v-icon size="16" class="mr-1" aria-hidden="true">mdi-calendar-check-outline</v-icon>
                   Nothing scheduled in this window
                 </template>
                 <template v-else-if="tabIdx === 1">
-                  <v-icon size="15" color="success" class="mr-1">mdi-check-circle-outline</v-icon>
+                  <v-icon size="15" color="success" class="mr-1" aria-hidden="true">mdi-check-circle-outline</v-icon>
                   All cleaners assigned
                 </template>
                 <template v-else>
+                  <v-icon size="16" class="mr-1" aria-hidden="true">mdi-calendar-blank-outline</v-icon>
                   Nothing here
                 </template>
               </div>
 
               <div v-else class="bk-list">
                 <button
-                  v-for="ev in filteredUpcoming"
+                  v-for="ev in eventsForTab(tabIdx)"
                   :key="ev.itemKey"
                   class="bk-item"
                   @click="handleDayBarOpenBooking(ev.bookingId)"
@@ -354,7 +355,7 @@
   import type { Property } from '@/types/property'
   import { useToday } from '@composables/shared/useToday'
   import { fmt12, fmtChipLabel, formatDateLabel, timelineIsPast, timelinePct } from '@utils/timelineMath'
-  import { computed, onMounted, onUnmounted, ref } from 'vue'
+  import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
   import { isNavigationFailure, NavigationFailureType, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import OwnerDayBar from '@/components/dumb/owner/OwnerDayBar.vue'
@@ -367,6 +368,19 @@
   import { formatPropertyAddress } from '@/types/property'
   import { mapLegacyPropertyColor } from '@/utils/constants'
   defineOptions({ name: 'OwnerOverview' })
+
+  // ── Unified event shape ────────────────────────────────────────────────────
+  interface UnifiedEvent {
+    bookingId: string
+    itemKey: string
+    propName: string
+    propColor: string
+    type: 'checkin' | 'checkout' | 'turn'
+    time: string
+    dateLabel: string
+    sortDate: string
+    needsCleaner: boolean
+  }
 
   const { mobile } = useDisplay()
   const router = useRouter()
@@ -671,17 +685,6 @@
   )
 
   // ── Unified upcoming events (all types, full range window) ──────────────────
-  interface UnifiedEvent {
-    bookingId: string
-    itemKey: string
-    propName: string
-    propColor: string
-    type: 'checkin' | 'checkout' | 'turn'
-    time: string
-    dateLabel: string
-    needsCleaner: boolean
-  }
-
   const unifiedUpcomingEvents = computed((): UnifiedEvent[] => {
     const end = rangeEndDate.value
     const events: UnifiedEvent[] = []
@@ -704,6 +707,7 @@
             type: 'turn',
             time: (b.checkout_time ?? '11:00').slice(0, 5),
             dateLabel: formatDateLabel(b.checkin_date, todayStr.value),
+            sortDate: b.checkin_date,
             needsCleaner,
           })
         }
@@ -717,6 +721,7 @@
             type: 'checkout',
             time: (b.checkout_time ?? '11:00').slice(0, 5),
             dateLabel: formatDateLabel(b.checkout_date, todayStr.value),
+            sortDate: b.checkout_date,
             needsCleaner,
           })
         }
@@ -729,13 +734,14 @@
             type: 'checkin',
             time: (b.checkin_time ?? '15:00').slice(0, 5),
             dateLabel: formatDateLabel(b.checkin_date, todayStr.value),
-            needsCleaner: false,
+            sortDate: b.checkin_date,
+            needsCleaner: false, // cleaners are needed before checkout, not before checkin
           })
         }
       }
     }
 
-    return events.toSorted((a, b) => a.dateLabel.localeCompare(b.dateLabel) || a.time.localeCompare(b.time))
+    return events.toSorted((a, b) => a.sortDate.localeCompare(b.sortDate) || a.time.localeCompare(b.time))
   })
 
   // Tab state and per-tab filtered lists
@@ -745,14 +751,18 @@
   const checkoutEvents  = computed(() => unifiedUpcomingEvents.value.filter(e => e.type === 'checkout'))
   const turnEvents      = computed(() => unifiedUpcomingEvents.value.filter(e => e.type === 'turn'))
 
-  const filteredUpcoming = computed((): UnifiedEvent[] => {
-    switch (upcomingTab.value) {
-      case 1:  return unassignedEvents.value
-      case 2:  return checkinEvents.value
-      case 3:  return checkoutEvents.value
-      case 4:  return turnEvents.value
-      default: return unifiedUpcomingEvents.value
-    }
+  // Per-tab event lookup: plain function avoids fragile shared-reactive computed
+  function eventsForTab (idx: number): UnifiedEvent[] {
+    if (idx === 1) return unassignedEvents.value
+    if (idx === 2) return checkinEvents.value
+    if (idx === 3) return checkoutEvents.value
+    if (idx === 4) return turnEvents.value
+    return unifiedUpcomingEvents.value
+  }
+
+  // Reset to "All" tab when Unassigned count drops to zero while that tab is active
+  watch(unassignedBookingCount, (n) => {
+    if (n === 0 && upcomingTab.value === 1) upcomingTab.value = 0
   })
 
   // ── Current time (for dbar NOW line) ─────────────────────────────────────
@@ -1163,8 +1173,8 @@
   text-transform: uppercase;
   white-space: nowrap;
   flex-shrink: 0;
-  background: rgba(255, 159, 67, 0.14);
-  color: #FF9F43;
+  background: rgba(234, 84, 85, 0.12);
+  color: #EA5455;
 }
 
 .bk-chevron {
