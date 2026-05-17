@@ -131,7 +131,7 @@
 }
 
 .card-aurora {
-  background: linear-gradient(125deg, #9E95F5 0%, #7367F0 40%, #5A4FE3 75%, #4840C8 100%);
+  background: var(--claro-gradient-primary);
   box-shadow:
     0 2px 0 rgba(255, 255, 255, 0.18) inset,
     0 -1px 0 rgba(0, 0, 0, 0.12) inset,

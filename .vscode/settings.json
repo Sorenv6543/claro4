@@ -5,10 +5,8 @@
   "hints": {
     "css-prefix-order": "off"
   },
-
   "js/ts.tsdk.path": "node_modules/typescript/lib",
   "js/ts.tsdk.promptToUseWorkspaceVersion": true,
-
   "workbench.editor.alwaysShowEditorActions": true,
   "workbench.editor.autoLockGroups": {
     "workbench.editor.processExplorer": false
@@ -26,7 +24,9 @@
         "copilot/auto",
         "copilotcli/claude-sonnet-4.6",
         "copilot/claude-opus-4.6",
-        "claude/claude-4.6"
+        "claude/claude-4.6",
+        "gemini/gemini-3.5-pro",
+        "gemini/gemini-3.5-pro-20240924",
       ]
     }
   },

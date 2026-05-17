@@ -108,22 +108,22 @@
 
             <div v-if="range === 0" class="tl-legend">
               <div class="tl-legend-item">
-                <span class="tl-legend-mark" style="background: #28C76F" />
+                <span class="tl-legend-mark tl-legend-mark--checkin" />
                 Check-in
               </div>
 
               <div class="tl-legend-item">
-                <span class="tl-legend-mark" style="background: #7367F0" />
+                <span class="tl-legend-mark tl-legend-mark--checkout" />
                 Check-out
               </div>
 
               <div class="tl-legend-item">
-                <span class="tl-legend-mark" style="background: #FF9F43" />
+                <span class="tl-legend-mark tl-legend-mark--turn" />
                 Turn
               </div>
 
               <div class="tl-legend-item">
-                <span class="tl-legend-mark" style="background: #EA5455" />
+                <span class="tl-legend-mark tl-legend-mark--urgent" />
                 Urgent
               </div>
             </div>
@@ -132,7 +132,7 @@
           <!-- Single-day: full-width labeled chips, shared NOW scrubber -->
           <template v-if="range === 0">
             <div v-if="deskPropertyRows.length === 0" class="tl-empty">
-              <v-icon class="mr-1" size="16" aria-hidden="true">mdi-calendar-check-outline</v-icon>
+              <v-icon aria-hidden="true" class="mr-1" size="16">mdi-calendar-check-outline</v-icon>
               Nothing scheduled for today
             </div>
 
@@ -147,53 +147,53 @@
                   </span>
                 </div>
               </div>
+            </div>
 
-              <!-- Property rows + per-ribbon NOW line (same coordinate space as chips) -->
-              <div class="tl-rows-wrap">
+            <!-- Property rows + per-ribbon NOW line (same coordinate space as chips) -->
+            <div class="tl-rows-wrap">
+              <div
+                v-for="(row, rowIdx) in deskPropertyRows"
+                :key="row.propId"
+                class="tl-prop-row"
+              >
                 <div
-                  v-for="(row, rowIdx) in deskPropertyRows"
-                  :key="row.propId"
-                  class="tl-prop-row"
+                  class="tl-prop-info"
+                  :style="{ '--prop-color': row.propColor }"
                 >
+                  <div class="tl-prop-name">{{ row.propName }}</div>
+                  <div v-if="row.subtitle" class="tl-prop-sub">{{ row.subtitle }}</div>
+
+                  <div class="tl-status-pill" :class="`tl-status-pill--${row.status}`">
+                    {{ deskStatusLabel(row.status) }}
+                  </div>
+                </div>
+
+                <div class="tl-ribbon">
+                  <!-- NOW line inside ribbon — same % coordinate space as chips -->
                   <div
-                    class="tl-prop-info"
-                    :style="{ '--prop-color': row.propColor }"
+                    class="tl-now-line-v"
+                    :style="{ left: `${deskNowPct}%` }"
                   >
-                    <div class="tl-prop-name">{{ row.propName }}</div>
-                    <div v-if="row.subtitle" class="tl-prop-sub">{{ row.subtitle }}</div>
-
-                    <div class="tl-status-pill" :class="`tl-status-pill--${row.status}`">
-                      {{ deskStatusLabel(row.status) }}
-                    </div>
+                    <div v-if="rowIdx === 0" class="tl-now-bubble">NOW</div>
                   </div>
 
-                  <div class="tl-ribbon">
-                    <!-- NOW line inside ribbon — same % coordinate space as chips -->
-                    <div
-                      class="tl-now-line-v"
-                      :style="{ left: `${deskNowPct}%` }"
-                    >
-                      <div v-if="rowIdx === 0" class="tl-now-bubble">NOW</div>
-                    </div>
-
-                    <button
-                      v-for="ev in row.events"
-                      :key="ev.id"
-                      class="tl-chip"
-                      :class="{
-                        'tl-chip--checkout': ev.type === 'checkout' && !ev.needsClean,
-                        'tl-chip--checkin': ev.type === 'checkin',
-                        'tl-chip--turn': ev.type === 'turn' && !ev.needsClean,
-                        'tl-chip--urgent': ev.needsClean,
-                        'tl-chip--past': deskIsPast(ev.time),
-                      }"
-                      :style="{ left: `${deskBarPct(ev.time)}%` }"
-                      :aria-label="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
-                      @click="handleDayBarOpenBooking(ev.id)"
-                    >
-                      {{ fmtChipLabel(ev.time, ev.type) }}
-                    </button>
-                  </div>
+                  <button
+                    v-for="ev in row.events"
+                    :key="ev.id"
+                    :aria-label="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
+                    class="tl-chip"
+                    :class="{
+                      'tl-chip--checkout': ev.type === 'checkout' && !ev.needsClean,
+                      'tl-chip--checkin': ev.type === 'checkin',
+                      'tl-chip--turn': ev.type === 'turn' && !ev.needsClean,
+                      'tl-chip--urgent': ev.needsClean,
+                      'tl-chip--past': deskIsPast(ev.time),
+                    }"
+                    :style="{ left: `${deskBarPct(ev.time)}%` }"
+                    @click="handleDayBarOpenBooking(ev.id)"
+                  >
+                    {{ fmtChipLabel(ev.time, ev.type) }}
+                  </button>
                 </div>
               </div>
             </div>
@@ -273,62 +273,67 @@
       </v-col>
     </v-row>
 
-    <!-- Unified tabbed Upcoming section -->
+    <!-- Unified Upcoming list -->
     <v-row class="ov-row-details">
       <v-col cols="12">
         <div class="tl-card">
           <div class="tl-card-hd">Upcoming</div>
 
-          <v-tabs v-model="upcomingTab" density="compact" color="primary" class="bk-tabs">
-            <v-tab :value="0">All ({{ unifiedUpcomingEvents.length }})</v-tab>
-            <v-tab v-if="unassignedBookingCount > 0" :value="1">Unassigned ({{ unassignedEvents.length }})</v-tab>
-            <v-tab :value="2">Check-ins ({{ checkinEvents.length }})</v-tab>
-            <v-tab :value="3">Check-outs ({{ checkoutEvents.length }})</v-tab>
-            <v-tab :value="4">Turns ({{ turnEvents.length }})</v-tab>
-          </v-tabs>
+          <div v-if="unifiedUpcomingEvents.length === 0" class="tl-empty">
+            <v-icon aria-hidden="true" class="mr-1" size="16">mdi-calendar-check-outline</v-icon>
+            Nothing scheduled in this window
+          </div>
 
-          <v-window v-model="upcomingTab">
-            <v-window-item v-for="tabIdx in [0, 1, 2, 3, 4]" :key="tabIdx" :value="tabIdx">
-              <div v-if="eventsForTab(tabIdx).length === 0" :class="tabIdx === 1 ? 'tl-empty tl-empty--ok' : 'tl-empty'">
-                <template v-if="tabIdx === 0">
-                  <v-icon size="16" class="mr-1" aria-hidden="true">mdi-calendar-check-outline</v-icon>
-                  Nothing scheduled in this window
-                </template>
-                <template v-else-if="tabIdx === 1">
-                  <v-icon size="15" color="success" class="mr-1" aria-hidden="true">mdi-check-circle-outline</v-icon>
-                  All cleaners assigned
-                </template>
-                <template v-else>
-                  <v-icon size="16" class="mr-1" aria-hidden="true">mdi-calendar-blank-outline</v-icon>
-                  Nothing here
-                </template>
-              </div>
+          <div v-else class="bk-list">
+            <div
+              v-for="ev in unifiedUpcomingEvents"
+              :key="ev.itemKey"
+              class="bk-row-shell"
+              :class="{ 'bk-row-shell--open': isUpcomingExpanded(ev.itemKey) }"
+            >
+              <button
+                :aria-expanded="isUpcomingExpanded(ev.itemKey)"
+                class="bk-item"
+                @click="toggleUpcoming(ev.itemKey)"
+              >
+                <div class="bk-dot" :style="{ background: ev.propColor }" />
 
-              <div v-else class="bk-list">
-                <button
-                  v-for="ev in eventsForTab(tabIdx)"
-                  :key="ev.itemKey"
-                  class="bk-item"
-                  @click="handleDayBarOpenBooking(ev.bookingId)"
-                >
-                  <div class="bk-dot" :style="{ background: ev.propColor }" />
+                <div class="bk-body">
+                  <div class="bk-prop">{{ ev.propName }}</div>
+                  <div class="bk-meta">{{ ev.dateLabel }} · {{ fmt12(ev.time) }}</div>
+                </div>
 
-                  <div class="bk-body">
-                    <div class="bk-prop">{{ ev.propName }}</div>
-                    <div class="bk-meta">{{ ev.dateLabel }} · {{ fmt12(ev.time) }}</div>
-                  </div>
+                <span :class="`bk-type-chip bk-type-chip--${ev.type}`">
+                  {{ ev.type === 'checkin' ? 'Check-in' : ev.type === 'checkout' ? 'Check-out' : 'Turn' }}
+                </span>
 
-                  <span :class="`bk-type-chip bk-type-chip--${ev.type}`">
-                    {{ ev.type === 'checkin' ? 'Check-in' : ev.type === 'checkout' ? 'Check-out' : 'Turn' }}
-                  </span>
+                <span v-if="ev.needsCleaner" class="bk-unassigned-chip">Unassigned</span>
 
-                  <span v-if="ev.needsCleaner" class="bk-unassigned-chip">Unassigned</span>
+                <v-icon class="bk-chevron" :class="{ 'bk-chevron--open': isUpcomingExpanded(ev.itemKey) }" size="14">
+                  mdi-chevron-down
+                </v-icon>
+              </button>
 
-                  <v-icon size="14" class="bk-chevron">mdi-chevron-right</v-icon>
-                </button>
-              </div>
-            </v-window-item>
-          </v-window>
+              <v-expand-transition>
+                <OwnerBookingInlay
+                  v-if="isUpcomingExpanded(ev.itemKey) && bookingItemFor(ev.bookingId)"
+                  :item="bookingItemFor(ev.bookingId)!"
+                  @delete="handleDeleteBooking"
+                  @edit="handleEditBooking"
+                />
+              </v-expand-transition>
+            </div>
+          </div>
+
+          <ConfirmationDialog
+            confirm-text="Delete"
+            dangerous
+            :message="`Delete this booking at ${bookingToDeleteName}?`"
+            :open="deleteConfirmOpen"
+            title="Delete Booking"
+            @cancel="deleteConfirmOpen = false"
+            @confirm="confirmDeleteBooking"
+          />
         </div>
       </v-col>
     </v-row>
@@ -350,16 +355,20 @@
 </template>
 
 <script setup lang="ts">
+  import type { BookingListItem } from '@/components/dumb/owner/OwnerBookingList.vue'
   import type { DayBarEvent, DayBarPropertyRow, RangeDayBlock } from '@/components/dumb/owner/OwnerDayBar.vue'
   import type { PropertyListEvent, PropertyListItem } from '@/components/dumb/owner/PropertyList.vue'
+  import type { Booking, ModalData } from '@/types'
   import type { Property } from '@/types/property'
   import { useToday } from '@composables/shared/useToday'
   import { fmt12, fmtChipLabel, formatDateLabel, timelineIsPast, timelinePct } from '@utils/timelineMath'
-  import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+  import { computed, onMounted, onUnmounted, ref } from 'vue'
   import { isNavigationFailure, NavigationFailureType, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
+  import OwnerBookingInlay from '@/components/dumb/owner/OwnerBookingInlay.vue'
   import OwnerDayBar from '@/components/dumb/owner/OwnerDayBar.vue'
   import PropertyList from '@/components/dumb/owner/PropertyList.vue'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import RangeToggle from '@/components/dumb/shared/RangeToggle.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
@@ -387,7 +396,7 @@
   const authStore = useAuthStore()
   const uiStore = useUIStore()
   const { myProperties, fetchMyProperties } = useOwnerProperties()
-  const { myBookings, myTodayTurns, fetchMyBookings } = useOwnerBookings()
+  const { myBookings, myTodayTurns, fetchMyBookings, deleteMyBooking } = useOwnerBookings()
 
   // ── Range toggle state ─────────────────────────────────────────────────────
   const RANGE_LABELS = ['Today', '3 days', '7 days']
@@ -612,8 +621,8 @@
     return myBookings.value.filter(b => {
       if (b.status === 'cancelled' || b.assigned_cleaner_id || b.assigned_team_id) return false
       if (b.booking_type === 'turn') return b.checkin_date >= todayStr.value && b.checkin_date <= end
-      return (b.checkout_date >= todayStr.value && b.checkout_date <= end) ||
-             (b.checkin_date >= todayStr.value && b.checkin_date <= end)
+      return (b.checkout_date >= todayStr.value && b.checkout_date <= end)
+        || (b.checkin_date >= todayStr.value && b.checkin_date <= end)
     }).length
   })
 
@@ -744,27 +753,6 @@
     return events.toSorted((a, b) => a.sortDate.localeCompare(b.sortDate) || a.time.localeCompare(b.time))
   })
 
-  // Tab state and per-tab filtered lists
-  const upcomingTab = ref<number>(0)
-  const unassignedEvents = computed(() => unifiedUpcomingEvents.value.filter(e => e.needsCleaner))
-  const checkinEvents   = computed(() => unifiedUpcomingEvents.value.filter(e => e.type === 'checkin'))
-  const checkoutEvents  = computed(() => unifiedUpcomingEvents.value.filter(e => e.type === 'checkout'))
-  const turnEvents      = computed(() => unifiedUpcomingEvents.value.filter(e => e.type === 'turn'))
-
-  // Per-tab event lookup: plain function avoids fragile shared-reactive computed
-  function eventsForTab (idx: number): UnifiedEvent[] {
-    if (idx === 1) return unassignedEvents.value
-    if (idx === 2) return checkinEvents.value
-    if (idx === 3) return checkoutEvents.value
-    if (idx === 4) return turnEvents.value
-    return unifiedUpcomingEvents.value
-  }
-
-  // Reset to "All" tab when Unassigned count drops to zero while that tab is active
-  watch(unassignedBookingCount, (n) => {
-    if (n === 0 && upcomingTab.value === 1) upcomingTab.value = 0
-  })
-
   // ── Current time (for dbar NOW line) ─────────────────────────────────────
   const currentHour = ref(new Date().getHours())
   const currentMin = ref(new Date().getMinutes())
@@ -804,6 +792,79 @@
 
   function handleDayBarAssignCleaner (_eventId: string): void {
     uiStore.addNotification('info', 'Cleaner Assignment', 'Contact your admin to assign a cleaner for this turn.')
+  }
+
+  // ── Upcoming list inline expand ──────────────────────────────────────────
+  const expandedItemKey = ref<string | null>(null)
+
+  function isUpcomingExpanded (itemKey: string): boolean {
+    return expandedItemKey.value === itemKey
+  }
+
+  function toggleUpcoming (itemKey: string): void {
+    expandedItemKey.value = expandedItemKey.value === itemKey ? null : itemKey
+  }
+
+  function bookingToItem (b: Booking): BookingListItem {
+    const property = myProperties.value.find(p => p.id === b.property_id)
+    return {
+      id: b.id,
+      propertyName: property ? formatPropertyAddress(property, 'short') : 'Unknown',
+      propertyColor: mapLegacyPropertyColor(property?.color),
+      checkinDate: b.checkin_date,
+      checkoutDate: b.checkout_date,
+      bookingType: b.booking_type as 'standard' | 'turn',
+      status: b.status,
+      guestCount: b.guest_count ?? undefined,
+      checkinTime: b.checkin_time ?? undefined,
+      checkoutTime: b.checkout_time ?? undefined,
+      notes: b.notes ?? undefined,
+      priority: b.priority ?? undefined,
+      createdAt: b.created_at ?? undefined,
+    }
+  }
+
+  function bookingItemFor (bookingId: string): BookingListItem | null {
+    const b = myBookings.value.find(x => x.id === bookingId)
+    return b ? bookingToItem(b) : null
+  }
+
+  // ── Edit / delete handlers (mirror OwnerBookings) ────────────────────────
+  const deleteConfirmOpen = ref(false)
+  const bookingToDelete = ref<Booking | null>(null)
+
+  const bookingToDeleteName = computed(() => {
+    if (!bookingToDelete.value) return ''
+    const p = myProperties.value.find(p => p.id === bookingToDelete.value!.property_id)
+    return p ? formatPropertyAddress(p, 'short') : 'this property'
+  })
+
+  function handleEditBooking (id: string): void {
+    const booking = myBookings.value.find(b => b.id === id)
+    if (booking) uiStore.openModal('eventModal', 'edit', { booking: booking as unknown as ModalData })
+  }
+
+  function handleDeleteBooking (id: string): void {
+    const booking = myBookings.value.find(b => b.id === id)
+    if (booking) {
+      bookingToDelete.value = booking
+      deleteConfirmOpen.value = true
+    }
+  }
+
+  async function confirmDeleteBooking (): Promise<void> {
+    if (!bookingToDelete.value) return
+    try {
+      await deleteMyBooking(bookingToDelete.value.id)
+      uiStore.addNotification('success', 'Deleted', 'Booking deleted successfully')
+      expandedItemKey.value = null
+    } catch (error) {
+      console.error('Failed to delete booking:', error)
+      uiStore.addNotification('error', 'Delete Failed', error instanceof Error ? error.message : 'Could not delete booking')
+    } finally {
+      deleteConfirmOpen.value = false
+      bookingToDelete.value = null
+    }
   }
 
   // ── PropertyList items for overview accordion ────────────────────────────────
@@ -1089,15 +1150,22 @@
 .tl-day-marker--turn     { background: #FF9F43; }
 
 /* ── Unified booking item list ── */
-.bk-tabs {
-  margin-bottom: 12px;
-  border-bottom: 1px solid var(--claro-border);
-}
-
 .bk-list {
   display: flex;
   flex-direction: column;
   gap: 4px;
+}
+
+.bk-row-shell {
+  border-radius: var(--claro-radius-sm);
+  overflow: hidden;
+  transition: box-shadow var(--claro-dur-slow) var(--claro-ease);
+}
+
+.bk-row-shell--open {
+  box-shadow:
+    0 0 0 1.5px rgba(115, 103, 240, 0.22),
+    0 2px 8px rgba(46, 38, 61, 0.06);
 }
 
 .bk-item {
@@ -1180,6 +1248,16 @@
 .bk-chevron {
   opacity: 0.30;
   flex-shrink: 0;
+  transition:
+    transform var(--claro-dur-slow) var(--claro-ease),
+    color var(--claro-dur-slow) var(--claro-ease),
+    opacity var(--claro-dur-slow) var(--claro-ease);
+}
+
+.bk-chevron--open {
+  opacity: 1;
+  color: var(--claro-primary);
+  transform: rotate(180deg);
 }
 
 /* ── Urgent / OK banner ── */
@@ -1385,12 +1463,14 @@
   width: fit-content;
 }
 
-.tl-status-pill--urgent   { background: rgba(234, 84, 85, 0.14);   color: #EA5455; }
-.tl-status-pill--turn     { background: rgba(255, 159, 67, 0.14);  color: #FF9F43; }
-.tl-status-pill--checkout { background: rgba(115, 103, 240, 0.12); color: var(--claro-primary); }
-.tl-status-pill--checkin  { background: rgba(40, 199, 111, 0.14);  color: #28C76F; }
-.tl-status-pill--occupied { background: rgba(30, 200, 222, 0.12);  color: #1EC8DE; }
-.tl-status-pill--vacant   { background: rgba(0, 0, 0, 0.06);       color: var(--claro-fg3); }
+/* Opaque pill backgrounds via color-mix(white) so the pill is immune to a tinted parent.
+ * Text is darkened to ~75% mix toward black so AA holds against the light tint. */
+.tl-status-pill--urgent   { background: color-mix(in srgb, #EA5455 14%, var(--claro-surface)); color: color-mix(in srgb, #EA5455 75%, black); }
+.tl-status-pill--turn     { background: color-mix(in srgb, #FF9F43 14%, var(--claro-surface)); color: color-mix(in srgb, #FF9F43 75%, black); }
+.tl-status-pill--checkout { background: color-mix(in srgb, #7367F0 12%, var(--claro-surface)); color: color-mix(in srgb, #7367F0 75%, black); }
+.tl-status-pill--checkin  { background: color-mix(in srgb, #28C76F 14%, var(--claro-surface)); color: color-mix(in srgb, #28C76F 75%, black); }
+.tl-status-pill--occupied { background: color-mix(in srgb, #1EC8DE 12%, var(--claro-surface)); color: color-mix(in srgb, #1EC8DE 75%, black); }
+.tl-status-pill--vacant   { background: var(--claro-surface);                                  color: var(--claro-fg2); border: 1px solid var(--claro-border); }
 
 /* Ribbon — event chip container */
 .tl-ribbon {
@@ -1456,7 +1536,7 @@
   top: -16px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--claro-primary, #7367F0);
+  background: var(--claro-primary-dark, #5E52EE);
   color: #fff;
   font-size: 8px;
   font-weight: 800;
@@ -1492,4 +1572,9 @@
   border-radius: 2px;
   flex-shrink: 0;
 }
+
+.tl-legend-mark--checkin  { background: var(--claro-success); }
+.tl-legend-mark--checkout { background: var(--claro-primary); }
+.tl-legend-mark--turn     { background: var(--claro-warning); }
+.tl-legend-mark--urgent   { background: var(--claro-error); }
 </style>

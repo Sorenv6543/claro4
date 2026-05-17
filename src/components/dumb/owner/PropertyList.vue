@@ -218,6 +218,7 @@
           <v-chip
             :color="item.property.active ? 'primary' : undefined"
             size="small"
+            :style="item.property.active ? { background: 'var(--claro-primary-dark)', color: '#fff' } : undefined"
             :variant="item.property.active ? 'flat' : 'outlined'"
           >
             {{ item.property.active ? 'Active' : 'Inactive' }}

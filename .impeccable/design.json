@@ -1,0 +1,245 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-05-09T00:00:00.000Z",
+  "title": "Design System: Claro",
+  "extensions": {
+    "colorMeta": {
+      "studio-violet": {
+        "role": "primary",
+        "displayName": "Studio Violet",
+        "canonical": "#7367F0",
+        "tonalRamp": ["#1a1540", "#2c258a", "#3d33c2", "#5449d8", "#7367F0", "#9E95F5", "#bab4f8", "#d8d5fb", "#F0EEFF"]
+      },
+      "studio-violet-light": {
+        "role": "primary-light",
+        "displayName": "Studio Violet Light",
+        "canonical": "#9E95F5",
+        "tonalRamp": ["#1a1540", "#2c258a", "#3d33c2", "#5449d8", "#7367F0", "#9E95F5", "#bab4f8", "#d8d5fb", "#F0EEFF"]
+      },
+      "studio-violet-deep": {
+        "role": "primary-dark",
+        "displayName": "Studio Violet Deep",
+        "canonical": "#5E52EE",
+        "tonalRamp": ["#1a1540", "#2c258a", "#3d33c2", "#5449d8", "#7367F0", "#9E95F5", "#bab4f8", "#d8d5fb", "#F0EEFF"]
+      },
+      "studio-violet-whisper": {
+        "role": "primary-tint",
+        "displayName": "Studio Violet Whisper",
+        "canonical": "#F0EEFF",
+        "tonalRamp": ["#1a1540", "#2c258a", "#3d33c2", "#5449d8", "#7367F0", "#9E95F5", "#bab4f8", "#d8d5fb", "#F0EEFF"]
+      },
+      "warm-concrete": {
+        "role": "secondary",
+        "displayName": "Warm Concrete",
+        "canonical": "#A8AAAE",
+        "tonalRamp": ["#2a2a2d", "#3f4145", "#565860", "#6e7078", "#8f9196", "#A8AAAE", "#c4c6ca", "#dcdde0", "#f4f4f6"]
+      },
+      "clearing-green": {
+        "role": "success",
+        "displayName": "Clearing Green",
+        "canonical": "#28C76F",
+        "tonalRamp": ["#0a2e1a", "#124d2d", "#197042", "#20945a", "#28C76F", "#5dd994", "#8fe5b3", "#bcf0d1", "#e8faf1"]
+      },
+      "warm-amber": {
+        "role": "warning",
+        "displayName": "Warm Amber",
+        "canonical": "#FF9F43",
+        "tonalRamp": ["#3d1e00", "#6b3600", "#9a5000", "#cc6a00", "#FF9F43", "#ffb870", "#ffce9a", "#ffe2c3", "#fff4e8"]
+      },
+      "alert-coral": {
+        "role": "error",
+        "displayName": "Alert Coral",
+        "canonical": "#EA5455",
+        "tonalRamp": ["#380d0d", "#641515", "#901c1c", "#c12526", "#EA5455", "#f08081", "#f5acad", "#f9d1d1", "#fdf0f0"]
+      },
+      "clear-sky": {
+        "role": "info",
+        "displayName": "Clear Sky",
+        "canonical": "#00CFE8",
+        "tonalRamp": ["#003038", "#005566", "#007a97", "#00a7cc", "#00CFE8", "#40dcef", "#7de8f5", "#b8f3fa", "#e5fbfe"]
+      },
+      "cool-linen": {
+        "role": "neutral-bg",
+        "displayName": "Cool Linen",
+        "canonical": "#F5F5F9",
+        "tonalRamp": ["#1a1a22", "#2e2e3d", "#44445e", "#5e5e80", "#8585a3", "#b0b0c4", "#d0d0dc", "#e6e6ed", "#F5F5F9"]
+      },
+      "white-surface": {
+        "role": "surface",
+        "displayName": "White Surface",
+        "canonical": "#FFFFFF",
+        "tonalRamp": ["#1a1a1a", "#333333", "#4d4d4d", "#737373", "#a3a3a3", "#c9c9c9", "#e0e0e0", "#f0f0f0", "#FFFFFF"]
+      },
+      "deep-ink": {
+        "role": "on-surface",
+        "displayName": "Deep Ink",
+        "canonical": "#2E263D",
+        "tonalRamp": ["#0f0b14", "#1e1628", "#2E263D", "#4a3e5e", "#675880", "#9080aa", "#b8aacc", "#d9d1e8", "#f3f0f8"]
+      },
+      "hairline": {
+        "role": "divider",
+        "displayName": "Hairline",
+        "canonical": "#E8E8E8",
+        "tonalRamp": ["#1a1a1a", "#404040", "#616161", "#888888", "#adadad", "#c7c7c7", "#d8d8d8", "#E8E8E8", "#f8f8f8"]
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Owner Aurora hero stat values only. Rarely appears." },
+      "headline": { "displayName": "Headline", "purpose": "Page section headings, modal titles, welcome greetings." },
+      "title": { "displayName": "Title", "purpose": "Card headers, section titles, navigation labels. Primary workhorse level." },
+      "body": { "displayName": "Body", "purpose": "All content text. Max 65–75ch line length in card contexts." },
+      "label": { "displayName": "Label", "purpose": "Eyebrow text, status badges, metadata, table column headers. Uppercase optional for admin contexts." }
+    },
+    "shadows": [
+      {
+        "name": "ambient-rest",
+        "token": "--claro-shadow-sm",
+        "value": "0 2px 10px rgba(0, 0, 0, 0.05)",
+        "purpose": "Default card and surface state at rest. Confirms surface exists without implying elevation."
+      },
+      {
+        "name": "primary-glow",
+        "token": "--claro-shadow-md",
+        "value": "0 4px 18px rgba(115, 103, 240, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06)",
+        "purpose": "Card hover state. Violet tint echoes the brand. Applied on interaction, never at rest."
+      },
+      {
+        "name": "structural-shadow",
+        "token": "--claro-shadow-lg",
+        "value": "0 8px 28px rgba(115, 103, 240, 0.18), 0 4px 10px rgba(0, 0, 0, 0.08)",
+        "purpose": "Navigation drawers, dialogs, modals. Reserved for surfaces that genuinely float above the page."
+      }
+    ],
+    "motion": [
+      {
+        "name": "fast",
+        "token": "--claro-dur-fast",
+        "value": "150ms ease",
+        "purpose": "Button :active scale-down. Instant tactile feedback."
+      },
+      {
+        "name": "base",
+        "token": "--claro-dur-base",
+        "value": "200ms ease",
+        "purpose": "List-item and chip hover fades. Standard state transition."
+      },
+      {
+        "name": "slow",
+        "token": "--claro-dur-slow",
+        "value": "250ms ease",
+        "purpose": "Card hover lift. Slightly slower so the shadow elevation reads clearly."
+      }
+    ],
+    "breakpoints": [
+      { "name": "xs", "value": "0px", "label": "Mobile (< 600px)" },
+      { "name": "sm", "value": "600px", "label": "Tablet (600px–959px)" },
+      { "name": "md", "value": "960px", "label": "Desktop (960px–1279px)" },
+      { "name": "lg", "value": "1280px", "label": "Large desktop (1280px–1919px)" },
+      { "name": "xl", "value": "1920px", "label": "Extra large (1920px+)" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main call-to-action. Pill-shaped contrast to 2px container system.",
+      "html": "<button class=\"ds-btn-primary\">Save Booking</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #7367F0; color: #fff; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 600; line-height: 1; padding: 10px 24px; border: none; border-radius: 9999px; cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: background 200ms ease, box-shadow 200ms ease, transform 150ms ease; } .ds-btn-primary:hover { background: #5E52EE; box-shadow: 0 4px 18px rgba(115,103,240,0.28), 0 2px 6px rgba(0,0,0,0.06); } .ds-btn-primary:focus-visible { outline: 2px solid #7367F0; outline-offset: 3px; } .ds-btn-primary:active { transform: scale(0.97); background: #4840C8; }"
+    },
+    {
+      "name": "Tonal Button",
+      "kind": "button",
+      "refersTo": "button-tonal",
+      "description": "Secondary action within a card. Violet tint without the full-color weight.",
+      "html": "<button class=\"ds-btn-tonal\">View Details</button>",
+      "css": ".ds-btn-tonal { display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: rgba(115, 103, 240, 0.16); color: #7367F0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 14px; font-weight: 600; line-height: 1; padding: 10px 24px; border: none; border-radius: 9999px; cursor: pointer; transition: background 200ms ease, transform 150ms ease; } .ds-btn-tonal:hover { background: rgba(115, 103, 240, 0.24); } .ds-btn-tonal:focus-visible { outline: 2px solid #7367F0; outline-offset: 3px; } .ds-btn-tonal:active { transform: scale(0.97); }"
+    },
+    {
+      "name": "Status Chip — Normal",
+      "kind": "chip",
+      "refersTo": "chip-tonal",
+      "description": "Normal-priority booking indicator. Tonal Studio Violet.",
+      "html": "<span class=\"ds-chip-normal\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><polyline points=\"12,6 12,12 16,14\"/></svg>Normal</span>",
+      "css": ".ds-chip-normal { display: inline-flex; align-items: center; gap: 4px; background: rgba(115, 103, 240, 0.16); color: #7367F0; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 12px; font-weight: 600; line-height: 1; padding: 4px 12px; border-radius: 9999px; letter-spacing: 0.01em; }"
+    },
+    {
+      "name": "Status Chip — Urgent",
+      "kind": "chip",
+      "refersTo": "chip-flat",
+      "description": "Urgent-priority booking indicator. Alert Coral. Admin-facing.",
+      "html": "<span class=\"ds-chip-urgent\"><svg width=\"14\" height=\"14\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><line x1=\"12\" y1=\"8\" x2=\"12\" y2=\"12\"/><line x1=\"12\" y1=\"16\" x2=\"12.01\" y2=\"16\"/></svg>URGENT</span>",
+      "css": ".ds-chip-urgent { display: inline-flex; align-items: center; gap: 4px; background: #EA5455; color: #fff; font-family: Inter, ui-sans-serif, system-ui, sans-serif; font-size: 12px; font-weight: 700; line-height: 1; padding: 4px 12px; border-radius: 9999px; letter-spacing: 0.05em; text-transform: uppercase; }"
+    },
+    {
+      "name": "Dashboard Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "Standard data container. 2px radius, flat at rest.",
+      "html": "<div class=\"ds-card\"><div class=\"ds-card-header\"><span class=\"ds-card-title\">Upcoming Cleanings</span></div><div class=\"ds-card-divider\"></div><div class=\"ds-card-body\"><p class=\"ds-card-text\">3 cleanings scheduled this week across 2 properties.</p></div></div>",
+      "css": ".ds-card { background: #fff; border-radius: 2px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: box-shadow 250ms ease; font-family: Inter, ui-sans-serif, system-ui, sans-serif; overflow: hidden; } .ds-card:hover { box-shadow: 0 4px 18px rgba(115,103,240,0.12), 0 2px 6px rgba(0,0,0,0.06); } .ds-card-header { display: flex; align-items: center; padding: 16px 24px 8px; } .ds-card-title { font-size: 15px; font-weight: 600; color: #2E263D; } .ds-card-divider { height: 1px; background: #E8E8E8; margin: 0; } .ds-card-body { padding: 20px 24px; } .ds-card-text { font-size: 15px; font-weight: 400; color: #2E263D; line-height: 1.5; margin: 0; }"
+    },
+    {
+      "name": "Stat Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "KPI metric card with icon circle and optional trend indicator.",
+      "html": "<div class=\"ds-stat-card\"><div class=\"ds-stat-body\"><div class=\"ds-stat-info\"><span class=\"ds-stat-value\">12</span><span class=\"ds-stat-label\">Active Bookings</span><span class=\"ds-stat-trend ds-stat-trend--up\"><svg width=\"12\" height=\"12\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.5\"><polyline points=\"22,7 13.5,15.5 8.5,10.5 2,17\"/><polyline points=\"16,7 22,7 22,13\"/></svg>+3 this week</span></div><div class=\"ds-stat-icon\" style=\"background: rgba(115,103,240,0.12)\"><svg width=\"22\" height=\"22\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"#7367F0\" stroke-width=\"2\"><rect x=\"3\" y=\"4\" width=\"18\" height=\"18\" rx=\"2\" ry=\"2\"/><line x1=\"16\" y1=\"2\" x2=\"16\" y2=\"6\"/><line x1=\"8\" y1=\"2\" x2=\"8\" y2=\"6\"/><line x1=\"3\" y1=\"10\" x2=\"21\" y2=\"10\"/></svg></div></div></div>",
+      "css": ".ds-stat-card { background: #fff; border-radius: 2px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); padding: 24px; font-family: Inter, ui-sans-serif, system-ui, sans-serif; transition: box-shadow 250ms ease; } .ds-stat-card:hover { box-shadow: 0 4px 18px rgba(115,103,240,0.12), 0 2px 6px rgba(0,0,0,0.06); } .ds-stat-body { display: flex; align-items: center; justify-content: space-between; gap: 16px; } .ds-stat-info { display: flex; flex-direction: column; gap: 4px; } .ds-stat-value { font-size: 28px; font-weight: 600; line-height: 1; color: #2E263D; } .ds-stat-label { font-size: 13px; color: rgba(46,38,61,0.70); line-height: 1.3; } .ds-stat-trend { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 500; margin-top: 2px; } .ds-stat-trend--up { color: #28C76F; } .ds-stat-trend--down { color: #EA5455; } .ds-stat-icon { flex-shrink: 0; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }"
+    },
+    {
+      "name": "Text Input",
+      "kind": "input",
+      "refersTo": "input",
+      "description": "Outlined text field. 2px radius, comfortable density.",
+      "html": "<div class=\"ds-field\"><label class=\"ds-field-label\" for=\"ds-input-1\">Property Name</label><div class=\"ds-field-wrap\"><input class=\"ds-field-input\" id=\"ds-input-1\" placeholder=\"e.g. Ocean View Suite\" type=\"text\"></div></div>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; font-family: Inter, ui-sans-serif, system-ui, sans-serif; } .ds-field-label { font-size: 13px; font-weight: 500; color: rgba(46,38,61,0.72); } .ds-field-wrap { position: relative; } .ds-field-input { display: block; width: 100%; background: #fff; color: #2E263D; font-family: inherit; font-size: 15px; font-weight: 400; line-height: 1.5; padding: 9px 14px; border: 1.5px solid #E8E8E8; border-radius: 2px; outline: none; box-sizing: border-box; transition: border-color 200ms ease, box-shadow 200ms ease; } .ds-field-input::placeholder { color: rgba(46,38,61,0.38); } .ds-field-input:hover { border-color: #b0b0c4; } .ds-field-input:focus { border-color: #7367F0; box-shadow: 0 0 0 3px rgba(115,103,240,0.12); }"
+    },
+    {
+      "name": "Owner Aurora Hero",
+      "kind": "custom",
+      "description": "Signature gradient hero card anchoring all owner-facing section headers. Gradient + SVG wave + frosted stat boxes.",
+      "html": "<div class=\"ds-aurora\"><svg aria-hidden=\"true\" class=\"ds-aurora-wave\" viewBox=\"0 0 800 200\" preserveAspectRatio=\"none\"><g style=\"opacity:0.7\" transform=\"scale(-1,1) translate(-800,0)\"><path d=\"M -40,150 C 120,150 180,68 310,68 S 500,160 610,110 760,48 900,78 L 900,86 C 760,56 610,118 500,169 S 310,80 180,76 C 50,72 -40,160 -40,160 Z\" fill=\"rgba(0,0,0,0.05)\"/><path d=\"M -40,138 C 120,138 180,56 310,56 S 500,146 610,96 760,36 900,66 L 900,86 C 760,56 610,118 500,169 S 310,80 180,76 C 50,72 -40,160 -40,160 Z\" fill=\"rgba(255,255,255,0.07)\"/></g></svg><div class=\"ds-aurora-left\"><h2 class=\"ds-aurora-heading\">Welcome back, Alex</h2><p class=\"ds-aurora-sub\">Here's what's happening with your properties today.</p></div><div class=\"ds-aurora-right\"><div class=\"ds-aurora-stat\"><div class=\"ds-aurora-box\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"white\" stroke-width=\"2.5\"><path d=\"M17 1l4 4-4 4\"/><path d=\"M3 11V9a4 4 0 0 1 4-4h14\"/><path d=\"M7 23l-4-4 4-4\"/><path d=\"M21 13v2a4 4 0 0 1-4 4H3\"/></svg></div><div><div class=\"ds-aurora-lbl\">Turns Today</div><div class=\"ds-aurora-val\">3</div></div></div><div class=\"ds-aurora-stat\"><div class=\"ds-aurora-box\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"white\" stroke-width=\"2.5\"><path d=\"M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4\"/><polyline points=\"16,17 21,12 16,7\"/><line x1=\"21\" y1=\"12\" x2=\"9\" y2=\"12\"/></svg></div><div><div class=\"ds-aurora-lbl\">Check-outs</div><div class=\"ds-aurora-val\">2</div></div></div></div></div>",
+      "css": ".ds-aurora { position: relative; width: 100%; display: flex; align-items: stretch; border-radius: 2px; color: #fff; overflow: hidden; isolation: isolate; background: linear-gradient(125deg, #9E95F5 0%, #7367F0 40%, #5A4FE3 75%, #4840C8 100%); box-shadow: 0 2px 0 rgba(255,255,255,0.18) inset, 0 -1px 0 rgba(0,0,0,0.12) inset, 0 8px 32px rgba(74,63,207,0.35); } .ds-aurora::before { content: ''; position: absolute; inset: 0 0 auto 0; height: 50%; background: linear-gradient(180deg, rgba(255,255,255,0.14) 0%, rgba(255,255,255,0) 100%); border-radius: 2px 2px 0 0; pointer-events: none; z-index: 2; } .ds-aurora-wave { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; } .ds-aurora-left { flex: 1 1 0; padding: 24px 28px; border-right: 1px solid rgba(255,255,255,0.10); position: relative; z-index: 1; display: flex; flex-direction: column; gap: 6px; justify-content: center; } .ds-aurora-heading { margin: 0; font-family: Inter, ui-sans-serif, sans-serif; font-size: 18px; font-weight: 700; letter-spacing: -0.02em; text-shadow: 0 1px 4px rgba(0,0,0,0.18); } .ds-aurora-sub { margin: 0; font-family: Inter, ui-sans-serif, sans-serif; font-size: 12.5px; opacity: 0.75; line-height: 1.4; } .ds-aurora-right { display: flex; align-items: center; padding: 24px 28px; gap: 28px; position: relative; z-index: 1; } .ds-aurora-stat { display: flex; align-items: center; gap: 11px; } .ds-aurora-box { width: 38px; height: 38px; border-radius: 2px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25); box-shadow: 0 2px 6px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.2) inset; } .ds-aurora-lbl { font-family: Inter, ui-sans-serif, sans-serif; font-size: 11px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: rgba(255,255,255,0.75); } .ds-aurora-val { font-family: Inter, ui-sans-serif, sans-serif; font-size: 18px; font-weight: 800; margin-top: 1px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Control Room",
+    "overview": "Claro gives property owners and operations admins complete situational awareness without demanding their full attention. An owner checking in at 9am should know within seconds: what properties have guests checking out, which cleanings are scheduled, what needs attention right now. An admin dispatching the day should see the whole board, not hunt through tabs to assemble the picture.\n\nThat goal drives every structural choice. The interface is dense enough to hold the full operational picture, disciplined enough that nothing competes with operational signal. The reference feel is Stripe Dashboard translated to property operations: typographic hierarchy does the heavy lifting, color signals status rather than personality, and whitespace is earned by separating meaningful groups, not applied uniformly.\n\nThe palette practices restraint. Studio Violet (#7367F0) is the one voice in the system. It marks actions, selections, and the primary accent dimension. Everything else serves a function: four semantic colors for operational status, two neutral surface values, one text color at four opacity steps.",
+    "keyCharacteristics": [
+      "Single-accent color discipline: Studio Violet on no more than 15% of any given screen",
+      "Near-zero border radius (2px) on all containers; pill shape reserved exclusively for interactive indicators",
+      "Typographic hierarchy through weight contrast, not size inflation",
+      "Semantic colors (green/amber/coral/cyan) reserved for operational status, never decoration",
+      "Shadows are flat at rest and ambient on interaction — elevation confirms state, not importance",
+      "Role-aware language: owner-facing copy is calm and contextual; admin-facing copy is terse and operational"
+    ],
+    "rules": [
+      { "name": "The One Voice Rule", "body": "Studio Violet is the only accent in the system. On any given screen, it covers no more than 15% of the surface area. When it appears everywhere, it signals nothing.", "section": "colors" },
+      { "name": "The Semantic Lock Rule", "body": "Clearing Green, Warm Amber, Alert Coral, and Clear Sky are reserved exclusively for operational status. They are never used to color a section heading, highlight a feature, or decorate a non-status element.", "section": "colors" },
+      { "name": "The Weight-First Rule", "body": "Express hierarchy through weight contrast (≥1.25 ratio between adjacent steps) before reaching for size. A card title at 18px/600 reads as clearly dominant over 15px/400 body without size inflation.", "section": "typography" },
+      { "name": "The Role-Register Rule", "body": "Admin-facing labels may use uppercase + tighter letter-spacing for operational terseness. Owner-facing labels use sentence case and warmer language. Same semantic content, different language register.", "section": "typography" },
+      { "name": "The State-Trigger Rule", "body": "Shadows confirm state changes. A card does not receive a stronger shadow because its content is more important — it receives a stronger shadow because the user is interacting with it.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use 2px radius on all container surfaces: cards, dialogs, drawers, expansion panels, form fields.",
+      "Do use pill shape (9999px) on all interactive indicators: buttons, chips, badges, navigation pills, range toggles.",
+      "Do keep Studio Violet to no more than 15% of any given screen surface.",
+      "Do express hierarchy through weight contrast (600 vs. 400) before escalating font sizes.",
+      "Do use --claro-shadow-sm at rest and --claro-shadow-md on hover via Vuetify's elevation prop or the global shadow token.",
+      "Do assign semantic colors by operational meaning: Clearing Green for confirmed/done, Warm Amber for caution/standard, Alert Coral for urgent/error, Clear Sky for informational/low.",
+      "Do write role-aware labels: owner-facing text is calm ('Needs Attention'), admin-facing text is terse ('URGENT')."
+    ],
+    "donts": [
+      "Don't use generic SaaS cream aesthetics: no cream or sand backgrounds, no Geist or Satoshi font, no border-only cards without a white surface fill.",
+      "Don't create cluttered admin panels: no cramming unrelated controls onto a single row, no data tables without adequate row breathing room (minimum 40px row height).",
+      "Don't animate for personality: no pulsing gradients, no animated counter numbers, no scroll-driven entrance choreography.",
+      "Don't add raw box-shadow on individual components. Use --claro-shadow-sm/md/lg or Vuetify's elevation prop.",
+      "Don't round any container above 2px. Cards, modals, drawers, panels: 2px, always.",
+      "Don't use border-left greater than 1px as a colored accent stripe on cards or list items.",
+      "Don't use gradient text (background-clip: text with a gradient).",
+      "Don't repurpose semantic colors decoratively: Clearing Green is not an active tab accent, Warm Amber is not a featured section highlight.",
+      "Don't use glassmorphism (backdrop-filter blur) except in the Owner Aurora Hero stat boxes."
+    ]
+  }
+}

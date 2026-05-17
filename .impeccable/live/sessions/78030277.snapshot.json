@@ -1,0 +1,25 @@
+{
+  "id": "78030277",
+  "phase": "variants_ready",
+  "pageUrl": "/owner/overview",
+  "sourceFile": "src/components/smart/owner/OwnerOverview.vue",
+  "expectedVariants": 3,
+  "arrivedVariants": 0,
+  "visibleVariant": 0,
+  "paramValues": {},
+  "pendingEventSeq": null,
+  "pendingEvent": null,
+  "deliveryLease": null,
+  "checkpointRevision": 22,
+  "activeOwner": "7ae78013",
+  "sourceMarkers": {},
+  "fallbackMode": null,
+  "annotationArtifacts": [],
+  "diagnostics": [
+    {
+      "error": "stale_checkpoint_ignored",
+      "revision": 1
+    }
+  ],
+  "updatedAt": "2026-05-10T04:49:30.001Z"
+}

@@ -64,9 +64,9 @@
 }
 
 .dark .toggle-pill--active {
-  background: #7367F0;
+  background: var(--claro-primary);
   color: #fff;
-  border-color: #7367F0;
+  border-color: var(--claro-primary);
 }
 
 .dark .toggle-pill:not(.toggle-pill--active):hover {
