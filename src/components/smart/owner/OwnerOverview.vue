@@ -621,8 +621,7 @@
     return myBookings.value.filter(b => {
       if (b.status === 'cancelled' || b.assigned_cleaner_id || b.assigned_team_id) return false
       if (b.booking_type === 'turn') return b.checkin_date >= todayStr.value && b.checkin_date <= end
-      return (b.checkout_date >= todayStr.value && b.checkout_date <= end)
-        || (b.checkin_date >= todayStr.value && b.checkin_date <= end)
+      return b.checkout_date >= todayStr.value && b.checkout_date <= end
     }).length
   })
 
