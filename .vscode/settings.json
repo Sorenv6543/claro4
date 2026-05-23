@@ -26,6 +26,8 @@
         "copilotcli/claude-sonnet-4.6",
         "copilot/claude-opus-4.6",
         "claude/claude-4.6",
+        "gemini/gemini-3.5-pro",
+        "gemini/gemini-3.5-pro-20240924"
       ]
     }
   },
