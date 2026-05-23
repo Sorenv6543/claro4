@@ -220,14 +220,17 @@
           <span class="dbar-legend-pip dbar-legend-pip--checkin" />
           <span>Check-in</span>
         </div>
+
         <div class="dbar-legend-item">
           <span class="dbar-legend-pip dbar-legend-pip--checkout" />
           <span>Check-out</span>
         </div>
+
         <div class="dbar-legend-item">
           <span class="dbar-legend-pip dbar-legend-pip--turn" />
           <span>Turn</span>
         </div>
+
         <div class="dbar-legend-item">
           <span class="dbar-legend-pip dbar-legend-pip--urgent" />
           <span>Unassigned</span>
@@ -693,9 +696,9 @@
   background: var(--claro-primary, #7367F0);
 }
 
-.dot--checkout { background: #7367F0; }
-.dot--checkin  { background: #28C76F; }
-.dot--turn     { background: #FF9F43; }
+.dot--checkout { background: var(--claro-primary); }
+.dot--checkin  { background: var(--claro-success); }
+.dot--turn     { background: var(--claro-warning); }
 
 .day-evt-body {
   flex: 1;

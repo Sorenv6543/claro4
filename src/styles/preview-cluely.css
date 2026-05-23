@@ -1,0 +1,140 @@
+/**
+ * preview-cluely.css — Token overlay for the "Cluely" external design system
+ * (light variant). Cluely's source spec is dark/cinematic; this preview keeps
+ * the blue accent + Geist + softer Cluely radii but lifts surfaces to light.
+ *
+ * Activates when <html data-theme="preview-cluely">.
+ * Toggle via the usePreviewTheme composable: ?theme=preview-cluely (sticky in localStorage).
+ *
+ * Scope intentionally limited to token overrides:
+ *   - Palette → light zinc base + electric blue accent (#3C83F6)
+ *   - Typography family → Geist (loaded via Google Fonts in index.html)
+ *   - Radii → Cluely's softer scale (sm 4 / md 8 / lg 12)
+ *   - Shadows → ambient lift (not the dark-mode atmospheric variant)
+ *
+ * NOT overridden (preserved from base for product fidelity):
+ *   - Spacing scale (Cluely's md=28/xl=156 is a marketing scale; would break data density)
+ *   - Status colors (Cluely tokens only specify error; green/amber/coral/cyan kept for operational signal)
+ *   - Type scale sizes (kept; only family changes)
+ */
+
+:root[data-theme="preview-cluely"] {
+  /* ─── Palette ─────────────────────────────────────────────────────── */
+  --claro-primary:        #3C83F6;
+  --claro-primary-light:  #6AA0F8;
+  --claro-primary-dark:   #2563D8;
+  --claro-primary-tint:   #EFF5FE;
+  --claro-secondary:      #71717A;
+  --claro-accent:         rgba(60, 131, 246, 0.10);
+  --claro-on-primary:     #FFFFFF;
+
+  /* Surfaces — light zinc base */
+  --claro-background:      #FAFAFA;
+  --claro-surface:         #FFFFFF;
+  --claro-surface-variant: #F4F4F5;
+  --claro-card-bg:         #FFFFFF;
+
+  /* Semantic — Cluely only ships an error color; green/amber/cyan retained for operational signal */
+  --claro-error:           #EF4444;
+
+  /* Tonal variants (16% over light base) */
+  --claro-primary-tonal:   rgba(60, 131, 246, 0.14);
+  --claro-success-tonal:   rgba(40, 199, 111, 0.14);
+  --claro-warning-tonal:   rgba(255, 159, 67, 0.14);
+  --claro-error-tonal:     rgba(239, 68, 68, 0.14);
+  --claro-info-tonal:      rgba(0, 207, 232, 0.14);
+
+  /* Domain-specific */
+  --claro-turn-urgent:       #EF4444;
+  --claro-turn-standard:     #FF9F43;
+  --claro-booking-standard:  #28C76F;
+
+  /* ─── Text (4-step alpha scale, zinc-900 base for the warmer-cool feel) ─── */
+  --claro-fg1: #18181B;
+  --claro-fg2: rgba(24, 24, 27, 0.72);
+  --claro-fg3: rgba(24, 24, 27, 0.55);
+  --claro-fg4: rgba(24, 24, 27, 0.30);
+
+  /* ─── Borders ────────────────────────────────────────────────────── */
+  --claro-divider:        #E4E4E7;
+  --claro-border:         #E4E4E7;
+  --claro-border-strong:  #D4D4D8;
+
+  /* ─── Typography family (sizes preserved) ────────────────────────── */
+  --claro-font-family: 'Geist', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* ─── Radii — Cluely's softer scale ──────────────────────────────── */
+  --claro-radius-sm:   4px;
+  --claro-radius-md:   8px;
+  --claro-radius-lg:   12px;
+  --claro-radius-card: 4px;
+  /* pill stays */
+
+  /* ─── Shadows — ambient lift, no brand-tinted glow ───────────────── */
+  --claro-shadow-sm: 0 1px 2px rgba(24, 24, 27, 0.05), 0 1px 3px rgba(24, 24, 27, 0.04);
+  --claro-shadow-md: 0 4px 14px rgba(24, 24, 27, 0.07), 0 1px 3px rgba(24, 24, 27, 0.05);
+  --claro-shadow-lg: 0 12px 32px rgba(24, 24, 27, 0.10), 0 4px 8px rgba(24, 24, 27, 0.06);
+
+  /* ─── Aurora hero gradient — recolored to Cluely blue ────────────── */
+  --claro-gradient-primary: linear-gradient(
+    135deg,
+    #6AA0F8 0%,
+    #3C83F6 50%,
+    #2563D8 100%
+  );
+}
+
+/* Page background uses the light zinc base. */
+html[data-theme="preview-cluely"],
+html[data-theme="preview-cluely"] body {
+  background: #FAFAFA;
+  color: #18181B;
+}
+
+/* Hardcoded hex sweeps — components that bake their accent color into scoped CSS
+ * won't pick up CSS-var overrides. The most visible offenders are remapped here
+ * under the preview scope so the theme reads cleanly. Anything not in this list
+ * will still show its original color in the preview. */
+html[data-theme="preview-cluely"] .bk-type-chip--checkout {
+  background: rgba(60, 131, 246, 0.12);
+  color: #2563D8;
+}
+html[data-theme="preview-cluely"] .tl-status-pill--checkout {
+  background: color-mix(in srgb, #3C83F6 12%, var(--claro-surface));
+  color: color-mix(in srgb, #3C83F6 75%, black);
+}
+html[data-theme="preview-cluely"] .triage-banner--urgent {
+  background: rgba(239, 68, 68, 0.10);
+  border-color: rgba(239, 68, 68, 0.25);
+}
+html[data-theme="preview-cluely"] .triage-icon--urgent {
+  background: rgba(239, 68, 68, 0.16);
+}
+
+/* Re-tint shadows that baked Studio Violet rgba into the literal */
+html[data-theme="preview-cluely"] .bk-row-shell--open {
+  box-shadow:
+    0 0 0 1.5px rgba(60, 131, 246, 0.22),
+    0 2px 8px rgba(24, 24, 27, 0.06);
+}
+
+/* Vuetify component shape overrides — theme-conditional so the pill→8px
+ * button shift is a preview-only experiment, not a global change. Chips stay
+ * pill (Cluely components.chip = rounded.full). Cards already pick up the
+ * new radius via --claro-radius-card. */
+html[data-theme="preview-cluely"] .v-btn.rounded-pill {
+  border-radius: 8px;
+}
+
+/* Aurora hero — editorial-serif probe.
+ * Cluely's guidance: "EB Garamond only for big marketing headlines." The Owner
+ * Aurora hero greeting ("Welcome back, {name}") is the closest analog in this
+ * product surface, so it's the right place to test whether editorial typography
+ * lands or feels mismatched in operational context. Body text stays Geist. */
+html[data-theme="preview-cluely"] .hero-h {
+  font-family: 'EB Garamond', Georgia, serif;
+  font-weight: 500;
+  font-size: 28px;
+  letter-spacing: -0.5px;
+  line-height: 1.15;
+}

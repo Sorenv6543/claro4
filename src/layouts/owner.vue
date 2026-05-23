@@ -472,7 +472,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--claro-primary, #7367F0);
+  background: var(--claro-primary-dark, #5E52EE);
   color: #fff;
   display: flex;
   align-items: center;

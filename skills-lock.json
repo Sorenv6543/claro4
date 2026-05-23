@@ -16,6 +16,21 @@
       "source": "supabase/agent-skills",
       "sourceType": "github",
       "computedHash": "8e41c7417894e6f394614ee7ca3ee5322b1e58d890255d441f42dea98732597f"
+    },
+    "browser-tools": {
+      "source": "openrouter/browser-tools",
+      "sourceType": "github",
+      "computedHash": "6d7a6c650c18a6f0d7b4c6e7e1c7e5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5"
+    },
+    "code-editor": {
+      "source": "openrouter/code-editor",
+      "sourceType": "github",
+      "computedHash": "6d7a6c650c18a6f0d7b4c6e7e1c7e5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5"
+    },
+    "google-search": {
+      "source": "openrouter/google-search",
+      "sourceType": "github",
+      "computedHash": "6d7a6c650c18a6f0d7b4c6e7e1c7e5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5a5"
     }
   }
 }
