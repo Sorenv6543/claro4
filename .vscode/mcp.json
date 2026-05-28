@@ -1,6 +1,16 @@
 {
   "servers": {
-  "chrome-devtools": {
+    "github": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-github"
+      ],
+      "env": {
+          "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "chrome-devtools": {
     "command": "npx",
     "args": [
       "-y",

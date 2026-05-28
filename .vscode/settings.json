@@ -18,6 +18,7 @@
   "workbench.editor.enablePreviewFromQuickOpen": true,
   "workbench.editor.revealIfOpen": true,
   "workbench.editor.sharedViewState": true,
+  "geminicodeassist.enable": true,
   "chat.mcp.serverSampling": {
     "claro4/.vscode/mcp.json: vuetify-mcp": {
       "allowedModels": [
@@ -25,13 +26,11 @@
         "copilotcli/claude-sonnet-4.6",
         "copilot/claude-opus-4.6",
         "claude/claude-4.6",
-        "gemini/gemini-3.5-pro",
-        "gemini/gemini-3.5-pro-20240924",
       ]
     }
   },
   "chat.mcp.discovery.enabled": {
     "claude-desktop": true
-},
+  },
   "svg.preview.background": "editor"
 }
