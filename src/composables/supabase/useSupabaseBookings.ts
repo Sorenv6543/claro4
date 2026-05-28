@@ -279,6 +279,18 @@ export function useSupabaseBookings () {
    * (The `one_assignment_type` constraint enforces at most one of
    * assigned_cleaner_id / assigned_team_id / assigned_group_ids.)
    *
+   * Staleness caveat: the pre-filter relies on the local booking store
+   * being fresh. If a concurrent admin assigns a team/group to one of
+   * the eligibleIds between our snapshot and the SQL `.in()` call, the
+   * CHECK constraint will abort the entire batch (PostgreSQL UPDATE
+   * statements are atomic — the planner has no "skip violating rows"
+   * mode). The local store is refreshed by realtime subscription, but
+   * there is still a TOCTOU window between the JS pre-filter and the
+   * server-side UPDATE. Callers should ensure realtime sync is
+   * connected before calling, and treat batch failures as a signal to
+   * re-fetch + retry. The optimistic-update lifecycle restores all
+   * snapshots correctly on rollback, so retry is safe.
+   *
    * Returns { updated, skipped } on success (including the all-skipped
    * no-op case where eligibleIds is empty). Skip reasons:
    * - `'not found in local store'` — caller passed an ID not in the booking store

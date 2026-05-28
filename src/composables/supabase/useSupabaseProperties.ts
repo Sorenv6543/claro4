@@ -36,6 +36,25 @@ export function useSupabaseProperties () {
       if (fetchError) {
         throw fetchError
       }
+
+      // Cap-hit warning. When the response length equals the cap, the
+      // table almost certainly contains more rows than we loaded — older
+      // properties (lowest updated_at) are silently truncated. False
+      // positives at exactly N rows are acceptable; the cost of a stray
+      // warning is far below the cost of discovering the cap via a
+      // support ticket.
+      // TODO: when an ops-side logger lands (PR #28 review N3), route
+      // this through it so the warning reaches Sentry instead of just
+      // the dev console.
+      if (data && data.length === PROPERTIES_FETCH_LIMIT) {
+        console.warn(
+          `[useSupabaseProperties] hit row cap (${PROPERTIES_FETCH_LIMIT}). `
+          + 'Older properties may be truncated from the local store. '
+          + 'Pagination is required at this scale — see the comment over '
+          + 'PROPERTIES_FETCH_LIMIT for the migration path.',
+        )
+      }
+
       propertyStore.setProperties((data ?? []) as Property[])
       subscribe() // Only subscribe after successful fetch
     } catch (error) {

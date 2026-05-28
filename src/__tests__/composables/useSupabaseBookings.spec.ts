@@ -684,6 +684,19 @@ describe('useSupabaseBookings', () => {
       expect(inMock).not.toHaveBeenCalled()
     })
 
+    it('handles empty bookingIds array without calling SQL or producing skipped entries', async () => {
+      const { updateMock, inMock } = wireBulkUpdateChain({ data: null, error: null })
+
+      const composable = await getComposable()
+
+      const result = await composable.bulkAssignCleaner([], 'cleaner-X')
+
+      expect(result.updated).toHaveLength(0)
+      expect(result.skipped).toHaveLength(0)
+      expect(updateMock).not.toHaveBeenCalled()
+      expect(inMock).not.toHaveBeenCalled()
+    })
+
     it('optimistically updates store and resolves with all eligible bookings on success', async () => {
       wireBulkUpdateChain({ data: null, error: null })
 

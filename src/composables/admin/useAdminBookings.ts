@@ -447,6 +447,15 @@ export function useAdminBookings () {
       return { success: [], failed: bookingIds }
     }
 
+    // Empty input is a no-op, not a failure — bail before touching loading
+    // / error / success refs. Without this guard, the function falls through
+    // to the defensive `else` at the end of the try block and shows a
+    // misleading "Bulk assignment failed: no operation performed" toast.
+    // (PR #28 Copilot review.)
+    if (bookingIds.length === 0) {
+      return { success: [], failed: [] }
+    }
+
     loading.value = true
     error.value = null
     success.value = null
@@ -456,12 +465,33 @@ export function useAdminBookings () {
       const successIds = updated.map(b => b.id)
       const skippedIds = skipped.map(s => s.id)
 
+      // Aggregate skip reasons so the user-visible message is actionable
+      // instead of a vague "N skipped" — e.g. "3 had conflicting team/group
+      // assignment, 2 not found in local store" tells the admin whether to
+      // refresh the page or unassign a team first.
+      let skipSummary = ''
+      if (skipped.length > 0) {
+        const counts = new Map<string, number>()
+        for (const { reason } of skipped) {
+          counts.set(reason, (counts.get(reason) ?? 0) + 1)
+        }
+        skipSummary = [...counts].map(([r, n]) => `${n} ${r}`).join(', ')
+      }
+
       if (successIds.length > 0) {
         success.value = skippedIds.length > 0
-          ? `Bulk assignment completed: ${successIds.length} successful, ${skippedIds.length} skipped`
+          ? `Bulk assignment completed: ${successIds.length} successful, ${skippedIds.length} skipped (${skipSummary})`
           : `Bulk assignment completed: ${successIds.length} successful`
+      } else if (skippedIds.length > 0) {
+        // All-skipped: this is a no-op (user selected ineligible rows),
+        // not a failure. Showing it as an error misleads the admin into
+        // thinking something went wrong when nothing was attempted.
+        success.value = `No bookings eligible: ${skipSummary}`
       } else {
-        error.value = `Bulk assignment failed: ${skippedIds.length} bookings could not be assigned`
+        // Defensive — nothing succeeded, nothing skipped, no error thrown.
+        // Shouldn't happen given the supabase layer's contract, but if it
+        // does we want a clear signal rather than a misleading toast.
+        error.value = 'Bulk assignment failed: no operation performed'
       }
 
       // Log per-id skip reasons for debugging
