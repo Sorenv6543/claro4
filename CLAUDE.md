@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Multi-tenant property cleaning scheduler with role-based Owner/Admin UI. Core product: guest-stay booking plus cleaning operations. Tech stack: Vue 3 + Vite + Vuetify 4, Pinia for state, Supabase for auth/Postgres/RLS/realtime. FullCalendar for scheduling views.
 
-Two user types: **Property Owners** (30-40 clients with personal property/booking management) and **Business Admin** (1 user with system-wide operations and cleaner management).
+Three user roles: **Property Owners** (30-40 clients with personal property/booking management), **Business Admin** (1 user with system-wide operations and cleaner management), and **Cleaners** (assigned staff — auto-redirected to `/auth/no-access` on login; no app UI).
 
 ## Commands
 
@@ -18,6 +18,7 @@ pnpm dev                    # Start dev server (with --host)
 pnpm test                   # Run tests in watch mode
 pnpm test:run               # Run tests once
 pnpm test -- path/to/file   # Run single test file
+pnpm test:ui                # Open Vitest browser UI
 pnpm test:coverage          # Run with coverage
 pnpm test:performance       # Performance regression tests
 
@@ -32,7 +33,16 @@ pnpm lint                   # ESLint with auto-fix
 
 # Analysis
 pnpm analyze:bundle         # Bundle size analysis
+pnpm check:bundle           # Check bundle against size budgets
 pnpm perf:analysis          # Performance analysis (bundle + regression tests)
+
+# Design tokens (Figma ↔ code sync)
+pnpm tokens:export          # Export tokens to tokens/*.json
+pnpm tokens:import          # Import tokens from tokens/*.json into CSS/SCSS
+
+# Figma Code Connect
+pnpm figma:connect          # Verify Code Connect links
+pnpm figma:publish          # Publish Code Connect stories to Figma
 ```
 
 ## Architecture
@@ -60,12 +70,14 @@ Owner and Admin have separate component trees throughout:
 
 ### Composables Organization
 
-- `src/composables/owner/` - Owner-specific data access (useOwnerBookings, useOwnerProperties, etc.)
-- `src/composables/admin/` - Admin-specific data access (useAdminBookings, useCleanerManagement, useAdminProperties, useAdminUserManagement, useTimeAwareMode, etc.)
-- `src/composables/shared/` - Cross-cutting concerns (useCalendarState, usePerformanceMonitor, usePWA, useResponsiveLayout, useSwipeNavigation, usePushNotifications, etc.)
-- `src/composables/supabase/` - Supabase integration (useSupabaseAuth, useSupabaseBookings, useSupabaseProperties, useRealtimeSync)
+- `src/composables/owner/` - Owner-specific: `useOwnerBookings`, `useOwnerProperties`, `useOwnerCalendarState`, `useOwnerErrorHandler`
+- `src/composables/admin/` - Admin-specific: `useAdminBookings`, `useCleanerManagement`, `useAdminProperties`, `useAdminUserManagement`, `useAdminCalendarState`, `useAdminErrorHandler`, `useTimeAwareMode`
+- `src/composables/shared/` - Cross-cutting: `useAuth`, `useCalendarState`, `useCachedComputed`, `useComponentEventLogger`, `useErrorHandler`, `useLoadingState`, `usePerformanceMonitor`, `usePreviewTheme`, `usePWA`, `usePushNotifications`, `useResponsiveLayout`, `useSwipeNavigation`, `useToday`
+- `src/composables/supabase/` - Supabase integration: `useSupabaseAuth`, `useSupabaseBookings`, `useSupabaseProperties`, `useRealtimeSync`, `useSupabaseCleanerTeams`, `useSupabaseUserProfiles`
 - Reuse existing composables before adding new Supabase calls
 - `useOwnerProperties()` returns `myProperties` (not `properties`): `const { myProperties } = useOwnerProperties()`
+- `useToday()` returns `{ todayStr, weekAhead, fortAhead, todayLabel }` — use instead of `new Date()` in components so date reactively updates at midnight
+- `useTimeAwareMode()` returns `isEveningMode` (true after 16:00) — admin overview switches label to "Tomorrow's Prep" after this threshold
 
 ### Key Utilities
 
@@ -77,6 +89,7 @@ Owner and Admin have separate component trees throughout:
 - `src/utils/cachedMapFilter.ts` - Reusable TTL-based cache for store Map computeds (`createMapCache`)
 - `src/utils/calendarHelpers.ts` - Booking → FullCalendar event conversion (`bookingToCalendarEvent`)
 - `src/utils/mobileViewport.ts` - Dynamic viewport height calculations for mobile devices
+- `src/utils/propertyStatus.ts` - Property status derivation helpers
 
 ### Path Aliases
 Configured in both `vite.config.ts` and `tsconfig.json`:
@@ -157,6 +170,17 @@ onMounted(() => {
 - Track subscriptions with `usePerformanceMonitor` from `src/composables/shared/usePerformanceMonitor.ts`
 - Clean up subscriptions on unmount to keep performance tests green
 - Run `pnpm test:performance` after significant data flow changes
+
+## Testing
+
+- Test environment: `happy-dom` (configured in `vitest.config.ts`)
+- Global Supabase mock is set up in `src/__tests__/setup/setupTests.ts` — `supabase.from()` returns a chainable mock builder; override per-test with `vi.mocked(supabase.from).mockReturnValueOnce(...)`
+- CSS imports and browser globals (`ResizeObserver`, `matchMedia`) are also mocked in setup
+- Vitest aliases mirror the vite path aliases — use `@/` imports freely in tests
+
+## Figma Code Connect
+
+Some dumb components have a paired `.figma.ts` file (e.g. `ClaroWordmark.figma.ts`, `ConfirmationDialog.figma.ts`) for Figma Code Connect. When creating new dumb components that should be linked to Figma, add a matching `.figma.ts` alongside the `.vue` file. Publish with `pnpm figma:publish`.
 
 ## Vuetify UI/UX
 

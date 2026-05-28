@@ -1,0 +1,5 @@
+# Gemini Code Assist exclusion patterns
+# Add files or globs you want Gemini to ignore.
+# Example:
+# node_modules/
+# dist/
