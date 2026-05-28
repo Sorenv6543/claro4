@@ -23,11 +23,11 @@ export function usePreviewTheme () {
 
   function applyPreview (name: string | null) {
     if (name === PREVIEW_NAME) {
-      document.documentElement.setAttribute('data-theme', PREVIEW_NAME)
+      document.documentElement.dataset.theme = PREVIEW_NAME
       theme.global.name.value = VUETIFY_THEME
       localStorage.setItem(STORAGE_KEY, PREVIEW_NAME)
     } else {
-      document.documentElement.removeAttribute('data-theme')
+      delete document.documentElement.dataset.theme
       theme.global.name.value = 'light'
       localStorage.removeItem(STORAGE_KEY)
     }
@@ -38,12 +38,14 @@ export function usePreviewTheme () {
     const param = url.searchParams.get('theme')
     if (param === PREVIEW_NAME) {
       applyPreview(PREVIEW_NAME)
-    } else if (param !== null) {
+    } else if (param === null) {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved === PREVIEW_NAME) {
+        applyPreview(PREVIEW_NAME)
+      }
+    } else {
       // Any other ?theme= value clears the preview.
       applyPreview(null)
-    } else {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved === PREVIEW_NAME) applyPreview(PREVIEW_NAME)
     }
   })
 
