@@ -54,7 +54,8 @@
     "docs",
     "docs/**/*",
     "scripts",
-    "scripts/**/*"
+    "scripts/**/*",
+    "src/**/*.figma.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 } 
