@@ -11,17 +11,17 @@
       }
     },
     "chrome-devtools": {
-    "command": "npx",
-    "args": [
-      "-y",
-      "chrome-devtools-mcp@latest",
-      "--browserUrl",
-      "http://127.0.0.1:9222"
-    ]
-  },
-  "vuetify-mcp": {
-    "type": "http",
-    "url": "https://mcp.vuetifyjs.com/mcp"
-  }
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest",
+         "--autoConnect",
+        "--channel=beta"
+      ]
+    },
+    "figma": {
+      "type": "http",
+      "url": "https://mcp.figma.com/mcp?token=${env:FIGMA_API_KEY}"
+    }
   }
 }

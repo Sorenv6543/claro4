@@ -1,5 +1,4 @@
 import type { PluginOption } from 'vite'
-
 import { execSync } from 'node:child_process'
 import { fileURLToPath, URL } from 'node:url'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
@@ -287,6 +286,7 @@ export default defineConfig(({ mode }) => {
     server: {
       port: 3000,
       open: false,
+
       sourcemapIgnoreList: false,
       headers: {
         // Required for the JS Profiling API used by Sentry browserProfilingIntegration.
