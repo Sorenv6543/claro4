@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import type { BookingListItem } from './OwnerBookingList.vue'
   import { useDisplay } from 'vuetify'
+  import { fmt12 } from '@/utils/timelineMath'
 
   defineProps<{
     item: BookingListItem
@@ -45,12 +46,12 @@
           <tbody>
             <tr>
               <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-login</v-icon> Check-in</span></td>
-              <td>{{ formatDate(item.checkinDate) }}<template v-if="item.checkinTime"> · {{ item.checkinTime }}</template></td>
+              <td>{{ formatDate(item.checkinDate) }}<template v-if="item.checkinTime"> · {{ fmt12(item.checkinTime) }}</template></td>
             </tr>
 
             <tr>
               <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-logout</v-icon> Check-out</span></td>
-              <td>{{ formatDate(item.checkoutDate) }}<template v-if="item.checkoutTime"> · {{ item.checkoutTime }}</template></td>
+              <td>{{ formatDate(item.checkoutDate) }}<template v-if="item.checkoutTime"> · {{ fmt12(item.checkoutTime) }}</template></td>
             </tr>
 
             <tr v-if="item.guestCount">

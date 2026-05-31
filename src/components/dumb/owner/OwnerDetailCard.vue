@@ -13,5 +13,5 @@
 </template>
 
 <script setup lang="ts">
-  defineOptions({ name: 'OwnerDetailCard' })
+  defineOptions({ name: 'OwnerProfilePlaceholder' })
 </script>

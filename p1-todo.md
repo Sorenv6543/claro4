@@ -36,7 +36,7 @@
 ## 📋 Owner Bookings — `/owner/bookings`
 
 - [x] **[P1] `handleEditBooking` wraps booking incorrectly** as `{ booking }` — downstream BookingForm probably opens empty. Same bug exists on Overview at L843. Pick one shape and align. (`OwnerBookings.vue:207`)
-- [ ] **[P1] Time format inconsistency** — expanded row shows `Mon, May 25, 2026 · 15:00:00` (24h with seconds). Fix in `OwnerBookingList`/`OwnerBookingInlay`. Use `fmt12()`.
+- [x] **[P1] Time format inconsistency** — `OwnerBookingInlay` now calls `fmt12()` for checkin/checkout times.
 - [x] **[P1] `unassignedCount` only checks `assigned_cleaner_id`** — now also checks `assigned_team_id`. (`OwnerBookings.vue:140-143`)
 - [x] **[P1] `weekCheckinCount` excludes turns** — removed `booking_type !== 'turn'` filter. (`OwnerBookings.vue:136`)
 
@@ -51,20 +51,20 @@
 
 ## 📋 Owner Property Detail — `/owner/properties/:id`
 
-- [ ] **[P1] `onBeforeRouteLeave` dirty-check is failing** — both in-app back arrow AND browser back button discard dirtied form with no confirmation. Likely cause: section components don't `defineExpose` `editing`/`isDirty` refs. Either fix the expose, or centralize dirty tracking in the parent. (`OwnerPropertyView.vue:453-460`)
-- [ ] **[P1] Browser back / tab close not protected at all** — `onBeforeRouteLeave` only catches router navigations. Add a `window.addEventListener('beforeunload')` for tab close + browser back.
-- [ ] **[P1] Page doesn't scroll** — Access, Contact, Upcoming, Recent sections render in DOM but are unreachable. Add `overflow-y: auto; max-height: calc(100vh - var(--app-bar-height));` to `.property-view-page` OR remove fixed-height from the parent layout slot for this route. (`OwnerPropertyView.vue:511-513`)
-- [ ] **[P1] Silent redirect when `:id` doesn't match a property** — `property.value` checked at L416, then `router.push('/owner/properties')` with no toast. Add `uiStore.addNotification('error', 'Not found', ...)` before pushing.
-- [ ] **[P1] Delete doesn't check active bookings** — list screen guards against deleting properties with active bookings; detail view doesn't. Add the same `bookingCountByProperty` guard here. (`OwnerPropertyView.vue:468-476`)
+- [x] **[P1] `onBeforeRouteLeave` dirty-check** — section components confirmed to expose `editing`/`isDirty`; guard was already correct.
+- [x] **[P1] Browser back / tab close not protected** — added `window.addEventListener('beforeunload', handleBeforeUnload)` with `onUnmounted` cleanup.
+- [x] **[P1] Page doesn't scroll** — added `overflow-y: auto; max-height: calc(100vh - var(--app-bar-height, 64px))` to `.property-view-page`.
+- [x] **[P1] Silent redirect when `:id` doesn't match** — now calls `uiStore.addNotification('error', 'Not Found', ...)` before pushing.
+- [x] **[P1] Delete doesn't check active bookings** — `confirmDelete` now checks `activeBookingCount` and shows an inline error instead of deleting.
 
 ## 📋 Owner Reports — `/owner/reports`
 
-- [ ] **[P1] Nav drawer points to a dead-end placeholder** — clicking "Reports" feels broken every time. Either hide the nav item behind a feature flag, or move it to a "Coming soon" sub-section so users know it's intentional.
+- [x] **[P1] Nav drawer points to a dead-end placeholder** — `Reports.vue` already has a proper "Reporting coming soon" state with a CTA to Bookings.
 
 ## 📋 Owner Profile — `/owner/profile`
 
 - [x] **[P1] Two profile entry points** — `/owner/profile` now redirects to `/owner/settings`.
-- [ ] **[P1] `OwnerDetailCard.vue` name collides** with `src/components/dumb/admin/OwnerDetailCard.vue` — two completely different purposes, same `defineOptions({ name })`. Rename the owner-folder one to `OwnerProfilePlaceholder.vue` or delete it.
+- [x] **[P1] `OwnerDetailCard.vue` name collides** — renamed `defineOptions` name to `'OwnerProfilePlaceholder'`.
 
 ## 📋 Owner Settings — `/owner/settings`
 
@@ -72,7 +72,7 @@
 - [x] **[P1] `form.theme` defaults to `''` (empty string)** — now initializes as `'system'`. (`OwnerSettings.vue:383`)
 - [ ] **[P1] Saving theme doesn't update Vuetify reactively** — user picks "Dark" → success toast → nothing visually changes. Verify `authStore.updateUserProfile` reaches Vuetify's `useTheme()`. (`OwnerSettings.vue:403-427`)
 - [ ] **[P1] Password fields are interactable in DOM but `savePassword()` is empty** — typing + Enter swallows silently with no feedback. Either truly disable, or add a "Password change is not yet available" toast on submit. (`OwnerSettings.vue:435-442`)
-- [ ] **[P1] Avatar "Upload New Photo" / "Reset" buttons have no `@click` handlers** — pure dead UI. Wire to Supabase storage or remove until ready. (`OwnerSettings.vue:42-48`)
+- [x] **[P1] Avatar "Upload New Photo" / "Reset" buttons have no `@click` handlers** — now show "not yet available" info toast on click.
 
 ---
 

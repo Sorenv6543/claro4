@@ -349,7 +349,7 @@
 
 <script setup lang="ts">
   import type { Booking, Property } from '@/types'
-  import { computed, onMounted, reactive, ref } from 'vue'
+  import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
   import { onBeforeRouteLeave, useRoute, useRouter } from 'vue-router'
   import PropertyAccessSection from '@/components/dumb/owner/PropertyAccessSection.vue'
   import PropertyCleaningSection from '@/components/dumb/owner/PropertyCleaningSection.vue'
@@ -359,6 +359,7 @@
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
   import { useOwnerProperties } from '@/composables/owner/useOwnerProperties'
+  import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
 
   defineOptions({ name: 'OwnerPropertyViewComponent' })
@@ -378,11 +379,21 @@
 
   const { myBookings, fetchMyBookings } = useOwnerBookings()
 
+  const uiStore = useUIStore()
+
   const deleteDialogOpen = ref(false)
   const loadError = ref<string | null>(null)
   const deleteError = ref<string | null>(null)
 
   const property = computed(() => myProperties.value.find(p => p.id === propertyId) ?? null)
+
+  const activeBookingCount = computed(() =>
+    myBookings.value.filter(b =>
+      b.property_id === propertyId
+      && b.status !== 'cancelled'
+      && b.status !== 'completed',
+    ).length,
+  )
 
   const propertyBookings = computed(() =>
     myBookings.value
@@ -410,14 +421,31 @@
     ).length
   })
 
+  function hasDirtySection (): boolean {
+    return [infoRef, cleaningRef, accessRef, contactRef]
+      .some(r => r.value?.editing && r.value?.isDirty)
+  }
+
+  function handleBeforeUnload (e: BeforeUnloadEvent): void {
+    if (hasDirtySection()) e.preventDefault()
+  }
+
   onMounted(async () => {
+    window.addEventListener('beforeunload', handleBeforeUnload)
     try {
       await Promise.all([fetchMyProperties(), fetchMyBookings()])
-      if (!property.value) router.push('/owner/properties')
+      if (!property.value) {
+        uiStore.addNotification('error', 'Not Found', 'Property not found.')
+        router.push('/owner/properties')
+      }
     } catch (error_) {
       console.error('[OwnerPropertyView] Failed to load property data:', error_)
       loadError.value = 'Unable to load property details. Please refresh or go back.'
     }
+  })
+
+  onUnmounted(() => {
+    window.removeEventListener('beforeunload', handleBeforeUnload)
   })
 
   // Section refs
@@ -466,6 +494,11 @@
   }
 
   async function confirmDelete () {
+    if (activeBookingCount.value > 0) {
+      deleteDialogOpen.value = false
+      deleteError.value = `This property has ${activeBookingCount.value} active booking${activeBookingCount.value === 1 ? '' : 's'}. Cancel or complete them before deleting.`
+      return
+    }
     deleteError.value = null
     const ok = await deleteMyProperty(propertyId)
     if (ok) {
@@ -510,6 +543,8 @@
 <style scoped>
 .property-view-page {
   background: rgb(var(--v-theme-background));
+  overflow-y: auto;
+  max-height: calc(100vh - var(--app-bar-height, 64px));
 }
 
 .stat-item {

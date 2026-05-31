@@ -39,11 +39,11 @@
 
                   <div>
                     <div class="d-flex ga-3 mb-2">
-                      <v-btn color="primary" prepend-icon="mdi-cloud-upload-outline" size="small">
+                      <v-btn color="primary" prepend-icon="mdi-cloud-upload-outline" size="small" @click="showNotification('Photo upload is not yet available', 'info')">
                         Upload New Photo
                       </v-btn>
 
-                      <v-btn color="error" size="small" variant="outlined">
+                      <v-btn color="error" size="small" variant="outlined" @click="showNotification('Photo reset is not yet available', 'info')">
                         Reset
                       </v-btn>
                     </div>
