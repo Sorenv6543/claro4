@@ -268,10 +268,18 @@
   async function handlePropertyModalSave (data: PropertyFormData): Promise<void> {
     try {
       if (propertyModal.value.mode === 'create') {
-        await createMyProperty(data)
+        const id = await createMyProperty(data)
+        if (!id) {
+          uiStore.addNotification('error', 'Failed', 'Could not create property')
+          return
+        }
         uiStore.addNotification('success', 'Created', 'Property added successfully')
       } else if (propertyModal.value.property) {
-        await updateMyProperty(propertyModal.value.property.id, data)
+        const success = await updateMyProperty(propertyModal.value.property.id, data)
+        if (!success) {
+          uiStore.addNotification('error', 'Failed', 'Could not update property')
+          return
+        }
         uiStore.addNotification('success', 'Updated', 'Property updated successfully')
       }
       propertyModal.value.show = false
@@ -282,7 +290,11 @@
 
   async function handlePropertyModalDelete (propertyId: string): Promise<void> {
     try {
-      await deleteMyProperty(propertyId)
+      const success = await deleteMyProperty(propertyId)
+      if (!success) {
+        uiStore.addNotification('error', 'Failed', 'Could not delete property')
+        return
+      }
       uiStore.addNotification('success', 'Deleted', 'Property deleted successfully')
       propertyModal.value.show = false
     } catch (error_) {

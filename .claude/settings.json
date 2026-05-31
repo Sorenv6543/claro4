@@ -86,6 +86,7 @@
     "commit-commands@claude-plugins-official": true,
     "figma@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": true,
-    "chrome-devtools-mcp@claude-plugins-official": true
+    "chrome-devtools-mcp@claude-plugins-official": true,
+    "superpowers@superpowers-marketplace": true
   }
 }
