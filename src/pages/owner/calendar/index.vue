@@ -62,12 +62,12 @@
 
     <Teleport to="body">
       <button
-        aria-label="Add property"
-        class="fab-add-property"
+        aria-label="Add booking"
+        class="fab-add-booking"
         type="button"
-        @click="openAddProperty"
+        @click="openNewBookingForm"
       >
-        <v-icon color="white" size="22">mdi-home-plus</v-icon>
+        <v-icon color="white" size="26">mdi-plus</v-icon>
       </button>
     </Teleport>
   </div>
@@ -153,7 +153,7 @@
         try {
           await createMyBooking({
             property_id: data.property_id,
-            owner_id: '',
+            owner_id: authStore.user?.id || '',
             checkin_date: data.checkout_date,
             checkout_date: data.checkout_date,
             checkin_time: turnCheckinTime,
@@ -242,8 +242,8 @@
     }
   }
 
-  function openAddProperty (): void {
-    propertyModal.value = { show: true, mode: 'create', property: undefined }
+  function openNewBookingForm (): void {
+    bookingFormModal.value = { show: true, loading: false, errors: new Map(), initialDates: undefined }
   }
 
   function handlePropertyModalClose (): void {
@@ -332,7 +332,7 @@
   flex-direction: column;
 }
 
-.fab-add-property {
+.fab-add-booking {
   position: fixed;
   bottom: 24px;
   right: 24px;
@@ -353,24 +353,24 @@
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
-.fab-add-property:hover {
+.fab-add-booking:hover {
   transform: translateY(-2px) scale(1.06);
   box-shadow:
     0 8px 20px rgba(0, 0, 0, 0.28),
     0 1px 0 rgba(255, 255, 255, 0.2) inset;
 }
 
-.fab-add-property:active {
+.fab-add-booking:active {
   transform: translateY(0) scale(0.95);
 }
 
-.fab-add-property:focus-visible {
+.fab-add-booking:focus-visible {
   outline: 2px solid rgba(255, 255, 255, 0.9);
   outline-offset: 3px;
 }
 
 @media (max-width: 599px) {
-  .fab-add-property {
+  .fab-add-booking {
     bottom: 72px;
     width: 52px;
     height: 52px;

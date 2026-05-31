@@ -58,6 +58,9 @@ export function loadingGuard (
 export function afterNavigationGuard (
   to: RouteLocationNormalized,
 ) {
+  const title = to.meta.title as string | undefined
+  document.title = title ? `${title} — Claro` : 'Claro'
+
   Sentry.addBreadcrumb({
     category: 'navigation',
     message: `Navigated to ${String(to.name ?? to.path)}`,

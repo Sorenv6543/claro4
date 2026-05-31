@@ -380,7 +380,7 @@
     company_name: '',
     language: '',
     timezone: '',
-    theme: '' as 'light' | 'dark' | 'system',
+    theme: 'system' as 'light' | 'dark' | 'system',
   })
 
   function populateAccountForm () {
@@ -475,8 +475,8 @@
 
   // --- Deactivate ---
   function handleDeactivate () {
-    // TODO: Implement account deactivation flow with confirmation dialog
-    showNotification('Account deactivation is not yet implemented', 'info')
+    showDeactivateDialog.value = false
+    showNotification('Account deactivation is not yet available. Please contact support.', 'info')
   }
 
   // --- Snackbar ---

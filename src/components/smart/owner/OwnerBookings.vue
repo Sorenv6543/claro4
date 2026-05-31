@@ -133,13 +133,14 @@
   const weekCheckinCount = computed(() =>
     myBookings.value.filter(b =>
       b.checkin_date >= todayStr && b.checkin_date <= weekAhead
-      && b.status !== 'cancelled' && b.booking_type !== 'turn',
+      && b.status !== 'cancelled',
     ).length,
   )
 
   const unassignedCount = computed(() =>
     myBookings.value.filter(b =>
-      !b.assigned_cleaner_id && b.status !== 'cancelled' && b.status !== 'completed',
+      !b.assigned_cleaner_id && !b.assigned_team_id
+      && b.status !== 'cancelled' && b.status !== 'completed',
     ).length,
   )
 

@@ -90,7 +90,7 @@
             </div>
           </div>
 
-          <v-btn color="error" size="small" variant="tonal" @click="uiStore.openModal('eventModal', 'view')">
+          <v-btn color="error" size="small" variant="tonal" @click="handleDayBarOpenBooking(urgentTurns[0].id)">
             View details
           </v-btn>
         </div>
@@ -147,10 +147,9 @@
                   </span>
                 </div>
               </div>
-            </div>
 
-            <!-- Property rows + per-ribbon NOW line (same coordinate space as chips) -->
-            <div class="tl-rows-wrap">
+              <!-- Property rows + per-ribbon NOW line (same coordinate space as chips) -->
+              <div class="tl-rows-wrap">
               <div
                 v-for="(row, rowIdx) in deskPropertyRows"
                 :key="row.propId"
@@ -195,6 +194,7 @@
                     {{ fmtChipLabel(ev.time, ev.type) }}
                   </button>
                 </div>
+              </div>
               </div>
             </div>
           </template>
@@ -450,6 +450,7 @@
       .map(b => {
         const p = propertyMap.value.get(b.property_id)
         return {
+          id: b.id,
           property: p ? formatPropertyAddress(p, 'short') : 'Unknown',
           checkinTime: b.checkin_time ?? '15:00',
           checkoutTime: b.checkout_time ?? '11:00',
