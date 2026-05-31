@@ -106,6 +106,7 @@
             >Turn</v-chip>
 
             <v-btn
+              aria-label="Edit property"
               density="compact"
               icon
               size="small"
@@ -116,6 +117,7 @@
             </v-btn>
 
             <v-btn
+              aria-label="Delete property"
               color="error"
               density="compact"
               icon
@@ -146,7 +148,6 @@
         :key="item.property.id"
         class="property-card"
         rounded="sm"
-        style="box-shadow: var(--claro-shadow-sm);"
         @click="emit('more', item.property.id)"
       >
         <div class="card-color-bar" :style="{ background: item.property.color }" />
@@ -191,6 +192,7 @@
           <v-spacer />
 
           <v-btn
+            aria-label="Edit property"
             density="compact"
             icon
             size="small"
@@ -201,6 +203,7 @@
           </v-btn>
 
           <v-btn
+            aria-label="Delete property"
             color="error"
             density="compact"
             icon
@@ -346,11 +349,6 @@
 .property-card {
   cursor: pointer;
   overflow: hidden;
-  transition: box-shadow 0.15s;
-}
-
-.property-card:hover {
-  box-shadow: var(--claro-shadow-md) !important;
 }
 
 .card-color-bar {
