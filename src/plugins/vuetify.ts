@@ -52,6 +52,34 @@ const lightTheme: ThemeDefinition = {
   },
 }
 
+const darkTheme: ThemeDefinition = {
+  dark: true,
+  colors: {
+    'primary': '#7367F0',
+    'primary-light': '#9E95F5',
+    'primary-dark': '#5E52EE',
+    'secondary': '#A8AAAE',
+    'background': '#1C1B2D',
+    'surface': '#28243D',
+    'surface-variant': '#1C1B2D',
+    'card-bg': '#28243D',
+    'success': '#28C76F',
+    'warning': '#FF9F43',
+    'error': '#EA5455',
+    'info': '#00CFE8',
+    'turn-urgent': '#EA5455',
+    'turn-standard': '#FF9F43',
+    'booking-standard': '#28C76F',
+    'on-background': '#E8E5F2',
+    'on-surface': '#E8E5F2',
+    'text-secondary': '#E8E5F280',
+    'divider': '#3D3759',
+  },
+  variables: {
+    'border-color': '#3D3759',
+  },
+}
+
 // Preview theme: "Cluely" external design system, light variant.
 // Activate via ?theme=preview-cluely (see usePreviewTheme composable).
 // Cluely's source is dark/cinematic; this variant lifts the surfaces to light
@@ -90,6 +118,7 @@ export default createVuetify({
     defaultTheme: 'light',
     themes: {
       light: lightTheme,
+      dark: darkTheme,
       previewCluely: previewCluelyTheme,
     },
     variations: {

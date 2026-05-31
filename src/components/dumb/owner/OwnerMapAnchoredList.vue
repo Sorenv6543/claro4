@@ -18,6 +18,7 @@
     'view-calendar': [propertyId: string]
     'edit': [propertyId: string]
     'more': [propertyId: string]
+    'delete': [propertyId: string]
   }>()
 
   const { mobile } = useDisplay()
@@ -113,6 +114,17 @@
             >
               <v-icon size="16">mdi-pencil-outline</v-icon>
             </v-btn>
+
+            <v-btn
+              color="error"
+              density="compact"
+              icon
+              size="small"
+              variant="text"
+              @click.stop="emit('delete', item.property.id)"
+            >
+              <v-icon size="16">mdi-delete-outline</v-icon>
+            </v-btn>
           </template>
         </v-list-item>
       </v-list>
@@ -186,6 +198,17 @@
             @click.stop="emit('edit', item.property.id)"
           >
             <v-icon size="16">mdi-pencil-outline</v-icon>
+          </v-btn>
+
+          <v-btn
+            color="error"
+            density="compact"
+            icon
+            size="small"
+            variant="text"
+            @click.stop="emit('delete', item.property.id)"
+          >
+            <v-icon size="16">mdi-delete-outline</v-icon>
           </v-btn>
         </v-card-actions>
       </v-card>

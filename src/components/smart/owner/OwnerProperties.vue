@@ -61,6 +61,7 @@
         :items="listItems"
         :loading="loading"
         @assign-cleaner="handleAssignCleaner"
+        @delete="handleDeleteProperty"
         @edit="handleListEdit"
         @more="handleListMore"
         @view-calendar="handleViewCalendar"

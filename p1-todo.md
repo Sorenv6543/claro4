@@ -20,15 +20,15 @@
 
 ## 📋 Owner Properties — `/owner/properties`
 
-- [ ] **[P1] Wrong primary CTA** — layout FAB reads "Add booking" on Properties page; no working "Add property" affordance. (`src/layouts/owner.vue:210-218`) *(FAB is route-aware systemic item already checked — still needs per-page audit)*
+- [x] **[P1] Wrong primary CTA** — layout FAB is now route-aware: shows "Add property" on `/owner/properties`, hidden on `/owner/overview`, "Add booking" elsewhere.
 - [ ] **[P1] `handleAssignCleaner` is a dead stub** — emits an info toast telling user to contact admin; child never fires the emit anyway. (`OwnerProperties.vue:321-323`)
-- [ ] **[P1] No delete path from the UI** — `handleDeleteProperty` exists but no card/row exposes a delete button. (`OwnerProperties.vue:343`)
+- [x] **[P1] No delete path from the UI** — added delete icon button to both card and list-item in `OwnerMapAnchoredList`; wired `@delete="handleDeleteProperty"` in `OwnerProperties`.
 - [ ] **[P1] "Active" segment appears pre-selected visually** but `selectedSegment` defaults to `'all'`. Visual vs. state mismatch. (`OwnerProperties.vue:139`)
 
 ## 📋 Owner Overview — `/owner/overview`
 
 - [x] **[P1] Template structure bug** — `.tl-rows-wrap` moved inside `.tl-timeline-wrap`; added missing closing tag.
-- [ ] **[P1] "Add booking" FAB is wrong primary action** for a read-only summary screen.
+- [x] **[P1] "Add booking" FAB is wrong primary action** for read-only overview — FAB now hidden on `/owner/overview`.
 - [x] **[P1] Urgent banner "View details" opens an empty modal** — now navigates to `/owner/bookings?id=<id>`; `urgentTurns` preserves booking `id`.
 - [ ] **[P1] `handleDayBarAssignCleaner` is the same dead stub** as Properties. (`OwnerOverview.vue:792-794`)
 - [ ] **[P1] Time format inconsistency** — same booking shows as `15:00:00` in Your Properties section and `3:00 PM` in Upcoming. Fix at `OwnerOverview.vue:892-893` — use `fmt12()`.
@@ -43,8 +43,8 @@
 ## 📋 Owner Calendar — `/owner/calendar`
 
 - [x] **[P1] FAB reads "Add property" instead of "Add booking"** — Calendar FAB now opens booking form. (`pages/owner/calendar/index.vue:63-72`)
-- [ ] **[P1] "Switch to range view" / "Switch to event view" toggle does nothing visible** — changes URL `?viewMode=ranges` ↔ `?viewMode=events` but renders identically. Either implement range mode or gate the button behind a feature flag. (`src/layouts/owner.vue:73-95`)
-- [ ] **[P1] No week / day / list view switcher exposed to users** — `OwnerCalendar.changeView()` exists at L303 but no UI calls it. Add a Month/Week/Day toggle.
+- [ ] **[P1] "Switch to range view" / "Switch to event view" toggle does nothing visible** — deferred (needs FullCalendar range-mode implementation).
+- [x] **[P1] No week / day / list view switcher** — added `v-btn-toggle` (Month/Week/Day/List) to calendar page; bound to `currentView` prop which OwnerCalendar already watches.
 - [ ] **[P1] Two `OwnerBookingForm` instances mounted simultaneously** (create + edit) — race condition on double-click. Consolidate into a single dialog with a `mode` prop. (`pages/owner/calendar/index.vue:17-38`)
 - [x] **[P1] `createMyBooking` for turn passes `owner_id: ''`** — now passes `authStore.user?.id || ''`. (`pages/owner/calendar/index.vue:154-170`)
 - [ ] **[P1] `handleBookingFormSubmit` turn-creation has broken error handling** — empty `catch {}` swallows errors, and null-return path doesn't fire the warning toast. Check for `!id` after the call too. (`pages/owner/calendar/index.vue:172-174`)
@@ -70,7 +70,7 @@
 
 - [x] **[P1] "Deactivate Account" button shows a scary "irreversible" warning then does nothing** — now closes dialog and shows informative toast directing user to support. (`OwnerSettings.vue:477-480`)
 - [x] **[P1] `form.theme` defaults to `''` (empty string)** — now initializes as `'system'`. (`OwnerSettings.vue:383`)
-- [ ] **[P1] Saving theme doesn't update Vuetify reactively** — user picks "Dark" → success toast → nothing visually changes. Verify `authStore.updateUserProfile` reaches Vuetify's `useTheme()`. (`OwnerSettings.vue:403-427`)
+- [x] **[P1] Saving theme doesn't update Vuetify reactively** — added `applyTheme()` using `useTheme()` called on save; added dark theme definition to `vuetify.ts`; 'system' resolves via `matchMedia`.
 - [ ] **[P1] Password fields are interactable in DOM but `savePassword()` is empty** — typing + Enter swallows silently with no feedback. Either truly disable, or add a "Password change is not yet available" toast on submit. (`OwnerSettings.vue:435-442`)
 - [x] **[P1] Avatar "Upload New Photo" / "Reset" buttons have no `@click` handlers** — now show "not yet available" info toast on click.
 
@@ -79,7 +79,7 @@
 ## 🔁 Systemic patterns (these fixes touch multiple screens)
 
 - [x] **"Add booking" FAB hardcoded in owner layout** affects Properties, Overview, Calendar, Property Detail, Settings (5+ screens). Replace the hard-coded button at `src/layouts/owner.vue:210-218` with route-aware actions via `QuickActionsFab` in `src/components/dumb/shared/`.
-- [ ] **"Toggle devtools panel" widget leaking into production** on every screen. Locate the source (likely `vite-plugin-vue-devtools` or similar in `vite.config.*` / `src/main.ts`) and gate to `import.meta.env.DEV`.
+- [x] **"Toggle devtools panel" widget leaking into production** — `vite-plugin-vue-devtools` is already gated to `isDevelopment` in `vite.config.ts` (lines 83-97). No change needed.
 - [ ] **Strip test/seed data from the demo account** — "Test Adress 3" (typo), "Lorum Ipsum" (typo), "1600 Pennsylvania Ave NW" appear on every screen. Either clean the DB seed or restrict the demo account.
 - [ ] **Time format inconsistency** — same booking shown as `15:00:00` and `3:00 PM` on different screens. Standardize on `fmt12()` from `@utils/timelineMath`.
 - [ ] **Magic-string statuses scattered everywhere** — `'cancelled'`, `'turn'`, `'completed'`, `'scheduled'`, `'in_progress'`, `'pending'` inline in every owner component. Define a `BookingStatus` / `BookingType` enum and import.

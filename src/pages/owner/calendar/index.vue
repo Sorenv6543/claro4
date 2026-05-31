@@ -2,6 +2,21 @@
   <div class="calendar-page">
     <ErrorAlert v-if="error" class="ma-4" :message="error" />
 
+    <div class="view-switcher pa-2 pb-0">
+      <v-btn-toggle
+        v-model="currentView"
+        density="compact"
+        mandatory
+        rounded="sm"
+        variant="outlined"
+      >
+        <v-btn value="dayGridMonth">Month</v-btn>
+        <v-btn value="timeGridWeek">Week</v-btn>
+        <v-btn value="timeGridDay">Day</v-btn>
+        <v-btn value="listWeek">List</v-btn>
+      </v-btn-toggle>
+    </div>
+
     <OwnerCalendar
       ref="ownerCalendarRef"
       :bookings="myBookings"

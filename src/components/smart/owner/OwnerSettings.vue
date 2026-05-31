@@ -357,6 +357,7 @@
 <script setup lang="ts">
   import type { VForm } from 'vuetify/components'
   import { computed, reactive, ref, watch } from 'vue'
+  import { useTheme } from 'vuetify'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import { useAuthStore } from '@/stores/auth'
 
@@ -364,6 +365,14 @@
 
   const authStore = useAuthStore()
   const user = computed(() => authStore.user)
+  const vuetifyTheme = useTheme()
+
+  function applyTheme (preference: 'light' | 'dark' | 'system'): void {
+    const resolved = preference === 'system'
+      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      : preference
+    vuetifyTheme.global.name.value = resolved
+  }
 
   // --- Tab state ---
   const activeTab = ref('account')
@@ -414,6 +423,7 @@
         theme: form.theme,
       })
       if (success) {
+        applyTheme(form.theme)
         showNotification('Account settings saved successfully', 'success')
       } else {
         showNotification(authStore.error || 'Failed to save settings', 'error')

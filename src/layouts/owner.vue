@@ -205,14 +205,14 @@
          Calendar page (HomeOwner.vue) manages its own modal with richer handlers. -->
     <GlobalBookingModal v-if="isReady && !isCalendarPage" />
 
-    <!-- Floating Add Booking circle -->
+    <!-- Floating action button — action varies by page -->
     <Teleport to="body">
       <button
-        v-if="isReady && !isCalendarPage"
-        aria-label="Add booking"
+        v-if="isReady && !isCalendarPage && !isOverviewPage"
+        :aria-label="isPropertiesPage ? 'Add property' : 'Add booking'"
         class="fab-add-booking"
         type="button"
-        @click="openBookingModal"
+        @click="isPropertiesPage ? openPropertyModal() : openBookingModal()"
       >
         <v-icon color="white" size="26">mdi-plus</v-icon>
       </button>
@@ -285,6 +285,12 @@
   })
 
   const isCalendarPage = computed(() => route.path === '/owner/calendar')
+  const isOverviewPage = computed(() => route.path === '/owner/overview')
+  const isPropertiesPage = computed(() => route.path === '/owner/properties')
+
+  function openPropertyModal (): void {
+    uiStore.openModal('propertyModal', 'create')
+  }
 
   const formattedMonthYear = ref(
     calendarState.currentDate.value.toLocaleDateString('en-US', { month: 'long', year: 'numeric' }),
