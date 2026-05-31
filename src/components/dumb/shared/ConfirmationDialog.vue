@@ -19,7 +19,7 @@
       <v-card-actions>
         <v-btn
           color="grey-darken-1"
-          :disabled="loading"
+          :disabled="isLoading"
           variant="text"
           @click="handleCancel"
         >
@@ -30,8 +30,8 @@
 
         <v-btn
           :color="confirmColor"
-          :disabled="loading"
-          :loading="loading"
+          :disabled="isLoading"
+          :loading="isLoading"
           variant="text"
           @click="handleConfirm"
         >
@@ -55,6 +55,7 @@
     confirmColor?: string
     dangerous?: boolean
     persistent?: boolean
+    loading?: boolean
   }
 
   interface Emits {
@@ -70,14 +71,17 @@
     confirmColor: 'primary',
     dangerous: false,
     persistent: true,
+    loading: false,
   })
 
   const emit = defineEmits<Emits>()
 
   // LOCAL STATE
-  const loading = ref<boolean>(false)
+  const internalLoading = ref<boolean>(false)
 
   // COMPUTED PROPERTIES
+  const isLoading = computed(() => props.loading || internalLoading.value)
+
   const isOpen = computed({
     get: () => props.open,
     set: (value: boolean) => {
@@ -92,13 +96,19 @@
 
   // METHODS
   function handleConfirm (): void {
-    loading.value = true
+    internalLoading.value = true
 
     try {
+      // emit('confirm') is synchronous — if the parent sets their loading prop to true
+      // inside their confirm handler, props.loading will be true by the time we reach
+      // the finally block. In that case the parent owns the close lifecycle, so we
+      // skip the auto-close and let the parent call closeConfirmDialog on success only.
       emit('confirm')
     } finally {
-      loading.value = false
-      emit('close')
+      internalLoading.value = false
+      if (!props.loading) {
+        emit('close')
+      }
     }
   }
 

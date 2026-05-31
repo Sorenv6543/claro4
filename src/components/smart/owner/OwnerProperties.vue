@@ -87,6 +87,7 @@
       :cancel-text="confirmDialogCancelText"
       :confirm-text="confirmDialogConfirmText"
       :dangerous="confirmDialogDangerous"
+      :loading="isDeleting"
       :message="confirmDialogMessage"
       :open="confirmDialogOpen"
       :title="confirmDialogTitle"
@@ -448,7 +449,11 @@
   // CONFIRMATION DIALOG HANDLERS - SAME PATTERN AS HomeOwner
   // ============================================================================
 
+  const isDeleting = ref(false)
+
   async function handleConfirmDialogConfirm (): Promise<void> {
+    if (isDeleting.value) return
+
     const data = confirmDialogData.value
 
     if (data?.type === 'property-blocked') {
@@ -458,9 +463,11 @@
     }
 
     if (data?.type === 'property' && data?.id) {
+      isDeleting.value = true
       try {
         const success = await deleteMyProperty(data.id as string)
         if (success) {
+          uiStore.closeConfirmDialog('confirmDialog')
           uiStore.closeModal('propertyModal')
         } else {
           const message = propertyError.value || 'Failed to delete your property'
@@ -471,10 +478,10 @@
         const message = propertyError.value || (error instanceof Error ? error.message : 'Failed to delete your property')
         console.error('[OwnerProperties] Failed to delete property:', error)
         uiStore.addNotification('error', 'Delete Failed', message)
+      } finally {
+        isDeleting.value = false
       }
     }
-
-    uiStore.closeConfirmDialog('confirmDialog')
   }
 
   function handleConfirmDialogCancel (): void {
