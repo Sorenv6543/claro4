@@ -9,12 +9,17 @@
 export type UserRole = 'owner' | 'admin' | 'cleaner'
 
 /**
+ * Valid theme preferences
+ */
+export type ThemePreference = 'light' | 'dark' | 'system'
+
+/**
  * User settings interface (nested structure)
  */
 export interface UserSettings {
   notifications: boolean
   timezone: string
-  theme: 'light' | 'dark' | 'system'
+  theme: ThemePreference
   language: string
 }
 
@@ -30,7 +35,7 @@ export interface User {
   company_name?: string
   notifications_enabled: boolean
   timezone: string
-  theme: 'light' | 'dark' | 'system'
+  theme: ThemePreference
   language: string
   access_level?: 'full' | 'limited'
   skills?: string[] | null

@@ -1,4 +1,4 @@
-import type { User, UserRole } from '@/types'
+import type { ThemePreference, User, UserRole } from '@/types'
 // src/stores/auth.ts - Fixed Version with Proper Loading Management
 import * as Sentry from '@sentry/vue'
 import { defineStore } from 'pinia'
@@ -171,7 +171,7 @@ export const useAuthStore = defineStore('auth', () => {
     company_name?: string
     notifications_enabled?: boolean
     timezone?: string
-    theme?: 'light' | 'dark' | 'system'
+    theme?: ThemePreference
     language?: string
   }): Promise<boolean> {
     try {

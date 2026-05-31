@@ -360,6 +360,7 @@
   import { useTheme } from 'vuetify'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import { useAuthStore } from '@/stores/auth'
+  import type { ThemePreference } from '@/types/user'
 
   defineOptions({ name: 'OwnerSettings' })
 
@@ -367,7 +368,7 @@
   const user = computed(() => authStore.user)
   const vuetifyTheme = useTheme()
 
-  function applyTheme (preference: 'light' | 'dark' | 'system'): void {
+  function applyTheme (preference: ThemePreference): void {
     const resolved = preference === 'system'
       ? (window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ? 'dark' : 'light')
       : preference
@@ -389,7 +390,7 @@
     company_name: '',
     language: '',
     timezone: '',
-    theme: 'system' as 'light' | 'dark' | 'system',
+    theme: 'system' as ThemePreference,
   })
 
   function populateAccountForm () {
