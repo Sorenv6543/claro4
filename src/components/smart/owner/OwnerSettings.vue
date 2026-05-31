@@ -369,7 +369,7 @@
 
   function applyTheme (preference: 'light' | 'dark' | 'system'): void {
     const resolved = preference === 'system'
-      ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+      ? (window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ? 'dark' : 'light')
       : preference
     vuetifyTheme.global.name.value = resolved
   }
@@ -423,8 +423,13 @@
         theme: form.theme,
       })
       if (success) {
-        applyTheme(form.theme)
         showNotification('Account settings saved successfully', 'success')
+        try {
+          applyTheme(form.theme)
+        } catch (themeError) {
+          console.error('[OwnerSettings] Failed to apply theme after save:', themeError)
+          // Non-fatal: preference was saved, will apply on next load
+        }
       } else {
         showNotification(authStore.error || 'Failed to save settings', 'error')
       }
