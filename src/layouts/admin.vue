@@ -161,6 +161,7 @@
   import { useAuthStore } from '@/stores/auth'
   import { useBookingStore } from '@/stores/booking'
   import { usePropertyStore } from '@/stores/property'
+  import { useUIStore } from '@/stores/ui'
 
   // Composables
   const router = useRouter()
@@ -168,6 +169,7 @@
   const authStore = useAuthStore()
   const bookingStore = useBookingStore()
   const propertyStore = usePropertyStore()
+  const uiStore = useUIStore()
   const { users: _allUsers, fetchAllUsers } = useAdminUserManagement()
   const { allCleaners, fetchCleaners } = useCleanerManagement()
   const { init: initRealtimeSync } = useRealtimeSync()
@@ -232,10 +234,15 @@
   async function handleSignOut () {
     try {
       await authStore.logout()
+      router.push('/')
     } catch (error) {
       console.error('Logout failed:', error)
+      uiStore.addNotification(
+        'error',
+        'Logout Failed',
+        'Unable to sign out. Please try again.',
+      )
     }
-    router.push('/')
   }
 
   // Event handlers for sidebar
