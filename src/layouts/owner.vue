@@ -225,7 +225,7 @@
   import type { NavItem } from '@/components/dumb/shared/MobileBottomNav.vue'
   import type { Ref } from 'vue'
   import { useAuthStore } from '@stores/auth'
-  import { computed, onMounted, provide, ref } from 'vue'
+  import { computed, onMounted, onUnmounted, provide, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import ClaroWordmark from '@/components/dumb/shared/ClaroWordmark.vue'
@@ -266,6 +266,8 @@
   const initError = ref<Error | null>(null)
   provide('appStatus', { isReady, initError })
 
+  let calendarLabelInterval: ReturnType<typeof setInterval> | null = null
+
   function openBookingModal () {
     uiStore.openModal('eventModal', 'create')
   }
@@ -281,7 +283,14 @@
       })
 
     updateCalendarMonthLabels()
-    window.setInterval(updateCalendarMonthLabels, 300)
+    calendarLabelInterval = window.setInterval(updateCalendarMonthLabels, 300)
+  })
+
+  onUnmounted(() => {
+    if (calendarLabelInterval !== null) {
+      window.clearInterval(calendarLabelInterval)
+      calendarLabelInterval = null
+    }
   })
 
   const isCalendarPage = computed(() => route.path === '/owner/calendar')
