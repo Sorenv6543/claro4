@@ -1,8 +1,9 @@
 // Vuetify plugin configuration — single source of truth for all color hex values.
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 //
-// Vuetify requires hex values and generates --v-theme-* RGB tuples at runtime.
-// tokens.css aliases those tuples via rgb(var(--v-theme-*)): edit hex values here only.
+// Vuetify requires hex values and registers --v-theme-* custom properties as
+// comma-separated R,G,B channel values (e.g. "115, 103, 240") at runtime.
+// tokens.css aliases those via rgb(var(--v-theme-*)): edit hex values here only.
 // Non-color tokens (spacing, radii, shadows, layout) live in tokens.css exclusively.
 
 // Vuetify

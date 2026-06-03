@@ -3,8 +3,12 @@
  *
  * COLOR SOURCE OF TRUTH: src/plugins/vuetify.ts
  * Color tokens here are aliases to Vuetify theme vars — edit hex values
- * in vuetify.ts only. Vuetify registers them as --v-theme-* RGB tuples;
- * these aliases wrap them in rgb() for direct CSS use.
+ * in vuetify.ts only. Vuetify registers them as --v-theme-* custom properties
+ * with comma-separated R,G,B channel values (e.g. "115, 103, 240"); these
+ * aliases wrap them in rgb() for direct CSS use.
+ *
+ * STANDALONE COLORS: tints, tonals, fg-scale, borders, and property accents
+ * have no --v-theme-* equivalent and are defined directly here as hex/rgba.
  *
  * NON-COLOR TOKENS (spacing, typography, radii, motion, shadows, layout)
  * live here exclusively — no Vuetify equivalent exists for them.
@@ -54,10 +58,9 @@
   --claro-prop-3: #9155FD;
   --claro-prop-4: #FF9F43;
   --claro-prop-5: #EA5455;
-  /* prop-6 is reserved for system-assigned use (calendar OUT events) — NOT in
-     the PROPERTY_COLORS user-selectable cycle. Currently unconsumed; will be
-     wired into bookingToTransitionEvents in src/utils/calendarHelpers.ts when
-     the OUT event yellow-treatment is implemented. */
+  /* prop-6 drives --cal-event-out-bg in src/styles/calendar-tokens.css — NOT in
+     the PROPERTY_COLORS user-selectable cycle. Applied to .fc-event.transition-out
+     in FullCalendar.vue via the calendar-tokens.css override. */
   --claro-prop-6: #FDD835;
 
   /* ─── Colors: Text (4-step alpha scale) ───────────────────────────── */
@@ -150,9 +153,9 @@
      definition means var(--app-bar-height, 64px) falls through to 64px
      until the .is-mobile class lands on an ancestor. */
   --claro-app-bar-height:         var(--app-bar-height, 64px);
-  /* --claro-drawer-width is documentary; AdminSidebar / OwnerNavigationDrawer
-     own width selection via useDisplay() (260 on md+, 280 overlay below).
-     Keep this token in sync with the sidebars' computed if either changes. */
+  /* --claro-drawer-width is documentary only — not consumed by the sidebars.
+     AdminSidebar and OwnerNavigationDrawer pick their width via useDisplay()
+     (260px permanent on md+, 280px overlay below md). */
   --claro-drawer-width:           380px;
   --claro-drawer-width-collapsed: 72px;
   --claro-content-padding:        24px;
