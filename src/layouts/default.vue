@@ -77,5 +77,3 @@
   // Sidebar state (for future implementation)
 
   </script>
-
-  

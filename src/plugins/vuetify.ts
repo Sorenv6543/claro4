@@ -10,16 +10,16 @@ import 'vuetify/styles'
 const lightTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    'primary':    '#6B7280',
-    'secondary':  '#9CA3AF',
+    'primary': '#6B7280',
+    'secondary': '#9CA3AF',
     'background': '#F9FAFB',
-    'surface':    '#FFFFFF',
-    'success':    '#28C76F',
-    'warning':    '#FF9F43',
-    'error':      '#EA5455',
-    'info':       '#00CFE8',
+    'surface': '#FFFFFF',
+    'success': '#28C76F',
+    'warning': '#FF9F43',
+    'error': '#EA5455',
+    'info': '#00CFE8',
     'on-background': '#111827',
-    'on-surface':    '#111827',
+    'on-surface': '#111827',
   },
 }
 
