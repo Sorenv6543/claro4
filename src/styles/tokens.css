@@ -1,6 +1,19 @@
 :root {
+  /* Layout */
   --claro-app-bar-height:         var(--app-bar-height, 64px);
   --claro-drawer-width:           380px;
   --claro-content-padding:        24px;
   --claro-content-padding-mobile: 12px;
+
+  /* Colors — neutral baseline, replace during restyle */
+  --claro-primary:        #6B7280;
+  --claro-primary-dark:   #4B5563;
+  --claro-fg1:            #111827;
+  --claro-fg3:            #6B7280;
+  --claro-surface-variant:#F3F4F6;
+  --claro-shadow-sm:      0 1px 3px rgba(0, 0, 0, 0.12);
+  --claro-success:        #28C76F;
+  --claro-warning:        #FF9F43;
+  --claro-error:          #EA5455;
+  --claro-info:           #00CFE8;
 }
