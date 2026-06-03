@@ -11,3 +11,9 @@
   })
 
     </script>
+
+<style scoped>
+.owner-settings {
+  height: 100%;
+}
+</style>
