@@ -10,9 +10,3 @@
     name: 'AdminCalendar',
   })
 </script>
-
-<style scoped>
-.admin-calendar {
-  height: 100%;
-}
-</style>

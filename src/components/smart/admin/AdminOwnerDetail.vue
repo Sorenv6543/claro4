@@ -672,10 +672,3 @@
 
   onMounted(fetchOwnerData)
 </script>
-
-<style scoped>
-.admin-owner-detail {
-  min-height: 100vh;
-  background: rgb(var(--v-theme-background));
-}
-</style>

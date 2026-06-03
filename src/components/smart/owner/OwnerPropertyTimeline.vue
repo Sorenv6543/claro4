@@ -261,14 +261,3 @@
     return events.toSorted((a, b) => a.day - b.day || a.time.localeCompare(b.time))
   })
 </script>
-
-<style scoped>
-.opt-page {
-  min-height: calc(100vh - var(--claro-app-bar-height, 64px));
-  background: var(--claro-background);
-}
-
-.opt-mobile {
-  height: calc(100vh - var(--claro-app-bar-height, 64px) - 72px);
-}
-</style>

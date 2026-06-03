@@ -506,38 +506,3 @@
     }
   }
 </script>
-
-<style scoped>
-.property-view-page {
-  background: rgb(var(--v-theme-background));
-}
-
-.stat-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  padding: 16px 0;
-  border-bottom: 1px solid rgba(var(--v-border-color), var(--v-border-opacity));
-}
-
-.stat-item:last-child {
-  border-bottom: none;
-}
-
-.stat-value {
-  font-size: 2rem;
-  font-weight: 600;
-  color: rgb(var(--v-theme-primary));
-}
-
-.stat-label {
-  font-size: 0.875rem;
-  color: rgb(var(--v-theme-on-surface-variant));
-  margin-top: 4px;
-}
-
-.gap-2 {
-  gap: 8px;
-}
-</style>

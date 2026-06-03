@@ -10,8 +10,3 @@
     name: 'AdminCleaners',
   })
 </script>
-<style scoped>
-.admin-cleaners {
-  height: 100%;
-}
-</style>

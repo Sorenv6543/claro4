@@ -14,9 +14,3 @@
     name: 'Reports',
   })
 </script>
-
-<style scoped>
-.reports-page {
-  height: 100vh;
-}
-</style>

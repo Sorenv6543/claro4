@@ -225,23 +225,3 @@
   // Initialize
   checkInstallDismissal()
 </script>
-
-<style scoped>
-.pwa-notifications {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1100;
-}
-
-.v-banner {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Ensure banners stack properly */
-.v-banner + .v-banner {
-  position: relative;
-  top: 0;
-}
-</style>

@@ -141,39 +141,3 @@
     return Math.round((props.cleaningsCompleted / props.cleaningsTotal) * 100)
   })
 </script>
-
-<style scoped>
-.welcome-banner {
-  background: linear-gradient(135deg, rgb(var(--v-theme-surface)) 0%, rgba(var(--v-theme-primary), 0.04) 100%);
-}
-
-.stat-pill {
-  min-width: 140px;
-}
-
-.stat-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-
-.stat-icon--blue {
-  background: rgba(var(--v-theme-primary), 0.12);
-}
-
-.stat-icon--green {
-  background: rgba(var(--v-theme-success), 0.12);
-}
-
-.stat-icon--orange {
-  background: rgba(var(--v-theme-warning), 0.12);
-}
-
-.donut-wrapper {
-  position: relative;
-}
-</style>

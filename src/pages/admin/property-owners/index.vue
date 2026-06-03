@@ -12,10 +12,3 @@
     name: 'AdminPropertyOwnersPage',
   })
 </script>
-
-<style scoped>
-.admin-property-owners-page {
-  height: 100vh;
-  width: 100%;
-}
-</style>

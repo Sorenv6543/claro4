@@ -11,9 +11,3 @@
     name: 'AdminProperties',
   })
 </script>
-
-<style scoped>
-.admin-properties {
-  height: 100%;
-}
-</style>

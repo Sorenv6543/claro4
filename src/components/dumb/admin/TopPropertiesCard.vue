@@ -53,12 +53,3 @@
     properties: Array<{ name: string, color: string, bookingCount: number }>
   }>()
 </script>
-
-<style scoped>
-.property-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-</style>

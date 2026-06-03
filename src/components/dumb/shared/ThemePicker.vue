@@ -159,29 +159,3 @@
     }
   })
 </script>
-
-<style scoped>
-.theme-swatch {
-  cursor: pointer;
-  position: relative;
-  transition: transform 0.2s;
-  border-radius: 50% !important;
-}
-
-.theme-swatch:hover {
-  transform: scale(1.1);
-}
-
-.theme-swatch-active {
-  transform: scale(1.1);
-  box-shadow: 0 0 0 2px white, 0 0 0 4px var(--v-theme-primary);
-}
-
-.theme-swatch-icon {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  font-size: 16px !important;
-}
-</style>

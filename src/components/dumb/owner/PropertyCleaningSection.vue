@@ -140,20 +140,3 @@
 
   defineExpose({ editing, isDirty, closeEdit })
 </script>
-
-<style scoped>
-.section-field {
-  margin-bottom: 12px;
-}
-.field-label {
-  display: block;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: rgb(var(--v-theme-primary));
-  margin-bottom: 2px;
-}
-.not-set {
-  color: rgb(var(--v-theme-on-surface-variant));
-  font-style: italic;
-}
-</style>

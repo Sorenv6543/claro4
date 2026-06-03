@@ -73,21 +73,3 @@
     return 'warning'
   }
 </script>
-
-<style scoped>
-.color-dot {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-}
-
-.property-row {
-  background: rgba(var(--v-theme-on-surface), 0.03);
-  border-radius: var(--claro-radius-sm, 2px);
-  transition: background-color 0.15s ease;
-}
-
-.property-row:hover {
-  background: rgba(var(--v-theme-on-surface), 0.06);
-}
-</style>

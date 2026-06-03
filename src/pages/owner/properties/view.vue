@@ -10,8 +10,3 @@
 
   defineOptions({ name: 'OwnerPropertyViewPage' })
 </script>
-<style scoped>
-.property-view {
-  height: 100vh;
-}
-</style>

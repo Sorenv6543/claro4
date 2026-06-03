@@ -154,11 +154,3 @@
     return new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
   }
 </script>
-
-<style scoped>
-.owner-header {
-  border-radius: inherit;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-</style>

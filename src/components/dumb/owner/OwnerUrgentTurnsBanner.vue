@@ -45,10 +45,3 @@
     return `${displayHour}:${minutes} ${ampm}`
   }
 </script>
-
-<style scoped>
-.urgent-turns-banner {
-  background: rgba(var(--v-theme-warning), 0.10);
-  border: 1px solid rgba(var(--v-theme-warning), 0.25);
-}
-</style>

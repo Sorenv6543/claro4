@@ -322,22 +322,5 @@
   }
 </script>
 
-<style scoped>
-/* Ensure nav icon colors follow active state, not forced overrides */
-.v-list-item :deep(.v-list-item__prepend .v-icon) {
-  opacity: 0.75;
-}
-
-.v-list-item--active :deep(.v-list-item__prepend .v-icon) {
-  opacity: 1;
-}
-</style>
-
 <!-- Non-scoped: temporary drawers are teleported to v-app root, scoped CSS can't reach them.
      Scoped to .admin-layout to avoid affecting owner drawers. -->
-<style>
-.admin-layout .v-navigation-drawer--temporary {
-  top: var(--app-bar-height, 64px) !important;
-  height: calc(100% - var(--app-bar-height, 64px)) !important;
-}
-</style>

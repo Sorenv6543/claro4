@@ -47,12 +47,3 @@
     />
   </svg>
 </template>
-
-<style scoped>
-.claro-wordmark {
-  display: block;
-  height: 38px;
-  width: auto;
-  flex-shrink: 0;
-}
-</style>

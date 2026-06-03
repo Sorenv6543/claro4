@@ -101,37 +101,3 @@
     return dots
   }
 </script>
-
-<style scoped>
-.calendar-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 2px;
-}
-
-.day-header {
-  padding: 4px 0;
-}
-
-.day-cell {
-  aspect-ratio: 1;
-  border-radius: 2px;
-  cursor: default;
-  min-height: 36px;
-}
-
-.today-cell {
-  background: rgba(var(--v-theme-primary), 0.1);
-  border: 1px solid rgba(var(--v-theme-primary), 0.3);
-}
-
-.dot-row {
-  height: 6px;
-}
-
-.booking-dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-}
-</style>

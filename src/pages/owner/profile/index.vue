@@ -11,9 +11,3 @@
     name: 'OwnerProfile',
   })
 </script>
-
-<style scoped>
-.owner-profile {
-    height: 100vh;
-}
-</style>

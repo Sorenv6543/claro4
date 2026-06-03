@@ -364,25 +364,3 @@
     }
   })
 </script>
-
-<style scoped>
-.v-card {
-  border-radius: 12px;
-}
-
-.v-card-title {
-  background-color: rgba(var(--v-theme-surface), 0.8);
-}
-
-.border-b {
-  border-bottom: 1px solid rgba(var(--v-border-color), 0.12);
-}
-
-.text-medium-emphasis {
-  opacity: 0.7;
-}
-
-:deep(.v-input__details) {
-  margin-top: 4px;
-}
-</style>

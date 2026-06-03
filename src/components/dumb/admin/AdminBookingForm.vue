@@ -852,13 +852,3 @@
     }
   })
 </script>
-
-<style scoped>
-.v-card-title {
-  background-color: rgb(var(--v-theme-surface-variant));
-}
-
-.v-alert {
-  border-left: 4px solid rgb(var(--v-theme-primary));
-}
-</style>

@@ -560,21 +560,3 @@
     }
   })
 </script>
-
-<style scoped>
-.v-card {
-  border-radius: 2px;
-}
-
-.v-card-title {
-  background-color: rgba(var(--v-theme-surface), 0.8);
-}
-
-:deep(.v-input__details) {
-  margin-top: 4px;
-}
-
-:deep(.v-field__input) {
-  min-height: 48px;
-}
-</style>

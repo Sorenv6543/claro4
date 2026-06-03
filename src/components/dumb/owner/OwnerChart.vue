@@ -100,16 +100,3 @@
     ...props.options,
   }))
 </script>
-
-<style scoped>
-.owner-chart__title {
-  display: flex;
-  align-items: center;
-  font-size: 1rem;
-  font-weight: var(--claro-font-weight-semibold);
-}
-
-.owner-chart__body {
-  padding-top: 0 !important;
-}
-</style>

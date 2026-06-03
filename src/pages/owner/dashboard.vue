@@ -11,9 +11,3 @@
     name: 'OwnerDashboard',
   })
 </script>
-
-<style scoped>
-.owner-dashboard {
-  height: 100%;
-}
-</style>

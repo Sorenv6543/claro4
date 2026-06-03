@@ -240,13 +240,3 @@
     return colors[tier] || 'primary'
   }
 </script>
-
-<style scoped>
-.property-card {
-  transition: border-color 0.2s;
-}
-
-.property-card:hover {
-  border-color: rgb(var(--v-theme-primary));
-}
-</style>

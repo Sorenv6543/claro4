@@ -511,25 +511,3 @@
     }
   })
 </script>
-
-<style scoped>
-.v-card-title {
-  background-color: rgb(var(--v-theme-primary));
-  color: #fff;
-}
-
-.v-card-actions {
-  background-color: rgb(var(--v-theme-surface-variant));
-}
-
-/* Mobile optimizations */
-@media (max-width: 600px) {
-  .v-dialog {
-    margin: 16px;
-  }
-
-  .v-card {
-    margin: 0;
-  }
-}
-</style>

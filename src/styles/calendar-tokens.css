@@ -1,35 +1,8 @@
-/* Calendar design tokens — Materio flat style.
-   Vuetify's --v-theme-* vars expand to comma-separated RGB (e.g. "46,38,61"),
-   so only the legacy rgba(R,G,B,a) syntax composes correctly. The modern
-   rgb(R G B / a) space/slash form silently produces invalid CSS here. */
 :root {
-  /* Grid */
-  --cal-border:                    rgba(var(--v-theme-on-surface), 0.1);
-  --cal-bg:                        rgb(var(--v-theme-surface));
-  --cal-today-bg:                  rgba(var(--v-theme-primary), 0.08);
-  --cal-day-num:                   rgba(var(--v-theme-on-surface), 0.72);
-  --cal-day-num-muted:             rgba(var(--v-theme-on-surface), 0.28);
-
-  /* Header row */
-  --cal-header-bg:                 rgba(var(--v-theme-primary), 0.09);
-  --cal-header-text:               rgb(var(--v-theme-primary));
-
-  /* Event pill */
-  --cal-event-radius:              2px;
-  --cal-event-text:                #fff;
-  --cal-event-padding:             4px 8px;
-  --cal-event-font-weight:         500;
-
-  /* Transition events (events-mode IN/TURN/OUT) — IN/TURN map to theme tokens;
-     OUT yellow is hardcoded because the theme has no yellow token. */
-  --cal-event-out-bg:              #FDD835;
-  --cal-event-out-text:            rgb(var(--v-theme-on-surface));
-
-  /* Status */
-  --cal-event-completed-opacity:   0.6;
-
-  /* Time chip */
-  --cal-time-chip-bg:              rgba(0, 0, 0, 0.18);
-  --cal-time-chip-text:            #fff;
-  --cal-time-chip-radius:          2px;
+  --cal-border:        rgba(0, 0, 0, 0.1);
+  --cal-bg:            #ffffff;
+  --cal-today-bg:      rgba(0, 0, 0, 0.04);
+  --cal-event-radius:  2px;
+  --cal-event-text:    #fff;
+  --cal-event-padding: 4px 8px;
 }

@@ -778,9 +778,3 @@
     </v-window>
   </v-container>
 </template>
-
-<style scoped>
-.v-list-item-subtitle {
-  margin-top: 8px;
-}
-</style>

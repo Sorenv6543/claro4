@@ -696,17 +696,3 @@
     }
   })
 </script>
-
-<style scoped>
-.v-card-title {
-  background-color: rgb(var(--v-theme-surface-variant));
-}
-
-.v-list-item:hover {
-  background-color: rgb(var(--v-theme-surface-variant));
-}
-
-.bg-primary-lighten-5 {
-  background-color: rgb(var(--v-theme-primary), 0.1) !important;
-}
-</style>

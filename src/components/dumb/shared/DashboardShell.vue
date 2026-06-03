@@ -20,28 +20,3 @@
     <slot name="footer" />
   </div>
 </template>
-
-<style scoped>
-.dashboard-shell {
-  width: 100%;
-  min-height: 100%;
-  background: var(--claro-background);
-  padding: var(--claro-content-padding);
-}
-
-.dashboard-shell--no-padding {
-  padding: 0;
-}
-
-.dashboard-shell__content {
-  display: flex;
-  flex-direction: column;
-  gap: var(--claro-section-gap);
-}
-
-@media (max-width: 599px) {
-  .dashboard-shell {
-    padding: var(--claro-content-padding-mobile);
-  }
-}
-</style>

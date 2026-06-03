@@ -12,10 +12,3 @@
     name: 'AdminUsersPage',
   })
 </script>
-
-<style scoped>
-.admin-users-page {
-  height: 100vh;
-  width: 100%;
-}
-</style>

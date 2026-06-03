@@ -450,32 +450,3 @@
     fetchAllUsers()
   })
 </script>
-
-<style scoped>
-.admin-system-users {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.stats-section {
-  flex-shrink: 0;
-  background: rgb(var(--v-theme-surface));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
-  padding: 16px 0;
-}
-
-/* Force fixed-layout table so percentage column widths are respected on mobile */
-@media (max-width: 599px) {
-  :deep(.v-table table) {
-    table-layout: fixed;
-    width: 100%;
-  }
-
-  :deep(.v-table td),
-  :deep(.v-table th) {
-    overflow: hidden;
-  }
-}
-</style>

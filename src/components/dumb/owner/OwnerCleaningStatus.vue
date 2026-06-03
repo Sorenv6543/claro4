@@ -78,15 +78,3 @@
     })
   }
 </script>
-
-<style scoped>
-.color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-}
-
-:deep(.dashboard-card__content) {
-  padding: 0 !important;
-}
-</style>

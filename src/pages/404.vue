@@ -12,10 +12,3 @@
 <script setup lang="ts">
 // 404 page component
 </script>
-
-<style scoped>
-.not-found-page {
-  padding: 2rem;
-  text-align: center;
-}
-</style>

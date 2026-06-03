@@ -87,17 +87,3 @@
     }
   }
 </script>
-
-<style scoped>
-:deep(.v-date-picker) {
-  zoom: 0.85;
-}
-
-:deep(.v-date-picker .v-btn) {
-  box-shadow: none !important;
-}
-
-:deep(.v-date-picker-controls .v-btn) {
-  box-shadow: none !important;
-}
-</style>

@@ -10,9 +10,3 @@
     name: 'AdminProfile',
   })
 </script>
-
-<style scoped>
-.admin-profile {
-    height: 100%;
-}
-</style>

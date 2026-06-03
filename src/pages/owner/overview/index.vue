@@ -11,9 +11,3 @@
     name: 'OwnerOverview',
   })
 </script>
-
-<style scoped>
-.owner-overview {
-  height: 100vh;
-}
-</style>

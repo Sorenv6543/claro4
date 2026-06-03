@@ -71,20 +71,3 @@
     return 'success'
   }
 </script>
-
-<style scoped>
-.cleaners-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-}
-
-.cleaner-item {
-  min-width: 80px;
-}
-
-.cleaner-name {
-  max-width: 80px;
-}
-</style>

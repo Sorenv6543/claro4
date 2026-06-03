@@ -760,23 +760,3 @@
     selectedDate.value = newDate
   })
 </script>
-
-<style scoped>
-.admin-calendar-controls {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.v-card-title {
-  background-color: rgb(var(--v-theme-surface-variant));
-}
-
-.v-btn-toggle {
-  width: 100%;
-}
-
-.v-btn-toggle .v-btn {
-  flex: 1;
-}
-</style>

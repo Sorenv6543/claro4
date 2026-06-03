@@ -621,32 +621,3 @@
     }
   }
 </script>
-
-<style scoped>
-.admin-bookings-page {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.property-color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-/* Force fixed-layout table so percentage column widths are respected on mobile */
-@media (max-width: 599px) {
-  :deep(.v-table table) {
-    table-layout: fixed;
-    width: 100%;
-  }
-
-  :deep(.v-table td),
-  :deep(.v-table th) {
-    overflow: hidden;
-  }
-}
-</style>

@@ -10,8 +10,3 @@
     name: 'AdminBookings',
   })
 </script>
-<style scoped>
-.admin-bookings {
-  height: 100%;
-}
-</style>

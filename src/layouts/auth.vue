@@ -79,19 +79,3 @@
   // Get current year for footer
   const currentYear = computed(() => new Date().getFullYear())
 </script>
-
-<style scoped>
-.auth-main {
-  background: radial-gradient(circle,
-    rgb(var(--v-theme-primary-lighten-5)) 1%,
-    rgb(var(--v-theme-primary-darken-2)) 100%
-  );
-  min-height: 100vh;
-}
-
-/* Footer styling */
-.v-footer {
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(var(--v-theme-on-surface), 0.12);
-}
-</style>

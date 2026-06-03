@@ -110,16 +110,3 @@
     return type === 'turn' ? 'warning' : 'info'
   }
 </script>
-
-<style scoped>
-.date-badge {
-  width: 48px;
-  height: 48px;
-  min-width: 48px;
-  border-radius: var(--claro-radius-sm, 2px);
-}
-
-:deep(.dashboard-card__content) {
-  padding: 0 !important;
-}
-</style>

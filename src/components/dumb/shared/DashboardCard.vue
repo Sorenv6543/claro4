@@ -64,34 +64,3 @@
   /** Header row is visible when a title/icon prop is set OR the #header slot is filled */
   const hasHeader = computed(() => !!(props.title || props.icon || slots.header))
 </script>
-
-<style scoped>
-.dashboard-card {
-  padding: var(--claro-card-padding, 0);
-}
-
-.dashboard-card--flat {
-  box-shadow: none !important;
-}
-
-.dashboard-card--accent {
-  background: color-mix(in srgb, var(--card-accent, #7367F0) 8%, transparent) !important;
-  border: 1px solid color-mix(in srgb, var(--card-accent, #7367F0) 25%, transparent) !important;
-}
-
-.dashboard-card__header {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  font-weight: var(--claro-font-weight-semibold, 600);
-  padding: var(--claro-space-lg, 24px) var(--claro-space-lg, 24px) var(--claro-space-sm, 8px);
-}
-
-.dashboard-card__content {
-  padding: var(--claro-space-lg, 24px) !important;
-}
-
-.dashboard-card__actions {
-  padding: var(--claro-space-sm, 8px) var(--claro-space-lg, 24px) !important;
-}
-</style>
