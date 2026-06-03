@@ -227,7 +227,7 @@
   import { useAuthStore } from '@stores/auth'
   import { computed, onMounted, onUnmounted, provide, ref } from 'vue'
   import { useRoute, useRouter } from 'vue-router'
-  import { useDisplay } from 'vuetify'
+  import { useDisplay, useTheme } from 'vuetify'
   import ClaroWordmark from '@/components/dumb/shared/ClaroWordmark.vue'
   import MobileBottomNav from '@/components/dumb/shared/MobileBottomNav.vue'
   import GlobalBookingModal from '@/components/smart/owner/GlobalBookingModal.vue'
@@ -266,6 +266,7 @@
   const initError = ref<Error | null>(null)
   provide('appStatus', { isReady, initError })
 
+  const vuetifyTheme = useTheme()
   let calendarLabelInterval: ReturnType<typeof setInterval> | null = null
 
   function openBookingModal () {
@@ -273,6 +274,9 @@
   }
 
   onMounted(() => {
+    const savedTheme = localStorage.getItem('property-scheduler-theme')
+    if (savedTheme) vuetifyTheme.global.name.value = savedTheme
+
     initRealtimeSync()
       .then(() => {
         isReady.value = true

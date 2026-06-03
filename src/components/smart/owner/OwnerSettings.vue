@@ -373,6 +373,7 @@
       ? (window.matchMedia?.('(prefers-color-scheme: dark)')?.matches ? 'dark' : 'light')
       : preference
     vuetifyTheme.global.name.value = resolved
+    localStorage.setItem('property-scheduler-theme', resolved)
   }
 
   // --- Tab state ---
@@ -401,6 +402,7 @@
     form.language = user.value.language || 'en'
     form.timezone = user.value.timezone || 'UTC'
     form.theme = user.value.theme || 'system'
+    applyTheme(form.theme)
   }
 
   watch(user, populateAccountForm, { immediate: true })
