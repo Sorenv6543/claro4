@@ -1,43 +1,38 @@
 /**
- * tokens.css — Design Token Single Source of Truth
+ * tokens.css — Non-Color Design Tokens + Color Aliases
  *
- * Two-Way Sync Protocol (Pencil MCP):
- * These tokens are bootstrapped from src/plugins/vuetify.ts theme values.
- * In sessions where Pencil MCP is available, run the sync to pull live
- * computed values from the browser and update the hex values here.
- * Conversely, editing a token here and re-syncing will propagate the
- * change back into Vuetify's runtime theme via CSS custom property
- * overrides. Never edit hex values in two places — always treat this
- * file as the canonical source and vuetify.ts as the registration point.
+ * COLOR SOURCE OF TRUTH: src/plugins/vuetify.ts
+ * Color tokens here are aliases to Vuetify theme vars — edit hex values
+ * in vuetify.ts only. Vuetify registers them as --v-theme-* RGB tuples;
+ * these aliases wrap them in rgb() for direct CSS use.
  *
- * Prefix convention: all properties use --claro- to avoid collisions
- * with Vuetify's own --v- namespace.
+ * NON-COLOR TOKENS (spacing, typography, radii, motion, shadows, layout)
+ * live here exclusively — no Vuetify equivalent exists for them.
+ *
+ * Prefix convention: --claro-* avoids collision with Vuetify's --v-* namespace.
  */
 
 :root {
   /* ─── Colors: Primary Palette ─────────────────────────────────────── */
-  --claro-primary:        #7367F0;
-  --claro-primary-light:  #9E95F5;
-  --claro-primary-dark:   #5E52EE;
+  --claro-primary:        rgb(var(--v-theme-primary));
+  --claro-primary-light:  rgb(var(--v-theme-primary-light));
+  --claro-primary-dark:   rgb(var(--v-theme-primary-dark));
   --claro-primary-tint:   #F0EEFF;
-  --claro-secondary:      #A8AAAE;
-  /* 12.5% tint for soft backgrounds / overlays (CSS-side only — the
-     Vuetify theme has no `accent` semantic; consumers read this var
-     directly). */
+  --claro-secondary:      rgb(var(--v-theme-secondary));
   --claro-accent:         rgba(115, 103, 240, 0.125);
   --claro-on-primary:     #FFFFFF;
 
   /* ─── Colors: Surfaces ────────────────────────────────────────────── */
-  --claro-background:      #F5F5F9;
-  --claro-surface:         #FFFFFF;
-  --claro-surface-variant: #F5F5F9;
-  --claro-card-bg:         #FFFFFF;
+  --claro-background:      rgb(var(--v-theme-background));
+  --claro-surface:         rgb(var(--v-theme-surface));
+  --claro-surface-variant: rgb(var(--v-theme-surface-variant));
+  --claro-card-bg:         rgb(var(--v-theme-card-bg));
 
   /* ─── Colors: Semantic ────────────────────────────────────────────── */
-  --claro-success: #28C76F;
-  --claro-warning: #FF9F43;
-  --claro-error:   #EA5455;
-  --claro-info:    #00CFE8;
+  --claro-success: rgb(var(--v-theme-success));
+  --claro-warning: rgb(var(--v-theme-warning));
+  --claro-error:   rgb(var(--v-theme-error));
+  --claro-info:    rgb(var(--v-theme-info));
 
   /* ─── Colors: Tonal Variants (16% — chip backgrounds, soft fills) ── */
   --claro-primary-tonal: rgba(115, 103, 240, 0.16);
@@ -47,9 +42,9 @@
   --claro-info-tonal:    rgba(0, 207, 232, 0.16);
 
   /* ─── Colors: Domain-Specific ─────────────────────────────────────── */
-  --claro-turn-urgent:       #EA5455;
-  --claro-turn-standard:     #FF9F43;
-  --claro-booking-standard:  #28C76F;
+  --claro-turn-urgent:       rgb(var(--v-theme-turn-urgent));
+  --claro-turn-standard:     rgb(var(--v-theme-turn-standard));
+  --claro-booking-standard:  rgb(var(--v-theme-booking-standard));
 
   /* ─── Colors: Property Accents ────────────────────────────────────── */
   /* User-selectable palette (matches PROPERTY_COLORS in src/utils/constants.ts).
@@ -83,7 +78,7 @@
   --claro-text-secondary: var(--claro-fg3);
 
   /* ─── Colors: Borders ─────────────────────────────────────────────── */
-  --claro-divider:        #E8E8E8;
+  --claro-divider:        rgb(var(--v-theme-divider));
   --claro-border:         #E8E8E8;
   --claro-border-strong:  #D4D4DB;
 
