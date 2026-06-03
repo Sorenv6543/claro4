@@ -1,10 +1,9 @@
-// Vuetify plugin configuration
+// Vuetify plugin configuration — single source of truth for all color hex values.
 // https://vuetifyjs.com/en/introduction/why-vuetify/#feature-guides
 //
-// Color values here MUST match src/styles/tokens.css.
-// Vuetify requires hex values (it generates --v-theme-* RGB tuples).
-// Non-color tokens (spacing, radii, shadows, layout) live in tokens.css only.
-// Two-way Pencil sync updates both files.
+// Vuetify requires hex values and generates --v-theme-* RGB tuples at runtime.
+// tokens.css aliases those tuples via rgb(var(--v-theme-*)): edit hex values here only.
+// Non-color tokens (spacing, radii, shadows, layout) live in tokens.css exclusively.
 
 // Vuetify
 import type { ThemeDefinition } from 'vuetify'
@@ -18,7 +17,6 @@ import '@mdi/font/css/materialdesignicons.css'
 import 'vuetify/styles'
 
 // default light theme
-// Color values must stay in sync with src/styles/tokens.css (canonical source).
 
 const lightTheme: ThemeDefinition = {
   dark: false,

@@ -35,14 +35,6 @@ pnpm lint                   # ESLint with auto-fix
 pnpm analyze:bundle         # Bundle size analysis
 pnpm check:bundle           # Check bundle against size budgets
 pnpm perf:analysis          # Performance analysis (bundle + regression tests)
-
-# Design tokens (Figma ↔ code sync)
-pnpm tokens:export          # Export tokens to tokens/*.json
-pnpm tokens:import          # Import tokens from tokens/*.json into CSS/SCSS
-
-# Figma Code Connect
-pnpm figma:connect          # Verify Code Connect links
-pnpm figma:publish          # Publish Code Connect stories to Figma
 ```
 
 ## Architecture
@@ -72,7 +64,7 @@ Owner and Admin have separate component trees throughout:
 
 - `src/composables/owner/` - Owner-specific: `useOwnerBookings`, `useOwnerProperties`, `useOwnerCalendarState`, `useOwnerErrorHandler`
 - `src/composables/admin/` - Admin-specific: `useAdminBookings`, `useCleanerManagement`, `useAdminProperties`, `useAdminUserManagement`, `useAdminCalendarState`, `useAdminErrorHandler`, `useTimeAwareMode`
-- `src/composables/shared/` - Cross-cutting: `useAuth`, `useCalendarState`, `useCachedComputed`, `useComponentEventLogger`, `useErrorHandler`, `useLoadingState`, `usePerformanceMonitor`, `usePreviewTheme`, `usePWA`, `usePushNotifications`, `useResponsiveLayout`, `useSwipeNavigation`, `useToday`
+- `src/composables/shared/` - Cross-cutting: `useAuth`, `useCalendarState`, `useCachedComputed`, `useComponentEventLogger`, `useErrorHandler`, `useLoadingState`, `usePerformanceMonitor`, `usePWA`, `usePushNotifications`, `useResponsiveLayout`, `useSwipeNavigation`, `useToday`
 - `src/composables/supabase/` - Supabase integration: `useSupabaseAuth`, `useSupabaseBookings`, `useSupabaseProperties`, `useRealtimeSync`, `useSupabaseCleanerTeams`, `useSupabaseUserProfiles`
 - Reuse existing composables before adding new Supabase calls
 - `useOwnerProperties()` returns `myProperties` (not `properties`): `const { myProperties } = useOwnerProperties()`
@@ -178,9 +170,16 @@ onMounted(() => {
 - CSS imports and browser globals (`ResizeObserver`, `matchMedia`) are also mocked in setup
 - Vitest aliases mirror the vite path aliases — use `@/` imports freely in tests
 
-## Figma Code Connect
+## Design Tokens
 
-Some dumb components have a paired `.figma.ts` file (e.g. `ClaroWordmark.figma.ts`, `ConfirmationDialog.figma.ts`) for Figma Code Connect. When creating new dumb components that should be linked to Figma, add a matching `.figma.ts` alongside the `.vue` file. Publish with `pnpm figma:publish`.
+Two non-overlapping sources of truth:
+
+| File | Owns |
+|------|------|
+| `src/plugins/vuetify.ts` | All color hex values (light + dark themes) |
+| `src/styles/tokens.css` | Spacing, typography, radii, motion, shadows, layout + CSS aliases for colors |
+
+Color aliases in `tokens.css` use `rgb(var(--v-theme-*))` — edit hex values in `vuetify.ts` only. Components continue using `var(--claro-*)` unchanged; the aliases resolve through Vuetify's theme vars at runtime. Non-color tokens (spacing, radii, motion, shadows) have no Vuetify equivalent and live in `tokens.css` exclusively.
 
 ## Vuetify UI/UX
 
