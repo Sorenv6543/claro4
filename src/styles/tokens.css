@@ -69,10 +69,10 @@
      fg2 = secondary (72%) — card subtitles, supporting copy
      fg3 = tertiary (50%) — captions, metadata, eyebrow text, page subheadings
      fg4 = disabled (28%) — disabled inputs, dimmed/inactive UI */
-  --claro-fg1: #2E263D;
-  --claro-fg2: rgba(46, 38, 61, 0.72);
-  --claro-fg3: rgba(46, 38, 61, 0.50);
-  --claro-fg4: rgba(46, 38, 61, 0.28);
+  --claro-fg1: rgb(var(--v-theme-on-surface));
+  --claro-fg2: rgba(var(--v-theme-on-surface), 0.72);
+  --claro-fg3: rgba(var(--v-theme-on-surface), 0.50);
+  --claro-fg4: rgba(var(--v-theme-on-surface), 0.28);
 
   /* Aliases for "text-on-X" semantic surfaces. */
   --claro-on-background:  var(--claro-fg1);
