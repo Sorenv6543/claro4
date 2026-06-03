@@ -25,10 +25,6 @@
 
   import LoadingSpinner from '@/components/dumb/shared/LoadingSpinner.vue'
   import PWANotificationsEnhanced from '@/components/dumb/shared/PWANotificationsEnhanced.vue'
-  import { usePreviewTheme } from '@/composables/shared/usePreviewTheme'
-
-  usePreviewTheme()
-
   function lazyLayout (loader: () => Promise<any>) {
     return defineAsyncComponent({
       loader,
