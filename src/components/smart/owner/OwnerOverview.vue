@@ -1005,7 +1005,7 @@
 
 /* ── Timeline card ── */
 .tl-card {
-  background: #ffffff;
+  background: var(--claro-card-bg);
   border: 1px solid var(--claro-border);
   border-radius: var(--claro-radius-sm);
   padding: 16px 20px;
