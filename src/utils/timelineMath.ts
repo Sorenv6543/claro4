@@ -70,6 +70,14 @@ export function fmt12 (timeStr: string): string {
 }
 
 /**
+ * Get current time in 12h format.
+ */
+export function fmt12Now(): string {
+  const now = new Date()
+  return fmt12(`${now.getHours()}:${now.getMinutes()}`)
+}
+
+/**
  * Build a compact chip label for the desktop timeline, e.g. "2:30pm Out",
  * "4pm In", "11am Turn!".
  *
