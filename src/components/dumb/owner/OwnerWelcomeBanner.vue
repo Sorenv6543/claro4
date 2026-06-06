@@ -80,6 +80,7 @@
   const props = defineProps<{
     // Mode A: greeting (overview)
     userName?: string
+    greeting?: string
     // Mode B: page title (other pages)
     pageTitle?: string
     subtitle?: string
@@ -91,15 +92,10 @@
     weeklyOccupancyPct?: number
   }>()
 
-  const timeGreeting = computed(() => {
-    const hour = new Date().getHours()
-    if (hour < 12) return 'Good morning'
-    if (hour <= 16) return 'Good afternoon'
-    return 'Good evening'
-  })
-
   const heading = computed(() =>
-    props.pageTitle ?? (props.userName ? `${timeGreeting.value}, ${props.userName}` : 'Claro'),
+    props.pageTitle ?? (props.userName
+      ? `${props.greeting ?? 'Good morning'}, ${props.userName}`
+      : 'Claro'),
   )
 
   const resolvedSubtitle = computed(() =>

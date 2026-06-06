@@ -46,6 +46,7 @@
     <v-row class="mb-6">
       <v-col cols="12">
         <OwnerWelcomeBanner
+          :greeting="timeGreeting"
           :turns-today-count="myTodayTurns.length"
           :user-name="userName"
         />
@@ -68,9 +69,10 @@
     </v-row>
 
     <!-- Stat row as Bento blocks -->
-    <v-row class="bento-grid mb-6">
-      <v-col v-for="stat in rangeStats" :key="stat.label" cols="6" md="3">
+    <v-row class="mb-6">
+      <v-col v-for="stat in rangeStats" :key="stat.label" cols="6" md="4">
         <StatCard
+          compact
           :color="stat.urgent ? 'error' : 'primary'"
           :icon="stat.urgent ? 'mdi-alert-circle' : 'mdi-chart-line'"
           :label="stat.label"
@@ -641,7 +643,6 @@
       }
     }
     return [
-      { n: unassignedBookingCount.value, label: 'Unassigned', urgent: unassignedBookingCount.value > 0 },
       { n: checkouts, label: 'Check-outs', urgent: false },
       { n: checkins, label: 'Check-ins', urgent: false },
       { n: turns, label: 'Turns', urgent: urgentTurns.value.length > 0 },
@@ -757,6 +758,12 @@
   // ── Current time (for dbar NOW line) ─────────────────────────────────────
   const currentHour = ref(new Date().getHours())
   const currentMin = ref(new Date().getMinutes())
+
+  const timeGreeting = computed(() => {
+    if (currentHour.value < 12) return 'Good morning'
+    if (currentHour.value <= 16) return 'Good afternoon'
+    return 'Good evening'
+  })
 
   // Desktop dbar position helpers — thin reactive wrappers around timelineMath utilities
   const deskNowPct = computed(() =>
