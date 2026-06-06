@@ -4,10 +4,6 @@ import { useSupabaseUserProfiles } from '@/composables/supabase/useSupabaseUserP
 import { supabase } from '@/plugins/supabase'
 import { useUserProfileStore } from '@/stores/userProfile'
 
-// Module-level singleton state
-const loading = ref(false)
-const error = ref<string | null>(null)
-
 /**
  * Helper to call the admin-users edge function.
  * The function verifies the caller is an admin via JWT, then uses the
@@ -39,6 +35,9 @@ function extractErrorMessage (err: unknown, fallback: string): string {
 }
 
 export function useAdminUserManagement () {
+  const loading = ref(false)
+  const error = ref<string | null>(null)
+
   const supaUserProfiles = useSupabaseUserProfiles()
   const userProfileStore = useUserProfileStore()
 

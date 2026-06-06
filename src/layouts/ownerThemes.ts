@@ -10,11 +10,11 @@ export interface ThemeSwatch {
 }
 
 export const THEMES: ThemeSwatch[] = [
-  { id: 'light', label: 'Light', primary: '#1976D2', background: '#1a60ca', surface: '#9b6c6c' },
-  { id: 'darkTeal', label: 'Dark Teal', primary: '#26A69A', background: '#121212', surface: '#1E1E1E' },
+  { id: 'light', label: 'Light', primary: '#1976D2', background: '#F5F5F9', surface: '#ffffff' },
+  { id: 'dark', label: 'Dark', primary: '#1976D2', background: '#1C1B2D', surface: '#28243D' },
 ]
 
 // Theme keys registered in vuetify.ts — used to verify THEMES stays in sync.
 export const REGISTERED_THEME_KEYS = [
-  'light', 'darkTeal',
+  'light', 'dark',
 ] as const
