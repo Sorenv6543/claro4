@@ -399,8 +399,8 @@
   const { myBookings, myTodayTurns, fetchMyBookings, deleteMyBooking } = useOwnerBookings()
 
   // ── Range toggle state ─────────────────────────────────────────────────────
-  const RANGE_LABELS = ['Today', '3 days', '7 days']
-  const RANGE_DAYS = [1, 3, 7]
+  const RANGE_LABELS = ['Today', 'Week', '2 Weeks']
+  const RANGE_DAYS = [1, 7, 14]
   const range = ref(0)
 
   const loading = ref(false)
@@ -689,7 +689,10 @@
       if (i === 0) return 'Today'
       const d = new Date(todayStr.value + 'T00:00:00')
       d.setDate(d.getDate() + i)
-      return d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })
+      return d.toLocaleDateString('en-US', {
+        weekday: rangeDays.value > 7 ? 'narrow' : 'short',
+        day: 'numeric',
+      })
     }),
   )
 
@@ -1085,7 +1088,7 @@
 }
 
 .tl-col-hd {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--claro-fg3);
   letter-spacing: 0.07em;
@@ -1106,7 +1109,7 @@
 .tl-multi-grid {
   position: relative;
   flex: 1;
-  height: 30px;
+  height: 48px;
   background: rgba(var(--v-theme-primary), 0.04);
   border: 1px solid rgba(var(--v-theme-primary), 0.10);
   border-radius: 2px;
