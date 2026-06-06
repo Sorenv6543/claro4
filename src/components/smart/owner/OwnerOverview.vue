@@ -42,12 +42,22 @@
   <v-container v-else class="owner-overview" fluid>
     <v-progress-linear v-if="loading" class="mb-4" color="primary" indeterminate />
 
+    <!-- Welcome Banner (Aurora) -->
+    <v-row class="mb-6">
+      <v-col cols="12">
+        <OwnerWelcomeBanner
+          :turns-today-count="myTodayTurns.length"
+          :user-name="userName"
+        />
+      </v-col>
+    </v-row>
+
     <!-- Page header: title + range toggle -->
-    <v-row class="ov-row-header">
+    <v-row class="ov-row-header mb-4">
       <v-col cols="12">
         <div class="ov-header">
           <div class="ov-header-left">
-            <span class="ov-title">Overview</span>
+            <span class="ov-title">Operational Status</span>
             <span class="ov-title-sep">·</span>
             <span class="ov-range-label">{{ RANGE_LABELS[range] }}</span>
           </div>
@@ -57,50 +67,45 @@
       </v-col>
     </v-row>
 
-    <!-- Stat row -->
-    <v-row class="ov-row-stats">
-      <v-col cols="12">
-        <div class="stat-row">
-          <div
-            v-for="stat in rangeStats"
-            :key="stat.label"
-            class="stat-chip"
-            :class="{ 'stat-chip--urgent': stat.urgent }"
-          >
-            <span class="stat-chip-n">{{ stat.n }}</span>
-            <span class="stat-chip-lbl">{{ stat.label }}</span>
-          </div>
-        </div>
+    <!-- Stat row as Bento blocks -->
+    <v-row class="bento-grid mb-6">
+      <v-col v-for="stat in rangeStats" :key="stat.label" cols="6" md="3">
+        <StatCard
+          :color="stat.urgent ? 'error' : 'primary'"
+          :icon="stat.urgent ? 'mdi-alert-circle' : 'mdi-chart-line'"
+          :label="stat.label"
+          :value="stat.n"
+        />
       </v-col>
     </v-row>
 
     <!-- Urgent banner (today only) -->
-    <v-row v-if="urgentTurns.length > 0" class="ov-row-urgent">
+    <v-row v-if="urgentTurns.length > 0" class="ov-row-urgent mb-8">
       <v-col cols="12">
-        <div class="triage-banner triage-banner--urgent">
+        <div class="triage-banner triage-banner--urgent glass-card">
           <div class="triage-icon triage-icon--urgent">
-            <v-icon aria-hidden="true" color="error" size="18">mdi-alert-circle-outline</v-icon>
+            <v-icon aria-hidden="true" color="error" size="24">mdi-alert-circle</v-icon>
           </div>
 
           <div class="triage-body">
-            <div class="triage-title">Urgent turn · {{ urgentTurns[0].property }}</div>
-
+            <div class="triage-title">Urgent turn required</div>
             <div class="triage-sub">
-              Guests out {{ fmt12(urgentTurns[0].checkoutTime) }} · new guests in {{ fmt12(urgentTurns[0].checkinTime) }} · same-day turn
+              {{ urgentTurns[0].property }} · Guests out {{ fmt12(urgentTurns[0].checkoutTime) }}
             </div>
           </div>
 
-          <v-btn color="error" size="small" variant="tonal" @click="handleDayBarOpenBooking(urgentTurns[0].id)">
-            View details
+          <v-btn color="error" rounded="pill" variant="flat" @click="handleDayBarOpenBooking(urgentTurns[0].id)">
+            Resolve
           </v-btn>
         </div>
       </v-col>
     </v-row>
 
-    <!-- Timeline card -->
-    <v-row class="ov-row-timeline">
-      <v-col cols="12">
-        <div class="tl-card">
+    <!-- Timeline & Upcoming as Large Bento blocks -->
+    <v-row class="bento-grid">
+      <!-- Timeline block -->
+      <v-col cols="12" lg="8">
+        <div class="tl-card glass-card">
           <div class="tl-card-hd">
             <span>Schedule</span>
             <span class="tl-card-hd-sep">·</span>
@@ -109,19 +114,16 @@
             <div v-if="range === 0" class="tl-legend">
               <div class="tl-legend-item">
                 <span class="tl-legend-mark tl-legend-mark--checkin" />
-                Check-in
+                In
               </div>
-
               <div class="tl-legend-item">
                 <span class="tl-legend-mark tl-legend-mark--checkout" />
-                Check-out
+                Out
               </div>
-
               <div class="tl-legend-item">
                 <span class="tl-legend-mark tl-legend-mark--turn" />
                 Turn
               </div>
-
               <div class="tl-legend-item">
                 <span class="tl-legend-mark tl-legend-mark--urgent" />
                 Urgent
@@ -271,17 +273,15 @@
           </template>
         </div>
       </v-col>
-    </v-row>
 
-    <!-- Unified Upcoming list -->
-    <v-row class="ov-row-details">
-      <v-col cols="12">
-        <div class="tl-card">
-          <div class="tl-card-hd">Upcoming</div>
+      <!-- Upcoming block -->
+      <v-col cols="12" lg="4">
+        <div class="tl-card glass-card">
+          <div class="tl-card-hd">Upcoming Activities</div>
 
           <div v-if="unifiedUpcomingEvents.length === 0" class="tl-empty">
             <v-icon aria-hidden="true" class="mr-1" size="16">mdi-calendar-check-outline</v-icon>
-            Nothing scheduled in this window
+            Nothing scheduled
           </div>
 
           <div v-else class="bk-list">
@@ -304,10 +304,8 @@
                 </div>
 
                 <span :class="`bk-type-chip bk-type-chip--${ev.type}`">
-                  {{ ev.type === 'checkin' ? 'Check-in' : ev.type === 'checkout' ? 'Check-out' : 'Turn' }}
+                  {{ ev.type === 'checkin' ? 'In' : ev.type === 'checkout' ? 'Out' : 'Turn' }}
                 </span>
-
-                <span v-if="ev.needsCleaner" class="bk-unassigned-chip">Unassigned</span>
 
                 <v-icon class="bk-chevron" :class="{ 'bk-chevron--open': isUpcomingExpanded(ev.itemKey) }" size="14">
                   mdi-chevron-down
@@ -324,33 +322,34 @@
               </v-expand-transition>
             </div>
           </div>
-
-          <ConfirmationDialog
-            confirm-text="Delete"
-            dangerous
-            :message="`Delete this booking at ${bookingToDeleteName}?`"
-            :open="deleteConfirmOpen"
-            title="Delete Booking"
-            @cancel="deleteConfirmOpen = false"
-            @confirm="confirmDeleteBooking"
-          />
         </div>
       </v-col>
     </v-row>
 
     <!-- Property health rows -->
-    <v-row>
+    <v-row class="mt-8">
       <v-col cols="12">
-        <div class="section-head">
-          <span class="section-title">Your properties</span>
-          <span class="section-count">{{ myProperties.length }}</span>
-          <router-link class="section-action" to="/owner/properties">Manage →</router-link>
+        <div class="section-head mb-4">
+          <span class="section-title">Portfolio</span>
+          <v-spacer />
+          <router-link class="section-action" to="/owner/properties">View All Properties →</router-link>
         </div>
 
-        <PropertyList :items="overviewListItems" :loading="loading" />
+        <div class="glass-card pa-1">
+          <PropertyList :items="overviewListItems" :loading="loading" />
+        </div>
       </v-col>
     </v-row>
 
+    <ConfirmationDialog
+      confirm-text="Delete"
+      dangerous
+      :message="`Delete this booking at ${bookingToDeleteName}?`"
+      :open="deleteConfirmOpen"
+      title="Delete Booking"
+      @cancel="deleteConfirmOpen = false"
+      @confirm="confirmDeleteBooking"
+    />
   </v-container>
 </template>
 
@@ -367,7 +366,9 @@
   import { useDisplay } from 'vuetify'
   import OwnerBookingInlay from '@/components/dumb/owner/OwnerBookingInlay.vue'
   import OwnerDayBar from '@/components/dumb/owner/OwnerDayBar.vue'
+  import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
   import PropertyList from '@/components/dumb/owner/PropertyList.vue'
+  import StatCard from '@/components/dumb/shared/StatCard.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import RangeToggle from '@/components/dumb/shared/RangeToggle.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
@@ -399,7 +400,7 @@
   const { myBookings, myTodayTurns, fetchMyBookings, deleteMyBooking } = useOwnerBookings()
 
   // ── Range toggle state ─────────────────────────────────────────────────────
-  const RANGE_LABELS = ['Today', '3 days', '7 days']
+  const RANGE_LABELS = ['Today', 'Next 3 Days', 'Next 7 Days']
   const RANGE_DAYS = [1, 3, 7]
   const range = ref(0)
 
@@ -916,6 +917,8 @@
 .owner-overview {
   max-width: 1280px;
   padding-bottom: var(--claro-space-2xl);
+  position: relative;
+  z-index: 1;
 }
 
 /* Tiered section rhythm: tight within header group, mid between operational sections, generous before portfolio */
@@ -1007,8 +1010,8 @@
 .tl-card {
   background: var(--claro-card-bg);
   border: 1px solid var(--claro-border);
-  border-radius: var(--claro-radius-sm);
-  padding: 16px 20px;
+  border-radius: var(--claro-radius-card, 24px);
+  padding: 24px;
   box-shadow: var(--claro-shadow-sm);
 }
 
@@ -1021,7 +1024,7 @@
   color: var(--claro-fg3);
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
 }
 
 .tl-card-hd-sep {
@@ -1044,11 +1047,11 @@
 .tl-row-lbl {
   display: flex;
   align-items: center;
-  gap: 6px;
-  width: 130px;
+  gap: 10px;
+  width: 160px;
   flex-shrink: 0;
   font-size: var(--claro-text-sm);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--claro-fg2);
   overflow: hidden;
   white-space: nowrap;
@@ -1060,8 +1063,8 @@
 }
 
 .tl-row-dot {
-  width: 7px;
-  height: 7px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -1070,13 +1073,13 @@
 .tl-multi-wrap {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .tl-col-headers {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .tl-col-hd-row {
@@ -1085,7 +1088,7 @@
 }
 
 .tl-col-hd {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 700;
   color: var(--claro-fg3);
   letter-spacing: 0.07em;
@@ -1100,16 +1103,16 @@
 .tl-multi-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
 }
 
 .tl-multi-grid {
   position: relative;
   flex: 1;
-  height: 30px;
-  background: rgba(var(--v-theme-primary), 0.04);
-  border: 1px solid rgba(var(--v-theme-primary), 0.10);
-  border-radius: 2px;
+  height: 40px;
+  background: rgba(var(--v-theme-on-surface), 0.02);
+  border: 1px solid rgba(var(--v-theme-on-surface), 0.05);
+  border-radius: 12px;
   overflow: hidden;
 }
 
@@ -1119,16 +1122,16 @@
   top: 0;
   bottom: 0;
   width: 1px;
-  background: rgba(var(--v-theme-primary), 0.12);
+  background: rgba(var(--v-theme-on-surface), 0.05);
 }
 
 /* Stay span bars */
 .tl-span-bar {
   position: absolute;
-  top: 4px;
-  bottom: 4px;
-  opacity: 0.22;
-  border-radius: 2px;
+  top: 6px;
+  bottom: 6px;
+  opacity: 0.3;
+  border-radius: 6px;
 }
 
 /* Event day markers */
@@ -1137,43 +1140,44 @@
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 4;
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 700;
-  padding: 2px 5px;
-  border-radius: 2px;
+  padding: 2px 6px;
+  border-radius: 6px;
   color: #fff;
   white-space: nowrap;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.tl-day-marker--checkin  { background: #28C76F; }
+.tl-day-marker--checkin  { background: var(--claro-success); }
 .tl-day-marker--checkout { background: var(--claro-primary); }
-.tl-day-marker--turn     { background: #FF9F43; }
+.tl-day-marker--turn     { background: var(--claro-warning); }
 
 /* ── Unified booking item list ── */
 .bk-list {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
 }
 
 .bk-row-shell {
-  border-radius: var(--claro-radius-sm);
+  border-radius: 16px;
   overflow: hidden;
-  transition: box-shadow var(--claro-dur-slow) var(--claro-ease);
+  transition: all var(--claro-dur-slow) var(--claro-ease);
+  border: 1px solid transparent;
 }
 
 .bk-row-shell--open {
-  box-shadow:
-    0 0 0 1.5px rgba(var(--v-theme-primary), 0.22),
-    0 2px 8px rgba(46, 38, 61, 0.06);
+  background: rgba(var(--v-theme-primary), 0.04);
+  border-color: rgba(var(--v-theme-primary), 0.1);
 }
 
 .bk-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: var(--claro-radius-sm);
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 16px;
   cursor: pointer;
   border: none;
   background: transparent;
@@ -1182,12 +1186,11 @@
   transition: background 0.12s;
 }
 
-.bk-item:hover { background: var(--claro-background); }
-.bk-item:focus-visible { outline: 2px solid var(--claro-primary); outline-offset: 2px; }
+.bk-item:hover { background: rgba(var(--v-theme-on-surface), 0.03); }
 
 .bk-dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -1198,8 +1201,8 @@
 }
 
 .bk-prop {
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  font-weight: 700;
   color: var(--claro-fg1);
   white-space: nowrap;
   overflow: hidden;
@@ -1208,50 +1211,32 @@
 }
 
 .bk-meta {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--claro-fg3);
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .bk-type-chip {
   display: inline-flex;
   align-items: center;
-  padding: 1px 8px;
+  padding: 2px 10px;
   border-radius: 9999px;
-  font-size: 9px;
-  font-weight: 700;
+  font-size: 10px;
+  font-weight: 800;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-.bk-type-chip--checkin  { background: rgba(40, 199, 111, 0.14);  color: #28C76F; }
-.bk-type-chip--checkout { background: rgba(var(--v-theme-primary), 0.12); color: var(--claro-primary); }
-.bk-type-chip--turn     { background: rgba(255, 159, 67, 0.14);  color: #FF9F43; }
-
-.bk-unassigned-chip {
-  display: inline-flex;
-  align-items: center;
-  padding: 1px 8px;
-  border-radius: 9999px;
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  white-space: nowrap;
-  flex-shrink: 0;
-  background: rgba(234, 84, 85, 0.12);
-  color: #EA5455;
-}
+.bk-type-chip--checkin  { background: var(--claro-success-tonal);  color: var(--claro-success); }
+.bk-type-chip--checkout { background: var(--claro-primary-tonal); color: var(--claro-primary); }
+.bk-type-chip--turn     { background: var(--claro-warning-tonal);  color: var(--claro-warning); }
 
 .bk-chevron {
   opacity: 0.30;
   flex-shrink: 0;
-  transition:
-    transform var(--claro-dur-slow) var(--claro-ease),
-    color var(--claro-dur-slow) var(--claro-ease),
-    opacity var(--claro-dur-slow) var(--claro-ease);
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .bk-chevron--open {
@@ -1264,33 +1249,27 @@
 .triage-banner {
   display: flex;
   align-items: center;
-  gap: 14px;
-  padding: 16px 20px;
-  border-radius: var(--claro-radius-sm);
+  gap: 16px;
+  padding: 24px;
+  border-radius: 24px;
   border: 1px solid transparent;
-}
-
-.triage-banner--ok {
-  background: var(--claro-success-tonal);
-  border-color: rgba(40, 199, 111, 0.25);
 }
 
 .triage-banner--urgent {
   background: var(--claro-error-tonal);
-  border-color: rgba(234, 84, 85, 0.25);
+  border-color: rgba(var(--v-theme-error), 0.15);
 }
 
 .triage-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--claro-radius-sm);
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: grid;
   place-items: center;
   flex-shrink: 0;
 }
 
-.triage-icon--ok     { background: rgba(40, 199, 111, 0.18); }
-.triage-icon--urgent { background: rgba(234, 84, 85, 0.18); }
+.triage-icon--urgent { background: rgba(var(--v-theme-error), 0.1); }
 
 .triage-body {
   flex: 1;
@@ -1298,15 +1277,16 @@
 }
 
 .triage-title {
-  font-size: var(--claro-text-sm);
-  font-weight: var(--claro-font-weight-semibold);
+  font-size: 1.1rem;
+  font-weight: 800;
   color: var(--claro-fg1);
+  letter-spacing: -0.01em;
 }
 
 .triage-sub {
-  font-size: var(--claro-text-xs);
+  font-size: 0.9rem;
   color: var(--claro-fg3);
-  margin-top: 2px;
+  margin-top: 4px;
 }
 
 /* ── Section headers ── */
@@ -1314,29 +1294,20 @@
   display: flex;
   align-items: baseline;
   gap: 10px;
-  margin-bottom: 12px;
 }
 
 .section-title {
-  font-size: var(--claro-text-sm);
-  font-weight: var(--claro-font-weight-semibold);
-  color: var(--claro-fg2);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.section-count {
-  font-size: var(--claro-text-xs);
-  color: var(--claro-fg3);
-  font-variant-numeric: tabular-nums;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--claro-fg1);
+  letter-spacing: -0.02em;
 }
 
 .section-action {
-  margin-left: auto;
-  font-size: var(--claro-text-xs);
+  font-size: 0.85rem;
   color: var(--claro-primary);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .section-action:hover {
@@ -1353,7 +1324,7 @@
 .tl-axis-top {
   display: flex;
   align-items: flex-end;
-  margin-bottom: 2px;
+  margin-bottom: 8px;
 }
 
 .tl-axis-spacer-wide {
@@ -1365,12 +1336,13 @@
   flex: 1;
   display: flex;
   justify-content: space-between;
-  padding-bottom: 10px;
-  border-bottom: 1px solid rgba(115, 113, 143, 0.31);
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
 .tl-axis-ticks-top span {
-  font-size: 9px;
+  font-size: 10px;
+  font-weight: 600;
   color: var(--claro-fg3);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
@@ -1389,13 +1361,8 @@
   left: 50%;
   transform: translateX(-50%);
   width: 1px;
-  height: 3px;
-  background: rgba(var(--v-theme-primary), 0.2);
-}
-
-.tl-axis-ticks-top span:nth-child(odd)::after {
-  height: 7px;
-  background: rgba(var(--v-theme-primary), 0.5);
+  height: 4px;
+  background: rgba(var(--v-theme-on-surface), 0.1);
 }
 
 /* Row wrapper — establishes stacking context for shared NOW line */
@@ -1403,18 +1370,17 @@
   position: relative;
   display: flex;
   flex-direction: column;
+  gap: 12px;
 }
 
 /* Per-property row */
 .tl-prop-row {
   display: flex;
   align-items: stretch;
-  min-height: 56px;
-  border-bottom: 1px solid rgba(131, 131, 131, 0.21);
-}
-
-.tl-prop-row:last-child {
-  border-bottom: none;
+  min-height: 80px;
+  background: rgba(var(--v-theme-on-surface), 0.02);
+  border-radius: 16px;
+  overflow: hidden;
 }
 
 /* Left info column: tonal fill from property color */
@@ -1422,55 +1388,54 @@
   width: 200px;
   box-sizing: border-box;
   flex-shrink: 0;
-  padding: 10px 12px;
-  background: color-mix(in srgb, var(--prop-color, rgb(var(--v-theme-primary))) 10%, transparent);
+  padding: 16px;
+  background: color-mix(in srgb, var(--prop-color, rgb(var(--v-theme-primary))) 12%, transparent);
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
 }
 
 .tl-prop-name {
-  font-size: var(--claro-text-sm);
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 800;
   color: var(--claro-fg1);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.3;
+  line-height: 1.2;
 }
 
 .tl-prop-sub {
-  font-size: var(--claro-text-xs);
+  font-size: 12px;
+  font-weight: 500;
   color: var(--claro-fg3);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  line-height: 1.3;
+  line-height: 1.2;
 }
 
 /* Status pill */
 .tl-status-pill {
   display: inline-flex;
   align-items: center;
-  padding: 1px 6px;
+  padding: 2px 8px;
   border-radius: 9999px;
   font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
+  font-weight: 800;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  margin-top: 3px;
+  margin-top: 4px;
   width: fit-content;
 }
 
-/* Opaque pill backgrounds via color-mix(white) so the pill is immune to a tinted parent.
- * Text is darkened to ~75% mix toward black so AA holds against the light tint. */
-.tl-status-pill--urgent   { background: color-mix(in srgb, #EA5455 14%, var(--claro-surface)); color: color-mix(in srgb, #EA5455 75%, black); }
-.tl-status-pill--turn     { background: color-mix(in srgb, #FF9F43 14%, var(--claro-surface)); color: color-mix(in srgb, #FF9F43 75%, black); }
-.tl-status-pill--checkout { background: color-mix(in srgb, rgb(var(--v-theme-primary)) 12%, var(--claro-surface)); color: color-mix(in srgb, rgb(var(--v-theme-primary)) 75%, black); }
-.tl-status-pill--checkin  { background: color-mix(in srgb, #28C76F 14%, var(--claro-surface)); color: color-mix(in srgb, #28C76F 75%, black); }
-.tl-status-pill--occupied { background: color-mix(in srgb, #1EC8DE 12%, var(--claro-surface)); color: color-mix(in srgb, #1EC8DE 75%, black); }
-.tl-status-pill--vacant   { background: var(--claro-surface);                                  color: var(--claro-fg2); border: 1px solid var(--claro-border); }
+.tl-status-pill--urgent   { background: var(--claro-error); color: #fff; }
+.tl-status-pill--turn     { background: var(--claro-warning); color: #fff; }
+.tl-status-pill--checkout { background: var(--claro-primary); color: #fff; }
+.tl-status-pill--checkin  { background: var(--claro-success); color: #fff; }
+.tl-status-pill--occupied { background: var(--claro-info); color: #fff; }
+.tl-status-pill--vacant   { background: rgba(var(--v-theme-on-surface), 0.1); color: var(--claro-fg2); }
 
 /* Ribbon — event chip container */
 .tl-ribbon {
@@ -1478,48 +1443,33 @@
   flex: 1;
   display: flex;
   align-items: center;
-  background: rgba(var(--v-theme-primary), 0.05);
 }
 
 /* Labeled event chips */
 .tl-chip {
   position: absolute;
   transform: translateX(-50%);
-  padding: 3px 8px;
-  border-radius: var(--claro-radius-sm);
-  font-size: 11px;
-  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 800;
   color: #fff;
   white-space: nowrap;
   cursor: pointer;
-  border: none;
-  line-height: 1.4;
+  border: 1px solid rgba(255,255,255,0.2);
+  line-height: 1.2;
   z-index: 3;
-  transition: opacity 0.15s, box-shadow 0.15s;
-  font-family: var(--claro-font-family, 'Inter', sans-serif);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
-.tl-chip--checkout { background: var(--claro-primary); }
-.tl-chip--checkin  { background: #28C76F; }
-.tl-chip--turn     { background: #FF9F43; }
-.tl-chip--urgent   { background: #EA5455; animation: urgentPulse 1.5s ease-in-out infinite; }
-.tl-chip--past     { opacity: 0.42; }
+.tl-chip--past     { opacity: 0.35; filter: grayscale(0.5); }
 
 .tl-chip:hover:not(.tl-chip--past) {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+  transform: translateX(-50%) translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 16px rgba(0,0,0,0.2);
 }
 
-.tl-chip:focus-visible {
-  outline: 2px solid var(--claro-primary);
-  outline-offset: 2px;
-}
-
-@keyframes urgentPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(234, 84, 85, 0.55); }
-  50%       { box-shadow: 0 0 0 4px rgba(234, 84, 85, 0); }
-}
-
-/* NOW scrubber: one per ribbon row, all sharing the same % coordinate space as chips */
+/* NOW scrubber */
 .tl-now-line-v {
   position: absolute;
   top: 0;
@@ -1533,17 +1483,18 @@
 
 .tl-now-bubble {
   position: absolute;
-  top: -16px;
+  top: -24px;
   left: 50%;
   transform: translateX(-50%);
   background: var(--claro-primary-dark);
   color: #fff;
-  font-size: 8px;
-  font-weight: 800;
-  padding: 2px 5px;
-  border-radius: 3px;
-  letter-spacing: 0.06em;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 3px 8px;
+  border-radius: 6px;
+  letter-spacing: 0.08em;
   white-space: nowrap;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
 
 /* Legend in card header */
@@ -1558,23 +1509,18 @@
 .tl-legend-item {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: var(--claro-text-xs);
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
   color: var(--claro-fg3);
-  font-weight: 400;
-  white-space: nowrap;
+  text-transform: uppercase;
 }
 
 .tl-legend-mark {
   display: inline-block;
-  width: 12px;
-  height: 8px;
-  border-radius: 2px;
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
   flex-shrink: 0;
 }
-
-.tl-legend-mark--checkin  { background: var(--claro-success); }
-.tl-legend-mark--checkout { background: var(--claro-primary); }
-.tl-legend-mark--turn     { background: var(--claro-warning); }
-.tl-legend-mark--urgent   { background: var(--claro-error); }
 </style>

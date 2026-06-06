@@ -70,20 +70,20 @@
      fg3 = tertiary (50%) — captions, metadata, eyebrow text, page subheadings
      fg4 = disabled (28%) — disabled inputs, dimmed/inactive UI */
   --claro-fg1: rgb(var(--v-theme-on-surface));
-  --claro-fg2: rgba(var(--v-theme-on-surface), 0.72);
-  --claro-fg3: rgba(var(--v-theme-on-surface), 0.50);
+  --claro-fg2: rgba(var(--v-theme-on-surface), 0.7);
+  --claro-fg3: rgb(var(--v-theme-text-secondary));
   --claro-fg4: rgba(var(--v-theme-on-surface), 0.28);
 
   /* Aliases for "text-on-X" semantic surfaces. */
   --claro-on-background:  var(--claro-fg1);
   --claro-on-surface:     var(--claro-fg1);
-  /* Alias for muted/secondary text — maps to fg3 (50% opacity). */
+  /* Alias for muted/secondary text — maps to text-secondary. */
   --claro-text-secondary: var(--claro-fg3);
 
   /* ─── Colors: Borders ─────────────────────────────────────────────── */
   --claro-divider:        rgb(var(--v-theme-divider));
-  --claro-border:         #E8E8E8;
-  --claro-border-strong:  #D4D4DB;
+  --claro-border:         rgb(var(--v-theme-divider));
+  --claro-border-strong:  rgba(var(--v-theme-on-surface), 0.15);
 
   /* ─── Typography ──────────────────────────────────────────────────── */
   --claro-font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -119,22 +119,27 @@
   --claro-heading-sub-gap: var(--claro-space-xs);
 
   /* ─── Shape / Border Radii ────────────────────────────────────────── */
-  --claro-radius-sm:   2px;
-  --claro-radius-md:   2px;
-  --claro-radius-lg:   2px;
-  --claro-radius-card: 2px;
+  --claro-radius-sm:   8px;
+  --claro-radius-md:   12px;
+  --claro-radius-lg:   24px;
+  --claro-radius-card: 24px;
   --claro-radius-pill: 9999px;
+
+  /* ─── Glassmorphism ───────────────────────────────────────────────── */
+  --claro-glass-bg:      var(--v-glass-bg);
+  --claro-glass-blur:    blur(12px);
+  --claro-glass-border:  var(--v-glass-border);
 
   /* ─── Motion ──────────────────────────────────────────────────────── */
   --claro-dur-fast:  150ms;  /* button :active scale */
   --claro-dur-base:  200ms;  /* list-item hover fades */
-  --claro-dur-slow:  250ms;  /* card hover lift */
-  --claro-ease:      ease;
+  --claro-dur-slow:  300ms;  /* card hover lift */
+  --claro-ease:      cubic-bezier(0.34, 1.56, 0.64, 1); /* spring-like */
 
-  /* ─── Elevation / Shadows (Material-like) ─────────────────────────── */
-  --claro-shadow-sm: 0 2px 10px rgba(0, 0, 0, 0.05);
-  --claro-shadow-md: 0 4px 18px rgba(var(--v-theme-primary), 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
-  --claro-shadow-lg: 0 8px 28px rgba(var(--v-theme-primary), 0.18), 0 4px 10px rgba(0, 0, 0, 0.08);
+  /* ─── Elevation / Shadows (Soft Bento) ───────────────────────────── */
+  --claro-shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --claro-shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --claro-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
 
   /* ─── Gradients ───────────────────────────────────────────────────── */
   /* Per Claude Design v1: gradients only on the Owner hero card. */

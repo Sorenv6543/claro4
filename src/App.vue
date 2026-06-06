@@ -1,22 +1,31 @@
 <!-- App.vue -->
 <template>
-  <component :is="layout">
-    <router-view v-slot="{ Component }">
-      <transition mode="out-in" name="page-transition">
-        <component :is="Component" v-if="Component" />
+  <v-app class="app-root">
+    <!-- Aurora background blobs -->
+    <div class="aurora-blobs" aria-hidden="true">
+      <div class="blob blob-1"></div>
+      <div class="blob blob-2"></div>
+      <div class="blob blob-3"></div>
+    </div>
 
-        <LoadingSpinner
-          v-else
-          message="Loading..."
-          min-height="60vh"
-          variant="page"
-        />
-      </transition>
-    </router-view>
-  </component>
+    <component :is="layout">
+      <router-view v-slot="{ Component }">
+        <transition mode="out-in" name="page-transition">
+          <component :is="Component" v-if="Component" />
 
-  <!-- PWA Notifications Enhanced (global) -->
-  <PWANotificationsEnhanced />
+          <LoadingSpinner
+            v-else
+            message="Loading..."
+            min-height="60vh"
+            variant="page"
+          />
+        </transition>
+      </router-view>
+    </component>
+
+    <!-- PWA Notifications Enhanced (global) -->
+    <PWANotificationsEnhanced />
+  </v-app>
 </template>
 
 <script setup lang="ts">
@@ -60,6 +69,63 @@
 </script>
 
 <style>
+/* ─── Aurora Background Blobs ────────────────────────────────────────── */
+.app-root {
+  background-color: var(--claro-background) !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.aurora-blobs {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  filter: blur(80px);
+  opacity: 0.5;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(40px);
+  animation: move-blobs 20s infinite alternate ease-in-out;
+}
+
+.blob-1 {
+  width: 400px;
+  height: 400px;
+  background: rgba(115, 103, 240, 0.15); /* Studio Violet */
+  top: -100px;
+  left: -100px;
+}
+
+.blob-2 {
+  width: 500px;
+  height: 500px;
+  background: rgba(0, 207, 232, 0.1); /* Clear Sky */
+  bottom: -150px;
+  right: -100px;
+  animation-delay: -5s;
+}
+
+.blob-3 {
+  width: 300px;
+  height: 300px;
+  background: rgba(40, 199, 111, 0.08); /* Clearing Green */
+  top: 40%;
+  right: 10%;
+  animation-delay: -10s;
+}
+
+@keyframes move-blobs {
+  0% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, 50px) scale(1.1); }
+  66% { transform: translate(-20px, 20px) scale(0.9); }
+  100% { transform: translate(0, 0) scale(1); }
+}
+
 /* Global styles */
 html, body {
   margin: 0;
@@ -79,6 +145,7 @@ html, body {
 /* Ensure Vuetify works properly */
 .v-application {
   font-family: 'Inter', sans-serif !important;
+  background: transparent !important;
 }
 
 /* Custom scrollbar styling */

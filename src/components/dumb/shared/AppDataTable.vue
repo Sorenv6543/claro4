@@ -186,31 +186,31 @@
 }
 
 .app-table :deep(.v-data-table-header) {
-  background: rgba(var(--v-theme-on-surface), 0.03);
+  background: rgba(var(--v-theme-on-surface), 0.05);
 }
 
 .app-table :deep(.v-data-table-header th) {
   font-size: 0.75rem !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.05em;
   color: rgba(var(--v-theme-on-surface), 0.6) !important;
   white-space: nowrap;
-  border-bottom: thin solid rgba(var(--v-theme-on-surface), 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 .app-table :deep(td) {
   font-size: 0.875rem;
-  border-bottom: thin solid rgba(var(--v-theme-on-surface), 0.06) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
 }
 
 .app-table :deep(tr:hover td) {
-  background: rgba(var(--v-theme-primary), 0.02);
+  background: rgba(var(--v-theme-primary), 0.05) !important;
 }
 
 .expanded-row-content {
-  background: rgba(var(--v-theme-on-surface), 0.02);
-  border-bottom: thin solid rgba(var(--v-theme-on-surface), 0.08);
+  background: rgba(var(--v-theme-on-surface), 0.03);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   padding: 0 !important;
 }
 

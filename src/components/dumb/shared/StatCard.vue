@@ -1,9 +1,9 @@
 <template>
-  <v-card class="stat-card" :elevation="0">
+  <v-card class="stat-card glass-card" :elevation="0">
     <div class="stat-card__body">
       <div class="stat-card__info">
-        <span class="stat-card__value">{{ value }}</span>
         <span class="stat-card__label">{{ label }}</span>
+        <span class="stat-card__value claro-numeric">{{ value }}</span>
 
         <span
           v-if="trend && trendValue"
@@ -58,6 +58,9 @@
 <style scoped>
 .stat-card {
   padding: var(--claro-space-lg, 24px);
+  min-height: 120px;
+  display: flex;
+  align-items: center;
 }
 
 .stat-card__body {
@@ -65,26 +68,31 @@
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
+  width: 100%;
   gap: var(--claro-space-md, 20px);
 }
 
 .stat-card__info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 8px;
   min-width: 0;
 }
 
 .stat-card__value {
-  font-size: 1.75rem;
-  font-weight: var(--claro-font-weight-semibold, 600);
+  font-size: 2.25rem;
+  font-weight: 700;
   line-height: 1;
   color: rgb(var(--v-theme-on-surface));
+  letter-spacing: -0.02em;
 }
 
 .stat-card__label {
-  font-size: 0.85rem;
-  opacity: 0.7;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  opacity: 0.6;
   color: rgb(var(--v-theme-on-surface));
   line-height: 1.3;
 }

@@ -3,7 +3,7 @@
     <!-- Stats Cards -->
     <div class="stats-section">
       <v-container fluid>
-        <v-row density="compact">
+        <v-row class="bento-grid" density="compact">
           <v-col cols="6" md="3">
             <StatCard color="primary" icon="mdi-account-group" label="Total Cleaners" :value="cleanerStats.total" />
           </v-col>
@@ -39,16 +39,18 @@
     </v-container>
 
     <!-- Cleaners Data Table -->
-    <AppDataTable
-      :active-filter-count="activeFilterCount"
-      :headers="tableHeaders"
-      :items="filteredCleaners"
-      :loading="loading"
-      :search-keys="['name', 'email']"
-      searchable
-      subtitle="Manage cleaner profiles, skills, and availability"
-      title="Cleaners"
-    >
+    <v-container fluid>
+      <AppDataTable
+        :active-filter-count="activeFilterCount"
+        class="glass-card"
+        :headers="tableHeaders"
+        :items="filteredCleaners"
+        :loading="loading"
+        :search-keys="['name', 'email']"
+        searchable
+        subtitle="Manage cleaner profiles, skills, and availability"
+        title="Cleaners"
+      >
       <!-- Header actions -->
       <template #header-actions>
         <v-btn
@@ -447,12 +449,11 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-color: var(--claro-background);
 }
 
 .stats-section {
   flex-shrink: 0;
-  background: rgb(var(--v-theme-surface));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
   padding: 16px 0;
 }
 
