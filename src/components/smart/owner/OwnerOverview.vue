@@ -1536,7 +1536,7 @@
   top: -16px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--claro-primary-dark, #5E52EE);
+  background: var(--claro-primary-dark);
   color: #fff;
   font-size: 8px;
   font-weight: 800;
