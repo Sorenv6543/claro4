@@ -1062,8 +1062,17 @@
         statusText = 'Check-out Today'; statusColor = 'primary'; statusVariant = 'flat'
       } else if (todayEvts.some(e => e.type === 'checkin')) {
         statusText = 'Check-in Today'; statusColor = 'success'; statusVariant = 'flat'
-      } else if (p.active) {
-        statusText = 'Occupied'; statusColor = 'info'; statusVariant = 'flat'
+      } else {
+        const isOccupied = myBookings.value.some(
+          b => b.property_id === p.id
+            && b.status !== 'cancelled'
+            && b.booking_type !== 'turn'
+            && b.checkin_date <= todayStr.value
+            && b.checkout_date > todayStr.value,
+        )
+        if (isOccupied) {
+          statusText = 'Occupied'; statusColor = 'info'; statusVariant = 'flat'
+        }
       }
 
       let eventLabel = 'No events today'
