@@ -47,9 +47,66 @@
       <v-col cols="12">
         <OwnerWelcomeBanner
           :greeting="timeGreeting"
+          :stats="bannerStats"
+          :subtitle="bannerSubtitle"
           :turns-today-count="myTodayTurns.length"
           :user-name="userName"
         />
+      </v-col>
+    </v-row>
+
+    <!-- Tip card -->
+    <v-row v-if="!tipDismissed" class="mb-4">
+      <v-col cols="12">
+        <v-alert
+          closable
+          icon="mdi-lightbulb-outline"
+          text="Open any property to see its turns, calendar sync, and access notes."
+          title="Tip: tap a property below"
+          variant="tonal"
+          @click:close="dismissTip"
+        />
+      </v-col>
+    </v-row>
+
+    <!-- Your properties preview -->
+    <v-row v-if="myProperties.length > 0" class="mb-6">
+      <v-col cols="12">
+        <div class="section-head mb-3">
+          <div>
+            <div class="section-title">Your properties</div>
+            <div class="section-sub">Tap a property to view details, sync calendars, and manage settings.</div>
+          </div>
+          <router-link class="section-action" to="/owner/properties">View all properties →</router-link>
+        </div>
+
+        <v-row>
+          <v-col
+            v-for="item in propertyPreviewItems"
+            :key="item.id"
+            cols="12"
+            md="4"
+          >
+            <div class="prop-preview-card glass-card">
+              <div class="prop-preview-top">
+                <div class="prop-dot" :style="{ background: item.color }" />
+                <span class="prop-name">{{ item.name }}</span>
+                <v-chip
+                  class="ml-auto"
+                  :color="item.statusColor"
+                  density="compact"
+                  rounded="pill"
+                  size="x-small"
+                  :variant="item.statusVariant"
+                >
+                  {{ item.statusText }}
+                </v-chip>
+              </div>
+              <div class="prop-meta">{{ item.cityBedBath }}</div>
+              <div class="prop-event-label">{{ item.eventLabel }}</div>
+            </div>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
 
@@ -394,6 +451,18 @@
     needsCleaner: boolean
   }
 
+  // ── Property preview item shape ──────────────────────────────────────────
+  interface PropertyPreviewItem {
+    id: string
+    name: string
+    cityBedBath: string
+    color: string
+    statusText: string
+    statusColor: string | undefined
+    statusVariant: 'flat' | 'outlined'
+    eventLabel: string
+  }
+
   const { mobile } = useDisplay()
   const router = useRouter()
   const authStore = useAuthStore()
@@ -408,6 +477,14 @@
 
   const loading = ref(false)
   const loadError = ref<string | null>(null)
+
+  // ── Tip card state ────────────────────────────────────────────────────────
+  const tipDismissed = ref(localStorage.getItem('claro-owner-tip-dismissed') === 'true')
+
+  function dismissTip (): void {
+    tipDismissed.value = true
+    localStorage.setItem('claro-owner-tip-dismissed', 'true')
+  }
 
   const propertyMap = computed(() => {
     const m = new Map<string, Property>()
@@ -914,6 +991,99 @@
           turnsYtd: bs.filter(b => b.booking_type === 'turn').length,
           assignmentLabel: nextBook ? 'Next check-in' : 'No upcoming',
         },
+      }
+    }),
+  )
+
+  // ── Welcome banner stats & subtitle ────────────────────────────────────────
+  const todayEventsCount = computed(() => {
+    let count = 0
+    for (const b of myBookings.value) {
+      if (b.status === 'cancelled') continue
+      if (b.booking_type === 'turn') {
+        if (b.checkin_date === todayStr.value) count++
+      } else {
+        if (b.checkout_date === todayStr.value) count++
+        if (b.checkin_date === todayStr.value) count++
+      }
+    }
+    return count
+  })
+
+  const weekEventsCount = computed(() => {
+    const end = new Date(todayStr.value + 'T00:00:00')
+    end.setDate(end.getDate() + 6)
+    const endStr = end.toISOString().slice(0, 10)
+    let count = 0
+    for (const b of myBookings.value) {
+      if (b.status === 'cancelled') continue
+      if (b.booking_type === 'turn') {
+        if (b.checkin_date >= todayStr.value && b.checkin_date <= endStr) count++
+      } else {
+        if (b.checkout_date >= todayStr.value && b.checkout_date <= endStr) count++
+        if (b.checkin_date >= todayStr.value && b.checkin_date <= endStr) count++
+      }
+    }
+    return count
+  })
+
+  const needsAttentionCount = computed(() => urgentTurns.value.length)
+
+  const bannerSubtitle = computed(() => {
+    const n = todayEventsCount.value
+    const attn = needsAttentionCount.value
+    const base = `${n} booking${n !== 1 ? 's' : ''} scheduled today`
+    return attn > 0 ? `${base} · ${attn} need${attn !== 1 ? '' : 's'} attention` : base
+  })
+
+  const bannerStats = computed(() => [
+    { icon: 'mdi-calendar-today', label: 'Today', value: todayEventsCount.value },
+    { icon: 'mdi-calendar-week', label: 'Week', value: weekEventsCount.value },
+  ])
+
+  // ── Property preview strip ────────────────────────────────────────────────
+  const propertyPreviewItems = computed((): PropertyPreviewItem[] =>
+    overviewListItems.value.slice(0, 3).map(item => {
+      const p = item.property
+      const parts: string[] = []
+      if (p.address_city) parts.push(p.address_city)
+      if (p.bedrooms) parts.push(`${p.bedrooms} bd`)
+      if (p.bathrooms) parts.push(`${p.bathrooms} ba`)
+      const cityBedBath = parts.join(' · ')
+
+      let statusText = 'Vacant'
+      let statusColor: string | undefined = undefined
+      let statusVariant: 'flat' | 'outlined' = 'outlined'
+
+      const todayEvts = item.todayEvents ?? []
+      if (item.isTurnToday) {
+        statusText = 'Turn Today'; statusColor = 'warning'; statusVariant = 'flat'
+      } else if (todayEvts.some(e => e.type === 'checkout')) {
+        statusText = 'Check-out Today'; statusColor = 'primary'; statusVariant = 'flat'
+      } else if (todayEvts.some(e => e.type === 'checkin')) {
+        statusText = 'Check-in Today'; statusColor = 'success'; statusVariant = 'flat'
+      } else if (p.active) {
+        statusText = 'Occupied'; statusColor = 'info'; statusVariant = 'flat'
+      }
+
+      let eventLabel = 'No events today'
+      const firstEv = todayEvts[0]
+      if (firstEv) {
+        if (firstEv.type === 'checkout') eventLabel = `Check-out today at ${firstEv.time}`
+        else if (firstEv.type === 'checkin') eventLabel = `Check-in today at ${firstEv.time}`
+      } else if (item.nextCheckin) {
+        eventLabel = `Next: ${item.nextCheckin.label}`
+      }
+
+      return {
+        id: p.id,
+        name: formatPropertyAddress(p, 'short'),
+        cityBedBath,
+        color: mapLegacyPropertyColor(p.color),
+        statusText,
+        statusColor,
+        statusVariant,
+        eventLabel,
       }
     }),
   )
@@ -1529,5 +1699,59 @@
   height: 10px;
   border-radius: 3px;
   flex-shrink: 0;
+}
+
+/* ── Property preview cards ── */
+.prop-preview-card {
+  padding: 16px;
+  border-radius: var(--claro-radius-card, 24px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+}
+
+.prop-preview-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: nowrap;
+}
+
+.prop-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.prop-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--claro-fg1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
+}
+
+.prop-meta {
+  font-size: 12px;
+  color: var(--claro-fg3);
+  padding-left: 20px;
+}
+
+.prop-event-label {
+  font-size: 12px;
+  color: var(--claro-fg3);
+  padding-left: 20px;
+  margin-top: 2px;
+}
+
+.section-sub {
+  font-size: 12px;
+  color: var(--claro-fg3);
+  margin-top: 2px;
 }
 </style>
