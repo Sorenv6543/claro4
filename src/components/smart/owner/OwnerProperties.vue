@@ -9,51 +9,67 @@
       <!-- Hero banner replaces OwnerPageHeader -->
 
       <!-- C3 — Compact Inline Bar -->
-      <div class="c3-inline-bar mb-5">
+      <div class="c3-inline-bar glass-card mb-6">
         <div class="c3-cell">
-          <v-icon color="primary" size="20">mdi-home-city</v-icon>
-          <span class="c3-value">{{ myProperties.length }}</span>
-          <span class="c3-label">Properties</span>
+          <v-icon color="primary" size="24">mdi-home-city</v-icon>
+          <div class="c3-info">
+            <span class="c3-value claro-numeric">{{ myProperties.length }}</span>
+            <span class="c3-label">Properties</span>
+          </div>
         </div>
 
         <div class="c3-divider" />
 
         <div class="c3-cell">
-          <v-icon color="success" size="20">mdi-check-circle</v-icon>
-          <span class="c3-value">{{ myActiveProperties.length }}</span>
-          <span class="c3-label">Active</span>
+          <v-icon color="success" size="24">mdi-check-circle</v-icon>
+          <div class="c3-info">
+            <span class="c3-value claro-numeric">{{ myActiveProperties.length }}</span>
+            <span class="c3-label">Active</span>
+          </div>
         </div>
 
         <div class="c3-divider" />
 
         <div class="c3-cell">
-          <v-icon color="info" size="20">mdi-calendar-multiple</v-icon>
-          <span class="c3-value">{{ myBookings.length }}</span>
-          <span class="c3-label">Bookings</span>
+          <v-icon color="info" size="24">mdi-calendar-multiple</v-icon>
+          <div class="c3-info">
+            <span class="c3-value claro-numeric">{{ myBookings.length }}</span>
+            <span class="c3-label">Bookings</span>
+          </div>
         </div>
 
         <div class="c3-divider" />
 
         <div class="c3-cell">
-          <v-icon color="warning" size="20">mdi-swap-horizontal</v-icon>
-          <span class="c3-value">{{ myTodayTurns.length }}</span>
-          <span class="c3-label">Turns</span>
+          <v-icon color="warning" size="24">mdi-swap-horizontal</v-icon>
+          <div class="c3-info">
+            <span class="c3-value claro-numeric">{{ myTodayTurns.length }}</span>
+            <span class="c3-label">Turns</span>
+          </div>
         </div>
       </div>
 
       <!-- Segment filter -->
-      <div class="d-flex ga-2 flex-wrap mb-4">
-        <v-btn
-          v-for="seg in segments"
-          :key="seg.value"
-          :color="selectedSegment === seg.value ? 'primary' : undefined"
-          density="compact"
-          size="small"
-          :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
-          @click="selectedSegment = seg.value"
-        >
-          {{ seg.title }}
-        </v-btn>
+      <div class="segment-container mb-6">
+        <div class="segment-pill glass-card">
+          <v-btn-toggle
+            v-model="selectedSegment"
+            color="primary"
+            density="compact"
+            mandatory
+            rounded="pill"
+            variant="text"
+          >
+            <v-btn
+              v-for="seg in segments"
+              :key="seg.value"
+              class="seg-btn"
+              :value="seg.value"
+            >
+              {{ seg.title }}
+            </v-btn>
+          </v-btn-toggle>
+        </div>
       </div>
 
       <!-- Property list — B3 map-anchored on mobile, card grid on desktop -->
@@ -524,10 +540,11 @@
   display: flex;
   align-items: stretch;
   flex-wrap: wrap;
-  min-height: 64px;
-  border-radius: var(--claro-radius-sm);
-  background: var(--claro-surface);
-  border: 1px solid var(--claro-divider);
+  min-height: 80px;
+  background: var(--claro-glass-bg);
+  backdrop-filter: var(--claro-glass-blur);
+  border: 1px solid var(--claro-glass-border) !important;
+  border-radius: var(--claro-radius-card, 24px) !important;
   overflow: hidden;
 }
 
@@ -535,26 +552,68 @@
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 20px;
+  gap: 16px;
+  padding: 16px 24px;
+  min-width: 160px;
+}
+
+.c3-info {
+  display: flex;
+  flex-direction: column;
 }
 
 .c3-divider {
   width: 1px;
   align-self: stretch;
-  background: var(--claro-divider);
+  background: var(--claro-glass-border);
 }
 
 .c3-value {
-  font-size: 20px;
-  font-weight: var(--claro-font-weight-semibold);
-  color: var(--claro-on-surface);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--claro-fg1);
   line-height: 1;
+  letter-spacing: -0.02em;
 }
 
 .c3-label {
-  font-size: 12px;
-  color: var(--claro-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--claro-fg3);
+  margin-top: 2px;
 }
 
+/* Segment filter */
+.segment-container {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.segment-pill {
+  padding: 4px;
+  border-radius: 9999px !important;
+  background: var(--claro-glass-bg);
+  backdrop-filter: var(--claro-glass-blur);
+  border: 1px solid var(--claro-glass-border) !important;
+}
+
+.seg-btn {
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
+  opacity: 0.7;
+  height: 32px !important;
+  min-width: 80px !important;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.seg-btn.v-btn--active {
+  opacity: 1;
+  background: rgb(var(--v-theme-primary)) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.3) !important;
+}
 </style>

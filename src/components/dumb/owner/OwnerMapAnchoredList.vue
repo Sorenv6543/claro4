@@ -146,11 +146,10 @@
       <v-card
         v-for="item in items"
         :key="item.property.id"
-        class="property-card"
-        rounded="sm"
+        class="property-card glass-card"
         @click="emit('more', item.property.id)"
       >
-        <div class="card-color-bar" :style="{ background: item.property.color }" />
+        <div class="card-color-strip" :style="{ background: item.property.color }" />
 
         <v-card-text class="card-body">
           <div class="card-name">{{ formatPropertyAddress(item.property, 'short') }}</div>
@@ -161,6 +160,7 @@
               class="mr-1"
               color="warning"
               size="x-small"
+              variant="tonal"
             >Turn Today</v-chip>
 
             <span v-if="item.nextCheckin" class="next-checkin">{{ item.nextCheckin.label }}</span>
@@ -168,21 +168,24 @@
           </div>
 
           <div class="card-stats">
-            <span>{{ item.stats.turnsYtd ?? 0 }} turns YTD</span>
+            <div class="stat-item">
+              <v-icon size="14">mdi-swap-horizontal</v-icon>
+              <span>{{ item.stats.turnsYtd ?? 0 }} turns YTD</span>
+            </div>
 
-            <template v-if="item.stats.avgCleanMin">
-              <span class="stat-dot">·</span>
-              <span>{{ item.stats.avgCleanMin }}min clean</span>
-            </template>
+            <div v-if="item.stats.avgCleanMin" class="stat-item">
+              <v-icon size="14">mdi-clock-outline</v-icon>
+              <span>{{ item.stats.avgCleanMin }}m clean</span>
+            </div>
           </div>
         </v-card-text>
 
-        <v-divider />
-
         <v-card-actions class="card-actions">
           <v-btn
+            color="primary"
+            rounded="pill"
             size="small"
-            variant="text"
+            variant="tonal"
             @click.stop="emit('view-calendar', item.property.id)"
           >
             <v-icon size="14" start>mdi-calendar</v-icon>
@@ -193,13 +196,14 @@
 
           <v-btn
             aria-label="Edit property"
+            color="secondary"
             density="compact"
             icon
             size="small"
             variant="text"
             @click.stop="emit('edit', item.property.id)"
           >
-            <v-icon size="16">mdi-pencil-outline</v-icon>
+            <v-icon size="18">mdi-pencil-outline</v-icon>
           </v-btn>
 
           <v-btn
@@ -211,7 +215,7 @@
             variant="text"
             @click.stop="emit('delete', item.property.id)"
           >
-            <v-icon size="16">mdi-delete-outline</v-icon>
+            <v-icon size="18">mdi-delete-outline</v-icon>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -232,7 +236,7 @@
 .map-zone {
   position: relative;
   flex: 0 0 42%;
-  background: #e8edf0;
+  background: var(--claro-background);
   overflow: hidden;
 }
 
@@ -241,8 +245,8 @@
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0,0,0,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,0,0,0.06) 1px, transparent 1px);
+    linear-gradient(rgba(var(--v-theme-on-surface), 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(var(--v-theme-on-surface), 0.04) 1px, transparent 1px);
   background-size: 40px 40px;
 }
 
@@ -256,65 +260,78 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.25));
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.map-pin:hover {
+  transform: translate(-50%, -110%) scale(1.1);
 }
 
 .pin-label {
-  font-size: 9px;
-  font-weight: 600;
+  font-size: 10px;
+  font-weight: 700;
   font-family: Inter, sans-serif;
-  background: #fff;
+  background: var(--claro-glass-bg);
+  backdrop-filter: var(--claro-glass-blur);
+  border: 1px solid var(--claro-glass-border);
   border-radius: 9999px;
-  padding: 1px 6px;
-  margin-top: -2px;
+  padding: 2px 10px;
+  margin-top: -4px;
   white-space: nowrap;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  box-shadow: var(--claro-shadow-sm);
 }
 
 .map-badge {
   position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background: rgba(255,255,255,0.92);
+  bottom: 16px;
+  right: 16px;
+  background: var(--claro-glass-bg);
+  backdrop-filter: var(--claro-glass-blur);
+  border: 1px solid var(--claro-glass-border);
   border-radius: 9999px;
-  padding: 4px 10px;
+  padding: 6px 12px;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 700;
   font-family: Inter, sans-serif;
-  color: var(--claro-on-background);
+  color: var(--claro-fg1);
   display: flex;
   align-items: center;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
+  box-shadow: var(--claro-shadow-md);
 }
 
 /* Anchored bottom panel */
 .anchored-panel {
   flex: 1;
-  background: var(--claro-surface);
-  border-radius: 12px 12px 0 0;
+  background: var(--claro-glass-bg);
+  backdrop-filter: var(--claro-glass-blur);
+  border: 1px solid var(--claro-glass-border);
+  border-radius: 24px 24px 0 0;
   margin-top: -12px;
-  box-shadow: var(--claro-shadow-sm);
+  box-shadow: var(--claro-shadow-lg);
   overflow-y: auto;
   display: flex;
   flex-direction: column;
 }
 
 .drag-handle {
-  width: 36px;
-  height: 4px;
+  width: 40px;
+  height: 5px;
   border-radius: 9999px;
   background: var(--claro-divider);
-  margin: 10px auto 4px;
+  margin: 12px auto 8px;
   flex-shrink: 0;
 }
 
 .panel-list {
   padding: 0;
+  background: transparent;
 }
 
 .panel-item {
   border-bottom: 1px solid var(--claro-divider);
   cursor: pointer;
+  padding: 12px 16px;
 }
 
 .panel-item:last-child {
@@ -322,24 +339,25 @@
 }
 
 .color-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 9999px;
-  margin-right: 4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  margin-right: 8px;
   flex-shrink: 0;
 }
 
 .item-name {
-  font-size: 14px !important;
-  font-weight: 500 !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--claro-fg1) !important;
 }
 
 /* ── Desktop grid ──────────────────────────────────────────── */
 
 .desktop-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
 }
 
 .grid-skeleton {
@@ -349,55 +367,69 @@
 .property-card {
   cursor: pointer;
   overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  border-radius: 24px !important;
 }
 
-.card-color-bar {
-  height: 4px;
+.property-card:hover {
+  transform: translateY(-4px) scale(1.02);
+  border-color: rgba(var(--v-theme-primary), 0.3) !important;
+}
+
+.card-color-strip {
+  height: 6px;
   width: 100%;
 }
 
 .card-body {
-  padding: 14px 16px 10px;
+  padding: 20px 24px 12px;
 }
 
 .card-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--claro-on-background);
-  margin-bottom: 6px;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: var(--claro-fg1);
+  margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 
 .card-meta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 4px;
-  margin-bottom: 6px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .next-checkin {
-  font-size: 12px;
-  color: var(--claro-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--claro-fg2);
 }
 
 .no-booking {
-  font-size: 12px;
-  color: var(--claro-text-secondary);
+  font-size: 13px;
+  color: var(--claro-fg3);
 }
 
 .card-stats {
-  font-size: 11px;
-  color: var(--claro-text-secondary);
   display: flex;
-  gap: 4px;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 12px;
 }
 
-.stat-dot {
-  opacity: 0.4;
+.stat-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--claro-fg3);
 }
 
 .card-actions {
-  padding: 4px 8px;
+  padding: 12px 16px 16px;
 }
 
 /* ── Shared ─────────────────────────────────────────────────── */

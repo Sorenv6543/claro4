@@ -245,23 +245,18 @@
 .claro-nav {
   display: flex;
   flex-direction: column;
-  gap: 1px;
-  padding: 10px 8px;
+  gap: 4px;
+  padding: 16px 12px;
 }
 
 .claro-nav-section-label {
-  font-size: 10.5px;
+  font-size: 0.65rem;
   color: var(--claro-fg3);
   text-transform: uppercase;
-  letter-spacing: 0.09em;
-  font-weight: 700;
-  padding: 10px 12px 4px;
-  margin-top: 4px;
-  opacity: 0.55;
-}
-
-.claro-nav-section-label:first-child {
-  margin-top: 0;
+  letter-spacing: 0.1em;
+  font-weight: 800;
+  padding: 12px 12px 8px;
+  opacity: 0.5;
 }
 
 .claro-nav-item {
@@ -269,20 +264,21 @@
   align-items: center;
   gap: 12px;
   padding: 0 12px;
-  min-height: 44px;
-  border-radius: 6px;
-  font-size: 13.5px;
+  min-height: 48px;
+  border-radius: 12px;
+  font-size: 0.875rem;
   cursor: pointer;
   text-decoration: none;
   outline: none;
   font-family: var(--claro-font-family);
-  opacity: 0.85;
-  transition: background 180ms ease, opacity 180ms ease;
+  color: var(--claro-fg2);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .claro-nav-item:hover {
-  background: rgba(46, 38, 61, 0.05);
-  opacity: 1;
+  background: rgba(var(--v-theme-on-surface), 0.05);
+  color: var(--claro-fg1);
+  transform: translateX(4px);
 }
 
 .claro-nav-item:focus-visible {
@@ -292,61 +288,58 @@
 
 /* Purple tint background on active — preserves current color styling */
 .claro-nav-item--active {
-  background: var(--claro-primary-tint, rgba(var(--v-theme-primary), 0.12));
-  opacity: 1;
+  background: rgba(var(--v-theme-primary), 0.1) !important;
+  color: var(--claro-primary) !important;
 }
 
 /* ── Icon: Ghost at rest → fills purple on active ── */
 .claro-nav-icon {
   flex-shrink: 0;
-  width: 22px;
+  width: 24px;
   text-align: center;
-  color: var(--claro-fg2);
-  transform: scale(0.85);
-  transition:
-    transform 300ms cubic-bezier(0.25, 0, 0, 1),
-    color     200ms ease;
+  color: inherit;
+  opacity: 0.7;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .claro-nav-item:hover .claro-nav-icon {
-  transform: scale(0.95);
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 /* Active: filled purple icon, scale overshoot */
 .claro-nav-item--active .claro-nav-icon {
-  color: var(--claro-primary);
-  transform: scale(1.15);
+  opacity: 1;
+  transform: scale(1.2);
 }
 
 /* ── Label: muted at rest → bold on active ── */
 .claro-nav-label {
   flex: 1;
   min-width: 0;
-  color: var(--claro-fg2);
-  font-weight: 400;
-  transition: color 200ms ease, font-weight 200ms ease;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .claro-nav-item--active .claro-nav-label {
-  color: var(--claro-primary-dark);
-  font-weight: 600;
+  font-weight: 700;
 }
 
 /* ── Badge ── */
 .claro-nav-badge {
   margin-left: auto;
-  font-size: 11px;
-  padding: 2px 7px;
+  font-size: 10px;
+  padding: 2px 8px;
   border-radius: 9999px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   font-variant-numeric: tabular-nums;
-  background: rgba(46, 38, 61, 0.08);
+  background: rgba(var(--v-theme-on-surface), 0.08);
   color: var(--claro-fg3);
 }
 
 .claro-nav-badge--active {
-  background: rgba(var(--v-theme-primary), 0.18);
-  color: var(--claro-primary-dark);
+  background: var(--claro-primary);
+  color: #fff;
 }
 </style>

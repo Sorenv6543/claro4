@@ -1,35 +1,31 @@
-/* Calendar design tokens — Materio flat style.
-   Vuetify's --v-theme-* vars expand to comma-separated RGB (e.g. "46,38,61"),
-   so only the legacy rgba(R,G,B,a) syntax composes correctly. The modern
-   rgb(R G B / a) space/slash form silently produces invalid CSS here. */
+/* Calendar design tokens — Bento Glass style. */
 :root {
   /* Grid */
-  --cal-border:                    rgba(var(--v-theme-on-surface), 0.1);
-  --cal-bg:                        rgb(var(--v-theme-surface));
-  --cal-today-bg:                  rgba(var(--v-theme-primary), 0.08);
-  --cal-day-num:                   rgba(var(--v-theme-on-surface), 0.72);
-  --cal-day-num-muted:             rgba(var(--v-theme-on-surface), 0.28);
+  --cal-border:                    rgba(var(--v-theme-on-surface), 0.05);
+  --cal-bg:                        transparent;
+  --cal-today-bg:                  rgba(var(--v-theme-primary), 0.1);
+  --cal-day-num:                   rgb(var(--v-theme-on-surface));
+  --cal-day-num-muted:             rgba(var(--v-theme-on-surface), 0.3);
 
   /* Header row */
-  --cal-header-bg:                 rgba(var(--v-theme-primary), 0.09);
-  --cal-header-text:               rgb(var(--v-theme-primary));
+  --cal-header-bg:                 rgba(var(--v-theme-on-surface), 0.03);
+  --cal-header-text:               rgba(var(--v-theme-on-surface), 0.6);
 
   /* Event pill */
-  --cal-event-radius:              2px;
+  --cal-event-radius:              12px;
   --cal-event-text:                #fff;
-  --cal-event-padding:             4px 8px;
-  --cal-event-font-weight:         500;
+  --cal-event-padding:             6px 12px;
+  --cal-event-font-weight:         700;
 
-  /* Transition events (events-mode IN/TURN/OUT) — IN/TURN map to theme tokens;
-     OUT yellow is hardcoded because the theme has no yellow token. */
-  --cal-event-out-bg:              #FDD835;
-  --cal-event-out-text:            rgb(var(--v-theme-on-surface));
+  /* Transition events (events-mode IN/TURN/OUT) */
+  --cal-event-out-bg:              #F59E0B; /* Amber 500 */
+  --cal-event-out-text:            #fff;
 
   /* Status */
-  --cal-event-completed-opacity:   0.6;
+  --cal-event-completed-opacity:   0.4;
 
   /* Time chip */
-  --cal-time-chip-bg:              rgba(0, 0, 0, 0.18);
+  --cal-time-chip-bg:              rgba(0, 0, 0, 0.15);
   --cal-time-chip-text:            #fff;
-  --cal-time-chip-radius:          2px;
+  --cal-time-chip-radius:          6px;
 }

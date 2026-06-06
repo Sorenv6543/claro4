@@ -375,16 +375,20 @@
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  padding: 4px 8px;
+  padding: 12px 16px;
   flex-shrink: 0;
-  background: rgb(var(--v-theme-primary));
-  border-bottom: none;
+  background: var(--claro-glass-bg);
+  backdrop-filter: var(--claro-glass-blur);
+  border-bottom: 1px solid var(--claro-glass-border);
+  margin-bottom: 8px;
+  border-radius: var(--claro-radius-card, 24px);
+  margin: 16px;
 }
 
 .cal-nav-center {
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 4px;
 }
 
 .cal-nav-side {
@@ -398,54 +402,62 @@
 
 .cal-nav-btn {
   /* 44×44 touch target */
-  min-width: 44px;
-  min-height: 44px;
-  border-radius: 2px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: none;
   cursor: pointer;
-  color: rgba(255, 255, 255, 0.88);
+  color: rgb(var(--v-theme-on-surface));
   touch-action: manipulation;
-  transition: background 120ms ease;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .cal-nav-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(var(--v-theme-on-surface), 0.05);
+  transform: scale(1.05);
 }
 
 .cal-nav-btn:active {
-  background: rgba(255, 255, 255, 0.2);
+  transform: scale(0.95);
 }
 
 .cal-nav-btn:focus-visible {
-  outline: 2px solid rgba(255, 255, 255, 0.8);
+  outline: 2px solid var(--claro-primary);
   outline-offset: 2px;
 }
 
 .cal-nav-chevron {
-  min-width: 36px;
-  opacity: 0.6;
+  min-width: 32px;
+  opacity: 0.5;
 }
 
 .cal-nav-today {
   min-width: unset;
-  padding: 0 12px;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
+  padding: 0 16px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  background: rgba(var(--v-theme-primary), 0.1);
+  color: var(--claro-primary);
+  border-radius: 9999px;
+}
+
+.cal-nav-today:hover {
+  background: rgba(var(--v-theme-primary), 0.15);
 }
 
 .cal-nav-label {
-  font-size: 0.9375rem;
-  font-weight: 600;
-  color: #fff;
-  letter-spacing: -0.01em;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: rgb(var(--v-theme-on-surface));
+  letter-spacing: -0.02em;
   user-select: none;
   white-space: nowrap;
-  padding: 0 2px;
+  padding: 0 8px;
 }
 
 /* ── Mini calendar ─────────────────────────────────── */

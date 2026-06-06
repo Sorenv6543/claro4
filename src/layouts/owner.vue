@@ -374,15 +374,16 @@
 
 /* ── Appbar shell — matches components-appbar.html handoff ─────────────────── */
 .owner-layout :deep(.v-app-bar) {
-  background: rgb(var(--v-theme-surface)) !important;
-  border-bottom: 1px solid rgba(46, 38, 61, 0.08);
+  background: var(--claro-glass-bg) !important;
+  backdrop-filter: var(--claro-glass-blur) !important;
+  border-bottom: 1px solid var(--claro-glass-border) !important;
   padding: 0 20px;
 }
 
 .owner-layout :deep(.v-app-bar .v-toolbar__content) {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 16px;
 }
 
 /* Wordmark — height 38px, fixed-width brand area on desktop to align with sidebar */
@@ -392,29 +393,34 @@
 
 @media (min-width: 960px) {
   .claro-appbar-wm {
-    margin-right: 8px;
+    margin-right: 12px;
   }
 }
 
 /* ── Tiles toggle (2×2 grid in primary purple) ─────────────────────────────── */
 .claro-toggle {
-  width: 36px;
-  height: 36px;
-  border-radius: 6px;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   flex-shrink: 0;
   border: none;
-  background: transparent;
+  background: rgba(var(--v-theme-primary), 0.1);
   color: var(--claro-primary);
-  transition: background 140ms ease;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   padding: 0;
 }
 
 .claro-toggle:hover {
-  background: rgba(var(--v-theme-primary), 0.10);
+  background: rgba(var(--v-theme-primary), 0.15);
+  transform: scale(1.05);
+}
+
+.claro-toggle:active {
+  transform: scale(0.95);
 }
 
 .claro-toggle:focus-visible {
@@ -424,65 +430,72 @@
 
 .claro-tiles {
   display: grid;
-  grid-template-columns: repeat(2, 8px);
-  grid-template-rows: repeat(2, 8px);
-  gap: 3px;
+  grid-template-columns: repeat(2, 9px);
+  grid-template-rows: repeat(2, 9px);
+  gap: 4px;
 }
 
 .claro-tiles > span {
   display: block;
-  border-radius: 1.5px;
+  border-radius: 2px;
   background: var(--claro-primary);
 }
 
 /* Diagonal tile dim for visual hierarchy (matches handoff) */
 .claro-tiles > span:nth-child(2),
 .claro-tiles > span:nth-child(3) {
-  opacity: 0.45;
+  opacity: 0.4;
 }
 
 /* ── Right-side actions ────────────────────────────────────────────────────── */
 .claro-actions {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 4px;
 }
 
 .claro-actions-divider {
   display: inline-block;
   width: 1px;
   height: 24px;
-  margin: 0 6px;
-  background: rgba(46, 38, 61, 0.12);
+  margin: 0 8px;
+  background: var(--claro-glass-border);
 }
 
 .claro-btn,
 .claro-chevron-btn {
-  height: 38px;
-  border-radius: 6px;
+  height: 40px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   border: none;
   background: transparent;
-  color: rgba(var(--v-theme-on-surface), 0.68);
-  transition: background 140ms ease, color 140ms ease;
+  color: rgb(var(--v-theme-on-surface));
+  opacity: 0.7;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
   padding: 0;
 }
 
 .claro-btn {
-  width: 38px;
+  width: 40px;
 }
 
 .claro-chevron-btn {
-  padding: 0 6px 0 4px;
+  padding: 0 8px 0 4px;
 }
 
 .claro-btn:hover,
 .claro-chevron-btn:hover {
-  background: rgba(46, 38, 61, 0.05);
-  color: rgba(var(--v-theme-on-surface), 0.95);
+  background: rgba(var(--v-theme-on-surface), 0.05);
+  opacity: 1;
+  transform: scale(1.05);
+}
+
+.claro-btn:active,
+.claro-chevron-btn:active {
+  transform: scale(0.95);
 }
 
 .claro-btn:focus-visible,
@@ -493,30 +506,31 @@
 
 /* ── Avatar with status dot ────────────────────────────────────────────────── */
 .claro-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: var(--claro-primary-dark);
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--claro-primary) 0%, var(--claro-primary-dark) 100%);
   color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  font-size: 12px;
-  margin-left: 4px;
+  font-weight: 800;
+  font-size: 13px;
+  margin-left: 8px;
   position: relative;
   flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(var(--v-theme-primary), 0.3);
 }
 
 .claro-status-dot {
   position: absolute;
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
-  background: #28C76F;
-  bottom: 0;
-  right: 0;
-  border: 2px solid #fff;
+  background: var(--claro-success, #28C76F);
+  bottom: -2px;
+  right: -2px;
+  border: 2px solid rgb(var(--v-theme-surface));
 }
 
 /* Floating Add Booking circle */
@@ -527,30 +541,25 @@
   z-index: 200;
   width: 56px;
   height: 56px;
-  border-radius: 50%;
+  border-radius: 16px;
   background: rgb(var(--v-theme-primary));
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow:
-    0 4px 14px rgba(var(--v-theme-primary), 0.45),
-    0 1px 0 rgba(255, 255, 255, 0.18) inset;
+  box-shadow: var(--claro-shadow-lg);
   touch-action: manipulation;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
 }
 
 .fab-add-booking:hover {
-  transform: translateY(-2px) scale(1.06);
-  box-shadow:
-    0 8px 20px rgba(var(--v-theme-primary), 0.55),
-    0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  transform: translateY(-4px) scale(1.08);
+  box-shadow: 0 12px 24px rgba(var(--v-theme-primary), 0.4);
 }
 
 .fab-add-booking:active {
-  transform: translateY(0) scale(0.95);
-  box-shadow: 0 2px 8px rgba(var(--v-theme-primary), 0.35);
+  transform: scale(0.92);
 }
 
 .fab-add-booking:focus-visible {
