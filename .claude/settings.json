@@ -62,16 +62,6 @@
         "hooks": [
           {
             "type": "command",
-            "command": "FILE=$(node -e \"console.log((JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}')).file_path||'')\" 2>/dev/null); [[ \"$FILE\" == *.vue || (\"$FILE\" == *.ts && \"$FILE\" != *.d.ts && \"$FILE\" != *.figma.ts) ]] && cd /c/Users/Soren/claro4 && pnpm exec eslint --fix \"$FILE\" 2>&1 | tail -3 || true",
-            "timeout": 10000
-          }
-        ]
-      },
-      {
-        "matcher": "Edit|Write",
-        "hooks": [
-          {
-            "type": "command",
             "command": "FILE=$(node -e \"console.log((JSON.parse(process.env.CLAUDE_TOOL_INPUT||'{}')).file_path||'')\" 2>/dev/null); [[ \"$FILE\" == *supabase/migrations* ]] && supabase gen types typescript --project-id aejkrsvemqnftivzkkxd > /c/Users/Soren/claro4/src/types/supabase.ts.tmp && mv /c/Users/Soren/claro4/src/types/supabase.ts.tmp /c/Users/Soren/claro4/src/types/supabase.ts && echo 'Types regenerated from schema' || true",
             "timeout": 30000
           }
@@ -84,9 +74,9 @@
     "code-review@claude-plugins-official": true,
     "superpowers@claude-plugins-official": true,
     "commit-commands@claude-plugins-official": true,
-    "figma@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": true,
     "chrome-devtools-mcp@claude-plugins-official": true,
-    "superpowers@superpowers-marketplace": true
+    "superpowers@superpowers-marketplace": false,
+    "superpowers-chrome@superpowers-marketplace": true
   }
 }

@@ -150,51 +150,51 @@
 
               <!-- Property rows + per-ribbon NOW line (same coordinate space as chips) -->
               <div class="tl-rows-wrap">
-              <div
-                v-for="(row, rowIdx) in deskPropertyRows"
-                :key="row.propId"
-                class="tl-prop-row"
-              >
                 <div
-                  class="tl-prop-info"
-                  :style="{ '--prop-color': row.propColor }"
+                  v-for="(row, rowIdx) in deskPropertyRows"
+                  :key="row.propId"
+                  class="tl-prop-row"
                 >
-                  <div class="tl-prop-name">{{ row.propName }}</div>
-                  <div v-if="row.subtitle" class="tl-prop-sub">{{ row.subtitle }}</div>
-
-                  <div class="tl-status-pill" :class="`tl-status-pill--${row.status}`">
-                    {{ deskStatusLabel(row.status) }}
-                  </div>
-                </div>
-
-                <div class="tl-ribbon">
-                  <!-- NOW line inside ribbon — same % coordinate space as chips -->
                   <div
-                    class="tl-now-line-v"
-                    :style="{ left: `${deskNowPct}%` }"
+                    class="tl-prop-info"
+                    :style="{ '--prop-color': row.propColor }"
                   >
-                    <div v-if="rowIdx === 0" class="tl-now-bubble">NOW</div>
+                    <div class="tl-prop-name">{{ row.propName }}</div>
+                    <div v-if="row.subtitle" class="tl-prop-sub">{{ row.subtitle }}</div>
+
+                    <div class="tl-status-pill" :class="`tl-status-pill--${row.status}`">
+                      {{ deskStatusLabel(row.status) }}
+                    </div>
                   </div>
 
-                  <button
-                    v-for="ev in row.events"
-                    :key="ev.id"
-                    :aria-label="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
-                    class="tl-chip"
-                    :class="{
-                      'tl-chip--checkout': ev.type === 'checkout' && !ev.needsClean,
-                      'tl-chip--checkin': ev.type === 'checkin',
-                      'tl-chip--turn': ev.type === 'turn' && !ev.needsClean,
-                      'tl-chip--urgent': ev.needsClean,
-                      'tl-chip--past': deskIsPast(ev.time),
-                    }"
-                    :style="{ left: `${deskBarPct(ev.time)}%` }"
-                    @click="handleDayBarOpenBooking(ev.id)"
-                  >
-                    {{ fmtChipLabel(ev.time, ev.type) }}
-                  </button>
+                  <div class="tl-ribbon">
+                    <!-- NOW line inside ribbon — same % coordinate space as chips -->
+                    <div
+                      class="tl-now-line-v"
+                      :style="{ left: `${deskNowPct}%` }"
+                    >
+                      <div v-if="rowIdx === 0" class="tl-now-bubble">NOW</div>
+                    </div>
+
+                    <button
+                      v-for="ev in row.events"
+                      :key="ev.id"
+                      :aria-label="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
+                      class="tl-chip"
+                      :class="{
+                        'tl-chip--checkout': ev.type === 'checkout' && !ev.needsClean,
+                        'tl-chip--checkin': ev.type === 'checkin',
+                        'tl-chip--turn': ev.type === 'turn' && !ev.needsClean,
+                        'tl-chip--urgent': ev.needsClean,
+                        'tl-chip--past': deskIsPast(ev.time),
+                      }"
+                      :style="{ left: `${deskBarPct(ev.time)}%` }"
+                      @click="handleDayBarOpenBooking(ev.id)"
+                    >
+                      {{ fmtChipLabel(ev.time, ev.type) }}
+                    </button>
+                  </div>
                 </div>
-              </div>
               </div>
             </div>
           </template>
@@ -1536,7 +1536,7 @@
   top: -16px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--claro-primary-dark, #5E52EE);
+  background: var(--claro-primary-dark);
   color: #fff;
   font-size: 8px;
   font-weight: 800;

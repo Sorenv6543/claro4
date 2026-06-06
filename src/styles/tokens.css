@@ -21,7 +21,7 @@
   --claro-primary:        rgb(var(--v-theme-primary));
   --claro-primary-light:  rgb(var(--v-theme-primary-light));
   --claro-primary-dark:   rgb(var(--v-theme-primary-dark));
-  --claro-primary-tint:   #F0EEFF;
+  --claro-primary-tint:   #E3F2FD;
   --claro-secondary:      rgb(var(--v-theme-secondary));
   --claro-accent:         rgba(var(--v-theme-primary), 0.125);
   --claro-on-primary:     #FFFFFF;

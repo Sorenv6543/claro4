@@ -22,9 +22,9 @@ import 'vuetify/styles'
 const lightTheme: ThemeDefinition = {
   dark: false,
   colors: {
-    'primary': '#7367F0',
-    'primary-light': '#9E95F5',
-    'primary-dark': '#5E52EE',
+    'primary': '#1976D2',
+    'primary-light': '#42A5F5',
+    'primary-dark': '#1565C0',
     'secondary': '#A8AAAE',
     'background': '#F5F5F9',
     'surface': '#ffffff',
@@ -54,9 +54,9 @@ const lightTheme: ThemeDefinition = {
 const darkTheme: ThemeDefinition = {
   dark: true,
   colors: {
-    'primary': '#7367F0',
-    'primary-light': '#9E95F5',
-    'primary-dark': '#5E52EE',
+    'primary': '#1976D2',
+    'primary-light': '#42A5F5',
+    'primary-dark': '#1565C0',
     'secondary': '#A8AAAE',
     'background': '#1C1B2D',
     'surface': '#28243D',

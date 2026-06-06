@@ -8,6 +8,14 @@ Multi-tenant property cleaning scheduler with role-based Owner/Admin UI. Core pr
 
 Three user roles: **Property Owners** (30-40 clients with personal property/booking management), **Business Admin** (1 user with system-wide operations and cleaner management), and **Cleaners** (assigned staff — auto-redirected to `/auth/no-access` on login; no app UI).
 
+## Chrome DevTools Workflow
+
+After `/openchrome` completes, always open two tabs in the debug Chrome:
+1. `chrome://inspect` — remote debugging panel
+2. `http://localhost:3000/` — the app (start dev server first with `pnpm dev` if not running)
+
+Never open a second Chrome instance after `/openchrome` has already launched one.
+
 ## Commands
 
 ```bash
@@ -85,6 +93,7 @@ Owner and Admin have separate component trees throughout:
 
 ### Path Aliases
 Configured in both `vite.config.ts` and `tsconfig.json`:
+
 - `@` → `./src`
 - `@components`, `@composables`, `@stores`, `@types`, `@utils`, `@layouts`, `@pages`, `@plugins`, `@assets`
 
