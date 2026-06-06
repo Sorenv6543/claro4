@@ -13,17 +13,31 @@ export const TIMELINE_DAY_START = 8
 /** Number of hours in the visible timeline window (8 AM – 10 PM). */
 export const TIMELINE_DAY_SPAN = 14
 
+/** Standard tick hours for the timeline axis. */
+export const TIMELINE_TICKS = [8, 10, 12, 14, 16, 18, 20, 22]
+
 // ── Position helpers ─────────────────────────────────────────────────────────
 
 /**
- * Convert an "HH:MM" time string to a percentage position [0–100] on the
- * timeline bar (clamped to the visible window).
+ * Convert an "HH:MM" time string OR raw hour/min numbers to a percentage
+ * position [0–100] on the timeline bar (clamped to the visible window).
  *
  * Was: `barPct` in OwnerDayBar.vue, `deskBarPct` in OwnerOverview.vue.
  */
-export function timelinePct (timeStr: string): number {
-  const [h, m] = timeStr.split(':').map(Number)
-  const frac = ((h ?? 0) + (m ?? 0) / 60 - TIMELINE_DAY_START) / TIMELINE_DAY_SPAN
+export function timelinePct (time: string | number, m?: number): number {
+  let h: number
+  let min: number
+
+  if (typeof time === 'string') {
+    const parts = time.split(':').map(Number)
+    h = parts[0] ?? 0
+    min = parts[1] ?? 0
+  } else {
+    h = time
+    min = m ?? 0
+  }
+
+  const frac = (h + min / 60 - TIMELINE_DAY_START) / TIMELINE_DAY_SPAN
   return Math.max(0, Math.min(100, frac * 100))
 }
 
@@ -96,6 +110,15 @@ export function fmtChipLabel (timeStr: string, type: string): string {
     return `${timePart} In`
   }
   return `${timePart} Turn!`
+}
+
+/**
+ * Format a tick hour for display (e.g. 8 -> "8am" or "8a").
+ */
+export function fmtTick (h: number, short = false): string {
+  const suffix = h < 12 ? (short ? 'a' : 'am') : h === 12 ? (short ? 'p' : 'pm') : (short ? 'p' : 'pm')
+  const h12 = h % 12 || 12
+  return `${h12}${suffix}`
 }
 
 /**

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { fmt12, TIMELINE_DAY_SPAN, TIMELINE_DAY_START, timelineIsPast, timelinePct } from '@utils/timelineMath'
+  import { fmt12, fmtTick, TIMELINE_TICKS, timelineIsPast, timelinePct } from '@utils/timelineMath'
   import { computed, ref, watch } from 'vue'
   import RangeToggle from '@/components/dumb/shared/RangeToggle.vue'
 
@@ -63,10 +63,7 @@
   // ── Day-bar math: 8 AM–10 PM (14 hours) ─────────────────────────────────────
   // Constants and pure helpers come from @utils/timelineMath; only the
   // reactive NOW percentage is kept here because it depends on live props.
-  const nowPct = computed(() => {
-    const frac = (props.currentHour + props.currentMin / 60 - TIMELINE_DAY_START) / TIMELINE_DAY_SPAN
-    return Math.max(0, Math.min(100, frac * 100))
-  })
+  const nowPct = computed(() => timelinePct(props.currentHour, props.currentMin))
 
   const RANGE_LABELS = ['Today', '3 days', '7 days']
 
@@ -203,8 +200,8 @@
 
       <!-- Shared axis for all rows -->
       <div v-if="propertyRows.length > 0" class="dbar-axis">
-        <span v-for="h in [8, 10, 12, 14, 16, 18, 20, 22]" :key="h">
-          {{ h <= 12 ? `${h}a` : `${h - 12}p` }}
+        <span v-for="h in TIMELINE_TICKS" :key="h">
+          {{ fmtTick(h, true) }}
         </span>
       </div>
 
@@ -247,7 +244,7 @@
           <button
             v-for="ev in block.events"
             :key="ev.bookingId + ev.type"
-            class="day-evt"
+            class="day-evt glass-card"
             @click="emit('open-booking', ev.bookingId)"
           >
             <div class="day-evt-dot" :class="typeDotClass(ev.type)" />
@@ -272,7 +269,7 @@
 
     <!-- ── Detail bottom sheet ──────────────────────────────────────────────── -->
     <v-bottom-sheet v-model="sheetOpen" max-width="600">
-      <v-card v-if="selectedEvent" class="sheet-card" flat rounded="0">
+      <v-card v-if="selectedEvent" class="sheet-card" flat rounded="xl">
         <div class="sheet-handle" />
 
         <div class="sheet-header">
@@ -329,7 +326,7 @@
           <v-btn
             block
             color="primary"
-            rounded="sm"
+            rounded="pill"
             @click="emit('open-booking', selectedEvent.id); sheetOpen = false"
           >
             <v-icon size="16" start>mdi-calendar-check-outline</v-icon>
@@ -339,7 +336,7 @@
           <v-btn
             v-if="selectedEvent.needsClean"
             block
-            rounded="sm"
+            rounded="pill"
             variant="outlined"
             @click="emit('assign-cleaner', selectedEvent.id); sheetOpen = false"
           >
@@ -457,7 +454,7 @@
   gap: 8px;
   background: linear-gradient(90deg, rgba(234, 84, 85, 0.25) 0%, rgba(234, 84, 85, 0.08) 100%);
   border: 1px solid rgba(234, 84, 85, 0.35);
-  border-radius: 6px;
+  border-radius: 12px;
   padding: 10px 12px;
   margin-top: 8px;
 }
@@ -524,7 +521,7 @@
   height: 34px;
   background: rgba(var(--v-theme-primary), 0.06);
   border: 1px solid rgba(var(--v-theme-primary), 0.12);
-  border-radius: 2px;
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -534,7 +531,7 @@
   top: 6px;
   bottom: 6px;
   width: 10px;
-  border-radius: 1px;
+  border-radius: 3px;
   background: var(--claro-primary);
   border: none;
   cursor: pointer;
@@ -618,7 +615,7 @@
   display: inline-block;
   width: 10px;
   height: 16px;
-  border-radius: 1px;
+  border-radius: 3px;
   flex-shrink: 0;
 }
 
@@ -667,32 +664,28 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 12px;
-  background: #fff;
-  border: 1px solid rgba(46, 38, 61, 0.08);
-  border-radius: 2px;
+  padding: 12px;
+  border-radius: 16px;
   cursor: pointer;
   text-align: left;
   width: 100%;
-  transition: border-color 0.12s, box-shadow 0.12s;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s;
 }
 
-.day-evt:hover {
-  border-color: rgba(var(--v-theme-primary), 0.25);
-  box-shadow: 0 2px 8px rgba(var(--v-theme-primary), 0.08);
+.day-evt:active {
+  transform: scale(0.97);
 }
 
 .day-evt-dot {
-  width: 8px;
-  height: 8px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
-  background: var(--claro-primary);
 }
 
 .dot--checkout { background: var(--claro-primary); }
-.dot--checkin  { background: var(--claro-success); }
-.dot--turn     { background: var(--claro-warning); }
+.dot--checkin  { background: #28C76F; }
+.dot--turn     { background: #FF9F43; }
 
 .day-evt-body {
   flex: 1;
@@ -700,14 +693,14 @@
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 12px;
+  font-size: 13px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
 .day-evt-prop {
-  font-weight: 600;
+  font-weight: 700;
   color: #2E263D;
   flex-shrink: 0;
 }
@@ -721,6 +714,7 @@
   color: rgba(46, 38, 61, 0.60);
   font-variant-numeric: tabular-nums;
   flex-shrink: 0;
+  font-weight: 600;
 }
 
 .day-evt-kind {
@@ -731,12 +725,12 @@
 
 .day-evt-action {
   padding: 2px 7px;
-  border-radius: 2px;
-  background: #E8A33D;
+  border-radius: 9999px;
+  background: #EF4444;
   color: #fff;
   font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
   flex-shrink: 0;
 }
@@ -786,19 +780,19 @@
   height: 4px;
   border-radius: 9999px;
   background: rgba(46, 38, 61, 0.16);
-  margin: 10px auto 4px;
+  margin: 12px auto 6px;
 }
 
 .sheet-header {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 16px 8px;
+  padding: 16px 20px 12px;
 }
 
 .sheet-color-dot {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   flex-shrink: 0;
 }
@@ -809,10 +803,10 @@
 }
 
 .sheet-prop {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 700;
   color: #2E263D;
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -821,7 +815,7 @@
 .sheet-sub {
   display: flex;
   align-items: center;
-  font-size: 12px;
+  font-size: 13px;
   color: rgba(46, 38, 61, 0.60);
   margin-top: 2px;
 }
@@ -829,20 +823,20 @@
 .sheet-alert {
   display: flex;
   align-items: center;
-  background: #FFF8EE;
-  border-top: 1px solid rgba(232, 163, 61, 0.22);
-  border-bottom: 1px solid rgba(232, 163, 61, 0.22);
-  padding: 10px 16px;
-  font-size: 12px;
+  background: #FEF2F2;
+  border-top: 1px solid rgba(239, 68, 68, 0.1);
+  border-bottom: 1px solid rgba(239, 68, 68, 0.1);
+  padding: 12px 20px;
+  font-size: 13px;
   font-weight: 600;
-  color: #B87714;
+  color: #EF4444;
 }
 
 .sheet-guest {
   display: flex;
   align-items: center;
-  padding: 10px 16px 0;
-  font-size: 13px;
+  padding: 12px 20px 0;
+  font-size: 14px;
   color: rgba(46, 38, 61, 0.68);
 }
 
@@ -850,39 +844,39 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #F5F3FF;
-  border: 1px solid rgba(var(--v-theme-primary), 0.20);
-  border-radius: 2px;
-  padding: 10px 12px;
-  margin: 12px 16px 0;
+  background: var(--claro-primary-whisper, rgba(115, 103, 240, 0.08));
+  border: 1px solid rgba(115, 103, 240, 0.15);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 16px 20px 0;
 }
 
 .clean-window-label {
   font-size: 9px;
-  font-weight: 700;
-  color: rgb(var(--v-theme-primary));
+  font-weight: 800;
+  color: #7367F0;
   letter-spacing: 0.10em;
   text-transform: uppercase;
 }
 
 .clean-window-dur {
-  font-size: 11px;
+  font-size: 12px;
   color: rgba(46, 38, 61, 0.68);
   margin-top: 2px;
 }
 
 .clean-window-times {
-  font-size: 15px;
-  font-weight: 700;
-  color: rgb(var(--v-theme-primary));
+  font-size: 17px;
+  font-weight: 800;
+  color: #7367F0;
   font-variant-numeric: tabular-nums;
 }
 
 .sheet-actions {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 16px;
+  gap: 10px;
+  padding: 20px;
 }
 
 @media (prefers-reduced-motion: reduce) {

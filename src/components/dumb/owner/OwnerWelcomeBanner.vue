@@ -5,7 +5,7 @@
   Stats are passed as an array for the right-side icon boxes.
 -->
 <template>
-  <div class="owner-hero card-aurora glass-card">
+  <div class="owner-hero card-aurora">
     <!-- Decorative SVG wave — enhanced opacity for glass feel -->
     <svg
       aria-hidden="true"

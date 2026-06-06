@@ -125,19 +125,6 @@
       </v-col>
     </v-row>
 
-    <!-- Stat row as Bento blocks -->
-    <v-row class="mb-6">
-      <v-col v-for="stat in rangeStats" :key="stat.label" cols="6" md="4">
-        <StatCard
-          compact
-          :color="stat.urgent ? 'error' : 'primary'"
-          :icon="stat.urgent ? 'mdi-alert-circle' : 'mdi-chart-line'"
-          :label="stat.label"
-          :value="stat.n"
-        />
-      </v-col>
-    </v-row>
-
     <!-- Urgent banner (today only) -->
     <v-row v-if="urgentTurns.length > 0" class="ov-row-urgent mb-8">
       <v-col cols="12">
@@ -190,146 +177,82 @@
             </div>
           </div>
 
-          <!-- Single-day: full-width labeled chips, shared NOW scrubber -->
-          <template v-if="range === 0">
-            <div v-if="deskPropertyRows.length === 0" class="tl-empty">
-              <v-icon aria-hidden="true" class="mr-1" size="16">mdi-calendar-check-outline</v-icon>
-              Nothing scheduled for today
+          <!-- Unified view: vertical day sections for Today / Week / 2-Weeks -->
+          <div v-if="deskUnifiedRows.length === 0" class="tl-empty">
+            <v-icon aria-hidden="true" class="mr-1" size="16">mdi-calendar-check-outline</v-icon>
+            Nothing scheduled in this period
+          </div>
+
+          <div v-else class="tl-timeline-wrap">
+            <!-- Shared hour axis — shown once at top -->
+            <div class="tl-axis-top">
+              <div class="tl-axis-spacer-wide" />
+              <div class="tl-axis-ticks-top">
+                <span v-for="h in [8, 10, 12, 14, 16, 18, 20, 22]" :key="h">
+                  {{ h < 12 ? `${h}am` : h === 12 ? '12pm' : `${h - 12}pm` }}
+                </span>
+              </div>
             </div>
 
-            <div v-else class="tl-timeline-wrap">
-              <!-- Hour axis at top -->
-              <div class="tl-axis-top">
-                <div class="tl-axis-spacer-wide" />
-
-                <div class="tl-axis-ticks-top">
-                  <span v-for="h in [8, 10, 12, 14, 16, 18, 20, 22]" :key="h">
-                    {{ h < 12 ? `${h}am` : h === 12 ? '12pm' : `${h - 12}pm` }}
-                  </span>
-                </div>
+            <!-- One vertical section per day in the range -->
+            <div v-for="(day, di) in deskDays" :key="day.date">
+              <div class="tl-day-hd">
+                <span class="tl-day-hd-label" :class="{ 'tl-day-hd-label--today': di === 0 }">
+                  {{ day.displayLabel }}
+                </span>
+                <div class="tl-day-hd-line" />
               </div>
 
-              <!-- Property rows + per-ribbon NOW line (same coordinate space as chips) -->
               <div class="tl-rows-wrap">
-                <div
-                  v-for="(row, rowIdx) in deskPropertyRows"
-                  :key="row.propId"
-                  class="tl-prop-row"
-                >
-                  <div
-                    class="tl-prop-info"
-                    :style="{ '--prop-color': row.propColor }"
-                  >
-                    <div class="tl-prop-name">{{ row.propName }}</div>
-                    <div v-if="row.subtitle" class="tl-prop-sub">{{ row.subtitle }}</div>
-
-                    <div class="tl-status-pill" :class="`tl-status-pill--${row.status}`">
-                      {{ deskStatusLabel(row.status) }}
-                    </div>
-                  </div>
-
-                  <div class="tl-ribbon">
-                    <!-- NOW line inside ribbon — same % coordinate space as chips -->
-                    <div
-                      class="tl-now-line-v"
-                      :style="{ left: `${deskNowPct}%` }"
-                    >
-                      <div v-if="rowIdx === 0" class="tl-now-bubble">NOW</div>
+                <template v-for="row in deskUnifiedRows" :key="row.propId">
+                  <div v-if="row.days[di]?.events.length" class="tl-prop-row">
+                    <div class="tl-prop-info" :style="{ '--prop-color': row.propColor }">
+                      <div class="tl-prop-name">{{ row.propName }}</div>
+                      <div v-if="row.subtitle" class="tl-prop-sub">{{ row.subtitle }}</div>
+                      <div v-if="di === 0" class="tl-status-pill" :class="`tl-status-pill--${row.status}`">
+                        {{ deskStatusLabel(row.status) }}
+                      </div>
                     </div>
 
-                    <button
-                      v-for="ev in row.events"
-                      :key="ev.id"
-                      :aria-label="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
-                      class="tl-chip"
-                      :class="{
-                        'tl-chip--checkout': ev.type === 'checkout' && !ev.needsClean,
-                        'tl-chip--checkin': ev.type === 'checkin',
-                        'tl-chip--turn': ev.type === 'turn' && !ev.needsClean,
-                        'tl-chip--urgent': ev.needsClean,
-                        'tl-chip--past': deskIsPast(ev.time),
-                      }"
-                      :style="{ left: `${deskBarPct(ev.time)}%` }"
-                      @click="handleDayBarOpenBooking(ev.id)"
-                    >
-                      {{ fmtChipLabel(ev.time, ev.type) }}
-                    </button>
+                    <div class="tl-ribbon">
+                      <div
+                        v-if="di === 0"
+                        class="tl-now-line-v"
+                        :style="{ left: `${deskNowPct}%` }"
+                      >
+                        <div v-if="row.propId === firstTodayPropId" class="tl-now-bubble">NOW</div>
+                      </div>
+
+                      <button
+                        v-for="ev in row.days[di].events"
+                        :key="ev.id"
+                        :aria-label="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
+                        class="tl-chip"
+                        :class="{
+                          'tl-chip--checkout': ev.type === 'checkout' && !ev.needsClean,
+                          'tl-chip--checkin': ev.type === 'checkin',
+                          'tl-chip--turn': ev.type === 'turn' && !ev.needsClean,
+                          'tl-chip--urgent': ev.needsClean,
+                          'tl-chip--past': di === 0 && deskIsPast(ev.time),
+                        }"
+                        :style="{ left: `${deskBarPct(ev.time)}%` }"
+                        @click="handleDayBarOpenBooking(ev.id)"
+                      >
+                        {{ fmtChipLabel(ev.time, ev.type) }}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </template>
-
-          <!-- Multi-day: per-property swimlane grid -->
-          <template v-else>
-            <div v-if="desktopMultiRows.length === 0" class="tl-empty">
-              Nothing scheduled in this period
-            </div>
-
-            <div v-else class="tl-multi-wrap">
-              <!-- Column day headers -->
-              <div class="tl-col-headers">
-                <div class="tl-row-lbl tl-row-lbl--ghost" />
-
-                <div class="tl-col-hd-row">
-                  <span
-                    v-for="(day, i) in rangeColumnDays"
-                    :key="i"
-                    class="tl-col-hd"
-                    :class="{ 'tl-col-hd--today': i === 0 }"
-                    :style="{ width: (100 / rangeDays) + '%' }"
-                  >
-                    {{ day }}
-                  </span>
-                </div>
+                </template>
               </div>
 
-              <!-- Per-property swimlane rows -->
               <div
-                v-for="row in desktopMultiRows"
-                :key="row.propId"
-                class="tl-multi-row"
+                v-if="!deskUnifiedRows.some(r => r.days[di]?.events.length)"
+                class="tl-day-empty"
               >
-                <div class="tl-row-lbl">
-                  <div class="tl-row-dot" :style="{ background: row.propColor }" />
-                  <span>{{ row.propName }}</span>
-                </div>
-
-                <div class="tl-multi-grid">
-                  <!-- Day dividers -->
-                  <div
-                    v-for="i in rangeDays - 1"
-                    :key="i"
-                    class="tl-day-div"
-                    :style="{ left: (i / rangeDays) * 100 + '%' }"
-                  />
-
-                  <!-- Stay span bars -->
-                  <div
-                    v-for="(span, si) in row.spans"
-                    :key="'span-' + si"
-                    class="tl-span-bar"
-                    :style="{
-                      left: (span.startDay / rangeDays) * 100 + '%',
-                      width: ((span.endDay - span.startDay) / rangeDays) * 100 + '%',
-                      background: span.color,
-                    }"
-                  />
-
-                  <!-- Event day markers -->
-                  <div
-                    v-for="(marker, mi) in row.markers"
-                    :key="'mk-' + mi"
-                    class="tl-day-marker"
-                    :class="'tl-day-marker--' + marker.type"
-                    :style="{ left: ((marker.day + 0.5) / rangeDays) * 100 + '%' }"
-                  >
-                    {{ marker.type === 'checkin' ? 'In' : marker.type === 'checkout' ? 'Out' : 'Trn' }}
-                  </div>
-                </div>
+                Nothing scheduled
               </div>
             </div>
-          </template>
+          </div>
         </div>
       </v-col>
 
@@ -410,6 +333,103 @@
       @confirm="confirmDeleteBooking"
     />
   </v-container>
+
+  <!-- ── Booking detail drawer ── -->
+  <Teleport to="body">
+    <Transition name="bdr-slide">
+      <div v-if="drawerOpen" class="bdr-overlay" @click.self="drawerOpen = false">
+        <div class="bdr-panel">
+    <div v-if="drawerItem" class="bdr-wrap">
+      <!-- Header -->
+      <div class="bdr-header">
+        <div>
+          <div class="bdr-prop-name">{{ drawerItem.propertyName }}</div>
+          <div class="bdr-meta-row">
+            <span class="bdr-dot" :style="{ background: drawerItem.propertyColor }" />
+            <span class="bdr-dates">{{ drawerFmtRange(drawerItem.checkinDate, drawerItem.checkoutDate) }}</span>
+          </div>
+        </div>
+        <v-btn aria-label="Close" icon size="small" variant="text" @click="drawerOpen = false">
+          <v-icon size="20">mdi-close</v-icon>
+        </v-btn>
+      </div>
+
+      <!-- Chips -->
+      <div class="bdr-chips">
+        <v-chip
+          :color="drawerItem.bookingType === 'turn' ? 'warning' : 'primary'"
+          size="small"
+          variant="tonal"
+        >
+          {{ drawerItem.bookingType === 'turn' ? 'Turn' : 'Standard' }}
+        </v-chip>
+        <v-chip :color="drawerStatusColor(drawerItem.status)" size="small" variant="tonal">
+          {{ drawerFmtStatus(drawerItem.status) }}
+        </v-chip>
+        <v-chip v-if="drawerItem.priority" :color="drawerPriorityColor(drawerItem.priority)" size="small" variant="tonal">
+          {{ drawerItem.priority }}
+        </v-chip>
+      </div>
+
+      <v-divider class="my-4" />
+
+      <!-- Booking details -->
+      <div class="bdr-section-label">Booking Details</div>
+      <div class="bdr-table">
+        <div class="bdr-row">
+          <span class="bdr-key"><v-icon color="primary" size="14">mdi-login</v-icon> Check-in</span>
+          <span class="bdr-val">{{ drawerFmtDate(drawerItem.checkinDate) }}<template v-if="drawerItem.checkinTime"> · {{ drawerItem.checkinTime }}</template></span>
+        </div>
+        <div class="bdr-row">
+          <span class="bdr-key"><v-icon color="primary" size="14">mdi-logout</v-icon> Check-out</span>
+          <span class="bdr-val">{{ drawerFmtDate(drawerItem.checkoutDate) }}<template v-if="drawerItem.checkoutTime"> · {{ drawerItem.checkoutTime }}</template></span>
+        </div>
+        <div v-if="drawerItem.guestCount" class="bdr-row">
+          <span class="bdr-key"><v-icon color="primary" size="14">mdi-account-group-outline</v-icon> Guests</span>
+          <span class="bdr-val">{{ drawerItem.guestCount }}</span>
+        </div>
+        <div v-if="drawerItem.guestName" class="bdr-row">
+          <span class="bdr-key"><v-icon color="primary" size="14">mdi-account-outline</v-icon> Guest</span>
+          <span class="bdr-val">{{ drawerItem.guestName }}</span>
+        </div>
+        <div v-if="drawerItem.createdAt" class="bdr-row">
+          <span class="bdr-key"><v-icon color="primary" size="14">mdi-clock-outline</v-icon> Created</span>
+          <span class="bdr-val">{{ drawerFmtDate(drawerItem.createdAt) }}</span>
+        </div>
+      </div>
+
+      <v-divider class="my-4" />
+
+      <!-- Notes -->
+      <div class="bdr-section-label">Notes</div>
+      <p class="bdr-notes">{{ drawerItem.notes || 'No notes for this booking.' }}</p>
+
+      <!-- Actions -->
+      <div class="bdr-actions">
+        <v-btn
+          block
+          color="primary"
+          rounded="sm"
+          variant="tonal"
+          @click="handleEditBooking(drawerItem.id); drawerOpen = false"
+        >
+          Edit Booking
+        </v-btn>
+        <v-btn
+          block
+          color="error"
+          rounded="sm"
+          variant="text"
+          @click="handleDeleteBooking(drawerItem.id); drawerOpen = false"
+        >
+          Delete
+        </v-btn>
+      </div>
+    </div>
+        </div>
+      </div>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup lang="ts">
@@ -427,7 +447,6 @@
   import OwnerDayBar from '@/components/dumb/owner/OwnerDayBar.vue'
   import OwnerWelcomeBanner from '@/components/dumb/owner/OwnerWelcomeBanner.vue'
   import PropertyList from '@/components/dumb/owner/PropertyList.vue'
-  import StatCard from '@/components/dumb/shared/StatCard.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import RangeToggle from '@/components/dumb/shared/RangeToggle.vue'
   import { useOwnerBookings } from '@/composables/owner/useOwnerBookings'
@@ -611,13 +630,24 @@
       .filter(r => r.events.length > 0),
   )
 
-  // Desktop single-day rows: rich property info + labeled chips
-  const deskPropertyRows = computed(() =>
+  // Day columns for the current range (used by unified header + rows)
+  const deskDays = computed(() =>
+    Array.from({ length: rangeDays.value }, (_, i) => {
+      const d = new Date(todayStr.value + 'T00:00:00')
+      d.setDate(d.getDate() + i)
+      const date = d.toISOString().slice(0, 10)
+      const label = i === 0 ? 'Today' : d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })
+      const displayLabel = i === 0 ? 'TODAY' : i === 1 ? 'TOMORROW' : d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()
+      return { date, label, displayLabel }
+    }),
+  )
+
+  // Unified desktop rows — one per property, with per-day events; works for all range values
+  const deskUnifiedRows = computed(() =>
     myProperties.value
       .map(p => {
         const name = formatPropertyAddress(p, 'short')
         const color = mapLegacyPropertyColor(p.color)
-        const events = dayBarEvents.value.filter(e => e.propId === p.id)
 
         const subtitleParts = [
           p.address_city || null,
@@ -627,6 +657,35 @@
             : null,
         ].filter(Boolean)
 
+        const days = deskDays.value.map(day => {
+          const events: DayBarEvent[] = []
+          for (const b of myBookings.value) {
+            if (b.property_id !== p.id || b.status === 'cancelled') continue
+            const noClean = !b.assigned_cleaner_id && !b.assigned_team_id
+            if (b.booking_type === 'turn' && b.checkin_date === day.date) {
+              events.push({
+                id: b.id + '-t', propId: p.id, propName: name, propColor: color,
+                type: 'turn', time: (b.checkout_time ?? '11:00').slice(0, 5),
+                guestCount: b.guest_count ?? undefined, needsClean: noClean,
+                cleanFrom: (b.turn_start_time ?? b.checkout_time ?? '11:00').slice(0, 5),
+                cleanTo: (b.turn_checkin_time ?? b.checkin_time ?? '15:00').slice(0, 5),
+                cleanMins: p.cleaning_duration ?? undefined,
+                bookingName: undefined,
+              })
+            } else {
+              if (b.checkout_date === day.date)
+                events.push({ id: b.id + '-o', propId: p.id, propName: name, propColor: color, type: 'checkout', time: (b.checkout_time ?? '11:00').slice(0, 5), guestCount: b.guest_count ?? undefined, needsClean: noClean })
+              if (b.checkin_date === day.date)
+                events.push({ id: b.id + '-i', propId: p.id, propName: name, propColor: color, type: 'checkin', time: (b.checkin_time ?? '15:00').slice(0, 5), guestCount: b.guest_count ?? undefined, needsClean: false })
+            }
+          }
+          events.sort((a, b) => a.time.localeCompare(b.time))
+          return { date: day.date, events }
+        })
+
+        if (!days.some(d => d.events.length > 0)) return null
+
+        const todayEvts = days[0]?.events ?? []
         const isOccupied = myBookings.value.some(
           b => b.property_id === p.id
             && b.status !== 'cancelled'
@@ -634,12 +693,10 @@
             && b.checkin_date <= todayStr.value
             && b.checkout_date > todayStr.value,
         )
-
-        const hasUrgent = events.some(e => e.needsClean)
-        const hasTurn = events.some(e => e.type === 'turn')
-        const hasCheckout = events.some(e => e.type === 'checkout')
-        const hasCheckin = events.some(e => e.type === 'checkin')
-
+        const hasUrgent = todayEvts.some(e => e.needsClean)
+        const hasTurn = todayEvts.some(e => e.type === 'turn')
+        const hasCheckout = todayEvts.some(e => e.type === 'checkout')
+        const hasCheckin = todayEvts.some(e => e.type === 'checkin')
         let status: 'urgent' | 'turn' | 'checkout' | 'checkin' | 'occupied' | 'vacant'
         if (hasUrgent) status = 'urgent'
         else if (hasTurn) status = 'turn'
@@ -648,16 +705,14 @@
         else if (isOccupied) status = 'occupied'
         else status = 'vacant'
 
-        return {
-          propId: p.id,
-          propName: name,
-          propColor: color,
-          subtitle: subtitleParts.join(' · '),
-          status,
-          events,
-        }
+        return { propId: p.id, propName: name, propColor: color, subtitle: subtitleParts.join(' · '), status, days }
       })
-      .filter(r => r.events.length > 0),
+      .filter(r => r !== null),
+  )
+
+  // First property with events today — used to anchor the NOW bubble to one row
+  const firstTodayPropId = computed(() =>
+    deskUnifiedRows.value.find(r => r.days[0]?.events.length)?.propId ?? null,
   )
 
   function deskStatusLabel (status: string): string {
@@ -705,75 +760,6 @@
       return b.checkout_date >= todayStr.value && b.checkout_date <= end
     }).length
   })
-
-  // Desktop stat chips
-  const rangeStats = computed(() => {
-    const end = rangeEndDate.value
-    let checkouts = 0, checkins = 0, turns = 0
-    for (const b of myBookings.value) {
-      if (b.status === 'cancelled') continue
-      if (b.booking_type === 'turn') {
-        if (b.checkin_date >= todayStr.value && b.checkin_date <= end) turns++
-      } else {
-        if (b.checkout_date >= todayStr.value && b.checkout_date <= end) checkouts++
-        if (b.checkin_date >= todayStr.value && b.checkin_date <= end) checkins++
-      }
-    }
-    return [
-      { n: checkouts, label: 'Check-outs', urgent: false },
-      { n: checkins, label: 'Check-ins', urgent: false },
-      { n: turns, label: 'Turns', urgent: urgentTurns.value.length > 0 },
-    ]
-  })
-
-  // Desktop multi-day swimlane rows (span bars + event markers)
-  const desktopMultiRows = computed(() => {
-    const days = rangeDays.value
-    const end = rangeEndDate.value
-
-    return myProperties.value
-      .map(p => {
-        const name = formatPropertyAddress(p, 'short')
-        const color = mapLegacyPropertyColor(p.color)
-        const spans: Array<{ startDay: number, endDay: number, color: string }> = []
-        const markers: Array<{ day: number, type: 'checkin' | 'checkout' | 'turn', bookingId: string }> = []
-
-        for (const b of myBookings.value) {
-          if (b.property_id !== p.id || b.status === 'cancelled') continue
-          if (b.checkout_date < todayStr.value || b.checkin_date > end) continue
-
-          const spanStart = Math.max(0, daysDiff(todayStr.value, b.checkin_date))
-          const spanEnd = Math.min(days, daysDiff(todayStr.value, b.checkout_date) + 1)
-          if (spanEnd > spanStart) spans.push({ startDay: spanStart, endDay: spanEnd, color })
-
-          if (b.booking_type === 'turn') {
-            const day = daysDiff(todayStr.value, b.checkin_date)
-            if (day >= 0 && day < days) markers.push({ day, type: 'turn', bookingId: b.id })
-          } else {
-            const outDay = daysDiff(todayStr.value, b.checkout_date)
-            if (outDay >= 0 && outDay < days) markers.push({ day: outDay, type: 'checkout', bookingId: b.id })
-            const inDay = daysDiff(todayStr.value, b.checkin_date)
-            if (inDay >= 0 && inDay < days) markers.push({ day: inDay, type: 'checkin', bookingId: b.id })
-          }
-        }
-
-        return { propId: p.id, propName: name, propColor: color, spans, markers }
-      })
-      .filter(r => r.spans.length > 0 || r.markers.length > 0)
-  })
-
-  // Day column labels for desktop multi-day header
-  const rangeColumnDays = computed(() =>
-    Array.from({ length: rangeDays.value }, (_, i) => {
-      if (i === 0) return 'Today'
-      const d = new Date(todayStr.value + 'T00:00:00')
-      d.setDate(d.getDate() + i)
-      return d.toLocaleDateString('en-US', {
-        weekday: rangeDays.value > 7 ? 'narrow' : 'short',
-        day: 'numeric',
-      })
-    }),
-  )
 
   // ── Unified upcoming events (all types, full range window) ──────────────────
   const unifiedUpcomingEvents = computed((): UnifiedEvent[] => {
@@ -868,14 +854,50 @@
     return d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })
   })
 
+  // ── Booking detail drawer ─────────────────────────────────────────────────
+  const drawerOpen = ref(false)
+  const drawerBookingId = ref<string | null>(null)
+
+  const drawerItem = computed((): BookingListItem | null => {
+    if (!drawerBookingId.value) return null
+    const b = myBookings.value.find(x => x.id === drawerBookingId.value)
+    return b ? bookingToItem(b) : null
+  })
+
+  function drawerFmtDate (dateStr: string | undefined): string {
+    if (!dateStr) return '—'
+    return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  }
+
+  function drawerFmtRange (checkin: string, checkout: string): string {
+    const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
+    const a = new Date(checkin + 'T00:00:00').toLocaleDateString('en-US', opts)
+    const b = new Date(checkout + 'T00:00:00').toLocaleDateString('en-US', opts)
+    return checkin === checkout ? a : `${a} – ${b}`
+  }
+
+  function drawerStatusColor (status: string): string {
+    if (status === 'confirmed') return 'success'
+    if (status === 'pending') return 'warning'
+    if (status === 'cancelled') return 'error'
+    return 'default'
+  }
+
+  function drawerPriorityColor (priority: string): string {
+    if (priority === 'urgent') return 'error'
+    if (priority === 'high') return 'warning'
+    if (priority === 'normal' || priority === 'low') return 'info'
+    return 'default'
+  }
+
+  function drawerFmtStatus (status: string): string {
+    return status.charAt(0).toUpperCase() + status.slice(1)
+  }
+
   function handleDayBarOpenBooking (eventId: string): void {
     const bookingId = eventId.replace(/-[toi]$/, '')
-    router.push({ path: '/owner/bookings', query: { id: bookingId } })
-      .catch((error: unknown) => {
-        if (!isNavigationFailure(error, NavigationFailureType.duplicated)) {
-          console.warn('[OwnerOverview] navigation failed', error)
-        }
-      })
+    drawerBookingId.value = bookingId
+    drawerOpen.value = true
   }
 
   function handleDayBarAssignCleaner (_eventId: string): void {
@@ -1233,114 +1255,40 @@
   font-weight: 500;
 }
 
-.tl-row-lbl {
+/* ── Day section headers (Today / Tomorrow / Weekday) ── */
+.tl-day-hd {
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 160px;
-  flex-shrink: 0;
-  font-size: var(--claro-text-sm);
-  font-weight: 600;
-  color: var(--claro-fg2);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
+  padding: 12px 0 8px;
 }
 
-.tl-row-lbl--ghost {
-  visibility: hidden;
-}
-
-.tl-row-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-/* ── Multi-day swimlane ── */
-.tl-multi-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.tl-col-headers {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.tl-col-hd-row {
-  flex: 1;
-  display: flex;
-}
-
-.tl-col-hd {
+.tl-day-hd-label {
   font-size: 10px;
-  font-weight: 700;
+  font-weight: 800;
   color: var(--claro-fg3);
-  letter-spacing: 0.07em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  text-align: center;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
-.tl-col-hd--today {
+.tl-day-hd-label--today {
   color: var(--claro-primary);
 }
 
-.tl-multi-row {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.tl-multi-grid {
-  position: relative;
+.tl-day-hd-line {
   flex: 1;
-  height: 48px;
-  background: rgba(var(--v-theme-primary), 0.04);
-  border: 1px solid rgba(var(--v-theme-primary), 0.10);
-  border-radius: 12px;
-  overflow: hidden;
+  height: 1px;
+  background: rgba(var(--v-theme-on-surface), 0.08);
 }
 
-/* Day column dividers */
-.tl-day-div {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 1px;
-  background: rgba(var(--v-theme-on-surface), 0.05);
+.tl-day-empty {
+  font-size: 12px;
+  color: var(--claro-fg3);
+  padding: 6px 0 8px;
+  opacity: 0.7;
 }
-
-/* Stay span bars */
-.tl-span-bar {
-  position: absolute;
-  top: 6px;
-  bottom: 6px;
-  opacity: 0.3;
-  border-radius: 6px;
-}
-
-/* Event day markers */
-.tl-day-marker {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 4;
-  font-size: 9px;
-  font-weight: 700;
-  padding: 2px 6px;
-  border-radius: 6px;
-  color: #fff;
-  white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.tl-day-marker--checkin  { background: var(--claro-success); }
-.tl-day-marker--checkout { background: var(--claro-primary); }
-.tl-day-marker--turn     { background: var(--claro-warning); }
 
 /* ── Unified booking item list ── */
 .bk-list {
@@ -1651,6 +1599,10 @@
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
+.tl-chip--checkout { background: var(--claro-primary); }
+.tl-chip--checkin  { background: #28C76F; }
+.tl-chip--turn     { background: #FF9F43; }
+.tl-chip--urgent   { background: #EA5455; box-shadow: 0 0 0 2px rgba(234, 84, 85, 0.28); }
 .tl-chip--past     { opacity: 0.35; filter: grayscale(0.5); }
 
 .tl-chip:hover:not(.tl-chip--past) {
@@ -1765,5 +1717,113 @@
   font-size: 12px;
   color: var(--claro-fg3);
   margin-top: 2px;
+}
+
+/* ── Booking detail drawer ── */
+/* Note: .bdr-overlay and .bdr-panel are Teleported to body, so they are NOT scoped.
+   They live here for co-location but are injected globally at runtime. */
+.bdr-wrap {
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100%;
+}
+
+.bdr-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.bdr-prop-name {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--claro-fg1);
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+}
+
+.bdr-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.bdr-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bdr-dates {
+  font-size: 13px;
+  color: var(--claro-fg3);
+  font-weight: 500;
+}
+
+.bdr-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.bdr-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--claro-fg3);
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.bdr-table {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.bdr-row {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.bdr-key {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  color: var(--claro-fg3);
+  font-weight: 600;
+  min-width: 100px;
+  flex-shrink: 0;
+}
+
+.bdr-val {
+  font-size: 13px;
+  color: var(--claro-fg1);
+  font-weight: 500;
+}
+
+.bdr-notes {
+  font-size: 13px;
+  color: var(--claro-fg2);
+  line-height: 1.6;
+  margin: 0 0 4px;
+}
+
+.bdr-actions {
+  margin-top: auto;
+  padding-top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 </style>

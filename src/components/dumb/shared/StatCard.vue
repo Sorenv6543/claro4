@@ -1,5 +1,5 @@
 <template>
-  <v-card class="stat-card glass-card" :elevation="0">
+  <v-card class="stat-card glass-card" :class="{ 'stat-card--compact': compact }" :elevation="0">
     <div class="stat-card__body">
       <div class="stat-card__info">
         <span class="stat-card__label">{{ label }}</span>
@@ -42,6 +42,7 @@
     trend?: 'up' | 'down' | 'flat'
     trendValue?: string
     color?: string
+    compact?: boolean
   }>()
 
   const trendIcon = computed(() => {
@@ -63,6 +64,11 @@
   align-items: center;
 }
 
+.stat-card--compact {
+  padding: var(--claro-space-md, 16px);
+  min-height: 90px;
+}
+
 .stat-card__body {
   display: flex;
   flex-direction: row;
@@ -79,12 +85,20 @@
   min-width: 0;
 }
 
+.stat-card--compact .stat-card__info {
+  gap: 4px;
+}
+
 .stat-card__value {
   font-size: 2.25rem;
   font-weight: 700;
   line-height: 1;
   color: rgb(var(--v-theme-on-surface));
   letter-spacing: -0.02em;
+}
+
+.stat-card--compact .stat-card__value {
+  font-size: 1.75rem;
 }
 
 .stat-card__label {
@@ -95,6 +109,10 @@
   opacity: 0.6;
   color: rgb(var(--v-theme-on-surface));
   line-height: 1.3;
+}
+
+.stat-card--compact .stat-card__label {
+  font-size: 0.7rem;
 }
 
 .stat-card__trend {

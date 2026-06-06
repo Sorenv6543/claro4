@@ -9,7 +9,7 @@
         :stats="[
           { icon: 'mdi-calendar-check', label: 'Total', value: myBookings.length },
           { icon: 'mdi-calendar-week', label: 'This Week', value: weekCheckinCount },
-          { icon: 'mdi-alert-outline', label: 'Unassigned', value: unassignedCount },
+          { icon: 'mdi-alert-outline', label: 'To Assign', value: unassignedCount },
         ]"
         subtitle="View and manage your upcoming and past bookings"
       />

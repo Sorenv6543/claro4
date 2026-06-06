@@ -70,7 +70,6 @@ export default defineConfig(({ mode }) => {
         },
       },
     }),
-    domscribe(),
     vuetify({
       autoImport: true,
       // NOTE: vuetify plugin's styles.configFile option is currently required to avoid a warning about missing SASS variables, even though the variables are actually being loaded correctly via the main.scss entry point. Tracked as a follow-up task to investigate and eliminate this quirk.
@@ -84,6 +83,7 @@ export default defineConfig(({ mode }) => {
 
   if (isDevelopment) {
     plugins.push(devtoolsJson())
+    plugins.push(domscribe({ overlay: true }))
 
     const vueDevToolsPlugin = vueDevTools({
       componentInspector: {
