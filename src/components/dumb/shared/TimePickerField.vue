@@ -31,6 +31,7 @@
 </template>
 
 <script setup lang="ts">
+  import { fmt12 } from '@/utils/timelineMath'
   import { computed, ref } from 'vue'
 
   const props = withDefaults(defineProps<{
@@ -52,13 +53,7 @@
 
   const displayValue = computed(() => {
     if (!props.modelValue) return ''
-    const [hourStr, minStr] = props.modelValue.split(':')
-    const hour = Number.parseInt(hourStr, 10)
-    if (Number.isNaN(hour)) return props.modelValue
-    const min = minStr ?? '00'
-    const period = hour >= 12 ? 'PM' : 'AM'
-    const displayHour = hour % 12 || 12
-    return `${displayHour}:${min} ${period}`
+    return fmt12(props.modelValue)
   })
 
   const wrappedRules = computed(() =>

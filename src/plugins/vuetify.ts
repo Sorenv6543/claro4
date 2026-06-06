@@ -26,10 +26,10 @@ const lightTheme: ThemeDefinition = {
     'primary-light': '#9E95F5',
     'primary-dark': '#5E52EE',
     'secondary': '#94A3B8',
-    'background': '#F8FAFC',
+    'background': '#F1F5F9', // Slightly deeper tint
     'surface': '#FFFFFF',
-    'surface-variant': '#F1F5F9',
-    'card-bg': 'rgba(255, 255, 255, 0.8)',
+    'surface-variant': '#E2E8F0',
+    'card-bg': 'rgba(255, 255, 255, 0.7)',
     'success': '#22C55E',
     'warning': '#F59E0B',
     'error': '#EF4444',
@@ -42,15 +42,15 @@ const lightTheme: ThemeDefinition = {
     /* ─── Colors: Text ────────────────────────────────────────────────── */
     'on-background': '#0F172A',
     'on-surface': '#0F172A',
-    'text-secondary': '#64748B',
-    'divider': 'rgba(15, 23, 42, 0.08)',
+    'text-secondary': '#475569', // More contrast
+    'divider': 'rgba(15, 23, 42, 0.12)',
 
   },
   variables: {
-    'border-color': 'rgba(15, 23, 42, 0.08)',
-    'medium-emphasis-opacity': 0.6,
-    'glass-bg': 'rgba(255, 255, 255, 0.8)',
-    'glass-border': 'rgba(15, 23, 42, 0.08)',
+    'border-color': 'rgba(15, 23, 42, 0.12)',
+    'medium-emphasis-opacity': 0.7,
+    'glass-bg': 'rgba(255, 255, 255, 0.7)',
+    'glass-border': 'rgba(255, 255, 255, 0.4)', // Bright edge
   },
 }
 

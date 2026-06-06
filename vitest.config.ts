@@ -55,5 +55,3 @@ export default defineConfig({
     },
   },
 })
-
-export { defineConfig } from 'vitest/config'

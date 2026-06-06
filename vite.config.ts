@@ -3,6 +3,7 @@ import { execSync } from 'node:child_process'
 import { fileURLToPath, URL } from 'node:url'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import vue from '@vitejs/plugin-vue'
+import { domscribe } from '@domscribe/vue/vite'
 import { defineConfig, loadEnv } from 'vite'
 import devtoolsJson from 'vite-plugin-devtools-json'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -69,6 +70,7 @@ export default defineConfig(({ mode }) => {
         },
       },
     }),
+    domscribe(),
     vuetify({
       autoImport: true,
       // NOTE: vuetify plugin's styles.configFile option is currently required to avoid a warning about missing SASS variables, even though the variables are actually being loaded correctly via the main.scss entry point. Tracked as a follow-up task to investigate and eliminate this quirk.

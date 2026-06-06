@@ -72,14 +72,14 @@ export function fmt12 (timeStr: string): string {
 /**
  * Get current time in 12h format.
  */
-export function fmt12Now(): string {
+export function fmt12Now (): string {
   const now = new Date()
   return fmt12(`${now.getHours()}:${now.getMinutes()}`)
 }
 
 /**
  * Build a compact chip label for the desktop timeline, e.g. "2:30pm Out",
- * "4pm In", "11am Turn!".
+ * "4:00pm In", "11:00am Turn!".
  *
  * Was: `fmtChipLabel` in OwnerOverview.vue.
  */
@@ -88,10 +88,7 @@ export function fmtChipLabel (timeStr: string, type: string): string {
   if (Number.isNaN(h)) {
     return timeStr
   }
-  const period = (h ?? 0) >= 12 ? 'pm' : 'am'
-  const h12 = (h ?? 0) % 12 || 12
-  const minStr = (m ?? 0) > 0 ? `:${String(m ?? 0).padStart(2, '0')}` : ''
-  const timePart = `${h12}${minStr}${period}`
+  const timePart = fmt12(timeStr).replace(' ', '').toLowerCase()
   if (type === 'checkout') {
     return `${timePart} Out`
   }

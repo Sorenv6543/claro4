@@ -110,13 +110,7 @@
     return { checkout: 'dot--checkout', checkin: 'dot--checkin', turn: 'dot--turn' }[t] ?? ''
   }
 
-  const displayTime = computed(() => {
-    const h = props.currentHour
-    const m = String(props.currentMin).padStart(2, '0')
-    const ap = h >= 12 ? 'PM' : 'AM'
-    const dh = h > 12 ? h - 12 : (h === 0 ? 12 : h)
-    return `${dh}:${m} ${ap}`
-  })
+  const displayTime = computed(() => fmt12(`${props.currentHour}:${props.currentMin}`))
 </script>
 
 <template>

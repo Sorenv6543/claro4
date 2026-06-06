@@ -1,5 +1,5 @@
 // src/__tests__/utils/timelineMath.test.ts
-import { describe, it, expect } from 'vitest'
+import { describe, expect, it } from 'vitest'
 import { fmt12, fmt12Now } from '@/utils/timelineMath'
 
 describe('timelineMath utils', () => {

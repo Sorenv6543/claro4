@@ -715,7 +715,7 @@
             propName,
             propColor,
             type: 'turn',
-            time: (b.checkout_time ?? '11:00').slice(0, 5),
+            time: fmt12(b.checkout_time ?? '11:00'),
             dateLabel: formatDateLabel(b.checkin_date, todayStr.value),
             sortDate: b.checkin_date,
             needsCleaner,
@@ -729,7 +729,7 @@
             propName,
             propColor,
             type: 'checkout',
-            time: (b.checkout_time ?? '11:00').slice(0, 5),
+            time: fmt12(b.checkout_time ?? '11:00'),
             dateLabel: formatDateLabel(b.checkout_date, todayStr.value),
             sortDate: b.checkout_date,
             needsCleaner,
@@ -742,7 +742,7 @@
             propName,
             propColor,
             type: 'checkin',
-            time: (b.checkin_time ?? '15:00').slice(0, 5),
+            time: fmt12(b.checkin_time ?? '15:00'),
             dateLabel: formatDateLabel(b.checkin_date, todayStr.value),
             sortDate: b.checkin_date,
             needsCleaner: false, // cleaners are needed before checkout, not before checkin
@@ -877,11 +877,11 @@
       const todayEvts: PropertyListEvent[] = []
       for (const b of bs) {
         if (b.booking_type === 'turn' && b.checkin_date === todayStr.value) {
-          todayEvts.push({ type: 'checkout', time: b.checkout_time ?? '11:00', time24: b.checkout_time ?? '11:00', isUnassigned: !b.assigned_cleaner_id }, { type: 'checkin', time: b.checkin_time ?? '15:00', time24: b.checkin_time ?? '15:00' })
+          todayEvts.push({ type: 'checkout', time: fmt12(b.checkout_time ?? '11:00'), time24: b.checkout_time ?? '11:00', isUnassigned: !b.assigned_cleaner_id }, { type: 'checkin', time: fmt12(b.checkin_time ?? '15:00'), time24: b.checkin_time ?? '15:00' })
         } else if (b.checkout_date === todayStr.value) {
-          todayEvts.push({ type: 'checkout', time: b.checkout_time ?? '11:00', time24: b.checkout_time ?? '11:00', isUnassigned: !b.assigned_cleaner_id })
+          todayEvts.push({ type: 'checkout', time: fmt12(b.checkout_time ?? '11:00'), time24: b.checkout_time ?? '11:00', isUnassigned: !b.assigned_cleaner_id })
         } else if (b.checkin_date === todayStr.value) {
-          todayEvts.push({ type: 'checkin', time: b.checkin_time ?? '15:00', time24: b.checkin_time ?? '15:00' })
+          todayEvts.push({ type: 'checkin', time: fmt12(b.checkin_time ?? '15:00'), time24: b.checkin_time ?? '15:00' })
         }
       }
 
@@ -892,7 +892,7 @@
       const nextCheckin = nextBook
         ? {
           label: nextBook.checkin_date === todayStr.value
-            ? `Today · ${nextBook.checkin_time ?? '15:00'}`
+            ? `Today · ${fmt12(nextBook.checkin_time ?? '15:00')}`
             : new Date(nextBook.checkin_date + 'T00:00:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
           isTurnDay: nextBook.booking_type === 'turn',
         }
