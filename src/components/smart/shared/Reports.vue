@@ -47,7 +47,7 @@
   width: 80px;
   height: 80px;
   border-radius: var(--claro-radius-sm);
-  background: rgba(115, 103, 240, 0.08);
+  background: rgba(var(--v-theme-primary), 0.08);
   display: grid;
   place-items: center;
 }

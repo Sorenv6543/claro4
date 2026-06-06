@@ -362,7 +362,7 @@
 
 .bgrid-hdr-day--today {
   color: var(--claro-primary);
-  background: rgba(115, 103, 240, 0.06);
+  background: rgba(var(--v-theme-primary), 0.06);
 }
 
 .bgrid-hdr-day--weekend {
@@ -458,7 +458,7 @@
 }
 
 .bgrid-cell--today {
-  background: rgba(115, 103, 240, 0.06);
+  background: rgba(var(--v-theme-primary), 0.06);
 }
 
 .bgrid-cell--weekend {
@@ -469,7 +469,7 @@
 .bgrid-band {
   height: 26px;
   border-radius: var(--claro-radius-sm);
-  background: rgba(115, 103, 240, 0.16);
+  background: rgba(var(--v-theme-primary), 0.16);
   display: flex;
   align-items: center;
   padding: 0 8px;

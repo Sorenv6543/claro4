@@ -1,6 +1,6 @@
 <template>
   <div class="admin-properties-page">
-    <MaterioDataTable
+    <AppDataTable
       :active-filter-count="activeFilterCount"
       :headers="tableHeaders"
       :items="tableItems"
@@ -216,7 +216,7 @@
           </v-menu>
         </div>
       </template>
-    </MaterioDataTable>
+    </AppDataTable>
 
     <!-- Create/Edit Property Dialog -->
     <v-dialog
@@ -270,7 +270,7 @@
   import type { Booking } from '@/types/booking.ts'
   import type { PricingTier, Property } from '@/types/property.ts'
   import { computed, ref } from 'vue'
-  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+  import AppDataTable from '@/components/dumb/shared/AppDataTable.vue'
   import { useAdminBookings } from '@/composables/admin/useAdminBookings.ts'
   import { useAdminProperties } from '@/composables/admin/useAdminProperties.ts'
   import { usePropertyStore } from '@/stores/property'

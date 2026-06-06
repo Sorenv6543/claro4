@@ -7,21 +7,8 @@
         "@modelcontextprotocol/server-github"
       ],
       "env": {
-          "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_PERSONAL_ACCESS_TOKEN}"
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${env:GITHUB_PERSONAL_ACCESS_TOKEN}"
       }
-    },
-    "chrome-devtools": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "chrome-devtools-mcp@latest",
-         "--autoConnect",
-        "--channel=beta"
-      ]
-    },
-    "figma": {
-      "type": "http",
-      "url": "https://mcp.figma.com/mcp?token=${env:FIGMA_API_KEY}"
     }
   }
 }

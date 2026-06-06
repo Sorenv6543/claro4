@@ -1,6 +1,6 @@
 <template>
   <v-dialog v-model="dialogOpen" max-width="700" persistent>
-    <MaterioFormWizard
+    <AppFormWizard
       v-model="currentStep"
       :before-next="validateCurrentStep"
       :steps="steps"
@@ -159,14 +159,14 @@
           </v-list>
         </v-card>
       </template>
-    </MaterioFormWizard>
+    </AppFormWizard>
   </v-dialog>
 </template>
 
 <script setup lang="ts">
   import type { VForm } from 'vuetify/components'
   import { computed, reactive, ref, watch } from 'vue'
-  import MaterioFormWizard from '@/components/dumb/shared/MaterioFormWizard.vue'
+  import AppFormWizard from '@/components/dumb/shared/AppFormWizard.vue'
 
   export interface UserFormData {
     email: string

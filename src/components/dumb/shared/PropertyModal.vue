@@ -33,7 +33,7 @@
 
       <!-- THREE-STEP WIZARD (create mode with stepper) -->
       <template v-if="stepper && mode === 'create'">
-        <MaterioFormWizard
+        <AppFormWizard
           v-model="wizardStep"
           :before-next="handleBeforeNext"
           :steps="wizardSteps"
@@ -299,7 +299,7 @@
               </v-container>
             </v-form>
           </template>
-        </MaterioFormWizard>
+        </AppFormWizard>
       </template>
 
       <!-- SINGLE-FORM (edit mode or stepper=false) -->
@@ -518,7 +518,7 @@
   import type { VForm } from 'vuetify/components'
   import { computed, onMounted, reactive, ref, watch } from 'vue'
   import PropertyColorPicker from '@/components/dumb/owner/PropertyColorPicker.vue'
-  import MaterioFormWizard from '@/components/dumb/shared/MaterioFormWizard.vue'
+  import AppFormWizard from '@/components/dumb/shared/AppFormWizard.vue'
   import { PROPERTY_COLORS } from '@/utils/constants'
 
   // PROPS & EMITS

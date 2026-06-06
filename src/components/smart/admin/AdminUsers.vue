@@ -39,7 +39,7 @@
     </v-container>
 
     <!-- Users Data Table -->
-    <MaterioDataTable
+    <AppDataTable
       :active-filter-count="activeFilterCount"
       :headers="tableHeaders"
       :items="filteredUsers"
@@ -214,7 +214,7 @@
           </v-menu>
         </div>
       </template>
-    </MaterioDataTable>
+    </AppDataTable>
 
     <!-- Add/Edit User Dialog -->
     <UserFormDialog
@@ -244,8 +244,8 @@
   import { computed, onMounted, ref } from 'vue'
   import { useDisplay } from 'vuetify'
   import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
+  import AppDataTable from '@/components/dumb/shared/AppDataTable.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import StatCard from '@/components/dumb/shared/StatCard.vue'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
 

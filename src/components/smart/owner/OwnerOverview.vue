@@ -150,51 +150,51 @@
 
               <!-- Property rows + per-ribbon NOW line (same coordinate space as chips) -->
               <div class="tl-rows-wrap">
-              <div
-                v-for="(row, rowIdx) in deskPropertyRows"
-                :key="row.propId"
-                class="tl-prop-row"
-              >
                 <div
-                  class="tl-prop-info"
-                  :style="{ '--prop-color': row.propColor }"
+                  v-for="(row, rowIdx) in deskPropertyRows"
+                  :key="row.propId"
+                  class="tl-prop-row"
                 >
-                  <div class="tl-prop-name">{{ row.propName }}</div>
-                  <div v-if="row.subtitle" class="tl-prop-sub">{{ row.subtitle }}</div>
-
-                  <div class="tl-status-pill" :class="`tl-status-pill--${row.status}`">
-                    {{ deskStatusLabel(row.status) }}
-                  </div>
-                </div>
-
-                <div class="tl-ribbon">
-                  <!-- NOW line inside ribbon — same % coordinate space as chips -->
                   <div
-                    class="tl-now-line-v"
-                    :style="{ left: `${deskNowPct}%` }"
+                    class="tl-prop-info"
+                    :style="{ '--prop-color': row.propColor }"
                   >
-                    <div v-if="rowIdx === 0" class="tl-now-bubble">NOW</div>
+                    <div class="tl-prop-name">{{ row.propName }}</div>
+                    <div v-if="row.subtitle" class="tl-prop-sub">{{ row.subtitle }}</div>
+
+                    <div class="tl-status-pill" :class="`tl-status-pill--${row.status}`">
+                      {{ deskStatusLabel(row.status) }}
+                    </div>
                   </div>
 
-                  <button
-                    v-for="ev in row.events"
-                    :key="ev.id"
-                    :aria-label="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
-                    class="tl-chip"
-                    :class="{
-                      'tl-chip--checkout': ev.type === 'checkout' && !ev.needsClean,
-                      'tl-chip--checkin': ev.type === 'checkin',
-                      'tl-chip--turn': ev.type === 'turn' && !ev.needsClean,
-                      'tl-chip--urgent': ev.needsClean,
-                      'tl-chip--past': deskIsPast(ev.time),
-                    }"
-                    :style="{ left: `${deskBarPct(ev.time)}%` }"
-                    @click="handleDayBarOpenBooking(ev.id)"
-                  >
-                    {{ fmtChipLabel(ev.time, ev.type) }}
-                  </button>
+                  <div class="tl-ribbon">
+                    <!-- NOW line inside ribbon — same % coordinate space as chips -->
+                    <div
+                      class="tl-now-line-v"
+                      :style="{ left: `${deskNowPct}%` }"
+                    >
+                      <div v-if="rowIdx === 0" class="tl-now-bubble">NOW</div>
+                    </div>
+
+                    <button
+                      v-for="ev in row.events"
+                      :key="ev.id"
+                      :aria-label="`${ev.propName} · ${fmt12(ev.time)} · ${ev.type}`"
+                      class="tl-chip"
+                      :class="{
+                        'tl-chip--checkout': ev.type === 'checkout' && !ev.needsClean,
+                        'tl-chip--checkin': ev.type === 'checkin',
+                        'tl-chip--turn': ev.type === 'turn' && !ev.needsClean,
+                        'tl-chip--urgent': ev.needsClean,
+                        'tl-chip--past': deskIsPast(ev.time),
+                      }"
+                      :style="{ left: `${deskBarPct(ev.time)}%` }"
+                      @click="handleDayBarOpenBooking(ev.id)"
+                    >
+                      {{ fmtChipLabel(ev.time, ev.type) }}
+                    </button>
+                  </div>
                 </div>
-              </div>
               </div>
             </div>
           </template>
@@ -1107,8 +1107,8 @@
   position: relative;
   flex: 1;
   height: 30px;
-  background: rgba(115, 103, 240, 0.04);
-  border: 1px solid rgba(115, 103, 240, 0.10);
+  background: rgba(var(--v-theme-primary), 0.04);
+  border: 1px solid rgba(var(--v-theme-primary), 0.10);
   border-radius: 2px;
   overflow: hidden;
 }
@@ -1119,7 +1119,7 @@
   top: 0;
   bottom: 0;
   width: 1px;
-  background: rgba(115, 103, 240, 0.12);
+  background: rgba(var(--v-theme-primary), 0.12);
 }
 
 /* Stay span bars */
@@ -1164,7 +1164,7 @@
 
 .bk-row-shell--open {
   box-shadow:
-    0 0 0 1.5px rgba(115, 103, 240, 0.22),
+    0 0 0 1.5px rgba(var(--v-theme-primary), 0.22),
     0 2px 8px rgba(46, 38, 61, 0.06);
 }
 
@@ -1227,7 +1227,7 @@
 }
 
 .bk-type-chip--checkin  { background: rgba(40, 199, 111, 0.14);  color: #28C76F; }
-.bk-type-chip--checkout { background: rgba(115, 103, 240, 0.12); color: var(--claro-primary); }
+.bk-type-chip--checkout { background: rgba(var(--v-theme-primary), 0.12); color: var(--claro-primary); }
 .bk-type-chip--turn     { background: rgba(255, 159, 67, 0.14);  color: #FF9F43; }
 
 .bk-unassigned-chip {
@@ -1390,12 +1390,12 @@
   transform: translateX(-50%);
   width: 1px;
   height: 3px;
-  background: rgba(115, 103, 240, 0.2);
+  background: rgba(var(--v-theme-primary), 0.2);
 }
 
 .tl-axis-ticks-top span:nth-child(odd)::after {
   height: 7px;
-  background: rgba(115, 103, 240, 0.5);
+  background: rgba(var(--v-theme-primary), 0.5);
 }
 
 /* Row wrapper — establishes stacking context for shared NOW line */
@@ -1423,7 +1423,7 @@
   box-sizing: border-box;
   flex-shrink: 0;
   padding: 10px 12px;
-  background: color-mix(in srgb, var(--prop-color, #7367F0) 10%, transparent);
+  background: color-mix(in srgb, var(--prop-color, rgb(var(--v-theme-primary))) 10%, transparent);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1467,7 +1467,7 @@
  * Text is darkened to ~75% mix toward black so AA holds against the light tint. */
 .tl-status-pill--urgent   { background: color-mix(in srgb, #EA5455 14%, var(--claro-surface)); color: color-mix(in srgb, #EA5455 75%, black); }
 .tl-status-pill--turn     { background: color-mix(in srgb, #FF9F43 14%, var(--claro-surface)); color: color-mix(in srgb, #FF9F43 75%, black); }
-.tl-status-pill--checkout { background: color-mix(in srgb, #7367F0 12%, var(--claro-surface)); color: color-mix(in srgb, #7367F0 75%, black); }
+.tl-status-pill--checkout { background: color-mix(in srgb, rgb(var(--v-theme-primary)) 12%, var(--claro-surface)); color: color-mix(in srgb, rgb(var(--v-theme-primary)) 75%, black); }
 .tl-status-pill--checkin  { background: color-mix(in srgb, #28C76F 14%, var(--claro-surface)); color: color-mix(in srgb, #28C76F 75%, black); }
 .tl-status-pill--occupied { background: color-mix(in srgb, #1EC8DE 12%, var(--claro-surface)); color: color-mix(in srgb, #1EC8DE 75%, black); }
 .tl-status-pill--vacant   { background: var(--claro-surface);                                  color: var(--claro-fg2); border: 1px solid var(--claro-border); }
@@ -1478,7 +1478,7 @@
   flex: 1;
   display: flex;
   align-items: center;
-  background: rgba(115, 103, 240, 0.05);
+  background: rgba(var(--v-theme-primary), 0.05);
 }
 
 /* Labeled event chips */
@@ -1499,7 +1499,7 @@
   font-family: var(--claro-font-family, 'Inter', sans-serif);
 }
 
-.tl-chip--checkout { background: var(--claro-primary, #7367F0); }
+.tl-chip--checkout { background: var(--claro-primary); }
 .tl-chip--checkin  { background: #28C76F; }
 .tl-chip--turn     { background: #FF9F43; }
 .tl-chip--urgent   { background: #EA5455; animation: urgentPulse 1.5s ease-in-out infinite; }
@@ -1526,7 +1526,7 @@
   bottom: 0;
   width: 2px;
   transform: translateX(-50%);
-  background: var(--claro-primary, #7367F0);
+  background: var(--claro-primary);
   z-index: 10;
   pointer-events: none;
 }
@@ -1536,7 +1536,7 @@
   top: -16px;
   left: 50%;
   transform: translateX(-50%);
-  background: var(--claro-primary-dark, #5E52EE);
+  background: var(--claro-primary-dark);
   color: #fff;
   font-size: 8px;
   font-weight: 800;

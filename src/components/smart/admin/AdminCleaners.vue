@@ -39,7 +39,7 @@
     </v-container>
 
     <!-- Cleaners Data Table -->
-    <MaterioDataTable
+    <AppDataTable
       :active-filter-count="activeFilterCount"
       :headers="tableHeaders"
       :items="filteredCleaners"
@@ -209,7 +209,7 @@
           </v-menu>
         </div>
       </template>
-    </MaterioDataTable>
+    </AppDataTable>
 
     <!-- Add/Edit Cleaner Dialog -->
     <v-dialog v-model="showAddDialog" max-width="500px" persistent>
@@ -292,8 +292,8 @@
   import { computed, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
+  import AppDataTable from '@/components/dumb/shared/AppDataTable.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
   import StatCard from '@/components/dumb/shared/StatCard.vue'
   import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
 

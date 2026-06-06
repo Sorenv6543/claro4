@@ -46,8 +46,8 @@ export const CHART_GRID_COLOR = 'rgba(46, 38, 61, 0.06)'
 
 // ── Color palette (matches tokens.css / vuetify.ts) ─────────────────────
 export const CHART_COLORS = {
-  primary: '#7367F0',
-  primaryLight: '#9E95F5',
+  primary: '#1976D2',
+  primaryLight: '#42A5F5',
   success: '#28C76F',
   warning: '#FF9F43',
   error: '#EA5455',
@@ -66,7 +66,7 @@ export const CHART_PALETTE = [
   CHART_COLORS.secondary,
 ] as const
 
-/** Appends hex alpha to a color string. `withAlpha('#7367F0', 0.2)` → `'#7367F033'` */
+/** Appends hex alpha to a color string. `withAlpha('#1976D2', 0.2)` → `'#1976D233'` */
 export function withAlpha (hex: string, alpha: number): string {
   return `${hex}${Math.round(alpha * 255).toString(16).padStart(2, '0')}`
 }

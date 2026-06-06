@@ -75,8 +75,8 @@
 }
 
 .dashboard-card--accent {
-  background: color-mix(in srgb, var(--card-accent, #7367F0) 8%, transparent) !important;
-  border: 1px solid color-mix(in srgb, var(--card-accent, #7367F0) 25%, transparent) !important;
+  background: color-mix(in srgb, var(--card-accent, rgb(var(--v-theme-primary))) 8%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--card-accent, rgb(var(--v-theme-primary))) 25%, transparent) !important;
 }
 
 .dashboard-card__header {

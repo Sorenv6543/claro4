@@ -42,7 +42,7 @@
 }
 
 .range-toggle.light {
-  background: rgba(115, 103, 240, 0.08);
+  background: rgba(var(--v-theme-primary), 0.08);
 }
 
 .toggle-pill {
@@ -76,22 +76,22 @@
 
 .light .toggle-pill {
   background: #fff;
-  color: var(--claro-primary, #7367F0);
-  border-color: rgba(115, 103, 240, 0.22);
+  color: var(--claro-primary);
+  border-color: rgba(var(--v-theme-primary), 0.22);
 }
 
 .light .toggle-pill--active {
-  background: var(--claro-primary, #7367F0);
+  background: var(--claro-primary);
   color: #fff;
-  border-color: var(--claro-primary, #7367F0);
+  border-color: var(--claro-primary);
 }
 
 .light .toggle-pill:not(.toggle-pill--active):hover {
-  background: rgba(115, 103, 240, 0.06);
+  background: rgba(var(--v-theme-primary), 0.06);
 }
 
 .toggle-pill:focus-visible {
-  outline: 2px solid var(--claro-primary, #7367F0);
+  outline: 2px solid var(--claro-primary);
   outline-offset: 2px;
 }
 </style>

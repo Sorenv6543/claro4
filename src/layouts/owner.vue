@@ -408,17 +408,17 @@
   flex-shrink: 0;
   border: none;
   background: transparent;
-  color: var(--claro-primary, #7367F0);
+  color: var(--claro-primary);
   transition: background 140ms ease;
   padding: 0;
 }
 
 .claro-toggle:hover {
-  background: rgba(115, 103, 240, 0.10);
+  background: rgba(var(--v-theme-primary), 0.10);
 }
 
 .claro-toggle:focus-visible {
-  outline: 2px solid var(--claro-primary, #7367F0);
+  outline: 2px solid var(--claro-primary);
   outline-offset: 2px;
 }
 
@@ -432,7 +432,7 @@
 .claro-tiles > span {
   display: block;
   border-radius: 1.5px;
-  background: var(--claro-primary, #7367F0);
+  background: var(--claro-primary);
 }
 
 /* Diagonal tile dim for visual hierarchy (matches handoff) */
@@ -487,7 +487,7 @@
 
 .claro-btn:focus-visible,
 .claro-chevron-btn:focus-visible {
-  outline: 2px solid var(--claro-primary, #7367F0);
+  outline: 2px solid var(--claro-primary);
   outline-offset: 2px;
 }
 
@@ -496,7 +496,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--claro-primary-dark, #5E52EE);
+  background: var(--claro-primary-dark);
   color: #fff;
   display: flex;
   align-items: center;
@@ -535,7 +535,7 @@
   align-items: center;
   justify-content: center;
   box-shadow:
-    0 4px 14px rgba(115, 103, 240, 0.45),
+    0 4px 14px rgba(var(--v-theme-primary), 0.45),
     0 1px 0 rgba(255, 255, 255, 0.18) inset;
   touch-action: manipulation;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
@@ -544,13 +544,13 @@
 .fab-add-booking:hover {
   transform: translateY(-2px) scale(1.06);
   box-shadow:
-    0 8px 20px rgba(115, 103, 240, 0.55),
+    0 8px 20px rgba(var(--v-theme-primary), 0.55),
     0 1px 0 rgba(255, 255, 255, 0.2) inset;
 }
 
 .fab-add-booking:active {
   transform: translateY(0) scale(0.95);
-  box-shadow: 0 2px 8px rgba(115, 103, 240, 0.35);
+  box-shadow: 0 2px 8px rgba(var(--v-theme-primary), 0.35);
 }
 
 .fab-add-booking:focus-visible {

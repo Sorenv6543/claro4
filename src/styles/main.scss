@@ -100,7 +100,7 @@ html, body {
      opted out so they don't pretend to be interactive. */
   .v-btn--variant-flat:not(:disabled):hover {
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(115, 103, 240, 0.35);
+    box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.35);
   }
 
   /* List items: smooth highlight fade instead of snap. */
