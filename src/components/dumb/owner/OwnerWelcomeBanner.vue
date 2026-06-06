@@ -40,7 +40,7 @@
 
     <!-- Left: heading + subtitle + mobile pills -->
     <div class="hero-left">
-      <div class="claro-eyebrow hero-eyebrow" v-if="userName">Overview</div>
+      <div class="claro-eyebrow hero-eyebrow" v-if="userName">TODAY</div>
       <h2 class="hero-h">{{ heading }}</h2>
       <p class="hero-sub">{{ resolvedSubtitle }}</p>
 
@@ -91,8 +91,15 @@
     weeklyOccupancyPct?: number
   }>()
 
+  const timeGreeting = computed(() => {
+    const hour = new Date().getHours()
+    if (hour < 12) return 'Good morning'
+    if (hour <= 16) return 'Good afternoon'
+    return 'Good evening'
+  })
+
   const heading = computed(() =>
-    props.pageTitle ?? (props.userName ? `Welcome back, ${props.userName}` : 'Claro'),
+    props.pageTitle ?? (props.userName ? `${timeGreeting.value}, ${props.userName}` : 'Claro'),
   )
 
   const resolvedSubtitle = computed(() =>
