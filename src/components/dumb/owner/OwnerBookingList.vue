@@ -384,7 +384,7 @@
   position: relative;
   z-index: 2;
   box-shadow:
-    0 0 0 1.5px rgba(115, 103, 240, 0.22),
+    0 0 0 1.5px rgba(var(--v-theme-primary), 0.22),
     0 2px 8px rgba(46, 38, 61, 0.06);
 }
 
@@ -399,7 +399,7 @@
 }
 
 .bl-row:hover {
-  background: color-mix(in srgb, var(--row-color, rgb(115, 103, 240)) 6%, transparent);
+  background: color-mix(in srgb, var(--row-color, rgb(var(--v-theme-primary))) 6%, transparent);
 }
 
 /* ── Color dot ── */

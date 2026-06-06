@@ -492,7 +492,7 @@
 }
 
 .mini-cal-nav:focus-visible {
-  outline: 2px solid var(--claro-primary, #7367F0);
+  outline: 2px solid var(--claro-primary);
   outline-offset: 2px;
 }
 
@@ -546,7 +546,7 @@
 }
 
 .mini-cal-day:focus-visible {
-  outline: 2px solid var(--claro-primary, #7367F0);
+  outline: 2px solid var(--claro-primary);
   outline-offset: 2px;
 }
 
@@ -555,8 +555,8 @@
 }
 
 .mini-cal-day--today {
-  background: rgba(var(--claro-primary-rgb, 115, 103, 240), 0.15);
-  color: var(--claro-primary, #7367F0);
+  background: rgba(var(--v-theme-primary), 0.15);
+  color: var(--claro-primary);
   font-weight: 700;
 }
 

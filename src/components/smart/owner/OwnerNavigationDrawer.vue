@@ -292,7 +292,7 @@
 
 /* Purple tint background on active — preserves current color styling */
 .claro-nav-item--active {
-  background: var(--claro-primary-tint, rgba(115, 103, 240, 0.12));
+  background: var(--claro-primary-tint, rgba(var(--v-theme-primary), 0.12));
   opacity: 1;
 }
 
@@ -346,7 +346,7 @@
 }
 
 .claro-nav-badge--active {
-  background: rgba(115, 103, 240, 0.18);
+  background: rgba(var(--v-theme-primary), 0.18);
   color: var(--claro-primary-dark);
 }
 </style>
