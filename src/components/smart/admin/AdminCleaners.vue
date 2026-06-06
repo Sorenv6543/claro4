@@ -212,6 +212,7 @@
         </div>
       </template>
     </AppDataTable>
+    </v-container>
 
     <!-- Add/Edit Cleaner Dialog -->
     <v-dialog v-model="showAddDialog" max-width="500px" persistent>
