@@ -10,7 +10,7 @@
     'update:modelValue': [value: number]
   }>()
 
-  const labels = ['Today', '3 days', '7 days']
+  const labels = ['Today', 'Week', '2 Weeks']
 </script>
 
 <template>
