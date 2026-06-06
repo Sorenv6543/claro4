@@ -355,12 +355,12 @@
 </template>
 
 <script setup lang="ts">
+  import type { ThemePreference } from '@/types/user'
   import type { VForm } from 'vuetify/components'
   import { computed, reactive, ref, watch } from 'vue'
   import { useTheme } from 'vuetify'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import { useAuthStore } from '@/stores/auth'
-  import type { ThemePreference } from '@/types/user'
 
   defineOptions({ name: 'OwnerSettings' })
 

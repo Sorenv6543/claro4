@@ -244,8 +244,8 @@
   import { computed, onMounted, ref } from 'vue'
   import { useDisplay } from 'vuetify'
   import UserFormDialog from '@/components/dumb/admin/UserFormDialog.vue'
-  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import AppDataTable from '@/components/dumb/shared/AppDataTable.vue'
+  import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
   import StatCard from '@/components/dumb/shared/StatCard.vue'
   import { useAdminUserManagement } from '@/composables/admin/useAdminUserManagement'
 
