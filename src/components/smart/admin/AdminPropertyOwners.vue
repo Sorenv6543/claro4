@@ -39,7 +39,7 @@
     </v-container>
 
     <!-- Owners Data Table -->
-    <MaterioDataTable
+    <AppDataTable
       :active-filter-count="activeFilterCount"
       :headers="tableHeaders"
       :items="filteredOwners"
@@ -191,7 +191,7 @@
           </v-menu>
         </div>
       </template>
-    </MaterioDataTable>
+    </AppDataTable>
 
     <!-- Invite Owner Dialog (placeholder) -->
     <v-dialog v-model="inviteDialog" max-width="500px">
@@ -227,7 +227,7 @@
   import { computed, onMounted, ref } from 'vue'
   import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
-  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+  import AppDataTable from '@/components/dumb/shared/AppDataTable.vue'
   import StatCard from '@/components/dumb/shared/StatCard.vue'
   import { useSupabaseUserProfiles } from '@/composables/supabase/useSupabaseUserProfiles'
   import { usePropertyStore } from '@/stores/property'

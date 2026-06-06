@@ -1,7 +1,7 @@
 <template>
   <div class="admin-bookings-page">
     <!-- Bookings Data Table -->
-    <MaterioDataTable
+    <AppDataTable
       :active-filter-count="activeFilterCount"
       :headers="tableHeaders"
       :items="tableItems"
@@ -225,7 +225,7 @@
         </div>
       </template>
 
-    </MaterioDataTable>
+    </AppDataTable>
 
     <!-- Create/Edit Booking Dialog -->
     <AdminBookingForm
@@ -294,7 +294,7 @@
   import { useDisplay } from 'vuetify'
   import AdminBookingForm from '@/components/dumb/admin/AdminBookingForm.vue'
   import ConfirmationDialog from '@/components/dumb/shared/ConfirmationDialog.vue'
-  import MaterioDataTable from '@/components/dumb/shared/MaterioDataTable.vue'
+  import AppDataTable from '@/components/dumb/shared/AppDataTable.vue'
   import { useAdminBookings } from '@/composables/admin/useAdminBookings'
   import { useAdminProperties } from '@/composables/admin/useAdminProperties'
   import { useCleanerManagement } from '@/composables/admin/useCleanerManagement'
