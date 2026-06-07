@@ -5,12 +5,14 @@
 
   defineProps<{
     item: BookingListItem
+    isCancelling?: boolean
+    cancelError?: string | null
+    cancelSuccess?: boolean
   }>()
 
   const emit = defineEmits<{
     edit: [id: string]
     cancel: [id: string]
-    'contact-admin': [id: string]
   }>()
 
   const { mobile } = useDisplay()
@@ -75,6 +77,17 @@
       </div>
     </div>
 
+    <!-- In-situ action feedback -->
+    <div v-if="cancelError" class="bl-action-feedback bl-action-feedback--error" role="alert">
+      <v-icon color="error" size="14">mdi-alert-circle-outline</v-icon>
+      {{ cancelError }}
+    </div>
+
+    <div v-if="cancelSuccess" class="bl-action-feedback bl-action-feedback--success" role="status">
+      <v-icon color="success" size="14">mdi-check-circle-outline</v-icon>
+      Booking cancelled
+    </div>
+
     <!-- Action bar -->
     <div class="bl-actions" :class="{ 'bl-actions--mobile': mobile }" @click.stop>
       <div class="bl-actions-group">
@@ -85,30 +98,33 @@
           variant="tonal"
           @click="emit('edit', item.id)"
         >
-          <v-icon v-if="mobile" size="16" start>mdi-calendar-edit-outline</v-icon>
+          <v-icon v-if="mobile" size="16" start>mdi-pencil-outline</v-icon>
           Reschedule
         </v-btn>
       </div>
 
       <div class="bl-actions-group">
+        <v-chip
+          class="bl-comingsoon"
+          size="small"
+          variant="outlined"
+        >
+          <v-icon size="12" start>mdi-message-outline</v-icon>
+          Messaging · coming soon
+        </v-chip>
+      </div>
+
+      <div class="bl-actions-group">
         <v-btn
-          color="warning"
+          color="error"
+          :disabled="isCancelling"
+          :loading="isCancelling"
           size="small"
           variant="text"
           @click="emit('cancel', item.id)"
         >
-          <v-icon size="16" start>mdi-calendar-remove-outline</v-icon>
-          Cancel Booking
-        </v-btn>
-
-        <v-btn
-          color="secondary"
-          size="small"
-          variant="text"
-          @click="emit('contact-admin', item.id)"
-        >
-          <v-icon size="16" start>mdi-message-outline</v-icon>
-          Contact Admin
+          <v-icon v-if="!isCancelling" size="16" start>mdi-delete-outline</v-icon>
+          {{ isCancelling ? 'Cancelling…' : 'Cancel Booking' }}
         </v-btn>
       </div>
     </div>
@@ -137,7 +153,7 @@
 }
 
 .bl-col-label {
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -148,7 +164,7 @@
 .bl-stats-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: var(--claro-text-sm);
 }
 
 .bl-stats-table tr {
@@ -184,7 +200,7 @@
 }
 
 .bl-notes {
-  font-size: 12px;
+  font-size: var(--claro-text-sm);
   color: var(--claro-fg2);
   line-height: var(--claro-lh-normal);
   margin: 0;
@@ -231,5 +247,31 @@
 
 .bl-actions--mobile .bl-actions-group:last-child {
   margin-left: auto;
+}
+
+.bl-action-feedback {
+  display: flex;
+  align-items: center;
+  gap: var(--claro-space-xs);
+  padding: 6px var(--claro-space-md);
+  font-size: var(--claro-text-xs);
+  font-weight: 500;
+}
+
+.bl-action-feedback--error {
+  color: var(--claro-error);
+  background: var(--claro-error-tonal);
+}
+
+.bl-action-feedback--success {
+  color: var(--claro-success);
+  background: var(--claro-success-tonal);
+}
+
+.bl-comingsoon {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.50;
+  font-size: var(--claro-text-xs);
 }
 </style>

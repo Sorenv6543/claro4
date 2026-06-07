@@ -167,9 +167,12 @@
       :style="{ '--row-color': item.property.color, '--pl-prop-color': item.property.color }"
     >
       <!-- Summary row (clickable) -->
-      <div
+      <button
+        :aria-controls="`pl-inlay-${item.property.id}`"
+        :aria-expanded="isExpanded(item.property.id)"
         class="pl-row"
         :style="{ gridTemplateColumns: rowGrid }"
+        type="button"
         @click="toggleRow(item.property.id)"
       >
         <!-- Property color dot -->
@@ -229,11 +232,11 @@
         <div class="pl-chev" :class="{ 'pl-chev--open': isExpanded(item.property.id) }">
           <v-icon size="20">mdi-chevron-down</v-icon>
         </div>
-      </div>
+      </button>
 
       <!-- Expandable inlay -->
       <v-expand-transition>
-        <div v-if="isExpanded(item.property.id)" class="pl-inlay">
+        <div v-if="isExpanded(item.property.id)" :id="`pl-inlay-${item.property.id}`" class="pl-inlay">
           <div class="pl-inlay-body" :class="{ 'pl-inlay-body--stacked': mobile }">
             <!-- ── Left panel ── -->
             <div class="pl-inlay-left">
@@ -246,7 +249,7 @@
                   <div class="pl-tb-block pl-tb-out" :style="outBlockStyle(item.todayEvents)">OUT</div>
 
                   <div class="pl-tb-block pl-tb-turn" :style="windowBlockStyle(item.todayEvents)">
-                    <span class="pl-tb-window-label">cleaning window</span>
+                    <span class="pl-tb-window-label">cleaning time</span>
                   </div>
 
                   <div class="pl-tb-block pl-tb-in" :style="inBlockStyle(item.todayEvents)">IN</div>
@@ -327,7 +330,7 @@
                     <td>
                       <span class="pl-td-inner">
                         <v-icon color="primary" size="15">mdi-autorenew</v-icon>
-                        Turns YTD
+                        Turnovers this year
                       </span>
                     </td>
 
@@ -442,7 +445,7 @@
   gap: 12px;
   align-items: center;
   padding: 8px 24px;
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
@@ -488,10 +491,23 @@
   padding: 12px 24px;
   cursor: pointer;
   transition: background var(--claro-dur-fast) var(--claro-ease);
+  /* button reset */
+  border: none;
+  background: transparent;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  -webkit-appearance: none;
+  width: 100%;
 }
 
 .pl-row:hover {
   background: color-mix(in srgb, var(--row-color, rgb(115, 103, 240)) 6%, transparent);
+}
+
+.pl-row:focus-visible {
+  outline: 2px solid var(--claro-primary);
+  outline-offset: -2px;
 }
 
 /* ─── Color dot ──────────────────────────────────────────────────────────── */
@@ -513,25 +529,25 @@
 }
 
 .pl-submeta {
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   color: var(--claro-fg3);
   margin-top: 2px;
 }
 
 /* ─── Next check-in cell ─────────────────────────────────────────────────── */
 .pl-checkin-when {
-  font-size: 12px;
+  font-size: var(--claro-text-sm);
   font-weight: 500;
   color: var(--claro-fg1);
 }
 
 .pl-checkin-who {
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   color: var(--claro-fg3);
 }
 
 .pl-checkin-empty {
-  font-size: 12px;
+  font-size: var(--claro-text-xs);
   color: var(--claro-fg3);
 }
 
@@ -580,7 +596,7 @@
 
 /* ─── Section label ──────────────────────────────────────────────────────── */
 .pl-col-label {
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -615,7 +631,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   color: #fff;
   white-space: nowrap;
@@ -633,7 +649,7 @@
 }
 
 .pl-tb-window-label {
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   color: var(--claro-warning);
   padding: 0 8px;
 }
@@ -641,7 +657,7 @@
 .pl-timebar-ticks {
   display: flex;
   justify-content: space-between;
-  font-size: 9px;
+  font-size: var(--claro-text-xs);
   color: var(--claro-fg3);
   font-variant-numeric: tabular-nums;
 }

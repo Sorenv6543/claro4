@@ -272,11 +272,17 @@
               </button>
 
               <v-expand-transition>
+                <div v-if="isUpcomingExpanded(ev.itemKey) && loading" class="bk-inlay-skel">
+                  <v-skeleton-loader type="paragraph,button" />
+                </div>
+
                 <OwnerBookingInlay
-                  v-if="isUpcomingExpanded(ev.itemKey) && bookingItemFor(ev.bookingId)"
+                  v-else-if="isUpcomingExpanded(ev.itemKey) && bookingItemFor(ev.bookingId)"
+                  :cancel-error="expandedItemKey === ev.itemKey ? cancelError : null"
+                  :cancel-success="cancelSuccessId === ev.bookingId"
+                  :is-cancelling="cancellingBookingId === ev.bookingId"
                   :item="bookingItemFor(ev.bookingId)!"
                   @cancel="handleCancelBooking"
-                  @contact-admin="showContactSnackbar"
                   @edit="handleEditBooking"
                 />
               </v-expand-transition>
@@ -310,12 +316,6 @@
       @confirm="confirmCancelBooking"
     />
   </v-container>
-
-  <!-- ── Contact Admin coming-soon snackbar ── -->
-  <v-snackbar v-model="contactSnackbarOpen" color="surface-variant" location="bottom" :timeout="3500">
-    <v-icon class="mr-2" size="18">mdi-message-outline</v-icon>
-    Direct messaging with your cleaning team is coming soon.
-  </v-snackbar>
 
   <!-- ── Booking detail drawer ── -->
   <Teleport to="body">
@@ -428,16 +428,13 @@
         >
           Cancel Booking
         </v-btn>
-        <v-btn
-          block
-          color="secondary"
-          prepend-icon="mdi-message-outline"
-          rounded="sm"
-          variant="text"
-          @click="showContactSnackbar()"
+        <v-chip
+          class="bdr-comingsoon"
+          variant="outlined"
         >
-          Contact Admin
-        </v-btn>
+          <v-icon size="14" start>mdi-message-outline</v-icon>
+          Messaging · coming soon
+        </v-chip>
       </div>
     </div>
         </div>
@@ -1012,7 +1009,9 @@
   // ── Edit / cancel handlers ────────────────────────────────────────────────
   const cancelConfirmOpen = ref(false)
   const bookingToCancel = ref<Booking | null>(null)
-  const contactSnackbarOpen = ref(false)
+  const cancellingBookingId = ref<string | null>(null)
+  const cancelError = ref<string | null>(null)
+  const cancelSuccessId = ref<string | null>(null)
 
   const bookingToDeleteName = computed(() => {
     if (!bookingToCancel.value) return ''
@@ -1035,22 +1034,26 @@
 
   async function confirmCancelBooking (): Promise<void> {
     if (!bookingToCancel.value) return
+    const targetId = bookingToCancel.value.id
+    cancellingBookingId.value = targetId
+    cancelError.value = null
+    cancelConfirmOpen.value = false
+    bookingToCancel.value = null
     try {
-      await changeMyBookingStatus(bookingToCancel.value.id, 'cancelled')
-      uiStore.addNotification('success', 'Cancelled', 'Booking cancelled successfully')
-      expandedItemKey.value = null
+      await changeMyBookingStatus(targetId, 'cancelled')
+      cancelSuccessId.value = targetId
+      setTimeout(() => {
+        expandedItemKey.value = null
+        cancelSuccessId.value = null
+      }, 1500)
     } catch (error) {
       console.error('Failed to cancel booking:', error)
-      uiStore.addNotification('error', 'Cancel Failed', error instanceof Error ? error.message : 'Could not cancel booking')
+      cancelError.value = error instanceof Error ? error.message : 'Could not cancel booking'
     } finally {
-      cancelConfirmOpen.value = false
-      bookingToCancel.value = null
+      cancellingBookingId.value = null
     }
   }
 
-  function showContactSnackbar (): void {
-    contactSnackbarOpen.value = true
-  }
 
   // ── PropertyList items for overview accordion ────────────────────────────────
   const overviewListItems = computed((): PropertyListItem[] =>
@@ -1256,7 +1259,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: var(--claro-space-sm) var(--claro-space-md);
   background: var(--claro-surface);
   border: 1px solid var(--claro-border);
   border-radius: var(--claro-radius-sm);
@@ -1265,7 +1268,7 @@
 }
 
 .stat-chip--urgent {
-  border-color: rgba(234, 84, 85, 0.30);
+  border-color: rgba(var(--v-theme-error), 0.30);
   background: var(--claro-error-tonal);
 }
 
@@ -1283,7 +1286,7 @@
 }
 
 .stat-chip-lbl {
-  font-size: 11px;
+  font-size: var(--claro-text-xs);
   font-weight: 600;
   color: var(--claro-fg3);
   text-transform: uppercase;
@@ -1304,12 +1307,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   color: var(--claro-fg3);
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  margin-bottom: 20px;
+  margin-bottom: var(--claro-space-md);
 }
 
 .tl-card-hd-sep {
@@ -1386,9 +1389,9 @@
 .bk-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 16px;
-  border-radius: 16px;
+  gap: var(--claro-space-sm);
+  padding: var(--claro-space-sm) var(--claro-space-md);
+  border-radius: var(--claro-radius-sm);
   cursor: pointer;
   border: none;
   background: transparent;
@@ -1412,8 +1415,8 @@
 }
 
 .bk-prop {
-  font-size: 15px;
-  font-weight: 700;
+  font-size: var(--claro-text-sm);
+  font-weight: 600;
   color: var(--claro-fg1);
   white-space: nowrap;
   overflow: hidden;
@@ -1422,7 +1425,7 @@
 }
 
 .bk-meta {
-  font-size: 12px;
+  font-size: var(--claro-text-xs);
   color: var(--claro-fg3);
   margin-top: 2px;
 }
@@ -1432,17 +1435,32 @@
   align-items: center;
   padding: 2px 10px;
   border-radius: 9999px;
-  font-size: 10px;
-  font-weight: 800;
+  font-size: var(--claro-text-xs);
+  font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
   flex-shrink: 0;
 }
 
-.bk-type-chip--checkin  { background: var(--claro-success-tonal);  color: var(--claro-success); }
-.bk-type-chip--checkout { background: var(--claro-primary-tonal); color: var(--claro-primary); }
-.bk-type-chip--turn     { background: var(--claro-warning-tonal);  color: var(--claro-warning); }
+.bk-type-chip--checkin  { background: var(--claro-success-tonal); color: var(--claro-success); }
+.bk-type-chip--checkout { background: rgba(var(--v-theme-primary), 0.12); color: var(--claro-primary); }
+.bk-type-chip--turn     { background: var(--claro-warning-tonal); color: var(--claro-warning); }
+
+.bk-unassigned-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 8px;
+  border-radius: 9999px;
+  font-size: var(--claro-text-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  flex-shrink: 0;
+  background: var(--claro-error-tonal);
+  color: var(--claro-error);
+}
 
 .bk-chevron {
   opacity: 0.30;
@@ -1460,27 +1478,33 @@
 .triage-banner {
   display: flex;
   align-items: center;
-  gap: 16px;
-  padding: 24px;
-  border-radius: 24px;
+  gap: var(--claro-space-md);
+  padding: 16px 20px;
+  border-radius: var(--claro-radius-sm);
   border: 1px solid transparent;
+}
+
+.triage-banner--ok {
+  background: var(--claro-success-tonal);
+  border-color: rgba(var(--v-theme-success), 0.25);
 }
 
 .triage-banner--urgent {
   background: var(--claro-error-tonal);
-  border-color: rgba(var(--v-theme-error), 0.15);
+  border-color: rgba(var(--v-theme-error), 0.25);
 }
 
 .triage-icon {
-  width: 48px;
-  height: 48px;
-  border-radius: 12px;
+  width: var(--claro-space-xl);
+  height: var(--claro-space-xl);
+  border-radius: var(--claro-radius-sm);
   display: grid;
   place-items: center;
   flex-shrink: 0;
 }
 
-.triage-icon--urgent { background: rgba(var(--v-theme-error), 0.1); }
+.triage-icon--ok     { background: rgba(var(--v-theme-success), 0.18); }
+.triage-icon--urgent { background: rgba(var(--v-theme-error), 0.18); }
 
 .triage-body {
   flex: 1;
@@ -1504,7 +1528,8 @@
 .section-head {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: var(--claro-space-sm);
+  margin-bottom: var(--claro-space-md);
 }
 
 .section-title {
@@ -1547,7 +1572,7 @@
   flex: 1;
   display: flex;
   justify-content: space-between;
-  padding-bottom: 12px;
+  padding-bottom: var(--claro-space-sm);
   border-bottom: 1px solid rgba(var(--v-theme-on-surface), 0.08);
 }
 
@@ -1641,12 +1666,12 @@
   width: fit-content;
 }
 
-.tl-status-pill--urgent   { background: var(--claro-error); color: #fff; }
-.tl-status-pill--turn     { background: var(--claro-warning); color: #fff; }
-.tl-status-pill--checkout { background: var(--claro-primary); color: #fff; }
-.tl-status-pill--checkin  { background: var(--claro-success); color: #fff; }
-.tl-status-pill--occupied { background: var(--claro-info); color: #fff; }
-.tl-status-pill--vacant   { background: rgba(var(--v-theme-on-surface), 0.1); color: var(--claro-fg2); }
+.tl-status-pill--urgent   { background: var(--claro-error-tonal);   color: var(--claro-error); }
+.tl-status-pill--turn     { background: var(--claro-warning-tonal); color: var(--claro-warning); }
+.tl-status-pill--checkout { background: color-mix(in srgb, rgb(var(--v-theme-primary)) 12%, var(--claro-surface)); color: var(--claro-primary); }
+.tl-status-pill--checkin  { background: var(--claro-success-tonal); color: var(--claro-success); }
+.tl-status-pill--occupied { background: var(--claro-info-tonal);    color: var(--claro-info); }
+.tl-status-pill--vacant   { background: var(--claro-surface);       color: var(--claro-fg2); border: 1px solid var(--claro-border); }
 
 /* Ribbon — event chip container */
 .tl-ribbon {
@@ -1660,31 +1685,49 @@
 .tl-chip {
   position: absolute;
   transform: translateX(-50%);
-  padding: 4px 12px;
-  border-radius: 12px;
-  font-size: 12px;
-  font-weight: 800;
+  padding: var(--claro-space-xs) var(--claro-space-sm);
+  border-radius: var(--claro-radius-sm);
+  font-size: var(--claro-text-xs);
+  font-weight: 700;
   color: #fff;
   white-space: nowrap;
   cursor: pointer;
   border: 1px solid rgba(255,255,255,0.2);
   line-height: 1.2;
   z-index: 3;
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  transition: opacity 0.15s, box-shadow 0.15s;
+  font-family: var(--claro-font-family, 'Inter', sans-serif);
 }
 
 .tl-chip--checkout { background: var(--claro-primary); }
-.tl-chip--checkin  { background: #28C76F; }
-.tl-chip--turn     { background: #FF9F43; }
-.tl-chip--urgent   { background: #EA5455; box-shadow: 0 0 0 2px rgba(234, 84, 85, 0.28); }
-.tl-chip--past     { opacity: 0.35; filter: grayscale(0.5); }
+.tl-chip--checkin  { background: rgb(var(--v-theme-success)); }
+.tl-chip--turn     { background: rgb(var(--v-theme-warning)); }
+.tl-chip--urgent   { background: rgb(var(--v-theme-error)); }
+.tl-chip--past     { opacity: 0.42; }
 
 .tl-chip:hover:not(.tl-chip--past) {
   transform: translateX(-50%) translateY(-2px) scale(1.05);
   box-shadow: 0 8px 16px rgba(0,0,0,0.2);
 }
 
-/* NOW scrubber */
+.tl-chip:focus-visible {
+  outline: 2px solid var(--claro-primary);
+  outline-offset: 2px;
+}
+
+@keyframes urgentPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0.55); }
+  50%       { box-shadow: 0 0 0 4px rgba(var(--v-theme-error), 0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tl-chip--urgent { animation: urgentPulse 1.5s ease-in-out infinite; }
+}
+
+/* NOW scrubber: one per ribbon row, all sharing the same % coordinate space as chips */
 .tl-now-line-v {
   position: absolute;
   top: 0;
@@ -1703,11 +1746,11 @@
   transform: translateX(-50%);
   background: var(--claro-primary-dark);
   color: #fff;
-  font-size: 9px;
-  font-weight: 900;
-  padding: 3px 8px;
-  border-radius: 6px;
-  letter-spacing: 0.08em;
+  font-size: var(--claro-text-xs);
+  font-weight: 800;
+  padding: 2px 5px;
+  border-radius: 3px;
+  letter-spacing: 0.06em;
   white-space: nowrap;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
@@ -2063,4 +2106,11 @@
   flex-direction: column;
   gap: 10px;
 }
+
+.tl-legend-mark--checkin  { background: var(--claro-success); }
+.tl-legend-mark--checkout { background: var(--claro-primary); }
+.tl-legend-mark--turn     { background: var(--claro-warning); }
+.tl-legend-mark--urgent   { background: var(--claro-error); }
+
+.bk-inlay-skel { padding: 12px 20px; }
 </style>
