@@ -775,6 +775,76 @@
     }).length
   })
 
+  // Desktop stat chips
+  const rangeStats = computed(() => {
+    const end = rangeEndDate.value
+    let checkouts = 0, checkins = 0, turns = 0
+    for (const b of myBookings.value) {
+      if (b.status === 'cancelled') continue
+      if (b.booking_type === 'turn') {
+        if (b.checkin_date >= todayStr.value && b.checkin_date <= end) turns++
+      } else {
+        if (b.checkout_date >= todayStr.value && b.checkout_date <= end) checkouts++
+        if (b.checkin_date >= todayStr.value && b.checkin_date <= end) checkins++
+      }
+    }
+    return [
+      { n: unassignedBookingCount.value, label: 'Unassigned', urgent: unassignedBookingCount.value > 0 },
+      { n: checkouts, label: 'Check-outs', urgent: false },
+      { n: checkins, label: 'Check-ins', urgent: false },
+      { n: turns, label: 'Turns', urgent: urgentTurns.value.length > 0 },
+    ]
+  })
+
+  // Desktop multi-day swimlane rows (span bars + event markers)
+  const desktopMultiRows = computed(() => {
+    const days = rangeDays.value
+    const end = rangeEndDate.value
+
+    return myProperties.value
+      .map(p => {
+        const name = formatPropertyAddress(p, 'short')
+        const color = mapLegacyPropertyColor(p.color)
+        const spans: Array<{ startDay: number, endDay: number, color: string }> = []
+        const markers: Array<{ day: number, type: 'checkin' | 'checkout' | 'turn', bookingId: string }> = []
+
+        for (const b of myBookings.value) {
+          if (b.property_id !== p.id || b.status === 'cancelled') continue
+          if (b.checkout_date < todayStr.value || b.checkin_date > end) continue
+
+          const spanStart = Math.max(0, daysDiff(todayStr.value, b.checkin_date))
+          const spanEnd = Math.min(days, daysDiff(todayStr.value, b.checkout_date) + 1)
+          if (spanEnd > spanStart) spans.push({ startDay: spanStart, endDay: spanEnd, color })
+
+          if (b.booking_type === 'turn') {
+            const day = daysDiff(todayStr.value, b.checkin_date)
+            if (day >= 0 && day < days) markers.push({ day, type: 'turn', bookingId: b.id })
+          } else {
+            const outDay = daysDiff(todayStr.value, b.checkout_date)
+            if (outDay >= 0 && outDay < days) markers.push({ day: outDay, type: 'checkout', bookingId: b.id })
+            const inDay = daysDiff(todayStr.value, b.checkin_date)
+            if (inDay >= 0 && inDay < days) markers.push({ day: inDay, type: 'checkin', bookingId: b.id })
+          }
+        }
+
+        return { propId: p.id, propName: name, propColor: color, spans, markers }
+      })
+      .filter(r => r.spans.length > 0 || r.markers.length > 0)
+  })
+
+  // Day column labels for desktop multi-day header
+  const rangeColumnDays = computed(() =>
+    Array.from({ length: rangeDays.value }, (_, i) => {
+      if (i === 0) return 'Today'
+      const d = new Date(todayStr.value + 'T00:00:00')
+      d.setDate(d.getDate() + i)
+      return d.toLocaleDateString('en-US', {
+        weekday: rangeDays.value > 7 ? 'narrow' : 'short',
+        day: 'numeric',
+      })
+    }),
+  )
+
   // ── Unified upcoming events (all types, full range window) ──────────────────
   const unifiedUpcomingEvents = computed((): UnifiedEvent[] => {
     const end = rangeEndDate.value
@@ -1376,6 +1446,13 @@
   overflow: hidden;
   transition: all var(--claro-dur-slow) var(--claro-ease);
   border: 1px solid transparent;
+.tl-col-hd {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--claro-fg3);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .bk-row-shell--open {
