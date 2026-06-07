@@ -1379,6 +1379,13 @@
   overflow: hidden;
   transition: all var(--claro-dur-slow) var(--claro-ease);
   border: 1px solid transparent;
+.tl-col-hd {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--claro-fg3);
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .bk-row-shell--open {
