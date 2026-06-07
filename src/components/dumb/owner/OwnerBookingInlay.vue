@@ -5,11 +5,14 @@
 
   defineProps<{
     item: BookingListItem
+    isCancelling?: boolean
+    cancelError?: string | null
+    cancelSuccess?: boolean
   }>()
 
   const emit = defineEmits<{
     edit: [id: string]
-    delete: [id: string]
+    cancel: [id: string]
   }>()
 
   const { mobile } = useDisplay()
@@ -17,21 +20,6 @@
   function formatDate (dateStr: string): string {
     const d = new Date(dateStr)
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
-  }
-
-  function priorityColor (priority: string): string {
-    switch (priority) {
-      case 'urgent': { return 'error'
-      }
-      case 'high': { return 'warning'
-      }
-      case 'normal': { return 'primary'
-      }
-      case 'low': { return 'info'
-      }
-      default: { return 'default'
-      }
-    }
   }
 </script>
 
@@ -59,16 +47,6 @@
               <td>{{ item.guestCount }}</td>
             </tr>
 
-            <tr v-if="item.priority">
-              <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-flag-outline</v-icon> Priority</span></td>
-
-              <td>
-                <v-chip :color="priorityColor(item.priority)" size="x-small" variant="tonal">
-                  {{ item.priority }}
-                </v-chip>
-              </td>
-            </tr>
-
             <tr v-if="item.createdAt">
               <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-clock-outline</v-icon> Created</span></td>
               <td>{{ formatDate(item.createdAt) }}</td>
@@ -84,30 +62,54 @@
       </div>
     </div>
 
+    <!-- In-situ action feedback -->
+    <div v-if="cancelError" class="bl-action-feedback bl-action-feedback--error" role="alert">
+      <v-icon color="error" size="14">mdi-alert-circle-outline</v-icon>
+      {{ cancelError }}
+    </div>
+
+    <div v-if="cancelSuccess" class="bl-action-feedback bl-action-feedback--success" role="status">
+      <v-icon color="success" size="14">mdi-check-circle-outline</v-icon>
+      Booking cancelled
+    </div>
+
     <!-- Action bar -->
     <div class="bl-actions" :class="{ 'bl-actions--mobile': mobile }" @click.stop>
       <div class="bl-actions-group">
         <v-btn
           color="primary"
-          :prepend-icon="mobile ? undefined : 'mdi-pencil-outline'"
+          :prepend-icon="mobile ? undefined : 'mdi-calendar-edit-outline'"
           size="small"
           variant="tonal"
           @click="emit('edit', item.id)"
         >
           <v-icon v-if="mobile" size="16" start>mdi-pencil-outline</v-icon>
-          Edit
+          Reschedule
         </v-btn>
+      </div>
+
+      <div class="bl-actions-group">
+        <v-chip
+          class="bl-comingsoon"
+          size="small"
+          variant="outlined"
+        >
+          <v-icon size="12" start>mdi-message-outline</v-icon>
+          Messaging · coming soon
+        </v-chip>
       </div>
 
       <div class="bl-actions-group">
         <v-btn
           color="error"
+          :disabled="isCancelling"
+          :loading="isCancelling"
           size="small"
           variant="text"
-          @click="emit('delete', item.id)"
+          @click="emit('cancel', item.id)"
         >
-          <v-icon size="16" start>mdi-delete-outline</v-icon>
-          Delete
+          <v-icon v-if="!isCancelling" size="16" start>mdi-delete-outline</v-icon>
+          {{ isCancelling ? 'Cancelling…' : 'Cancel Booking' }}
         </v-btn>
       </div>
     </div>
@@ -136,7 +138,7 @@
 }
 
 .bl-col-label {
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
@@ -147,7 +149,7 @@
 .bl-stats-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 12px;
+  font-size: var(--claro-text-sm);
 }
 
 .bl-stats-table tr {
@@ -183,7 +185,7 @@
 }
 
 .bl-notes {
-  font-size: 12px;
+  font-size: var(--claro-text-sm);
   color: var(--claro-fg2);
   line-height: var(--claro-lh-normal);
   margin: 0;
@@ -230,5 +232,31 @@
 
 .bl-actions--mobile .bl-actions-group:last-child {
   margin-left: auto;
+}
+
+.bl-action-feedback {
+  display: flex;
+  align-items: center;
+  gap: var(--claro-space-xs);
+  padding: 6px var(--claro-space-md);
+  font-size: var(--claro-text-xs);
+  font-weight: 500;
+}
+
+.bl-action-feedback--error {
+  color: var(--claro-error);
+  background: var(--claro-error-tonal);
+}
+
+.bl-action-feedback--success {
+  color: var(--claro-success);
+  background: var(--claro-success-tonal);
+}
+
+.bl-comingsoon {
+  cursor: default;
+  pointer-events: none;
+  opacity: 0.50;
+  font-size: var(--claro-text-xs);
 }
 </style>

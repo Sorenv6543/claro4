@@ -7,5 +7,5 @@
 
  - [ ] Add a user icon to the bottom navbar that links to the user profile interface, "User".
  - [ ] Add weekly recurring events (e.g. every Monday at 10am)
- - [ ] Add 12h time format to all time displays (e.g. "2:30 PM" instead of "14:30")
+ - [x] Add 12h time format to all time displays (e.g. "2:30 PM" instead of "14:30")
 

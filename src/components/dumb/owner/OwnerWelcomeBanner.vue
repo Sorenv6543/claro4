@@ -6,7 +6,7 @@
 -->
 <template>
   <div class="owner-hero card-aurora">
-    <!-- Decorative SVG wave -->
+    <!-- Decorative SVG wave — enhanced opacity for glass feel -->
     <svg
       aria-hidden="true"
       class="flow"
@@ -32,32 +32,31 @@
         </mask>
       </defs>
 
-      <g mask="url(#owner-hero-mask)" style="opacity:0.7" transform="scale(-1,1) translate(-800,0)">
-        <path d="M -40,150 C 120,150 180,68 310,68 S 500,160 610,110 760,48 900,78 L 900,86 C 760,56 610,118 500,169 S 310,80 180,76 C 50,72 -40,160 -40,160 Z" fill="rgba(0,0,0,0.05)" />
+      <g mask="url(#owner-hero-mask)" style="opacity:0.4" transform="scale(-1,1) translate(-800,0)">
+        <path d="M -40,150 C 120,150 180,68 310,68 S 500,160 610,110 760,48 900,78 L 900,86 C 760,56 610,118 500,169 S 310,80 180,76 C 50,72 -40,160 -40,160 Z" fill="rgba(255,255,255,0.1)" />
         <path d="M -40,138 C 120,138 180,56 310,56 S 500,146 610,96 760,36 900,66 L 900,86 C 760,56 610,118 500,169 S 310,80 180,76 C 50,72 -40,160 -40,160 Z" fill="rgba(255,255,255,0.05)" />
-        <path d="M -40,138 C 120,138 180,56 310,56 S 500,146 610,96 760,36 900,66 L 900,70 C 760,40 610,102 500,152 S 310,70 180,66 C 50,62 -40,142 -40,142 Z" fill="rgba(255,255,255,0.11)" />
-        <path d="M -40,138 C 120,138 180,56 310,56 S 500,146 610,96 760,36 900,66" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="0.8" />
       </g>
     </svg>
 
     <!-- Left: heading + subtitle + mobile pills -->
     <div class="hero-left">
+      <div v-if="userName" class="claro-eyebrow hero-eyebrow">TODAY</div>
       <h2 class="hero-h">{{ heading }}</h2>
       <p class="hero-sub">{{ resolvedSubtitle }}</p>
 
       <!-- Mobile stat pills (overview only — when legacy count props are passed) -->
       <div v-if="hasMobilePills" class="hero-pills d-flex d-sm-none">
-        <span class="hero-pill">{{ turnsTodayCount }} turns</span>
+        <span class="hero-pill">{{ turnsTodayCount }} same-day turnovers</span>
         <span class="hero-pill">{{ checkoutsTodayCount }} check-outs</span>
-        <span class="hero-pill">{{ weeklyOccupancyPct }}% occ.</span>
+        <span class="hero-pill">{{ weeklyOccupancyPct }}% occupancy</span>
       </div>
     </div>
 
     <!-- Right: stat boxes (desktop) -->
     <div v-if="resolvedStats.length > 0" class="hero-right d-none d-sm-flex">
       <div v-for="stat in resolvedStats" :key="stat.label" class="hero-item">
-        <div class="hero-box">
-          <v-icon aria-hidden="true" color="white" :icon="stat.icon" size="18" />
+        <div class="hero-box glass-card">
+          <v-icon aria-hidden="true" color="white" :icon="stat.icon" size="20" />
         </div>
 
         <div>
@@ -81,6 +80,7 @@
   const props = defineProps<{
     // Mode A: greeting (overview)
     userName?: string
+    greeting?: string
     // Mode B: page title (other pages)
     pageTitle?: string
     subtitle?: string
@@ -93,7 +93,9 @@
   }>()
 
   const heading = computed(() =>
-    props.pageTitle ?? (props.userName ? `Welcome back, ${props.userName}` : 'Claro'),
+    props.pageTitle ?? (props.userName
+      ? `${props.greeting ?? 'Good morning'}, ${props.userName}`
+      : 'Claro'),
   )
 
   const resolvedSubtitle = computed(() =>
@@ -124,30 +126,18 @@
   width: 100%;
   display: flex;
   align-items: stretch;
-  border-radius: var(--claro-radius-card, 2px);
+  border-radius: var(--claro-radius-card, 24px);
   color: #fff;
   overflow: hidden;
   isolation: isolate;
+  min-height: 180px;
+  margin-bottom: var(--claro-space-lg);
 }
 
 .card-aurora {
-  background: var(--claro-gradient-primary);
-  box-shadow:
-    0 2px 0 rgba(255, 255, 255, 0.18) inset,
-    0 -1px 0 rgba(0, 0, 0, 0.12) inset,
-    0 8px 32px rgba(74, 63, 207, 0.35),
-    0 1px 0 rgba(158, 149, 245, 0.4);
-}
-
-.card-aurora::before {
-  content: "";
-  position: absolute;
-  inset: 0 0 auto 0;
-  height: 50%;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0) 100%);
-  border-radius: var(--claro-radius-card, 2px) var(--claro-radius-card, 2px) 0 0;
-  pointer-events: none;
-  z-index: 2;
+  background: linear-gradient(135deg, #7367F0 0%, #9E95F5 50%, #5E52EE 100%);
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: var(--claro-shadow-lg) !important;
 }
 
 .flow {
@@ -161,36 +151,42 @@
 
 .hero-left {
   flex: 1 1 0;
-  padding: var(--claro-space-lg, 24px) 28px;
-  border-right: 1px solid rgba(255, 255, 255, 0.10);
+  padding: 40px;
   position: relative;
   z-index: 1;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   justify-content: center;
 }
 
 .hero-right {
   align-items: center;
-  padding: var(--claro-space-lg, 24px) 28px;
-  gap: 28px;
+  padding: 40px;
+  gap: 32px;
   flex-wrap: wrap;
   position: relative;
   z-index: 1;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(4px);
+}
+
+.hero-eyebrow {
+  color: rgba(255, 255, 255, 0.6);
+  margin-bottom: -4px;
 }
 
 .hero-h {
   margin: 0;
-  font-size: var(--claro-text-lg, 18px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+  font-size: 2.25rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 .hero-sub {
   margin: 0;
-  font-size: 12.5px;
+  font-size: var(--claro-text-sm);
   opacity: 0.75;
   line-height: var(--claro-lh-snug, 1.4);
 }
@@ -217,18 +213,15 @@
 }
 
 .hero-box {
-  width: 38px;
-  height: 38px;
-  border-radius: var(--claro-radius-card, 2px);
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  box-shadow:
-    0 2px 6px rgba(0, 0, 0, 0.15),
-    0 1px 0 rgba(255, 255, 255, 0.2) inset;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
 }
 
 .hero-lbl {
@@ -237,9 +230,9 @@
 }
 
 .hero-val {
-  font-size: var(--claro-text-lg, 18px);
-  font-weight: 800;
-  margin-top: 1px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
 }
 
 @media (max-width: 599px) {

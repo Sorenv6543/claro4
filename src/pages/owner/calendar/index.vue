@@ -2,19 +2,22 @@
   <div class="calendar-page">
     <ErrorAlert v-if="error" class="ma-4" :message="error" />
 
-    <div class="view-switcher pa-2 pb-0">
-      <v-btn-toggle
-        v-model="currentView"
-        density="compact"
-        mandatory
-        rounded="sm"
-        variant="outlined"
-      >
-        <v-btn value="dayGridMonth">Month</v-btn>
-        <v-btn value="timeGridWeek">Week</v-btn>
-        <v-btn value="timeGridDay">Day</v-btn>
-        <v-btn value="listWeek">List</v-btn>
-      </v-btn-toggle>
+    <div class="view-switcher-container">
+      <div class="view-switcher glass-card">
+        <v-btn-toggle
+          v-model="currentView"
+          color="primary"
+          density="compact"
+          mandatory
+          rounded="pill"
+          variant="text"
+        >
+          <v-btn class="switcher-btn" value="dayGridMonth">Month</v-btn>
+          <v-btn class="switcher-btn" value="timeGridWeek">Week</v-btn>
+          <v-btn class="switcher-btn" value="timeGridDay">Day</v-btn>
+          <v-btn class="switcher-btn" value="listWeek">List</v-btn>
+        </v-btn-toggle>
+      </div>
     </div>
 
     <OwnerCalendar
@@ -48,18 +51,7 @@
       mode="edit"
       :properties="myProperties"
       @close="editModal.show = false"
-      @create-turn="handleCreateTurn"
       @submit="handleBookingEditSubmit"
-    />
-
-    <TurnBookingDialog
-      v-if="turnDialog.sourceBooking"
-      v-model="turnDialog.show"
-      :loading="turnDialog.loading"
-      :properties="myProperties"
-      :source-booking="turnDialog.sourceBooking"
-      @close="turnDialog.show = false"
-      @submit="handleTurnSubmit"
     />
 
     <PropertyModal
@@ -94,7 +86,6 @@
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import { computed, onMounted, ref } from 'vue'
   import OwnerBookingForm from '@/components/dumb/owner/OwnerBookingForm.vue'
-  import TurnBookingDialog from '@/components/dumb/owner/TurnBookingDialog.vue'
   import ErrorAlert from '@/components/dumb/shared/ErrorAlert.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue'
@@ -129,12 +120,6 @@
     loading: false,
     errors: new Map<string, string[]>(),
     booking: null as Booking | null,
-  })
-
-  const turnDialog = ref({
-    show: false,
-    loading: false,
-    sourceBooking: null as Booking | null,
   })
 
   const propertyModal = ref({
@@ -230,30 +215,6 @@
       uiStore.addNotification('error', 'Failed', error_ instanceof Error ? error_.message : 'Could not update booking')
     } finally {
       editModal.value.loading = false
-    }
-  }
-
-  function handleCreateTurn (): void {
-    const booking = editModal.value.booking
-    if (!booking) return
-    editModal.value.show = false
-    turnDialog.value = { show: true, loading: false, sourceBooking: booking }
-  }
-
-  async function handleTurnSubmit (data: BookingFormData): Promise<void> {
-    turnDialog.value.loading = true
-    try {
-      const id = await createMyBooking(data)
-      if (!id) {
-        uiStore.addNotification('error', 'Failed', 'Could not create turn booking')
-        return
-      }
-      uiStore.addNotification('success', 'Created', 'Turn booking scheduled successfully')
-      turnDialog.value.show = false
-    } catch (error_) {
-      uiStore.addNotification('error', 'Failed', error_ instanceof Error ? error_.message : 'Could not create turn booking')
-    } finally {
-      turnDialog.value.loading = false
     }
   }
 
@@ -357,6 +318,39 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+.view-switcher-container {
+  padding: 12px 16px 0;
+  display: flex;
+  justify-content: center;
+  z-index: 10;
+}
+
+.view-switcher {
+  padding: 4px;
+  border-radius: 9999px !important;
+  background: var(--claro-glass-bg);
+  backdrop-filter: var(--claro-glass-blur);
+  border: 1px solid var(--claro-glass-border) !important;
+}
+
+.switcher-btn {
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  color: rgb(var(--v-theme-on-surface)) !important;
+  opacity: 0.7;
+  height: 36px !important;
+  min-width: 80px !important;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+}
+
+.switcher-btn.v-btn--active {
+  opacity: 1;
+  background: rgb(var(--v-theme-primary)) !important;
+  color: #fff !important;
+  box-shadow: 0 4px 12px rgba(var(--v-theme-primary), 0.3) !important;
 }
 
 .fab-add-booking {

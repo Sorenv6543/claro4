@@ -1,6 +1,7 @@
 import type { PluginOption } from 'vite'
 import { execSync } from 'node:child_process'
 import { fileURLToPath, URL } from 'node:url'
+import { domscribe } from '@domscribe/vue/vite'
 import { sentryVitePlugin } from '@sentry/vite-plugin'
 import vue from '@vitejs/plugin-vue'
 import { defineConfig, loadEnv } from 'vite'
@@ -81,7 +82,7 @@ export default defineConfig(({ mode }) => {
   ]
 
   if (isDevelopment) {
-    plugins.push(devtoolsJson())
+    plugins.push(devtoolsJson(), domscribe({ overlay: true }))
 
     const vueDevToolsPlugin = vueDevTools({
       componentInspector: {

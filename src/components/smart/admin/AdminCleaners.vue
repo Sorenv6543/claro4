@@ -3,7 +3,7 @@
     <!-- Stats Cards -->
     <div class="stats-section">
       <v-container fluid>
-        <v-row density="compact">
+        <v-row class="bento-grid" density="compact">
           <v-col cols="6" md="3">
             <StatCard color="primary" icon="mdi-account-group" label="Total Cleaners" :value="cleanerStats.total" />
           </v-col>
@@ -39,177 +39,180 @@
     </v-container>
 
     <!-- Cleaners Data Table -->
-    <AppDataTable
-      :active-filter-count="activeFilterCount"
-      :headers="tableHeaders"
-      :items="filteredCleaners"
-      :loading="loading"
-      :search-keys="['name', 'email']"
-      searchable
-      subtitle="Manage cleaner profiles, skills, and availability"
-      title="Cleaners"
-    >
-      <!-- Header actions -->
-      <template #header-actions>
-        <v-btn
-          color="primary"
-          prepend-icon="mdi-account-plus"
-          @click="showAddDialog = true"
-        >
-          Add Cleaner
-        </v-btn>
-      </template>
-
-      <!-- Segment tabs -->
-      <template #segments>
-        <div class="d-flex ga-2 flex-wrap">
+    <v-container fluid>
+      <AppDataTable
+        :active-filter-count="activeFilterCount"
+        class="glass-card"
+        :headers="tableHeaders"
+        :items="filteredCleaners"
+        :loading="loading"
+        :search-keys="['name', 'email']"
+        searchable
+        subtitle="Manage cleaner profiles, skills, and availability"
+        title="Cleaners"
+      >
+        <!-- Header actions -->
+        <template #header-actions>
           <v-btn
-            v-for="seg in segments"
-            :key="seg.value"
             color="primary"
-            density="compact"
-            size="small"
-            :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
-            @click="selectedSegment = seg.value"
+            prepend-icon="mdi-account-plus"
+            @click="showAddDialog = true"
           >
-            {{ seg.title }}
+            Add Cleaner
           </v-btn>
-        </div>
-      </template>
+        </template>
 
-      <!-- Collapsible filters -->
-      <template #filters>
-        <v-row align="center" density="comfortable">
-          <v-col cols="6" md="3" sm="4">
-            <v-select
-              v-model="statusFilter"
-              clearable
+        <!-- Segment tabs -->
+        <template #segments>
+          <div class="d-flex ga-2 flex-wrap">
+            <v-btn
+              v-for="seg in segments"
+              :key="seg.value"
+              color="primary"
               density="compact"
-              hide-details
-              :items="statusOptions"
-              placeholder="Status"
+              size="small"
+              :variant="selectedSegment === seg.value ? 'flat' : 'outlined'"
+              @click="selectedSegment = seg.value"
+            >
+              {{ seg.title }}
+            </v-btn>
+          </div>
+        </template>
+
+        <!-- Collapsible filters -->
+        <template #filters>
+          <v-row align="center" density="comfortable">
+            <v-col cols="6" md="3" sm="4">
+              <v-select
+                v-model="statusFilter"
+                clearable
+                density="compact"
+                hide-details
+                :items="statusOptions"
+                placeholder="Status"
+                variant="outlined"
+              />
+            </v-col>
+          </v-row>
+        </template>
+
+        <!-- Avatar Column -->
+        <template #[`item.avatar`]="{ item }">
+          <v-avatar
+            class="my-1"
+            color="success"
+            :size="mobile ? 28 : 32"
+          >
+            <span class="text-white font-weight-bold">
+              {{ getInitials(item.name as string) }}
+            </span>
+          </v-avatar>
+        </template>
+
+        <!-- Cleaner Name Column -->
+        <template #[`item.name`]="{ item }">
+          <div style="min-width: 150px">
+            <div
+              class="font-weight-medium"
+              :class="mobile ? 'text-body-2' : 'text-body-1'"
+            >
+              {{ item.name }}
+            </div>
+
+            <div
+              class="text-medium-emphasis"
+              :class="mobile ? 'text-caption' : 'text-body-2'"
+            >
+              {{ item.email }}
+            </div>
+          </div>
+        </template>
+
+        <!-- Skills Column -->
+        <template #[`item.skills`]="{ item }">
+          <div class="d-flex flex-wrap ga-1 py-1">
+            <v-chip
+              v-for="skill in (item.skills as string[]).slice(0, 2)"
+              :key="skill"
+              size="x-small"
               variant="outlined"
-            />
-          </v-col>
-        </v-row>
-      </template>
+            >
+              {{ skill }}
+            </v-chip>
 
-      <!-- Avatar Column -->
-      <template #[`item.avatar`]="{ item }">
-        <v-avatar
-          class="my-1"
-          color="success"
-          :size="mobile ? 28 : 32"
-        >
-          <span class="text-white font-weight-bold">
-            {{ getInitials(item.name as string) }}
-          </span>
-        </v-avatar>
-      </template>
-
-      <!-- Cleaner Name Column -->
-      <template #[`item.name`]="{ item }">
-        <div style="min-width: 150px">
-          <div
-            class="font-weight-medium"
-            :class="mobile ? 'text-body-2' : 'text-body-1'"
-          >
-            {{ item.name }}
+            <v-chip
+              v-if="(item.skills as string[]).length > 2"
+              size="x-small"
+              variant="outlined"
+            >
+              +{{ (item.skills as string[]).length - 2 }}
+            </v-chip>
           </div>
+        </template>
 
-          <div
-            class="text-medium-emphasis"
-            :class="mobile ? 'text-caption' : 'text-body-2'"
-          >
-            {{ item.email }}
+        <!-- Capacity Column -->
+        <template #[`item.max_daily_bookings`]="{ item }">
+          <v-chip color="info" size="small" variant="tonal">
+            {{ item.max_daily_bookings }}/day
+          </v-chip>
+        </template>
+
+        <!-- Status Column -->
+        <template #[`item.status`]>
+          <v-chip color="success" size="small" variant="flat">
+            Active
+          </v-chip>
+        </template>
+
+        <!-- Actions Column -->
+        <template #[`item.actions`]="{ item }">
+          <div class="d-flex align-center ga-1">
+            <v-tooltip location="top" text="Edit">
+              <template #activator="{ props: tooltipProps }">
+                <v-btn
+                  icon="mdi-pencil-outline"
+                  size="small"
+                  variant="text"
+                  v-bind="tooltipProps"
+                  @click.stop="editCleaner(item as unknown as Cleaner)"
+                />
+              </template>
+            </v-tooltip>
+
+            <v-menu>
+              <template #activator="{ props: menuProps }">
+                <v-btn
+                  v-bind="menuProps"
+                  icon="mdi-dots-vertical"
+                  size="small"
+                  variant="text"
+                  @click.stop
+                />
+              </template>
+
+              <v-list>
+                <v-list-item @click="viewSchedule(item as unknown as Cleaner)">
+                  <template #prepend>
+                    <v-icon>mdi-calendar</v-icon>
+                  </template>
+
+                  <v-list-item-title>View Schedule</v-list-item-title>
+                </v-list-item>
+
+                <v-divider />
+
+                <v-list-item
+                  class="text-error"
+                  @click="confirmDelete(item as unknown as Cleaner)"
+                >
+                  <v-list-item-title>Delete Cleaner</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </div>
-        </div>
-      </template>
-
-      <!-- Skills Column -->
-      <template #[`item.skills`]="{ item }">
-        <div class="d-flex flex-wrap ga-1 py-1">
-          <v-chip
-            v-for="skill in (item.skills as string[]).slice(0, 2)"
-            :key="skill"
-            size="x-small"
-            variant="outlined"
-          >
-            {{ skill }}
-          </v-chip>
-
-          <v-chip
-            v-if="(item.skills as string[]).length > 2"
-            size="x-small"
-            variant="outlined"
-          >
-            +{{ (item.skills as string[]).length - 2 }}
-          </v-chip>
-        </div>
-      </template>
-
-      <!-- Capacity Column -->
-      <template #[`item.max_daily_bookings`]="{ item }">
-        <v-chip color="info" size="small" variant="tonal">
-          {{ item.max_daily_bookings }}/day
-        </v-chip>
-      </template>
-
-      <!-- Status Column -->
-      <template #[`item.status`]>
-        <v-chip color="success" size="small" variant="flat">
-          Active
-        </v-chip>
-      </template>
-
-      <!-- Actions Column -->
-      <template #[`item.actions`]="{ item }">
-        <div class="d-flex align-center ga-1">
-          <v-tooltip location="top" text="Edit">
-            <template #activator="{ props: tooltipProps }">
-              <v-btn
-                icon="mdi-pencil-outline"
-                size="small"
-                variant="text"
-                v-bind="tooltipProps"
-                @click.stop="editCleaner(item as unknown as Cleaner)"
-              />
-            </template>
-          </v-tooltip>
-
-          <v-menu>
-            <template #activator="{ props: menuProps }">
-              <v-btn
-                v-bind="menuProps"
-                icon="mdi-dots-vertical"
-                size="small"
-                variant="text"
-                @click.stop
-              />
-            </template>
-
-            <v-list>
-              <v-list-item @click="viewSchedule(item as unknown as Cleaner)">
-                <template #prepend>
-                  <v-icon>mdi-calendar</v-icon>
-                </template>
-
-                <v-list-item-title>View Schedule</v-list-item-title>
-              </v-list-item>
-
-              <v-divider />
-
-              <v-list-item
-                class="text-error"
-                @click="confirmDelete(item as unknown as Cleaner)"
-              >
-                <v-list-item-title>Delete Cleaner</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </div>
-      </template>
-    </AppDataTable>
+        </template>
+      </AppDataTable>
+    </v-container>
 
     <!-- Add/Edit Cleaner Dialog -->
     <v-dialog v-model="showAddDialog" max-width="500px" persistent>
@@ -447,12 +450,11 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  background-color: var(--claro-background);
 }
 
 .stats-section {
   flex-shrink: 0;
-  background: rgb(var(--v-theme-surface));
-  border-bottom: 1px solid rgb(var(--v-theme-surface-variant));
   padding: 16px 0;
 }
 

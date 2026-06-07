@@ -46,6 +46,7 @@
   import type { Property } from '@/types/property'
   import { useToday } from '@composables/shared/useToday'
   import { propStatus } from '@utils/propertyStatus'
+  import { fmt12 } from '@utils/timelineMath'
   import { computed, onMounted, ref } from 'vue'
   import { useDisplay } from 'vuetify'
   import MobileTimelineFeed from '@/components/dumb/owner/MobileTimelineFeed.vue'
@@ -153,10 +154,10 @@
       const name = propName(p)
       const color = propColor(p)
       if (b.booking_type === 'turn' && b.checkin_date === todayStr.value) {
-        events.push({ propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'turn' })
+        events.push({ propId: p.id, propName: name, propColor: color, time: fmt12(b.checkout_time ?? '11:00'), kind: 'turn' })
       } else {
-        if (b.checkout_date === todayStr.value) events.push({ propId: p.id, propName: name, propColor: color, time: b.checkout_time ?? '11:00', kind: 'checkout' })
-        if (b.checkin_date === todayStr.value) events.push({ propId: p.id, propName: name, propColor: color, time: b.checkin_time ?? '15:00', kind: 'checkin' })
+        if (b.checkout_date === todayStr.value) events.push({ propId: p.id, propName: name, propColor: color, time: fmt12(b.checkout_time ?? '11:00'), kind: 'checkout' })
+        if (b.checkin_date === todayStr.value) events.push({ propId: p.id, propName: name, propColor: color, time: fmt12(b.checkin_time ?? '15:00'), kind: 'checkin' })
       }
     }
     return events.toSorted((a, b) => a.time.localeCompare(b.time))
@@ -214,13 +215,13 @@
           propColor: propColor(p),
           city: p.address_city ?? '',
           day,
-          time: `${b.checkout_time ?? '11:00'}→${b.checkin_time ?? '15:00'}`,
+          time: `${fmt12(b.checkout_time ?? '11:00')}→${fmt12(b.checkin_time ?? '15:00')}`,
           type: 'turn',
           guestCount: b.guest_count ?? undefined,
           status: b.status,
           urgent: b.priority === 'urgent',
-          cleanFrom: b.checkout_time ?? '11:00',
-          cleanTo: b.checkin_time ?? '15:00',
+          cleanFrom: fmt12(b.checkout_time ?? '11:00'),
+          cleanTo: fmt12(b.checkin_time ?? '15:00'),
           notes: b.notes ?? undefined,
         })
       } else {
@@ -234,7 +235,7 @@
             propColor: propColor(p),
             city: p.address_city ?? '',
             day: coDays,
-            time: b.checkout_time ?? '11:00',
+            time: fmt12(b.checkout_time ?? '11:00'),
             type: 'out',
             guestCount: b.guest_count ?? undefined,
             status: b.status,
@@ -249,7 +250,7 @@
             propColor: propColor(p),
             city: p.address_city ?? '',
             day: ciDays,
-            time: b.checkin_time ?? '15:00',
+            time: fmt12(b.checkin_time ?? '15:00'),
             type: 'in',
             guestCount: b.guest_count ?? undefined,
             status: b.status,

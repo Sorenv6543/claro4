@@ -16,23 +16,22 @@ Claro is a multi-tenant property cleaning scheduler. It connects short-term rent
 
 ## Brand Personality
 
-Friendly, clean, modern. The tone is quietly confident — the kind of software that respects your time. It doesn't shout. It gives you what you need without ceremony.
+Sophisticated, modular, premium. The tone is "high-end digital craftsmanship." It feels like a physical object — layers of frosted glass, soft lighting, and modular blocks that fit together perfectly.
 
-Reference feel: **Stripe Dashboard** — data-dense but polished, strong typographic hierarchy, operationally serious without being cold.
+Reference feel: **Linear** or **Apple.com** — modularity, depth, strong typographic hierarchy, and a focus on modular "Bento" units.
 
 ## Anti-references
 
-- **Generic SaaS cream**: cream/sand backgrounds, Geist or Satoshi font, subtle-border-only cards — the default AI-generated startup aesthetic.
-- **Cluttered admin panels**: old-school Bootstrap/AG Grid density with no breathing room, everything squeezed, no visual hierarchy.
-- **Over-animated dashboards**: pulsing gradients, animated big numbers, confetti — enterprise excess that performs excitement instead of delivering clarity.
+- **Stark Admin Panels**: No flat, 2px-radius controls, no dense Bootstrap grids, no cold industrial aesthetics.
+- **Over-animated dashboards**: Still avoid pulsing gradients and enterprise excess, but lean into subtle "spring" interactions.
 
 ## Design Principles
 
-1. **Data first, chrome last.** The interface surfaces operational clarity. Every structural element earns its place by organizing information, not decorating it.
-2. **Approachable precision.** Friendly does not mean casual. Warm language and color, exact behavior. An owner trusts the booking dates they see. An admin trusts the schedule they dispatch.
-3. **Earned whitespace.** Breathing room is a reward, not a default. Every gap separates something meaningful from something else meaningful.
-4. **Calm hierarchy.** The most urgent thing on screen should be obvious without animation or shouting. Priority is communicated through size, weight, and color — once, clearly.
-5. **Context-aware density.** Owners need quick orientation on mobile; admins need comprehensive data on desktop. The same design system serves both by adapting density, not by switching aesthetics.
+1. **The Bento Box.** Every feature or data point is housed in its own highly rounded (24px) container.
+2. **Frosted Depth.** Use `backdrop-filter` and semi-transparent surfaces to create layers.
+3. **Modular Rhythm.** Spacing between Bento blocks is consistent, creating a breathable, balanced grid.
+4. **Lighting & Precision.** Use 1px subtle borders instead of heavy shadows to define edges.
+5. **Context-aware density.** Admins see more Bento blocks; owners see fewer, larger blocks. The modularity scales naturally.
 
 ## Accessibility & Inclusion
 

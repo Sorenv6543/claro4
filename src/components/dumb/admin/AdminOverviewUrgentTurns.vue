@@ -1,6 +1,7 @@
 <script setup lang="ts">
   import type { Booking } from '@/types/booking'
   import { computed, onUnmounted, ref } from 'vue'
+  import { fmt12 } from '@/utils/timelineMath'
 
   const props = defineProps<{
     turns: Booking[]
@@ -55,8 +56,8 @@
   }
 
   function getTimeWindow (booking: Booking): string {
-    const out = (booking.checkout_time || '11:00').substring(0, 5)
-    const inn = (booking.checkin_time || '15:00').substring(0, 5)
+    const out = fmt12(booking.checkout_time || '11:00')
+    const inn = fmt12(booking.checkin_time || '15:00')
     return `${out} out → ${inn} in`
   }
 </script>

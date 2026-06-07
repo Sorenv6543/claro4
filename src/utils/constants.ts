@@ -118,7 +118,45 @@ export function getBookingStatusColor (status: string): string {
     }
     case 'cancelled': { return 'error'
     }
-    default: { return 'warning'
+    default: { return 'grey'
+    }
+  }
+}
+
+/**
+ * Maps a property type to an MDI icon name.
+ * Provides variety for 'house' types by using a deterministic hash of the ID.
+ */
+export function getPropertyIcon (type?: string, id?: string): string {
+  const typeLower = type?.toLowerCase() || 'house'
+
+  if (typeLower === 'house') {
+    const houseVariants = [
+      'mdi-home',
+      'mdi-home-variant',
+      'mdi-home-modern',
+      'mdi-home-city',
+      'mdi-home-outline',
+      'mdi-home-variant-outline',
+    ]
+    if (id) {
+      let hash = 0
+      for (let i = 0; i < id.length; i++) {
+        hash = (id.codePointAt(i) || 0) + ((hash << 5) - hash)
+      }
+      return houseVariants[Math.abs(hash) % houseVariants.length]
+    }
+    return 'mdi-home'
+  }
+
+  switch (typeLower) {
+    case 'apartment': { return 'mdi-office-building'
+    }
+    case 'condo': { return 'mdi-domain'
+    }
+    case 'townhouse': { return 'mdi-home-group'
+    }
+    default: { return 'mdi-home'
     }
   }
 }
