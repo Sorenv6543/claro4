@@ -47,9 +47,9 @@
 
       <!-- Mobile stat pills (overview only — when legacy count props are passed) -->
       <div v-if="hasMobilePills" class="hero-pills d-flex d-sm-none">
-        <span class="hero-pill">{{ turnsTodayCount }} turns</span>
+        <span class="hero-pill">{{ turnsTodayCount }} same-day turnovers</span>
         <span class="hero-pill">{{ checkoutsTodayCount }} check-outs</span>
-        <span class="hero-pill">{{ weeklyOccupancyPct }}% occ.</span>
+        <span class="hero-pill">{{ weeklyOccupancyPct }}% occupancy</span>
       </div>
     </div>
 
@@ -190,7 +190,7 @@
 
 .hero-sub {
   margin: 0;
-  font-size: 12.5px;
+  font-size: var(--claro-text-sm);
   opacity: 0.75;
   line-height: var(--claro-lh-snug, 1.4);
 }

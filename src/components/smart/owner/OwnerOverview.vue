@@ -315,8 +315,15 @@
               </button>
 
               <v-expand-transition>
+                <div v-if="isUpcomingExpanded(ev.itemKey) && loading" class="bk-inlay-skel">
+                  <v-skeleton-loader type="paragraph,button" />
+                </div>
+
                 <OwnerBookingInlay
-                  v-if="isUpcomingExpanded(ev.itemKey) && bookingItemFor(ev.bookingId)"
+                  v-else-if="isUpcomingExpanded(ev.itemKey) && bookingItemFor(ev.bookingId)"
+                  :cancel-error="expandedItemKey === ev.itemKey ? cancelError : null"
+                  :cancel-success="cancelSuccessId === ev.bookingId"
+                  :is-cancelling="cancellingBookingId === ev.bookingId"
                   :item="bookingItemFor(ev.bookingId)!"
                   @delete="handleDeleteBooking"
                   @edit="handleEditBooking"
@@ -835,6 +842,9 @@
   // ── Edit / delete handlers (mirror OwnerBookings) ────────────────────────
   const deleteConfirmOpen = ref(false)
   const bookingToDelete = ref<Booking | null>(null)
+  const cancellingBookingId = ref<string | null>(null)
+  const cancelError = ref<string | null>(null)
+  const cancelSuccessId = ref<string | null>(null)
 
   const bookingToDeleteName = computed(() => {
     if (!bookingToDelete.value) return ''
@@ -857,16 +867,23 @@
 
   async function confirmDeleteBooking (): Promise<void> {
     if (!bookingToDelete.value) return
+    const targetId = bookingToDelete.value.id
+    cancellingBookingId.value = targetId
+    cancelError.value = null
+    deleteConfirmOpen.value = false
+    bookingToDelete.value = null
     try {
-      await deleteMyBooking(bookingToDelete.value.id)
-      uiStore.addNotification('success', 'Deleted', 'Booking deleted successfully')
-      expandedItemKey.value = null
+      await deleteMyBooking(targetId)
+      cancelSuccessId.value = targetId
+      setTimeout(() => {
+        expandedItemKey.value = null
+        cancelSuccessId.value = null
+      }, 1500)
     } catch (error) {
       console.error('Failed to delete booking:', error)
-      uiStore.addNotification('error', 'Delete Failed', error instanceof Error ? error.message : 'Could not delete booking')
+      cancelError.value = error instanceof Error ? error.message : 'Could not cancel booking'
     } finally {
-      deleteConfirmOpen.value = false
-      bookingToDelete.value = null
+      cancellingBookingId.value = null
     }
   }
 
@@ -971,7 +988,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px 16px;
+  padding: var(--claro-space-sm) var(--claro-space-md);
   background: var(--claro-surface);
   border: 1px solid var(--claro-border);
   border-radius: var(--claro-radius-sm);
@@ -980,7 +997,7 @@
 }
 
 .stat-chip--urgent {
-  border-color: rgba(234, 84, 85, 0.30);
+  border-color: rgba(var(--v-theme-error), 0.30);
   background: var(--claro-error-tonal);
 }
 
@@ -998,7 +1015,7 @@
 }
 
 .stat-chip-lbl {
-  font-size: 11px;
+  font-size: var(--claro-text-xs);
   font-weight: 600;
   color: var(--claro-fg3);
   text-transform: uppercase;
@@ -1019,12 +1036,12 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 11px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   color: var(--claro-fg3);
   text-transform: uppercase;
   letter-spacing: 0.09em;
-  margin-bottom: 14px;
+  margin-bottom: var(--claro-space-md);
 }
 
 .tl-card-hd-sep {
@@ -1088,7 +1105,7 @@
 }
 
 .tl-col-hd {
-  font-size: 10px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   color: var(--claro-fg3);
   letter-spacing: 0.07em;
@@ -1140,7 +1157,7 @@
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 4;
-  font-size: 8px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   padding: 2px 5px;
   border-radius: 2px;
@@ -1148,9 +1165,9 @@
   white-space: nowrap;
 }
 
-.tl-day-marker--checkin  { background: #28C76F; }
+.tl-day-marker--checkin  { background: rgb(var(--v-theme-success)); }
 .tl-day-marker--checkout { background: var(--claro-primary); }
-.tl-day-marker--turn     { background: #FF9F43; }
+.tl-day-marker--turn     { background: rgb(var(--v-theme-warning)); }
 
 /* ── Unified booking item list ── */
 .bk-list {
@@ -1174,8 +1191,8 @@
 .bk-item {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 10px 12px;
+  gap: var(--claro-space-sm);
+  padding: var(--claro-space-sm) var(--claro-space-md);
   border-radius: var(--claro-radius-sm);
   cursor: pointer;
   border: none;
@@ -1201,7 +1218,7 @@
 }
 
 .bk-prop {
-  font-size: 14px;
+  font-size: var(--claro-text-sm);
   font-weight: 600;
   color: var(--claro-fg1);
   white-space: nowrap;
@@ -1211,7 +1228,7 @@
 }
 
 .bk-meta {
-  font-size: 11px;
+  font-size: var(--claro-text-xs);
   color: var(--claro-fg3);
   margin-top: 1px;
 }
@@ -1221,7 +1238,7 @@
   align-items: center;
   padding: 1px 8px;
   border-radius: 9999px;
-  font-size: 9px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1229,23 +1246,23 @@
   flex-shrink: 0;
 }
 
-.bk-type-chip--checkin  { background: rgba(40, 199, 111, 0.14);  color: #28C76F; }
+.bk-type-chip--checkin  { background: var(--claro-success-tonal); color: var(--claro-success); }
 .bk-type-chip--checkout { background: rgba(var(--v-theme-primary), 0.12); color: var(--claro-primary); }
-.bk-type-chip--turn     { background: rgba(255, 159, 67, 0.14);  color: #FF9F43; }
+.bk-type-chip--turn     { background: var(--claro-warning-tonal); color: var(--claro-warning); }
 
 .bk-unassigned-chip {
   display: inline-flex;
   align-items: center;
   padding: 1px 8px;
   border-radius: 9999px;
-  font-size: 9px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
   flex-shrink: 0;
-  background: rgba(234, 84, 85, 0.12);
-  color: #EA5455;
+  background: var(--claro-error-tonal);
+  color: var(--claro-error);
 }
 
 .bk-chevron {
@@ -1267,7 +1284,7 @@
 .triage-banner {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: var(--claro-space-md);
   padding: 16px 20px;
   border-radius: var(--claro-radius-sm);
   border: 1px solid transparent;
@@ -1275,25 +1292,25 @@
 
 .triage-banner--ok {
   background: var(--claro-success-tonal);
-  border-color: rgba(40, 199, 111, 0.25);
+  border-color: rgba(var(--v-theme-success), 0.25);
 }
 
 .triage-banner--urgent {
   background: var(--claro-error-tonal);
-  border-color: rgba(234, 84, 85, 0.25);
+  border-color: rgba(var(--v-theme-error), 0.25);
 }
 
 .triage-icon {
-  width: 36px;
-  height: 36px;
+  width: var(--claro-space-xl);
+  height: var(--claro-space-xl);
   border-radius: var(--claro-radius-sm);
   display: grid;
   place-items: center;
   flex-shrink: 0;
 }
 
-.triage-icon--ok     { background: rgba(40, 199, 111, 0.18); }
-.triage-icon--urgent { background: rgba(234, 84, 85, 0.18); }
+.triage-icon--ok     { background: rgba(var(--v-theme-success), 0.18); }
+.triage-icon--urgent { background: rgba(var(--v-theme-error), 0.18); }
 
 .triage-body {
   flex: 1;
@@ -1316,8 +1333,8 @@
 .section-head {
   display: flex;
   align-items: baseline;
-  gap: 10px;
-  margin-bottom: 12px;
+  gap: var(--claro-space-sm);
+  margin-bottom: var(--claro-space-md);
 }
 
 .section-title {
@@ -1368,7 +1385,7 @@
   flex: 1;
   display: flex;
   justify-content: space-between;
-  padding-bottom: 10px;
+  padding-bottom: var(--claro-space-sm);
   border-bottom: 1px solid rgba(115, 113, 143, 0.31);
 }
 
@@ -1466,14 +1483,12 @@
   width: fit-content;
 }
 
-/* Opaque pill backgrounds via color-mix(white) so the pill is immune to a tinted parent.
- * Text is darkened to ~75% mix toward black so AA holds against the light tint. */
-.tl-status-pill--urgent   { background: color-mix(in srgb, #EA5455 14%, var(--claro-surface)); color: color-mix(in srgb, #EA5455 75%, black); }
-.tl-status-pill--turn     { background: color-mix(in srgb, #FF9F43 14%, var(--claro-surface)); color: color-mix(in srgb, #FF9F43 75%, black); }
-.tl-status-pill--checkout { background: color-mix(in srgb, rgb(var(--v-theme-primary)) 12%, var(--claro-surface)); color: color-mix(in srgb, rgb(var(--v-theme-primary)) 75%, black); }
-.tl-status-pill--checkin  { background: color-mix(in srgb, #28C76F 14%, var(--claro-surface)); color: color-mix(in srgb, #28C76F 75%, black); }
-.tl-status-pill--occupied { background: color-mix(in srgb, #1EC8DE 12%, var(--claro-surface)); color: color-mix(in srgb, #1EC8DE 75%, black); }
-.tl-status-pill--vacant   { background: var(--claro-surface);                                  color: var(--claro-fg2); border: 1px solid var(--claro-border); }
+.tl-status-pill--urgent   { background: var(--claro-error-tonal);   color: var(--claro-error); }
+.tl-status-pill--turn     { background: var(--claro-warning-tonal); color: var(--claro-warning); }
+.tl-status-pill--checkout { background: color-mix(in srgb, rgb(var(--v-theme-primary)) 12%, var(--claro-surface)); color: var(--claro-primary); }
+.tl-status-pill--checkin  { background: var(--claro-success-tonal); color: var(--claro-success); }
+.tl-status-pill--occupied { background: var(--claro-info-tonal);    color: var(--claro-info); }
+.tl-status-pill--vacant   { background: var(--claro-surface);       color: var(--claro-fg2); border: 1px solid var(--claro-border); }
 
 /* Ribbon — event chip container */
 .tl-ribbon {
@@ -1488,9 +1503,9 @@
 .tl-chip {
   position: absolute;
   transform: translateX(-50%);
-  padding: 3px 8px;
+  padding: var(--claro-space-xs) var(--claro-space-sm);
   border-radius: var(--claro-radius-sm);
-  font-size: 11px;
+  font-size: var(--claro-text-xs);
   font-weight: 700;
   color: #fff;
   white-space: nowrap;
@@ -1498,14 +1513,17 @@
   border: none;
   line-height: 1.4;
   z-index: 3;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   transition: opacity 0.15s, box-shadow 0.15s;
   font-family: var(--claro-font-family, 'Inter', sans-serif);
 }
 
 .tl-chip--checkout { background: var(--claro-primary); }
-.tl-chip--checkin  { background: #28C76F; }
-.tl-chip--turn     { background: #FF9F43; }
-.tl-chip--urgent   { background: #EA5455; animation: urgentPulse 1.5s ease-in-out infinite; }
+.tl-chip--checkin  { background: rgb(var(--v-theme-success)); }
+.tl-chip--turn     { background: rgb(var(--v-theme-warning)); }
+.tl-chip--urgent   { background: rgb(var(--v-theme-error)); }
 .tl-chip--past     { opacity: 0.42; }
 
 .tl-chip:hover:not(.tl-chip--past) {
@@ -1518,8 +1536,12 @@
 }
 
 @keyframes urgentPulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(234, 84, 85, 0.55); }
-  50%       { box-shadow: 0 0 0 4px rgba(234, 84, 85, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0.55); }
+  50%       { box-shadow: 0 0 0 4px rgba(var(--v-theme-error), 0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tl-chip--urgent { animation: urgentPulse 1.5s ease-in-out infinite; }
 }
 
 /* NOW scrubber: one per ribbon row, all sharing the same % coordinate space as chips */
@@ -1541,7 +1563,7 @@
   transform: translateX(-50%);
   background: var(--claro-primary-dark);
   color: #fff;
-  font-size: 8px;
+  font-size: var(--claro-text-xs);
   font-weight: 800;
   padding: 2px 5px;
   border-radius: 3px;
@@ -1580,4 +1602,6 @@
 .tl-legend-mark--checkout { background: var(--claro-primary); }
 .tl-legend-mark--turn     { background: var(--claro-warning); }
 .tl-legend-mark--urgent   { background: var(--claro-error); }
+
+.bk-inlay-skel { padding: 12px 20px; }
 </style>
