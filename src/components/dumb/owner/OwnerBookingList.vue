@@ -30,8 +30,8 @@
   })
 
   const emit = defineEmits<{
-    edit: [id: string]
-    cancel: [id: string]
+    'edit': [id: string]
+    'cancel': [id: string]
     'contact-admin': [id: string]
   }>()
 
@@ -97,21 +97,6 @@
       case 'cancelled': { return 'error'
       }
       case 'scheduled': { return 'primary'
-      }
-      default: { return 'default'
-      }
-    }
-  }
-
-  function priorityColor (priority: string): string {
-    switch (priority) {
-      case 'urgent': { return 'error'
-      }
-      case 'high': { return 'warning'
-      }
-      case 'normal': { return 'primary'
-      }
-      case 'low': { return 'info'
       }
       default: { return 'default'
       }
@@ -582,4 +567,3 @@
   border-radius: 12px;
 }
 </style>
-

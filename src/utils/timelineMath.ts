@@ -24,7 +24,7 @@ export const TIMELINE_TICKS = [8, 10, 12, 14, 16, 18, 20, 22]
  *
  * Was: `barPct` in OwnerDayBar.vue, `deskBarPct` in OwnerOverview.vue.
  */
-export function timelinePct (time: string | number, m?: number): number {
+export function timelinePct (time: string | number): number {
   let h: number
   let min: number
 
@@ -34,7 +34,7 @@ export function timelinePct (time: string | number, m?: number): number {
     min = parts[1] ?? 0
   } else {
     h = time
-    min = m ?? 0
+    min = 0
   }
 
   const frac = (h + min / 60 - TIMELINE_DAY_START) / TIMELINE_DAY_SPAN
@@ -98,7 +98,7 @@ export function fmt12Now (): string {
  * Was: `fmtChipLabel` in OwnerOverview.vue.
  */
 export function fmtChipLabel (timeStr: string, type: string): string {
-  const [h, m] = timeStr.split(':').map(Number)
+  const [h, _m] = timeStr.split(':').map(Number)
   if (Number.isNaN(h)) {
     return timeStr
   }
@@ -116,7 +116,10 @@ export function fmtChipLabel (timeStr: string, type: string): string {
  * Format a tick hour for display (e.g. 8 -> "8am" or "8a").
  */
 export function fmtTick (h: number, short = false): string {
-  const suffix = h < 12 ? (short ? 'a' : 'am') : h === 12 ? (short ? 'p' : 'pm') : (short ? 'p' : 'pm')
+  let suffix = h < 12 ? 'am' : 'pm'
+  if (short) {
+    suffix = h < 12 ? 'a' : 'p'
+  }
   const h12 = h % 12 || 12
   return `${h12}${suffix}`
 }

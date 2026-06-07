@@ -275,7 +275,15 @@
 
   onMounted(() => {
     const savedTheme = localStorage.getItem('property-scheduler-theme')
-    if (savedTheme) vuetifyTheme.global.name.value = savedTheme
+    if (savedTheme) {
+      if (typeof vuetifyTheme.global === 'object' && 'name' in vuetifyTheme.global) {
+        vuetifyTheme.global.name.value = savedTheme
+      } else if ('change' in vuetifyTheme) {
+        (vuetifyTheme as any).change(savedTheme)
+      } else {
+        vuetifyTheme.name.value = savedTheme
+      }
+    }
 
     initRealtimeSync()
       .then(() => {

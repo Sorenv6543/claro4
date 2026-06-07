@@ -31,8 +31,8 @@
 </template>
 
 <script setup lang="ts">
-  import { fmt12 } from '@/utils/timelineMath'
   import { computed, ref } from 'vue'
+  import { fmt12 } from '@/utils/timelineMath'
 
   const props = withDefaults(defineProps<{
     modelValue: string | undefined

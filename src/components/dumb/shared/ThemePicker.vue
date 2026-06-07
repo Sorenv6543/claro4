@@ -147,7 +147,13 @@
 
   // Function to set the theme
   function setTheme (themeName: string) {
-    theme.global.name.value = themeName
+    if (typeof theme.global === 'object' && 'name' in theme.global) {
+      theme.global.name.value = themeName
+    } else if ('change' in theme) {
+      (theme as any).change(themeName)
+    } else {
+      theme.name.value = themeName
+    }
     localStorage.setItem(THEME_STORAGE_KEY, themeName)
   }
 
@@ -155,7 +161,13 @@
   onMounted(() => {
     const savedTheme = localStorage.getItem(THEME_STORAGE_KEY)
     if (savedTheme) {
-      theme.global.name.value = savedTheme
+      if (typeof theme.global === 'object' && 'name' in theme.global) {
+        theme.global.name.value = savedTheme
+      } else if ('change' in theme) {
+        (theme as any).change(savedTheme)
+      } else {
+        theme.name.value = savedTheme
+      }
     }
   })
 </script>

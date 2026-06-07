@@ -2,10 +2,10 @@
 <template>
   <v-app class="app-root">
     <!-- Aurora background blobs -->
-    <div class="aurora-blobs" aria-hidden="true">
-      <div class="blob blob-1"></div>
-      <div class="blob blob-2"></div>
-      <div class="blob blob-3"></div>
+    <div aria-hidden="true" class="aurora-blobs">
+      <div class="blob blob-1" />
+      <div class="blob blob-2" />
+      <div class="blob blob-3" />
     </div>
 
     <component :is="layout">

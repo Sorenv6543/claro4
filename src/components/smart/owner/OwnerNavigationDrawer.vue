@@ -103,8 +103,7 @@
       </div>
     </template>
 
-      <div class="pb-2" />
-    </template>
+    <div class="pb-2" />
   </v-navigation-drawer>
 </template>
 

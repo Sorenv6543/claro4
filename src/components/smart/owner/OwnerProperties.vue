@@ -12,6 +12,7 @@
       <div class="c3-inline-bar glass-card mb-6">
         <div class="c3-cell">
           <v-icon color="primary" size="24">mdi-home-city</v-icon>
+
           <div class="c3-info">
             <span class="c3-value claro-numeric">{{ myProperties.length }}</span>
             <span class="c3-label">Properties</span>
@@ -22,6 +23,7 @@
 
         <div class="c3-cell">
           <v-icon color="success" size="24">mdi-check-circle</v-icon>
+
           <div class="c3-info">
             <span class="c3-value claro-numeric">{{ myActiveProperties.length }}</span>
             <span class="c3-label">Active</span>
@@ -32,6 +34,7 @@
 
         <div class="c3-cell">
           <v-icon color="info" size="24">mdi-calendar-multiple</v-icon>
+
           <div class="c3-info">
             <span class="c3-value claro-numeric">{{ myBookings.length }}</span>
             <span class="c3-label">Bookings</span>
@@ -42,6 +45,7 @@
 
         <div class="c3-cell">
           <v-icon color="warning" size="24">mdi-swap-horizontal</v-icon>
+
           <div class="c3-info">
             <span class="c3-value claro-numeric">{{ myTodayTurns.length }}</span>
             <span class="c3-label">Turns</span>

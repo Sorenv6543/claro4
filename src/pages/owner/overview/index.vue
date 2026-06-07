@@ -8,7 +8,7 @@
   import OwnerOverview from '@/components/smart/owner/OwnerOverview.vue'
 
   defineOptions({
-    name: 'OwnerOverview',
+    name: 'OwnerOverviewPage',
   })
 </script>
 

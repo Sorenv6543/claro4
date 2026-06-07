@@ -40,7 +40,7 @@
 
     <!-- Left: heading + subtitle + mobile pills -->
     <div class="hero-left">
-      <div class="claro-eyebrow hero-eyebrow" v-if="userName">TODAY</div>
+      <div v-if="userName" class="claro-eyebrow hero-eyebrow">TODAY</div>
       <h2 class="hero-h">{{ heading }}</h2>
       <p class="hero-sub">{{ resolvedSubtitle }}</p>
 

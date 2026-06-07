@@ -21,21 +21,6 @@
     const d = new Date(dateStr)
     return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
   }
-
-  function priorityColor (priority: string): string {
-    switch (priority) {
-      case 'urgent': { return 'error'
-      }
-      case 'high': { return 'warning'
-      }
-      case 'normal': { return 'primary'
-      }
-      case 'low': { return 'info'
-      }
-      default: { return 'default'
-      }
-    }
-  }
 </script>
 
 <template>

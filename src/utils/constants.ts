@@ -142,7 +142,7 @@ export function getPropertyIcon (type?: string, id?: string): string {
     if (id) {
       let hash = 0
       for (let i = 0; i < id.length; i++) {
-        hash = id.charCodeAt(i) + ((hash << 5) - hash)
+        hash = (id.codePointAt(i) || 0) + ((hash << 5) - hash)
       }
       return houseVariants[Math.abs(hash) % houseVariants.length]
     }
@@ -150,13 +150,16 @@ export function getPropertyIcon (type?: string, id?: string): string {
   }
 
   switch (typeLower) {
-    case 'apartment': return 'mdi-office-building'
-    case 'condo':     return 'mdi-domain'
-    case 'townhouse': return 'mdi-home-group'
-    default:          return 'mdi-home'
+    case 'apartment': { return 'mdi-office-building'
+    }
+    case 'condo': { return 'mdi-domain'
+    }
+    case 'townhouse': { return 'mdi-home-group'
+    }
+    default: { return 'mdi-home'
+    }
   }
 }
-
 
 /**
  * Formats a snake_case status string for display (e.g. "in_progress" → "in progress").

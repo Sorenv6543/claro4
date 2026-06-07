@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import type { Booking } from '@/types/booking'
-  import { fmt12 } from '@/utils/timelineMath'
   import { computed, onUnmounted, ref } from 'vue'
+  import { fmt12 } from '@/utils/timelineMath'
 
   const props = defineProps<{
     turns: Booking[]
