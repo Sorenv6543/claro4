@@ -51,18 +51,7 @@
       mode="edit"
       :properties="myProperties"
       @close="editModal.show = false"
-      @create-turn="handleCreateTurn"
       @submit="handleBookingEditSubmit"
-    />
-
-    <TurnBookingDialog
-      v-if="turnDialog.sourceBooking"
-      v-model="turnDialog.show"
-      :loading="turnDialog.loading"
-      :properties="myProperties"
-      :source-booking="turnDialog.sourceBooking"
-      @close="turnDialog.show = false"
-      @submit="handleTurnSubmit"
     />
 
     <PropertyModal
@@ -97,7 +86,6 @@
   import type { EventResizeDoneArg } from '@fullcalendar/interaction'
   import { computed, onMounted, ref } from 'vue'
   import OwnerBookingForm from '@/components/dumb/owner/OwnerBookingForm.vue'
-  import TurnBookingDialog from '@/components/dumb/owner/TurnBookingDialog.vue'
   import ErrorAlert from '@/components/dumb/shared/ErrorAlert.vue'
   import PropertyModal from '@/components/dumb/shared/PropertyModal.vue'
   import OwnerCalendar from '@/components/smart/owner/OwnerCalendar.vue'
@@ -132,12 +120,6 @@
     loading: false,
     errors: new Map<string, string[]>(),
     booking: null as Booking | null,
-  })
-
-  const turnDialog = ref({
-    show: false,
-    loading: false,
-    sourceBooking: null as Booking | null,
   })
 
   const propertyModal = ref({
@@ -233,30 +215,6 @@
       uiStore.addNotification('error', 'Failed', error_ instanceof Error ? error_.message : 'Could not update booking')
     } finally {
       editModal.value.loading = false
-    }
-  }
-
-  function handleCreateTurn (): void {
-    const booking = editModal.value.booking
-    if (!booking) return
-    editModal.value.show = false
-    turnDialog.value = { show: true, loading: false, sourceBooking: booking }
-  }
-
-  async function handleTurnSubmit (data: BookingFormData): Promise<void> {
-    turnDialog.value.loading = true
-    try {
-      const id = await createMyBooking(data)
-      if (!id) {
-        uiStore.addNotification('error', 'Failed', 'Could not create turn booking')
-        return
-      }
-      uiStore.addNotification('success', 'Created', 'Turn booking scheduled successfully')
-      turnDialog.value.show = false
-    } catch (error_) {
-      uiStore.addNotification('error', 'Failed', error_ instanceof Error ? error_.message : 'Could not create turn booking')
-    } finally {
-      turnDialog.value.loading = false
     }
   }
 

@@ -76,23 +76,22 @@
     <template #append>
       <v-divider />
 
-      <div class="pa-3 pb-1">
-        <!-- User row -->
-        <div class="d-flex align-center gap-3 px-1 py-2">
-          <v-avatar color="primary" size="30">
+      <div class="pa-3">
+        <!-- User block -->
+        <div class="user-profile-block">
+          <v-avatar color="primary" size="36" variant="tonal">
             <span class="text-caption font-weight-bold">{{ userInitials }}</span>
           </v-avatar>
 
-          <div class="overflow-hidden">
-            <div class="text-body-2 font-weight-semibold text-truncate">{{ userName }}</div>
-            <div class="text-caption text-medium-emphasis text-truncate">{{ userEmail }}</div>
+          <div class="user-profile-info">
+            <div class="user-profile-name">{{ userName }}</div>
+            <div class="user-profile-email">{{ userEmail }}</div>
           </div>
         </div>
 
         <!-- Sign out -->
         <v-btn
           block
-          class="mt-1"
           color="error"
           prepend-icon="mdi-logout"
           size="small"
@@ -102,6 +101,7 @@
           Sign out
         </v-btn>
       </div>
+    </template>
 
       <div class="pb-2" />
     </template>
@@ -341,5 +341,45 @@
 .claro-nav-badge--active {
   background: var(--claro-primary);
   color: #fff;
+}
+
+/* ── User Profile Block ── */
+.user-profile-block {
+  display: flex;
+  align-items: center;
+  padding: 12px;
+  background: rgba(var(--v-theme-on-surface), 0.03);
+  border-radius: 12px;
+  border: 1px solid var(--claro-border);
+  margin-bottom: 12px;
+  gap: 12px;
+}
+
+.user-profile-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.user-profile-name {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--claro-fg1);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.user-profile-email {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--claro-fg3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
 }
 </style>

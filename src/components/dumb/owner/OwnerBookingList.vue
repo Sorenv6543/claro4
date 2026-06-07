@@ -31,7 +31,8 @@
 
   const emit = defineEmits<{
     edit: [id: string]
-    delete: [id: string]
+    cancel: [id: string]
+    'contact-admin': [id: string]
   }>()
 
   const { mobile } = useDisplay()
@@ -187,7 +188,7 @@
                 size="x-small"
                 variant="tonal"
               >
-                {{ item.bookingType === 'turn' ? 'Turn' : 'Standard' }}
+                {{ item.bookingType === 'turn' ? 'Same-day stay' : 'Standard' }}
               </v-chip>
 
               <v-chip :color="statusColor(item.status)" size="x-small" variant="tonal">
@@ -208,7 +209,7 @@
               size="small"
               variant="tonal"
             >
-              {{ item.bookingType === 'turn' ? 'Turn' : 'Standard' }}
+              {{ item.bookingType === 'turn' ? 'Same-day stay' : 'Standard' }}
             </v-chip>
           </div>
 
@@ -230,7 +231,8 @@
           <OwnerBookingInlay
             v-if="isExpanded(item.id)"
             :item="item"
-            @delete="emit('delete', $event)"
+            @cancel="emit('cancel', $event)"
+            @contact-admin="emit('contact-admin', $event)"
             @edit="emit('edit', $event)"
           />
         </v-expand-transition>
@@ -301,16 +303,6 @@
             <tr v-if="sheetItem.guestCount">
               <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-account-group-outline</v-icon> Guests</span></td>
               <td>{{ sheetItem.guestCount }}</td>
-            </tr>
-
-            <tr v-if="sheetItem.priority">
-              <td><span class="sheet-td-inner"><v-icon color="primary" size="14">mdi-flag-outline</v-icon> Priority</span></td>
-
-              <td>
-                <v-chip :color="priorityColor(sheetItem.priority)" size="x-small" variant="tonal">
-                  {{ sheetItem.priority }}
-                </v-chip>
-              </td>
             </tr>
 
             <tr v-if="sheetItem.createdAt">

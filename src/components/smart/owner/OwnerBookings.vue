@@ -9,7 +9,6 @@
         :stats="[
           { icon: 'mdi-calendar-check', label: 'Total', value: myBookings.length },
           { icon: 'mdi-calendar-week', label: 'This Week', value: weekCheckinCount },
-          { icon: 'mdi-alert-outline', label: 'To Assign', value: unassignedCount },
         ]"
         subtitle="View and manage your upcoming and past bookings"
       />
@@ -67,20 +66,26 @@
       <OwnerBookingList
         :items="filteredItems"
         :loading="loading"
-        @delete="handleDeleteBooking"
+        @cancel="handleCancelBooking"
+        @contact-admin="showContactSnackbar"
         @edit="handleEditBooking"
       />
 
-      <!-- Confirm delete -->
+      <!-- Confirm cancel -->
       <ConfirmationDialog
-        confirm-text="Delete"
-        dangerous
-        :message="`Delete this booking at ${bookingToDeleteName}?`"
-        :open="deleteConfirmOpen"
-        title="Delete Booking"
-        @cancel="deleteConfirmOpen = false"
-        @confirm="confirmDeleteBooking"
+        confirm-text="Cancel Booking"
+        :message="`Cancel this booking at ${bookingToCancelName}? Your cleaning company will be notified.`"
+        :open="cancelConfirmOpen"
+        title="Cancel Booking"
+        @cancel="cancelConfirmOpen = false"
+        @confirm="confirmCancelBooking"
       />
+
+      <!-- Contact Admin snackbar -->
+      <v-snackbar v-model="contactSnackbarOpen" color="surface-variant" location="bottom" :timeout="3500">
+        <v-icon class="mr-2" size="18">mdi-message-outline</v-icon>
+        Direct messaging with your cleaning team is coming soon.
+      </v-snackbar>
     </v-container>
   </div>
 </template>
@@ -101,7 +106,7 @@
 
   defineOptions({ name: 'OwnerBookingsComponent' })
 
-  const { myBookings, fetchMyBookings, deleteMyBooking } = useOwnerBookings()
+  const { myBookings, fetchMyBookings, changeMyBookingStatus } = useOwnerBookings()
   const { myProperties, fetchMyProperties } = useOwnerProperties()
   const uiStore = useUIStore()
 
@@ -109,19 +114,20 @@
   const selectedType = ref<string | null>(null)
   const selectedSegment = ref('upcoming')
   const loading = ref(false)
-  const deleteConfirmOpen = ref(false)
-  const bookingToDelete = ref<Booking | null>(null)
+  const cancelConfirmOpen = ref(false)
+  const bookingToCancel = ref<Booking | null>(null)
+  const contactSnackbarOpen = ref(false)
 
   const segments = [
     { title: 'Upcoming', value: 'upcoming' },
     { title: 'All', value: 'all' },
-    { title: 'Turns', value: 'turns' },
+    { title: 'Same-day stays', value: 'turns' },
     { title: 'Past', value: 'past' },
   ]
 
   const typeOptions = [
     { title: 'Standard', value: 'standard' },
-    { title: 'Turn', value: 'turn' },
+    { title: 'Same-day stay', value: 'turn' },
   ]
 
   const propertyOptions = computed(() =>
@@ -142,13 +148,6 @@
     myBookings.value.filter(b =>
       b.checkin_date >= todayStr && b.checkin_date <= weekAhead
       && b.status !== 'cancelled',
-    ).length,
-  )
-
-  const unassignedCount = computed(() =>
-    myBookings.value.filter(b =>
-      !b.assigned_cleaner_id && !b.assigned_team_id
-      && b.status !== 'cancelled' && b.status !== 'completed',
     ).length,
   )
 
@@ -205,9 +204,9 @@
       })
   })
 
-  const bookingToDeleteName = computed(() => {
-    if (!bookingToDelete.value) return ''
-    const p = myProperties.value.find(p => p.id === bookingToDelete.value!.property_id)
+  const bookingToCancelName = computed(() => {
+    if (!bookingToCancel.value) return ''
+    const p = myProperties.value.find(p => p.id === bookingToCancel.value!.property_id)
     return p ? formatPropertyAddress(p, 'short') : 'this property'
   })
 
@@ -216,26 +215,30 @@
     if (booking) uiStore.openModal('eventModal', 'edit', { booking: booking as unknown as ModalData })
   }
 
-  function handleDeleteBooking (id: string): void {
+  function handleCancelBooking (id: string): void {
     const booking = myBookings.value.find(b => b.id === id)
     if (booking) {
-      bookingToDelete.value = booking
-      deleteConfirmOpen.value = true
+      bookingToCancel.value = booking
+      cancelConfirmOpen.value = true
     }
   }
 
-  async function confirmDeleteBooking (): Promise<void> {
-    if (!bookingToDelete.value) return
+  async function confirmCancelBooking (): Promise<void> {
+    if (!bookingToCancel.value) return
     try {
-      await deleteMyBooking(bookingToDelete.value.id)
-      uiStore.addNotification('success', 'Deleted', 'Booking deleted successfully')
+      await changeMyBookingStatus(bookingToCancel.value.id, 'cancelled')
+      uiStore.addNotification('success', 'Cancelled', 'Booking cancelled successfully')
     } catch (error) {
-      console.error('Failed to delete booking:', error)
-      uiStore.addNotification('error', 'Delete Failed', error instanceof Error ? error.message : 'Could not delete booking')
+      console.error('Failed to cancel booking:', error)
+      uiStore.addNotification('error', 'Cancel Failed', error instanceof Error ? error.message : 'Could not cancel booking')
     } finally {
-      deleteConfirmOpen.value = false
-      bookingToDelete.value = null
+      cancelConfirmOpen.value = false
+      bookingToCancel.value = null
     }
+  }
+
+  function showContactSnackbar (): void {
+    contactSnackbarOpen.value = true
   }
 
   onMounted(async () => {

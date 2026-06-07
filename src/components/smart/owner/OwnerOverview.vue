@@ -87,9 +87,12 @@
             cols="12"
             md="4"
           >
-            <div class="prop-preview-card glass-card">
+            <div
+              class="prop-preview-card glass-card clickable"
+              @click="router.push(`/owner/properties/${item.id}`)"
+            >
               <div class="prop-preview-top">
-                <div class="prop-dot" :style="{ background: item.color }" />
+                <v-icon :color="item.color" class="mr-2" size="32">{{ item.icon }}</v-icon>
                 <span class="prop-name">{{ item.name }}</span>
                 <v-chip
                   class="ml-auto"
@@ -115,7 +118,7 @@
       <v-col cols="12">
         <div class="ov-header">
           <div class="ov-header-left">
-            <span class="ov-title">Operational Status</span>
+            <span class="ov-title">My Schedule</span>
             <span class="ov-title-sep">·</span>
             <span class="ov-range-label">{{ RANGE_LABELS[range] }}</span>
           </div>
@@ -125,27 +128,6 @@
       </v-col>
     </v-row>
 
-    <!-- Urgent banner (today only) -->
-    <v-row v-if="urgentTurns.length > 0" class="ov-row-urgent mb-8">
-      <v-col cols="12">
-        <div class="triage-banner triage-banner--urgent glass-card">
-          <div class="triage-icon triage-icon--urgent">
-            <v-icon aria-hidden="true" color="error" size="24">mdi-alert-circle</v-icon>
-          </div>
-
-          <div class="triage-body">
-            <div class="triage-title">Urgent turn required</div>
-            <div class="triage-sub">
-              {{ urgentTurns[0].property }} · Guests out {{ fmt12(urgentTurns[0].checkoutTime) }}
-            </div>
-          </div>
-
-          <v-btn color="error" rounded="pill" variant="flat" @click="handleDayBarOpenBooking(urgentTurns[0].id)">
-            Resolve
-          </v-btn>
-        </div>
-      </v-col>
-    </v-row>
 
     <!-- Timeline & Upcoming as Large Bento blocks -->
     <v-row class="bento-grid">
@@ -153,7 +135,7 @@
       <v-col cols="12" lg="8">
         <div class="tl-card glass-card">
           <div class="tl-card-hd">
-            <span>Schedule</span>
+            <span>Property Timeline</span>
             <span class="tl-card-hd-sep">·</span>
             <span>{{ RANGE_LABELS[range] }}</span>
 
@@ -168,11 +150,7 @@
               </div>
               <div class="tl-legend-item">
                 <span class="tl-legend-mark tl-legend-mark--turn" />
-                Turn
-              </div>
-              <div class="tl-legend-item">
-                <span class="tl-legend-mark tl-legend-mark--urgent" />
-                Urgent
+                Same-day stay
               </div>
             </div>
           </div>
@@ -231,8 +209,7 @@
                         :class="{
                           'tl-chip--checkout': ev.type === 'checkout' && !ev.needsClean,
                           'tl-chip--checkin': ev.type === 'checkin',
-                          'tl-chip--turn': ev.type === 'turn' && !ev.needsClean,
-                          'tl-chip--urgent': ev.needsClean,
+                          'tl-chip--turn': ev.type === 'turn' || ev.needsClean,
                           'tl-chip--past': di === 0 && deskIsPast(ev.time),
                         }"
                         :style="{ left: `${deskBarPct(ev.time)}%` }"
@@ -286,7 +263,7 @@
                 </div>
 
                 <span :class="`bk-type-chip bk-type-chip--${ev.type}`">
-                  {{ ev.type === 'checkin' ? 'In' : ev.type === 'checkout' ? 'Out' : 'Turn' }}
+                  {{ ev.type === 'checkin' ? 'In' : ev.type === 'checkout' ? 'Out' : 'Same-day' }}
                 </span>
 
                 <v-icon class="bk-chevron" :class="{ 'bk-chevron--open': isUpcomingExpanded(ev.itemKey) }" size="14">
@@ -298,7 +275,8 @@
                 <OwnerBookingInlay
                   v-if="isUpcomingExpanded(ev.itemKey) && bookingItemFor(ev.bookingId)"
                   :item="bookingItemFor(ev.bookingId)!"
-                  @delete="handleDeleteBooking"
+                  @cancel="handleCancelBooking"
+                  @contact-admin="showContactSnackbar"
                   @edit="handleEditBooking"
                 />
               </v-expand-transition>
@@ -324,15 +302,20 @@
     </v-row>
 
     <ConfirmationDialog
-      confirm-text="Delete"
-      dangerous
-      :message="`Delete this booking at ${bookingToDeleteName}?`"
-      :open="deleteConfirmOpen"
-      title="Delete Booking"
-      @cancel="deleteConfirmOpen = false"
-      @confirm="confirmDeleteBooking"
+      confirm-text="Cancel Booking"
+      :message="`Cancel this booking at ${bookingToDeleteName}? Your cleaning company will be notified.`"
+      :open="cancelConfirmOpen"
+      title="Cancel Booking"
+      @cancel="cancelConfirmOpen = false"
+      @confirm="confirmCancelBooking"
     />
   </v-container>
+
+  <!-- ── Contact Admin coming-soon snackbar ── -->
+  <v-snackbar v-model="contactSnackbarOpen" color="surface-variant" location="bottom" :timeout="3500">
+    <v-icon class="mr-2" size="18">mdi-message-outline</v-icon>
+    Direct messaging with your cleaning team is coming soon.
+  </v-snackbar>
 
   <!-- ── Booking detail drawer ── -->
   <Teleport to="body">
@@ -361,42 +344,61 @@
           size="small"
           variant="tonal"
         >
-          {{ drawerItem.bookingType === 'turn' ? 'Turn' : 'Standard' }}
+          {{ drawerItem.bookingType === 'turn' ? 'Same-day stay' : 'Standard' }}
         </v-chip>
         <v-chip :color="drawerStatusColor(drawerItem.status)" size="small" variant="tonal">
           {{ drawerFmtStatus(drawerItem.status) }}
-        </v-chip>
-        <v-chip v-if="drawerItem.priority" :color="drawerPriorityColor(drawerItem.priority)" size="small" variant="tonal">
-          {{ drawerItem.priority }}
         </v-chip>
       </div>
 
       <v-divider class="my-4" />
 
-      <!-- Booking details -->
-      <div class="bdr-section-label">Booking Details</div>
-      <div class="bdr-table">
-        <div class="bdr-row">
-          <span class="bdr-key"><v-icon color="primary" size="14">mdi-login</v-icon> Check-in</span>
-          <span class="bdr-val">{{ drawerFmtDate(drawerItem.checkinDate) }}<template v-if="drawerItem.checkinTime"> · {{ drawerItem.checkinTime }}</template></span>
+      <!-- B2: Turn today → timebar visualization -->
+      <template v-if="drawerIsTurnToday && drawerHasTimebar">
+        <div class="bdr-section-label">Today's events</div>
+
+        <div class="bdr-timebar-axis">
+          <div class="bdr-timebar-line" />
+          <div class="bdr-tb-block bdr-tb-out" :style="drawerOutBlockStyle">OUT</div>
+          <div class="bdr-tb-block bdr-tb-turn" :style="drawerWindowBlockStyle">
+            <span class="bdr-tb-window-label">cleaning window</span>
+          </div>
+          <div class="bdr-tb-block bdr-tb-in" :style="drawerInBlockStyle">IN</div>
         </div>
-        <div class="bdr-row">
-          <span class="bdr-key"><v-icon color="primary" size="14">mdi-logout</v-icon> Check-out</span>
-          <span class="bdr-val">{{ drawerFmtDate(drawerItem.checkoutDate) }}<template v-if="drawerItem.checkoutTime"> · {{ drawerItem.checkoutTime }}</template></span>
+
+        <div class="bdr-timebar-ticks">
+          <span>8am</span><span>10am</span><span>12pm</span><span>2pm</span><span>4pm</span><span>6pm</span>
         </div>
-        <div v-if="drawerItem.guestCount" class="bdr-row">
-          <span class="bdr-key"><v-icon color="primary" size="14">mdi-account-group-outline</v-icon> Guests</span>
-          <span class="bdr-val">{{ drawerItem.guestCount }}</span>
+
+        <div class="bdr-tb-events">
+          <div v-for="ev in drawerTodayEvents" :key="ev.type" class="bdr-tb-event-row">
+            <div class="bdr-tb-dot" :class="`bdr-tb-dot--${ev.type}`" />
+            <div class="bdr-tb-event-text">
+              <template v-if="ev.type === 'checkout'">Guest check-out</template>
+              <template v-else-if="ev.type === 'checkin'">Guest check-in</template>
+            </div>
+            <div class="bdr-tb-event-time">{{ ev.time }}</div>
+          </div>
         </div>
-        <div v-if="drawerItem.guestName" class="bdr-row">
-          <span class="bdr-key"><v-icon color="primary" size="14">mdi-account-outline</v-icon> Guest</span>
-          <span class="bdr-val">{{ drawerItem.guestName }}</span>
+      </template>
+
+      <!-- B1: Upcoming events spine -->
+      <template v-else>
+        <div class="bdr-section-label">Booking dates</div>
+
+        <div class="bdr-tl-spine">
+          <div v-for="(ev, idx) in drawerUpcomingEvents" :key="idx" class="bdr-tl-item">
+            <div class="bdr-tl-dot-wrap">
+              <div class="bdr-tl-dot" />
+            </div>
+            <div class="bdr-tl-content">
+              <div class="bdr-tl-date">{{ ev.dateLabel }}</div>
+              <div class="bdr-tl-title">{{ ev.title }}</div>
+              <div v-if="ev.subtitle" class="bdr-tl-sub">{{ ev.subtitle }}</div>
+            </div>
+          </div>
         </div>
-        <div v-if="drawerItem.createdAt" class="bdr-row">
-          <span class="bdr-key"><v-icon color="primary" size="14">mdi-clock-outline</v-icon> Created</span>
-          <span class="bdr-val">{{ drawerFmtDate(drawerItem.createdAt) }}</span>
-        </div>
-      </div>
+      </template>
 
       <v-divider class="my-4" />
 
@@ -409,20 +411,32 @@
         <v-btn
           block
           color="primary"
+          prepend-icon="mdi-calendar-edit-outline"
           rounded="sm"
           variant="tonal"
           @click="handleEditBooking(drawerItem.id); drawerOpen = false"
         >
-          Edit Booking
+          Reschedule
         </v-btn>
         <v-btn
           block
-          color="error"
+          color="warning"
+          prepend-icon="mdi-calendar-remove-outline"
           rounded="sm"
           variant="text"
-          @click="handleDeleteBooking(drawerItem.id); drawerOpen = false"
+          @click="handleCancelBooking(drawerItem.id); drawerOpen = false"
         >
-          Delete
+          Cancel Booking
+        </v-btn>
+        <v-btn
+          block
+          color="secondary"
+          prepend-icon="mdi-message-outline"
+          rounded="sm"
+          variant="text"
+          @click="showContactSnackbar()"
+        >
+          Contact Admin
         </v-btn>
       </div>
     </div>
@@ -454,7 +468,7 @@
   import { useAuthStore } from '@/stores/auth'
   import { useUIStore } from '@/stores/ui'
   import { formatPropertyAddress } from '@/types/property'
-  import { mapLegacyPropertyColor } from '@/utils/constants'
+  import { getPropertyIcon, mapLegacyPropertyColor } from '@/utils/constants'
   defineOptions({ name: 'OwnerOverview' })
 
   // ── Unified event shape ────────────────────────────────────────────────────
@@ -476,6 +490,7 @@
     name: string
     cityBedBath: string
     color: string
+    icon: string
     statusText: string
     statusColor: string | undefined
     statusVariant: 'flat' | 'outlined'
@@ -487,7 +502,7 @@
   const authStore = useAuthStore()
   const uiStore = useUIStore()
   const { myProperties, fetchMyProperties } = useOwnerProperties()
-  const { myBookings, myTodayTurns, fetchMyBookings, deleteMyBooking } = useOwnerBookings()
+  const { myBookings, myTodayTurns, fetchMyBookings, changeMyBookingStatus } = useOwnerBookings()
 
   // ── Range toggle state ─────────────────────────────────────────────────────
   const RANGE_LABELS = ['Today', 'Week', '2 Weeks']
@@ -716,8 +731,7 @@
   )
 
   function deskStatusLabel (status: string): string {
-    if (status === 'urgent') return 'Urgent turn'
-    if (status === 'turn') return 'Turn'
+    if (status === 'urgent' || status === 'turn') return 'Same-day stay'
     if (status === 'checkout') return 'Check-out'
     if (status === 'checkin') return 'Check-in'
     if (status === 'occupied') return 'Occupied'
@@ -864,6 +878,69 @@
     return b ? bookingToItem(b) : null
   })
 
+  const drawerIsTurnToday = computed(() =>
+    !!drawerItem.value
+    && drawerItem.value.bookingType === 'turn'
+    && drawerItem.value.checkinDate === todayStr.value,
+  )
+
+  const drawerTodayEvents = computed(() => {
+    if (!drawerItem.value) return [] as Array<{ type: string; time: string; time24: string }>
+    const checkoutTime = drawerItem.value.checkoutTime ?? '11:00'
+    const checkinTime = drawerItem.value.checkinTime ?? '15:00'
+    return [
+      { type: 'checkout', time: fmt12(checkoutTime), time24: checkoutTime },
+      { type: 'checkin', time: fmt12(checkinTime), time24: checkinTime },
+    ]
+  })
+
+  const drawerResolvedBar = computed(() => {
+    const [outEv, inEv] = drawerTodayEvents.value
+    if (!outEv || !inEv) return null
+    const pct = (t: string) => {
+      const [h, m] = t.split(':').map(Number)
+      return Math.max(0, Math.min(100, ((h * 60 + (m ?? 0) - 480) / 600) * 100))
+    }
+    const outPct = pct(outEv.time24)
+    const inPct = pct(inEv.time24)
+    return inPct > outPct ? { outPct, inPct, windowPct: inPct - outPct } : null
+  })
+
+  const drawerHasTimebar = computed(() => drawerResolvedBar.value !== null)
+
+  const drawerOutBlockStyle = computed(() => {
+    const b = drawerResolvedBar.value
+    return b ? { left: `calc(${b.outPct}% - 22px)`, width: '44px' } : {}
+  })
+
+  const drawerWindowBlockStyle = computed(() => {
+    const b = drawerResolvedBar.value
+    return b ? { left: `${b.outPct}%`, width: `${b.windowPct}%` } : {}
+  })
+
+  const drawerInBlockStyle = computed(() => {
+    const b = drawerResolvedBar.value
+    return b ? { left: `calc(${b.inPct}% - 18px)`, width: '36px' } : {}
+  })
+
+  const drawerUpcomingEvents = computed(() => {
+    const item = drawerItem.value
+    if (!item) return [] as Array<{ dateLabel: string; title: string; subtitle?: string }>
+    const guestSuffix = item.guestCount ? ` · ${item.guestCount} guests` : ''
+    return [
+      {
+        dateLabel: drawerFmtDate(item.checkinDate),
+        title: 'Guest check-in',
+        subtitle: item.checkinTime ? fmt12(item.checkinTime) + guestSuffix : guestSuffix || undefined,
+      },
+      {
+        dateLabel: drawerFmtDate(item.checkoutDate),
+        title: 'Guest check-out',
+        subtitle: item.checkoutTime ? fmt12(item.checkoutTime) : undefined,
+      },
+    ]
+  })
+
   function drawerFmtDate (dateStr: string | undefined): string {
     if (!dateStr) return '—'
     return new Date(dateStr + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
@@ -880,13 +957,6 @@
     if (status === 'confirmed') return 'success'
     if (status === 'pending') return 'warning'
     if (status === 'cancelled') return 'error'
-    return 'default'
-  }
-
-  function drawerPriorityColor (priority: string): string {
-    if (priority === 'urgent') return 'error'
-    if (priority === 'high') return 'warning'
-    if (priority === 'normal' || priority === 'low') return 'info'
     return 'default'
   }
 
@@ -939,13 +1009,14 @@
     return b ? bookingToItem(b) : null
   }
 
-  // ── Edit / delete handlers (mirror OwnerBookings) ────────────────────────
-  const deleteConfirmOpen = ref(false)
-  const bookingToDelete = ref<Booking | null>(null)
+  // ── Edit / cancel handlers ────────────────────────────────────────────────
+  const cancelConfirmOpen = ref(false)
+  const bookingToCancel = ref<Booking | null>(null)
+  const contactSnackbarOpen = ref(false)
 
   const bookingToDeleteName = computed(() => {
-    if (!bookingToDelete.value) return ''
-    const p = myProperties.value.find(p => p.id === bookingToDelete.value!.property_id)
+    if (!bookingToCancel.value) return ''
+    const p = myProperties.value.find(p => p.id === bookingToCancel.value!.property_id)
     return p ? formatPropertyAddress(p, 'short') : 'this property'
   })
 
@@ -954,27 +1025,31 @@
     if (booking) uiStore.openModal('eventModal', 'edit', { booking: booking as unknown as ModalData })
   }
 
-  function handleDeleteBooking (id: string): void {
+  function handleCancelBooking (id: string): void {
     const booking = myBookings.value.find(b => b.id === id)
     if (booking) {
-      bookingToDelete.value = booking
-      deleteConfirmOpen.value = true
+      bookingToCancel.value = booking
+      cancelConfirmOpen.value = true
     }
   }
 
-  async function confirmDeleteBooking (): Promise<void> {
-    if (!bookingToDelete.value) return
+  async function confirmCancelBooking (): Promise<void> {
+    if (!bookingToCancel.value) return
     try {
-      await deleteMyBooking(bookingToDelete.value.id)
-      uiStore.addNotification('success', 'Deleted', 'Booking deleted successfully')
+      await changeMyBookingStatus(bookingToCancel.value.id, 'cancelled')
+      uiStore.addNotification('success', 'Cancelled', 'Booking cancelled successfully')
       expandedItemKey.value = null
     } catch (error) {
-      console.error('Failed to delete booking:', error)
-      uiStore.addNotification('error', 'Delete Failed', error instanceof Error ? error.message : 'Could not delete booking')
+      console.error('Failed to cancel booking:', error)
+      uiStore.addNotification('error', 'Cancel Failed', error instanceof Error ? error.message : 'Could not cancel booking')
     } finally {
-      deleteConfirmOpen.value = false
-      bookingToDelete.value = null
+      cancelConfirmOpen.value = false
+      bookingToCancel.value = null
     }
+  }
+
+  function showContactSnackbar (): void {
+    contactSnackbarOpen.value = true
   }
 
   // ── PropertyList items for overview accordion ────────────────────────────────
@@ -1056,9 +1131,7 @@
 
   const bannerSubtitle = computed(() => {
     const n = todayEventsCount.value
-    const attn = needsAttentionCount.value
-    const base = `${n} booking${n !== 1 ? 's' : ''} scheduled today`
-    return attn > 0 ? `${base} · ${attn} need${attn !== 1 ? '' : 's'} attention` : base
+    return `${n} booking${n !== 1 ? 's' : ''} scheduled today`
   })
 
   const bannerStats = computed(() => [
@@ -1114,6 +1187,7 @@
         name: formatPropertyAddress(p, 'short'),
         cityBedBath,
         color: mapLegacyPropertyColor(p.color),
+        icon: getPropertyIcon(p.property_type, p.id),
         statusText,
         statusColor,
         statusVariant,
@@ -1675,6 +1749,22 @@
   height: 100%;
 }
 
+.prop-preview-card.clickable {
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.prop-preview-card.clickable:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: var(--claro-shadow-md);
+  border-color: rgba(var(--v-theme-primary), 0.3);
+  background: rgba(var(--v-theme-on-surface), 0.04);
+}
+
+.prop-preview-card.clickable:active {
+  transform: translateY(-2px) scale(1.01);
+}
+
 .prop-preview-top {
   display: flex;
   align-items: center;
@@ -1739,91 +1829,238 @@
 }
 
 .bdr-prop-name {
-  font-size: 18px;
-  font-weight: 800;
+  font-size: 26px;
+  font-weight: 900;
   color: var(--claro-fg1);
-  letter-spacing: -0.02em;
-  line-height: 1.2;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 
 .bdr-meta-row {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-top: 6px;
+  gap: 10px;
+  margin-top: 8px;
 }
 
 .bdr-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.bdr-dates {
+  font-size: 16px;
+  color: var(--claro-fg3);
+  font-weight: 600;
+}
+
+.bdr-chips {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+
+.bdr-section-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--claro-fg3);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+
+/* ── Timebar ── */
+.bdr-timebar-axis {
+  position: relative;
+  height: 56px;
+  margin: 0 0 12px;
+}
+
+.bdr-timebar-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 3px;
+  background: var(--claro-border);
+  border-radius: 3px;
+  transform: translateY(-50%);
+}
+
+.bdr-tb-block {
+  position: absolute;
+  top: 50%;
+  height: 20px;
+  border-radius: 4px;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 800;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  letter-spacing: 0.05em;
+}
+
+.bdr-tb-out { background: var(--claro-error); }
+.bdr-tb-in  { background: var(--claro-success); z-index: 2; }
+
+.bdr-tb-turn {
+  background: transparent;
+  border: 2px dashed var(--claro-warning);
+  height: 28px;
+}
+
+.bdr-tb-window-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--claro-warning);
+  padding: 0 10px;
+}
+
+.bdr-timebar-ticks {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--claro-fg3);
+  font-variant-numeric: tabular-nums;
+}
+
+.bdr-tb-events {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 18px;
+  margin-bottom: 6px;
+}
+
+.bdr-tb-event-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bdr-tb-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
 }
 
-.bdr-dates {
+.bdr-tb-dot--checkout { background: var(--claro-error); }
+.bdr-tb-dot--checkin  { background: var(--claro-success); }
+
+.bdr-tb-event-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--claro-fg1);
+  flex: 1;
+}
+
+.bdr-tb-event-time {
   font-size: 13px;
-  color: var(--claro-fg3);
-  font-weight: 500;
-}
-
-.bdr-chips {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  margin-bottom: 4px;
-}
-
-.bdr-section-label {
-  font-size: 10px;
   font-weight: 700;
   color: var(--claro-fg3);
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  margin-bottom: 12px;
+  font-variant-numeric: tabular-nums;
 }
 
-.bdr-table {
+/* ── Timeline spine ── */
+.bdr-tl-spine {
+  padding-left: 16px;
+  margin-bottom: 6px;
+}
+
+.bdr-tl-item {
+  display: grid;
+  grid-template-columns: 32px 1fr;
+  gap: 12px;
+  align-items: flex-start;
+  position: relative;
+  padding-bottom: 22px;
+}
+
+.bdr-tl-item:last-child {
+  padding-bottom: 0;
+}
+
+.bdr-tl-item::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 20px;
+  bottom: 0;
+  width: 2px;
+  background: var(--claro-border);
+}
+
+.bdr-tl-item:last-child::before {
+  display: none;
+}
+
+.bdr-tl-dot-wrap {
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.bdr-tl-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 0 0 0 2px var(--claro-primary);
+}
+
+.bdr-tl-content {
+  padding-top: 2px;
+}
+
+.bdr-tl-date {
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--claro-fg3);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
   margin-bottom: 4px;
 }
 
-.bdr-row {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-}
-
-.bdr-key {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12px;
-  color: var(--claro-fg3);
-  font-weight: 600;
-  min-width: 100px;
-  flex-shrink: 0;
-}
-
-.bdr-val {
-  font-size: 13px;
+.bdr-tl-title {
+  font-size: 17px;
+  font-weight: 700;
   color: var(--claro-fg1);
+  line-height: 1.2;
+}
+
+.bdr-tl-sub {
+  font-size: 13px;
   font-weight: 500;
+  color: var(--claro-fg3);
+  margin-top: 4px;
 }
 
 .bdr-notes {
-  font-size: 13px;
+  font-size: 16px;
   color: var(--claro-fg2);
-  line-height: 1.6;
-  margin: 0 0 4px;
+  line-height: 1.5;
+  margin: 0 0 6px;
 }
 
 .bdr-actions {
   margin-top: auto;
-  padding-top: 24px;
+  padding-top: 32px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 </style>

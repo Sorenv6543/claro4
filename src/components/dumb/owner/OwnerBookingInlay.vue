@@ -9,7 +9,8 @@
 
   const emit = defineEmits<{
     edit: [id: string]
-    delete: [id: string]
+    cancel: [id: string]
+    'contact-admin': [id: string]
   }>()
 
   const { mobile } = useDisplay()
@@ -59,16 +60,6 @@
               <td>{{ item.guestCount }}</td>
             </tr>
 
-            <tr v-if="item.priority">
-              <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-flag-outline</v-icon> Priority</span></td>
-
-              <td>
-                <v-chip :color="priorityColor(item.priority)" size="x-small" variant="tonal">
-                  {{ item.priority }}
-                </v-chip>
-              </td>
-            </tr>
-
             <tr v-if="item.createdAt">
               <td><span class="bl-td-inner"><v-icon color="primary" size="14">mdi-clock-outline</v-icon> Created</span></td>
               <td>{{ formatDate(item.createdAt) }}</td>
@@ -89,25 +80,35 @@
       <div class="bl-actions-group">
         <v-btn
           color="primary"
-          :prepend-icon="mobile ? undefined : 'mdi-pencil-outline'"
+          :prepend-icon="mobile ? undefined : 'mdi-calendar-edit-outline'"
           size="small"
           variant="tonal"
           @click="emit('edit', item.id)"
         >
-          <v-icon v-if="mobile" size="16" start>mdi-pencil-outline</v-icon>
-          Edit
+          <v-icon v-if="mobile" size="16" start>mdi-calendar-edit-outline</v-icon>
+          Reschedule
         </v-btn>
       </div>
 
       <div class="bl-actions-group">
         <v-btn
-          color="error"
+          color="warning"
           size="small"
           variant="text"
-          @click="emit('delete', item.id)"
+          @click="emit('cancel', item.id)"
         >
-          <v-icon size="16" start>mdi-delete-outline</v-icon>
-          Delete
+          <v-icon size="16" start>mdi-calendar-remove-outline</v-icon>
+          Cancel Booking
+        </v-btn>
+
+        <v-btn
+          color="secondary"
+          size="small"
+          variant="text"
+          @click="emit('contact-admin', item.id)"
+        >
+          <v-icon size="16" start>mdi-message-outline</v-icon>
+          Contact Admin
         </v-btn>
       </div>
     </div>
