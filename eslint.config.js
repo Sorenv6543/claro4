@@ -58,6 +58,8 @@ export default [
       'vue/define-emits-declaration': ['error', 'type-based'],
       'vue/prefer-define-options': 'error',
       'vue/no-v-html': 'warn',
+      'vue/custom-event-name-casing': 'off',
+      '@stylistic/max-statements-per-line': 'off',
     },
   },
 ]
