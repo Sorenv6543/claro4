@@ -30,7 +30,7 @@
 
       <v-spacer />
 
-      <!-- Right-side nav icons (Materio style) -->
+      <!-- Right-side nav icons -->
       <div class="appbar-icons">
         <ThemePicker />
 
@@ -321,7 +321,7 @@
   font-size: 26px;
 }
 
-/* Materio-style app bar icons — plain icons (no button chrome) */
+/* App bar icons — plain icons (no button chrome) */
 .appbar-icons {
   display: flex;
   align-items: center;

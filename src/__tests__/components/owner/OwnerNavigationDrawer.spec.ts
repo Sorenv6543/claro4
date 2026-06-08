@@ -16,7 +16,7 @@ function isNavItemActive (itemPath: string, currentPath: string): boolean {
 }
 
 // propertyColor: cycles through PROPERTY_COLORS by index. Imports from constants
-// so the test stays aligned with palette changes (5 Materio colors today).
+// so the test stays aligned with palette changes (5 colors today).
 function propertyColor (index: number): string {
   return PROPERTY_COLORS[index % PROPERTY_COLORS.length]
 }

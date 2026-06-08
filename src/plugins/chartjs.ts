@@ -1,5 +1,5 @@
 /**
- * Chart.js global registration and Materio theme defaults.
+ * Chart.js global registration and theme defaults.
  *
  * Import this module (side-effect) before rendering any vue-chartjs component.
  * Exports a color palette and helper that match Claro design tokens.
@@ -31,7 +31,7 @@ ChartJS.register(
   Legend,
 )
 
-// ── Global Materio-themed defaults ──────────────────────────────────────
+// ── Global chart defaults ──────────────────────────────────────
 ChartJS.defaults.font.family = '\'Inter\', sans-serif'
 ChartJS.defaults.color = 'rgba(46, 38, 61, 0.5)'
 ChartJS.defaults.responsive = true
@@ -41,7 +41,7 @@ ChartJS.defaults.plugins.legend.labels.padding = 16
 ChartJS.defaults.plugins.tooltip.padding = 12
 ChartJS.defaults.plugins.tooltip.cornerRadius = 8
 
-/** Grid / axis line color — derived from Materio foreground at 6% opacity. */
+/** Grid / axis line color — derived from foreground at 6% opacity. */
 export const CHART_GRID_COLOR = 'rgba(46, 38, 61, 0.06)'
 
 // ── Color palette (matches tokens.css / vuetify.ts) ─────────────────────

@@ -1725,6 +1725,9 @@
   outline-offset: 2px;
 }
 
+/* close .bk-row-shell */
+}
+
 @keyframes urgentPulse {
   0%, 100% { box-shadow: 0 0 0 0 rgba(var(--v-theme-error), 0.55); }
   50%       { box-shadow: 0 0 0 4px rgba(var(--v-theme-error), 0); }

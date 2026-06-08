@@ -1,5 +1,5 @@
 /**
- * 5 user-selectable property colors (Claude Design v1 / Materio palette).
+ * 5 user-selectable property colors.
  * Used for property cards, sidebar icons, and calendar events.
  * Deliberately avoids Vuetify surface/on-surface theme variables.
  *
@@ -31,7 +31,7 @@ export const LEGACY_PROPERTY_COLORS = [
   '#e53935', // red     → #EA5455
 ] as const
 
-/** A property color from the current Claude Design v1 / Materio palette. */
+/** A property color from the current palette. */
 export type CurrentPropertyColor = typeof PROPERTY_COLORS[number]
 
 /** A property color from the pre-Claude-Design-v1 Material palette. */

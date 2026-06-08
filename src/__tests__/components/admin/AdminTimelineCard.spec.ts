@@ -58,7 +58,7 @@ describe('AdminTimelineCard', () => {
 
   it('renders property dot using mapLegacyPropertyColor (Phase 6 wiring)', () => {
     // Fixture stores legacy indigo #5c6bc0; the component must route through
-    // mapLegacyPropertyColor and render the Materio violet #7367F0.
+    // mapLegacyPropertyColor and render violet #7367F0.
     const wrapper = mountCard()
     const dot = wrapper.find('.rounded-circle')
     expect(dot.exists()).toBe(true)
