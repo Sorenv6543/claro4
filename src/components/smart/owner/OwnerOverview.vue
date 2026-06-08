@@ -77,6 +77,7 @@
             <div class="section-title">Your properties</div>
             <div class="section-sub">Tap a property to view details, sync calendars, and manage settings.</div>
           </div>
+
           <router-link class="section-action" to="/owner/properties">View all properties →</router-link>
         </div>
 
@@ -92,8 +93,9 @@
               @click="router.push(`/owner/properties/${item.id}`)"
             >
               <div class="prop-preview-top">
-                <v-icon :color="item.color" class="mr-2" size="32">{{ item.icon }}</v-icon>
+                <v-icon class="mr-2" :color="item.color" size="32">{{ item.icon }}</v-icon>
                 <span class="prop-name">{{ item.name }}</span>
+
                 <v-chip
                   class="ml-auto"
                   :color="item.statusColor"
@@ -105,6 +107,7 @@
                   {{ item.statusText }}
                 </v-chip>
               </div>
+
               <div class="prop-meta">{{ item.cityBedBath }}</div>
               <div class="prop-event-label">{{ item.eventLabel }}</div>
             </div>
@@ -128,7 +131,6 @@
       </v-col>
     </v-row>
 
-
     <!-- Timeline & Upcoming as Large Bento blocks -->
     <v-row class="bento-grid">
       <!-- Timeline block -->
@@ -144,10 +146,12 @@
                 <span class="tl-legend-mark tl-legend-mark--checkin" />
                 In
               </div>
+
               <div class="tl-legend-item">
                 <span class="tl-legend-mark tl-legend-mark--checkout" />
                 Out
               </div>
+
               <div class="tl-legend-item">
                 <span class="tl-legend-mark tl-legend-mark--turn" />
                 Same-day stay
@@ -165,6 +169,7 @@
             <!-- Shared hour axis — shown once at top -->
             <div class="tl-axis-top">
               <div class="tl-axis-spacer-wide" />
+
               <div class="tl-axis-ticks-top">
                 <span v-for="h in [8, 10, 12, 14, 16, 18, 20, 22]" :key="h">
                   {{ h < 12 ? `${h}am` : h === 12 ? '12pm' : `${h - 12}pm` }}
@@ -178,6 +183,7 @@
                 <span class="tl-day-hd-label" :class="{ 'tl-day-hd-label--today': di === 0 }">
                   {{ day.displayLabel }}
                 </span>
+
                 <div class="tl-day-hd-line" />
               </div>
 
@@ -187,6 +193,7 @@
                     <div class="tl-prop-info" :style="{ '--prop-color': row.propColor }">
                       <div class="tl-prop-name">{{ row.propName }}</div>
                       <div v-if="row.subtitle" class="tl-prop-sub">{{ row.subtitle }}</div>
+
                       <div v-if="di === 0" class="tl-status-pill" :class="`tl-status-pill--${row.status}`">
                         {{ deskStatusLabel(row.status) }}
                       </div>
@@ -322,121 +329,137 @@
     <Transition name="bdr-slide">
       <div v-if="drawerOpen" class="bdr-overlay" @click.self="drawerOpen = false">
         <div class="bdr-panel">
-    <div v-if="drawerItem" class="bdr-wrap">
-      <!-- Header -->
-      <div class="bdr-header">
-        <div>
-          <div class="bdr-prop-name">{{ drawerItem.propertyName }}</div>
-          <div class="bdr-meta-row">
-            <span class="bdr-dot" :style="{ background: drawerItem.propertyColor }" />
-            <span class="bdr-dates">{{ drawerFmtRange(drawerItem.checkinDate, drawerItem.checkoutDate) }}</span>
-          </div>
-        </div>
-        <v-btn aria-label="Close" icon size="small" variant="text" @click="drawerOpen = false">
-          <v-icon size="20">mdi-close</v-icon>
-        </v-btn>
-      </div>
+          <div v-if="drawerItem" class="bdr-wrap">
+            <!-- Header -->
+            <div class="bdr-header">
+              <div>
+                <div class="bdr-prop-name">{{ drawerItem.propertyName }}</div>
 
-      <!-- Chips -->
-      <div class="bdr-chips">
-        <v-chip
-          :color="drawerItem.bookingType === 'turn' ? 'warning' : 'primary'"
-          size="small"
-          variant="tonal"
-        >
-          {{ drawerItem.bookingType === 'turn' ? 'Same-day stay' : 'Standard' }}
-        </v-chip>
-        <v-chip :color="drawerStatusColor(drawerItem.status)" size="small" variant="tonal">
-          {{ drawerFmtStatus(drawerItem.status) }}
-        </v-chip>
-      </div>
+                <div class="bdr-meta-row">
+                  <span class="bdr-dot" :style="{ background: drawerItem.propertyColor }" />
+                  <span class="bdr-dates">{{ drawerFmtRange(drawerItem.checkinDate, drawerItem.checkoutDate) }}</span>
+                </div>
+              </div>
 
-      <v-divider class="my-4" />
-
-      <!-- B2: Turn today → timebar visualization -->
-      <template v-if="drawerIsTurnToday && drawerHasTimebar">
-        <div class="bdr-section-label">Today's events</div>
-
-        <div class="bdr-timebar-axis">
-          <div class="bdr-timebar-line" />
-          <div class="bdr-tb-block bdr-tb-out" :style="drawerOutBlockStyle">OUT</div>
-          <div class="bdr-tb-block bdr-tb-turn" :style="drawerWindowBlockStyle">
-            <span class="bdr-tb-window-label">cleaning window</span>
-          </div>
-          <div class="bdr-tb-block bdr-tb-in" :style="drawerInBlockStyle">IN</div>
-        </div>
-
-        <div class="bdr-timebar-ticks">
-          <span>8am</span><span>10am</span><span>12pm</span><span>2pm</span><span>4pm</span><span>6pm</span>
-        </div>
-
-        <div class="bdr-tb-events">
-          <div v-for="ev in drawerTodayEvents" :key="ev.type" class="bdr-tb-event-row">
-            <div class="bdr-tb-dot" :class="`bdr-tb-dot--${ev.type}`" />
-            <div class="bdr-tb-event-text">
-              <template v-if="ev.type === 'checkout'">Guest check-out</template>
-              <template v-else-if="ev.type === 'checkin'">Guest check-in</template>
+              <v-btn
+                aria-label="Close"
+                icon
+                size="small"
+                variant="text"
+                @click="drawerOpen = false"
+              >
+                <v-icon size="20">mdi-close</v-icon>
+              </v-btn>
             </div>
-            <div class="bdr-tb-event-time">{{ ev.time }}</div>
-          </div>
-        </div>
-      </template>
 
-      <!-- B1: Upcoming events spine -->
-      <template v-else>
-        <div class="bdr-section-label">Booking dates</div>
+            <!-- Chips -->
+            <div class="bdr-chips">
+              <v-chip
+                :color="drawerItem.bookingType === 'turn' ? 'warning' : 'primary'"
+                size="small"
+                variant="tonal"
+              >
+                {{ drawerItem.bookingType === 'turn' ? 'Same-day stay' : 'Standard' }}
+              </v-chip>
 
-        <div class="bdr-tl-spine">
-          <div v-for="(ev, idx) in drawerUpcomingEvents" :key="idx" class="bdr-tl-item">
-            <div class="bdr-tl-dot-wrap">
-              <div class="bdr-tl-dot" />
+              <v-chip :color="drawerStatusColor(drawerItem.status)" size="small" variant="tonal">
+                {{ drawerFmtStatus(drawerItem.status) }}
+              </v-chip>
             </div>
-            <div class="bdr-tl-content">
-              <div class="bdr-tl-date">{{ ev.dateLabel }}</div>
-              <div class="bdr-tl-title">{{ ev.title }}</div>
-              <div v-if="ev.subtitle" class="bdr-tl-sub">{{ ev.subtitle }}</div>
+
+            <v-divider class="my-4" />
+
+            <!-- B2: Turn today → timebar visualization -->
+            <template v-if="drawerIsTurnToday && drawerHasTimebar">
+              <div class="bdr-section-label">Today's events</div>
+
+              <div class="bdr-timebar-axis">
+                <div class="bdr-timebar-line" />
+                <div class="bdr-tb-block bdr-tb-out" :style="drawerOutBlockStyle">OUT</div>
+
+                <div class="bdr-tb-block bdr-tb-turn" :style="drawerWindowBlockStyle">
+                  <span class="bdr-tb-window-label">cleaning window</span>
+                </div>
+
+                <div class="bdr-tb-block bdr-tb-in" :style="drawerInBlockStyle">IN</div>
+              </div>
+
+              <div class="bdr-timebar-ticks">
+                <span>8am</span><span>10am</span><span>12pm</span><span>2pm</span><span>4pm</span><span>6pm</span>
+              </div>
+
+              <div class="bdr-tb-events">
+                <div v-for="ev in drawerTodayEvents" :key="ev.type" class="bdr-tb-event-row">
+                  <div class="bdr-tb-dot" :class="`bdr-tb-dot--${ev.type}`" />
+
+                  <div class="bdr-tb-event-text">
+                    <template v-if="ev.type === 'checkout'">Guest check-out</template>
+                    <template v-else-if="ev.type === 'checkin'">Guest check-in</template>
+                  </div>
+
+                  <div class="bdr-tb-event-time">{{ ev.time }}</div>
+                </div>
+              </div>
+            </template>
+
+            <!-- B1: Upcoming events spine -->
+            <template v-else>
+              <div class="bdr-section-label">Booking dates</div>
+
+              <div class="bdr-tl-spine">
+                <div v-for="(ev, idx) in drawerUpcomingEvents" :key="idx" class="bdr-tl-item">
+                  <div class="bdr-tl-dot-wrap">
+                    <div class="bdr-tl-dot" />
+                  </div>
+
+                  <div class="bdr-tl-content">
+                    <div class="bdr-tl-date">{{ ev.dateLabel }}</div>
+                    <div class="bdr-tl-title">{{ ev.title }}</div>
+                    <div v-if="ev.subtitle" class="bdr-tl-sub">{{ ev.subtitle }}</div>
+                  </div>
+                </div>
+              </div>
+            </template>
+
+            <v-divider class="my-4" />
+
+            <!-- Notes -->
+            <div class="bdr-section-label">Notes</div>
+            <p class="bdr-notes">{{ drawerItem.notes || 'No notes for this booking.' }}</p>
+
+            <!-- Actions -->
+            <div class="bdr-actions">
+              <v-btn
+                block
+                color="primary"
+                prepend-icon="mdi-calendar-edit-outline"
+                rounded="sm"
+                variant="tonal"
+                @click="handleEditBooking(drawerItem.id); drawerOpen = false"
+              >
+                Reschedule
+              </v-btn>
+
+              <v-btn
+                block
+                color="warning"
+                prepend-icon="mdi-calendar-remove-outline"
+                rounded="sm"
+                variant="text"
+                @click="handleCancelBooking(drawerItem.id); drawerOpen = false"
+              >
+                Cancel Booking
+              </v-btn>
+
+              <v-chip
+                class="bdr-comingsoon"
+                variant="outlined"
+              >
+                <v-icon size="14" start>mdi-message-outline</v-icon>
+                Messaging · coming soon
+              </v-chip>
             </div>
           </div>
-        </div>
-      </template>
-
-      <v-divider class="my-4" />
-
-      <!-- Notes -->
-      <div class="bdr-section-label">Notes</div>
-      <p class="bdr-notes">{{ drawerItem.notes || 'No notes for this booking.' }}</p>
-
-      <!-- Actions -->
-      <div class="bdr-actions">
-        <v-btn
-          block
-          color="primary"
-          prepend-icon="mdi-calendar-edit-outline"
-          rounded="sm"
-          variant="tonal"
-          @click="handleEditBooking(drawerItem.id); drawerOpen = false"
-        >
-          Reschedule
-        </v-btn>
-        <v-btn
-          block
-          color="warning"
-          prepend-icon="mdi-calendar-remove-outline"
-          rounded="sm"
-          variant="text"
-          @click="handleCancelBooking(drawerItem.id); drawerOpen = false"
-        >
-          Cancel Booking
-        </v-btn>
-        <v-chip
-          class="bdr-comingsoon"
-          variant="outlined"
-        >
-          <v-icon size="14" start>mdi-message-outline</v-icon>
-          Messaging · coming soon
-        </v-chip>
-      </div>
-    </div>
         </div>
       </div>
     </Transition>
@@ -649,7 +672,7 @@
       d.setDate(d.getDate() + i)
       const date = d.toISOString().slice(0, 10)
       const label = i === 0 ? 'Today' : d.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric' })
-      const displayLabel = i === 0 ? 'TODAY' : i === 1 ? 'TOMORROW' : d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase()
+      const displayLabel = i === 0 ? 'TODAY' : (i === 1 ? 'TOMORROW' : d.toLocaleDateString('en-US', { weekday: 'short' }).toUpperCase())
       return { date, label, displayLabel }
     }),
   )
@@ -882,7 +905,7 @@
   )
 
   const drawerTodayEvents = computed(() => {
-    if (!drawerItem.value) return [] as Array<{ type: string; time: string; time24: string }>
+    if (!drawerItem.value) return [] as Array<{ type: string, time: string, time24: string }>
     const checkoutTime = drawerItem.value.checkoutTime ?? '11:00'
     const checkinTime = drawerItem.value.checkinTime ?? '15:00'
     return [
@@ -922,7 +945,7 @@
 
   const drawerUpcomingEvents = computed(() => {
     const item = drawerItem.value
-    if (!item) return [] as Array<{ dateLabel: string; title: string; subtitle?: string }>
+    if (!item) return [] as Array<{ dateLabel: string, title: string, subtitle?: string }>
     const guestSuffix = item.guestCount ? ` · ${item.guestCount} guests` : ''
     return [
       {
@@ -1054,7 +1077,6 @@
     }
   }
 
-
   // ── PropertyList items for overview accordion ────────────────────────────────
   const overviewListItems = computed((): PropertyListItem[] =>
     myProperties.value.map(p => {
@@ -1134,7 +1156,7 @@
 
   const bannerSubtitle = computed(() => {
     const n = todayEventsCount.value
-    return `${n} booking${n !== 1 ? 's' : ''} scheduled today`
+    return `${n} booking${n === 1 ? '' : 's'} scheduled today`
   })
 
   const bannerStats = computed(() => [

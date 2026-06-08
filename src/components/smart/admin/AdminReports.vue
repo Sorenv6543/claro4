@@ -52,18 +52,22 @@
         <!-- Charts Placeholder -->
         <v-row class="mb-6">
           <v-col cols="12">
-            <v-card elevation="0" class="bg-surface rounded-xl" variant="flat">
+            <v-card class="bg-surface rounded-xl" elevation="0" variant="flat">
               <v-card-title class="d-flex align-center font-weight-semibold pb-2 pt-6 px-6">
                 <v-icon class="mr-2">mdi-chart-line</v-icon>
                 <span>Business Analytics Dashboard</span>
               </v-card-title>
+
               <v-divider />
+
               <v-card-text class="pa-6">
                 <div class="chart-placeholder">
                   <v-icon color="grey-lighten-2" size="64">mdi-chart-line</v-icon>
+
                   <p class="text-body-2 text-medium-emphasis mt-2">
                     Business analytics charts would be displayed here
                   </p>
+
                   <p class="text-caption text-medium-emphasis">
                     Integration with Chart.js or similar charting library needed
                   </p>
@@ -76,17 +80,20 @@
         <!-- Performance Tables -->
         <v-row>
           <v-col cols="12" md="6">
-            <v-card elevation="0" class="bg-surface rounded-xl" variant="flat">
+            <v-card class="bg-surface rounded-xl" elevation="0" variant="flat">
               <v-card-title class="d-flex align-center font-weight-semibold pb-2 pt-6 px-6">
                 <v-icon class="mr-2">mdi-home-city</v-icon>
                 <span>Top Performing Properties</span>
               </v-card-title>
+
               <v-divider />
+
               <v-card-text class="pa-6">
                 <div v-if="topProperties.length === 0" class="text-center py-4">
                   <v-icon color="grey-lighten-1" size="48">mdi-home-search</v-icon>
                   <p class="text-body-2 text-medium-emphasis mt-2">No property data available</p>
                 </div>
+
                 <div v-else>
                   <div
                     v-for="property in topProperties"
@@ -97,6 +104,7 @@
                       <div class="font-weight-medium">{{ property.name }}</div>
                       <div class="text-caption text-medium-emphasis">{{ property.bookings }} bookings</div>
                     </div>
+
                     <div class="text-success font-weight-bold">${{ property.revenue }}</div>
                   </div>
                 </div>
@@ -105,17 +113,20 @@
           </v-col>
 
           <v-col cols="12" md="6">
-            <v-card elevation="0" class="bg-surface rounded-xl" variant="flat">
+            <v-card class="bg-surface rounded-xl" elevation="0" variant="flat">
               <v-card-title class="d-flex align-center font-weight-semibold pb-2 pt-6 px-6">
                 <v-icon class="mr-2">mdi-account-group</v-icon>
                 <span>Cleaner Performance</span>
               </v-card-title>
+
               <v-divider />
+
               <v-card-text class="pa-6">
                 <div v-if="topCleaners.length === 0" class="text-center py-4">
                   <v-icon color="grey-lighten-1" size="48">mdi-account-search</v-icon>
                   <p class="text-body-2 text-medium-emphasis mt-2">No cleaner data available</p>
                 </div>
+
                 <div v-else>
                   <div
                     v-for="cleaner in topCleaners"
@@ -126,6 +137,7 @@
                       <div class="font-weight-medium">{{ cleaner.name }}</div>
                       <div class="text-caption text-medium-emphasis">{{ cleaner.completed }} completed</div>
                     </div>
+
                     <div class="text-info font-weight-bold">{{ cleaner.rating }}/5</div>
                   </div>
                 </div>
