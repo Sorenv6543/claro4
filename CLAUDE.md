@@ -156,6 +156,16 @@ onMounted(() => {
 })
 ```
 
+## Knowledge Base
+
+Extended project documentation is maintained in the Obsidian vault at `/root/obsidian-vault/claro4/`:
+- `Overview.md` — Project architecture and tech stack
+- `Owner-Side.md` — Owner UI components and data flow
+- `Admin-Side.md` — Admin UI components and data flow
+- `Design-System.md` — Bento/glassmorphism design reference
+- `Supabase-Schema.md` — Database tables, views, RLS
+- `Deprecated.md` — History of removed/refactored code
+
 ## PWA
 
 - **App name**: "Property Cleaning Scheduler" / short name "Claro"; manifest: `public/manifest.webmanifest`
