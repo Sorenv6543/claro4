@@ -1152,8 +1152,6 @@
     return count
   })
 
-  const needsAttentionCount = computed(() => urgentTurns.value.length)
-
   const bannerSubtitle = computed(() => {
     const n = todayEventsCount.value
     return `${n} booking${n === 1 ? '' : 's'} scheduled today`
