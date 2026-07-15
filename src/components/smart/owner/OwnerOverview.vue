@@ -475,7 +475,7 @@
   import { useToday } from '@composables/shared/useToday'
   import { fmt12, fmtChipLabel, formatDateLabel, timelineIsPast, timelinePct } from '@utils/timelineMath'
   import { computed, onMounted, onUnmounted, ref } from 'vue'
-  import { isNavigationFailure, NavigationFailureType, useRouter } from 'vue-router'
+  import { useRouter } from 'vue-router'
   import { useDisplay } from 'vuetify'
   import OwnerBookingInlay from '@/components/dumb/owner/OwnerBookingInlay.vue'
   import OwnerDayBar from '@/components/dumb/owner/OwnerDayBar.vue'
@@ -606,12 +606,6 @@
     d.setDate(d.getDate() + rangeDays.value - 1)
     return d.toISOString().slice(0, 10)
   })
-
-  function daysDiff (from: string, to: string): number {
-    const a = new Date(from + 'T00:00:00')
-    const b = new Date(to + 'T00:00:00')
-    return Math.round((b.getTime() - a.getTime()) / (1000 * 60 * 60 * 24))
-  }
 
   // ── Day-bar events (today's events, used by propertyRows) ─────────────────
   const dayBarEvents = computed((): DayBarEvent[] => {
@@ -784,15 +778,6 @@
       events.sort((a, b) => a.time.localeCompare(b.time))
       return { date: dateStr, label, isToday: i === 0, events }
     })
-  })
-
-  const unassignedBookingCount = computed(() => {
-    const end = rangeEndDate.value
-    return myBookings.value.filter(b => {
-      if (b.status === 'cancelled' || b.assigned_cleaner_id || b.assigned_team_id) return false
-      if (b.booking_type === 'turn') return b.checkin_date >= todayStr.value && b.checkin_date <= end
-      return b.checkout_date >= todayStr.value && b.checkout_date <= end
-    }).length
   })
 
   // ── Unified upcoming events (all types, full range window) ──────────────────
