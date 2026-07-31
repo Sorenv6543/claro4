@@ -28,7 +28,7 @@ The app is built for three user types, though only two have a working interface 
 | **Business Admin** | All clients, all bookings | Master calendar, cleaner assignment, cross-client view |
 | **Cleaner** | Assigned jobs only (planned) | Not built yet — cleaners are redirected to a coming-soon page on login |
 
-Role separation runs all the way down for the two built roles — components, composables, and routes are split by owner/admin, and the build can emit role-specific bundles so owners never download admin code. Cleaner assignment and scheduling already exist in the data model and in the admin UI (admins assign cleaners to jobs), but cleaners don't yet have their own interface to view those assignments.
+Role separation runs all the way down for the two built roles — components, composables, and routes are split by owner/admin, and the app is chunked by role at build time for caching. Cleaner assignment and scheduling already exist in the data model and in the admin UI (admins assign cleaners to jobs), but cleaners don't yet have their own interface to view those assignments.
 
 ---
 
@@ -60,7 +60,7 @@ Two patterns carry most of the weight:
 
 **Dumb/smart separation.** Presentational components take props and emit events; smart components own data fetching and state. Makes the role-specific UIs cheap to build, since they compose the same dumb components differently.
 
-**Role-based code splitting.** Vite chunks by role at build time. The full build serves everyone; `build:owner-only` and `build:admin-only` produce lighter bundles for role-specific deployments.
+**Role-based code splitting.** Vite chunks by role at build time (`owner-app`/`admin-app`/`app-core`) for better browser caching. The `build:owner-only` and `build:admin-only` scripts exist but don't yet produce role-exclusive bundles — every build currently ships both roles' code.
 
 ---
 
@@ -102,8 +102,8 @@ Actively developed. The core is working and deployed.
 - Booking and property CRUD
 - Calendar views with FullCalendar integration
 - Turn detection and priority handling
-- Role-based build splitting and bundle optimization
-- TypeScript strict mode (vue-tsc runs as part of `pnpm run build`)
+- Role-based code chunking for caching
+- TypeScript strict mode (vue-tsc runs as part of `pnpm run build`; a few pre-existing type errors are still being cleaned up)
 - Supabase row-level security policies across bookings, properties, cleaner teams, and user profiles
 
 **In progress**
