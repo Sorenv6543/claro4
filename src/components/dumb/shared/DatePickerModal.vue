@@ -3,8 +3,7 @@
     max-width="400"
     :model-value="visible"
     persistent
-    @keydown.enter="handleConfirm"
-    @keydown.esc="handleCancel"
+    @keydown="handleKeydown"
     @update:model-value="(value) => emit('update:visible', value)"
   >
     <v-card class="date-picker-modal">
@@ -243,6 +242,11 @@
 
     // Update selected date
     selectedDate.value = inputDate
+  }
+
+  function handleKeydown (e: KeyboardEvent): void {
+    if (e.key === 'Enter') handleConfirm()
+    else if (e.key === 'Escape') handleCancel()
   }
 
   function handleConfirm (): void {

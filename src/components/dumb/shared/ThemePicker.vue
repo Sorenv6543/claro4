@@ -152,7 +152,7 @@
     } else if ('change' in theme) {
       (theme as any).change(themeName)
     } else {
-      theme.name.value = themeName
+      (theme as any).name.value = themeName
     }
     localStorage.setItem(THEME_STORAGE_KEY, themeName)
   }
@@ -166,7 +166,7 @@
       } else if ('change' in theme) {
         (theme as any).change(savedTheme)
       } else {
-        theme.name.value = savedTheme
+        (theme as any).name.value = savedTheme
       }
     }
   })

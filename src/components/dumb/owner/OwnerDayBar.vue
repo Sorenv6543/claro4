@@ -63,7 +63,7 @@
   // ── Day-bar math: 8 AM–10 PM (14 hours) ─────────────────────────────────────
   // Constants and pure helpers come from @utils/timelineMath; only the
   // reactive NOW percentage is kept here because it depends on live props.
-  const nowPct = computed(() => timelinePct(props.currentHour, props.currentMin))
+  const nowPct = computed(() => timelinePct(`${props.currentHour}:${String(props.currentMin).padStart(2, '0')}`))
 
   const RANGE_LABELS = ['Today', '3 days', '7 days']
 

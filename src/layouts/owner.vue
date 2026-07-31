@@ -281,7 +281,7 @@
       } else if ('change' in vuetifyTheme) {
         (vuetifyTheme as any).change(savedTheme)
       } else {
-        vuetifyTheme.name.value = savedTheme
+        (vuetifyTheme as any).name.value = savedTheme
       }
     }
 
