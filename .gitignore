@@ -66,12 +66,15 @@ dist-ssr
 .claude/*.local.md
 .claude/*.local.json
 
+# Personal/local Claude context — not meant to be shared
+/.claude.local.md
+
 # Git worktrees
 .worktrees/
 .claude/worktrees/
 
 # Claude Code — tool-specific dirs and installed skill packages
-# skills-lock.json + .claude/skills/ are committed; .agents/ is the install cache
+# .agent/skills-lock.json + .claude/skills/ are committed; .agents/ is the install cache
 .agents/
 .kiro/
 .windsurf/
