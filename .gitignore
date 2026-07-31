@@ -66,6 +66,9 @@ dist-ssr
 .claude/*.local.md
 .claude/*.local.json
 
+# Personal/local Claude context — not meant to be shared
+/.claude.local.md
+
 # Git worktrees
 .worktrees/
 .claude/worktrees/
