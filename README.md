@@ -104,7 +104,7 @@ Actively developed. The core is working and deployed.
 - Calendar views with FullCalendar integration
 - Turn detection and priority handling
 - Role-based build splitting and bundle optimization
-- Clean TypeScript compilation
+- TypeScript strict mode (vue-tsc runs as part of `pnpm run build`)
 - Supabase row-level security policies across bookings, properties, cleaner teams, and user profiles
 
 **In progress**
