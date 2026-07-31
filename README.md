@@ -71,8 +71,7 @@ git clone https://github.com/Sorenv6543/claro4.git
 cd claro4
 
 pnpm install
-cp .env.example .env      # add your Supabase project URL and anon key
-
+cp .env.example .env.local  # add your Supabase project URL and anon key
 pnpm run dev
 ```
 
